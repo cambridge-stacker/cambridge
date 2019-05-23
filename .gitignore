@@ -1,0 +1,4 @@
+*.sav
+*.love
+dist/*.zip
+dist/**/cambridge.exe
