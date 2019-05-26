@@ -165,7 +165,9 @@ function Marathon2020Game:onPieceEnter()
 end
 
 function Marathon2020Game:whilePieceActive()
-	self.grade_point_decay_counter = self.grade_point_decay_counter + self.grade + 2
+	if not self.clear then
+		self.grade_point_decay_counter = self.grade_point_decay_counter + self.grade + 2
+	end
 	if self.grade_point_decay_counter > 240 then
 		self.grade_point_decay_counter = 0
 		self.grade_points = math.max(0, self.grade_points - 1)
@@ -375,19 +377,29 @@ function Marathon2020Game:updateScore(level, drop_bonus, cleared_lines)
 	end
 end
 
-Marathon2020Game.mRollOpacityFunction = function(age)
+Marathon2020Game.rollOpacityFunction = function(age)
 	if age > 300 then return 0
 	elseif age < 240 then return 1
 	else return (300 - age) / 60 end
 end
 
-Marathon2020Game.rollOpacityFunction = function(age)
+Marathon2020Game.mRollOpacityFunction = function(age)
 	if age > 4 then return 0
 	else return 1 - age / 4 end
 end
 
 function Marathon2020Game:qualifiesForMRoll()
 	return false -- until I actually have grading working
+--[[
+
+GM-roll requirements
+
+You qualify for the GM roll if you:
+- Reach level 2020
+- with a grade of 50
+- in less than 13:30.00 total.
+
+]]--
 end
 
 function Marathon2020Game:drawGrid()

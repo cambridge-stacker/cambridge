@@ -36,8 +36,8 @@ function Survival2020Game:getARE()
 	elseif self.level < 300 then return 10
 	elseif self.level < 500 then return 6
 	elseif self.level < 1000 then return 4
-	elseif self.level < 1500 then return 3
-	else return 2 end
+	elseif self.level < 1500 then return 5
+	else return 6 end
 end
 
 function Survival2020Game:getLineARE()
@@ -71,12 +71,12 @@ end
 
 function Survival2020Game:getTotalDelay()
 		if self.level < 500 then return 60
-	elseif self.level < 600 then return 45  -- lock delay: 15
+	elseif self.level < 600 then return 45  -- lock delay: 13
 	elseif self.level < 700 then return 36
 	elseif self.level < 800 then return 27
 	elseif self.level < 900 then return 21
 	elseif self.level < 1000 then return 15
-	elseif self.level < 1100 then return 36  -- lock delay: 11
+	elseif self.level < 1100 then return 36  -- lock delay: 10
 	elseif self.level < 1200 then return 27
 	elseif self.level < 1300 then return 21
 	elseif self.level < 1400 then return 15
