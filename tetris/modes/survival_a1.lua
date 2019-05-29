@@ -33,23 +33,23 @@ function SurvivalA1Game:new()
 	self.next_queue_length = 1
 end
 
-function SurvivalA1Game:getARE()
-	return 25
+function MarathonA1Game:getARE()
+	return 30
 end
 
-function SurvivalA1Game:getLineARE()
-	return 25
+function MarathonA1Game:getLineARE()
+	return 27
 end
 
-function SurvivalA1Game:getDasLimit()
+function MarathonA1Game:getDasLimit()
 	return 15
 end
 
-function SurvivalA1Game:getLineClearDelay()
-	return 40
+function MarathonA1Game:getLineClearDelay()
+	return 44
 end
 
-function SurvivalA1Game:getLockDelay()
+function MarathonA1Game:getLockDelay()
 	return 30
 end
 

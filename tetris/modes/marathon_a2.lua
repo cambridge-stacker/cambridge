@@ -35,16 +35,16 @@ function MarathonA2Game:new()
 end
 
 function MarathonA2Game:getARE()
-        if self.level < 700 then return 25
-    elseif self.level < 800 then return 16
-    else return 12 end
+        if self.level < 700 then return 28
+    elseif self.level < 800 then return 19
+    else return 15 end
 end
 
 function MarathonA2Game:getLineARE()
-        if self.level < 600 then return 25
-    elseif self.level < 700 then return 16
-    elseif self.level < 800 then return 12
-    else return 6 end
+        if self.level < 600 then return 27
+    elseif self.level < 700 then return 18
+    elseif self.level < 800 then return 14
+    else return 8 end
 end
 
 function MarathonA2Game:getDasLimit()
@@ -54,11 +54,11 @@ function MarathonA2Game:getDasLimit()
 end
 
 function MarathonA2Game:getLineClearDelay()
-        if self.level < 500 then return 40
-    elseif self.level < 600 then return 25
-    elseif self.level < 700 then return 16
-    elseif self.level < 800 then return 12
-    else return 6 end
+        if self.level < 500 then return 41
+    elseif self.level < 600 then return 26
+    elseif self.level < 700 then return 17
+    elseif self.level < 800 then return 13
+    else return 7 end
 end
 
 function MarathonA2Game:getLockDelay()

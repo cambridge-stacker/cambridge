@@ -114,26 +114,33 @@ function GameMode:update(inputs, ruleset)
 			self.hard_drop_locked = false
 		end
 
+		local piece_y = self.piece.position.y
+
 		ruleset:processPiece(
 			inputs, self.piece, self.grid, self:getGravity(), self.prev_inputs,
 			self.move, self:getLockDelay(), self:getDropSpeed(),
 			self.drop_locked, self.hard_drop_locked, self.enable_hard_drop
 		)
 
+		local piece_dy = self.piece.position.y - piece_y
+
 		if inputs["up"] == true and
 			self.piece:isDropBlocked(self.grid) and
-			not self.hard_drop_locked and
-			self.instant_hard_drop
-		then
-			self.piece.locked = true
+			not self.hard_drop_locked then
+			self:onHardDrop(piece_dy)
+			if self.instant_hard_drop then
+				self.piece.locked = true
+			end
 		end
 
-		if inputs["down"] == true and
-			self.piece:isDropBlocked(self.grid) and
-			not self.drop_locked and
-			self.instant_soft_drop
-		then
-			self.piece.locked = true
+		if inputs["down"] == true then
+			self:onSoftDrop(piece_dy)
+			if self.piece:isDropBlocked(self.grid) and
+				not self.drop_locked and
+				self.instant_soft_drop
+			then
+				self.piece.locked = true
+			end
 		end
 
 		if self.piece.locked == true then
@@ -188,6 +195,14 @@ function GameMode:onPieceLock(piece) end
 function GameMode:onLineClear(cleared_row_count) end
 function GameMode:onPieceEnter() end
 function GameMode:onHold() end
+
+function GameMode:onSoftDrop(dropped_row_count)
+	self.drop_bonus = self.drop_bonus + 1 * dropped_row_count
+end
+
+function GameMode:onHardDrop(dropped_row_count)
+	self.drop_bonus = self.drop_bonus + 2 * dropped_row_count
+end
 
 function GameMode:onGameOver()
 	switchBGM(nil)
@@ -374,7 +389,8 @@ function GameMode:drawScoringInfo()
 	love.graphics.print(
 		self.das.direction .. " " ..
 		self.das.frames .. " " ..
-		st(self.prev_inputs)
+		st(self.prev_inputs) ..
+		self.drop_bonus
 	)
 
 	love.graphics.setFont(font_8x11)

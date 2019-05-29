@@ -12,7 +12,7 @@ MarathonA1Game.hash = "MarathonA1"
 MarathonA1Game.tagline = "Can you score enough points to reach the title of Grand Master?"
 
 MarathonA1Game.arr = 1
-MarathonA1Game.drop_speed = 1
+function MarathonA1Game:getDropSpeed() return 0.2 end
 
 function MarathonA1Game:new()
     MarathonA1Game.super:new()
@@ -34,11 +34,11 @@ function MarathonA1Game:new()
 end
 
 function MarathonA1Game:getARE()
-	return 25
+	return 30
 end
 
 function MarathonA1Game:getLineARE()
-	return 25
+	return 27
 end
 
 function MarathonA1Game:getDasLimit()
@@ -46,7 +46,7 @@ function MarathonA1Game:getDasLimit()
 end
 
 function MarathonA1Game:getLineClearDelay()
-	return 40
+	return 44
 end
 
 function MarathonA1Game:getLockDelay()
