@@ -46,7 +46,7 @@ function SurvivalA2Game:getDasLimit()
 end
 
 function SurvivalA2Game:getLineClearDelay()
-	return self:getLineARE()
+	return self:getLineARE() - 2
 end
 
 function SurvivalA2Game:getLockDelay()
