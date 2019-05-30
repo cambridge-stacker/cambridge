@@ -148,7 +148,7 @@ end
 
 function SurvivalA2Game:getSectionEndLevel()
 	if self.clear then return self.level
-	elseif self.level > 900 then return 999
+	elseif self.level >= 900 then return 999
 	else return math.floor(self.level / 100 + 1) * 100 end
 end
 

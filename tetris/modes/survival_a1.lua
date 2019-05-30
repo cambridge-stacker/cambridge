@@ -175,7 +175,7 @@ function SurvivalA1Game:drawScoringInfo()
 end
 
 function SurvivalA1Game:getSectionEndLevel()
-	if self.level > 900 then return 999
+	if self.level >= 900 then return 999
 	else return math.floor(self.level / 100 + 1) * 100 end
 end
 

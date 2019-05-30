@@ -423,7 +423,7 @@ function MarathonA3Game:getHighscoreData()
 end
 
 function MarathonA3Game:getSectionEndLevel()
-	if self.level > 900 then return 999
+	if self.level >= 900 then return 999
 	else return math.floor(self.level / 100 + 1) * 100 end
 end
 
