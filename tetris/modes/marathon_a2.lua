@@ -11,8 +11,8 @@ MarathonA2Game.name = "Marathon A2"
 MarathonA2Game.hash = "MarathonA2"
 MarathonA2Game.tagline = "The points don't matter! Can you reach the invisible roll?"
 
-MarathonA2Game.arr = 1
-MarathonA2Game.drop_speed = 1
+
+
 
 function MarathonA2Game:new()
     MarathonA2Game.super:new()

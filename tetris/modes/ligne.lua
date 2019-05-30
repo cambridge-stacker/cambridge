@@ -11,8 +11,8 @@ LigneGame.name = "Ligne"
 LigneGame.hash = "Ligne"
 LigneGame.tagline = "How fast can you clear 40 lines?"
 
-LigneGame.arr = 1
-LigneGame.drop_speed = 1
+
+
 
 function LigneGame:new()
 	LigneGame.super:new()

@@ -11,8 +11,7 @@ MarathonA1Game.name = "Marathon A1"
 MarathonA1Game.hash = "MarathonA1"
 MarathonA1Game.tagline = "Can you score enough points to reach the title of Grand Master?"
 
-MarathonA1Game.arr = 1
-function MarathonA1Game:getDropSpeed() return 0.2 end
+
 
 function MarathonA1Game:new()
     MarathonA1Game.super:new()

@@ -11,8 +11,8 @@ DemonModeGame.name = "Demon Mode"
 DemonModeGame.hash = "DemonMode"
 DemonModeGame.tagline = "Can you handle the ludicrous speed past level 20?"
 
-DemonModeGame.arr = 1
-DemonModeGame.drop_speed = 1
+
+
 
 function DemonModeGame:new()
 	DemonModeGame.super:new()

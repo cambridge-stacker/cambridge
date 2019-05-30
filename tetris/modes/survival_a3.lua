@@ -11,8 +11,8 @@ SurvivalA3Game.name = "Survival A3"
 SurvivalA3Game.hash = "SurvivalA3"
 SurvivalA3Game.tagline = "The blocks turn black and white! Can you make it to level 1300?"
 
-SurvivalA3Game.arr = 1
-SurvivalA3Game.drop_speed = 1
+
+
 
 function SurvivalA3Game:new()
 	SurvivalA3Game.super:new()

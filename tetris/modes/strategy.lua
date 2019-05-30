@@ -11,8 +11,8 @@ StrategyGame.name = "Strategy"
 StrategyGame.hash = "Strategy"
 StrategyGame.tagline = "You have lots of time to think! Can you use it to place a piece fast?"
 
-StrategyGame.arr = 1
-StrategyGame.drop_speed = 1
+
+
 
 function StrategyGame:new()
 	StrategyGame.super:new()

@@ -11,8 +11,8 @@ SurvivalA2Game.name = "Survival A2"
 SurvivalA2Game.hash = "SurvivalA2"
 SurvivalA2Game.tagline = "The game starts fast and only gets faster!"
 
-SurvivalA2Game.arr = 1
-SurvivalA2Game.drop_speed = 1
+
+
 
 function SurvivalA2Game:new()
 	SurvivalA2Game.super:new()

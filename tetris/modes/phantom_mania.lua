@@ -11,8 +11,8 @@ PhantomManiaGame.name = "Phantom Mania"
 PhantomManiaGame.hash = "PhantomMania"
 PhantomManiaGame.tagline = "The blocks disappear as soon as they're locked! Can you remember where everything is?"
 
-PhantomManiaGame.arr = 1
-PhantomManiaGame.drop_speed = 1
+
+
 
 function PhantomManiaGame:new()
 	PhantomManiaGame.super:new()

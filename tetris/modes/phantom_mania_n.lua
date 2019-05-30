@@ -11,8 +11,8 @@ PhantomManiaGame.name = "Phantom Mania N"
 PhantomManiaGame.hash = "PhantomManiaN"
 PhantomManiaGame.tagline = "The old mode from Nullpomino."
 
-PhantomManiaGame.arr = 1
-PhantomManiaGame.drop_speed = 1
+
+
 
 function PhantomManiaGame:new()
 	PhantomManiaGame.super:new()

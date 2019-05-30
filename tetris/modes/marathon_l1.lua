@@ -11,8 +11,8 @@ MarathonL1Game.name = "Line Attack"
 MarathonL1Game.hash = "MarathonL1"
 MarathonL1Game.tagline = "Can you clear the time hurdles when the game goes this fast?"
 
-MarathonL1Game.arr = 1
-MarathonL1Game.drop_speed = 1
+
+
 
 function MarathonL1Game:new()
 	MarathonL1Game.super:new()

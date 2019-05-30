@@ -11,8 +11,8 @@ PhantomMania2Game.name = "Phantom Mania 2"
 PhantomMania2Game.hash = "PhantomMania2"
 PhantomMania2Game.tagline = "The blocks disappear even faster now! Can you make it to level 1300?"
 
-PhantomMania2Game.arr = 1
-PhantomMania2Game.drop_speed = 1
+
+
 
 function PhantomMania2Game:new()
 	PhantomMania2Game.super:new()

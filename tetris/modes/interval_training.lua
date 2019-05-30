@@ -11,8 +11,8 @@ IntervalTrainingGame.name = "Interval Training"
 IntervalTrainingGame.hash = "IntervalTraining"
 IntervalTrainingGame.tagline = "Can you clear the time hurdles when the game goes this fast?"
 
-IntervalTrainingGame.arr = 1
-IntervalTrainingGame.drop_speed = 1
+
+
 
 function IntervalTrainingGame:new()
 	IntervalTrainingGame.super:new()

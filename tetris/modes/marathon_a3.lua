@@ -11,8 +11,8 @@ MarathonA3Game.name = "Marathon A3"
 MarathonA3Game.hash = "MarathonA3"
 MarathonA3Game.tagline = "The game gets faster way more quickly! Can you get all the Section COOLs?"
 
-MarathonA3Game.arr = 1
-MarathonA3Game.drop_speed = 1
+
+
 
 function MarathonA3Game:new()
     MarathonA3Game.super:new()

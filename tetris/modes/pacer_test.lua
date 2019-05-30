@@ -11,8 +11,8 @@ PacerTest.name = "TetrisGram™ Pacer Test"
 PacerTest.hash = "PacerTest"
 PacerTest.tagline = ""
 
-PacerTest.arr = 1
-PacerTest.drop_speed = 1
+
+
 
 local function getLevelFrames(level)
 	if level == 1 then return 72 * 60 / 8.0

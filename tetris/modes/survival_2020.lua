@@ -11,8 +11,8 @@ Survival2020Game.name = "Survival 2020"
 Survival2020Game.hash = "Survival2020"
 Survival2020Game.tagline = "A new time limit on the blocks! Can you handle being forced to perform under the total delay?"
 
-Survival2020Game.arr = 1
-Survival2020Game.drop_speed = 1
+
+
 
 function Survival2020Game:new()
 	Survival2020Game.super:new()
