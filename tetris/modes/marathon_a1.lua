@@ -171,6 +171,9 @@ end
 
 function MarathonA1Game:drawGrid()
 	self.grid:draw()
+	if self.piece ~= nil and self.level < 100 then
+		self:drawGhostPiece(ruleset)
+	end
 end
 
 function MarathonA1Game:drawScoringInfo()
