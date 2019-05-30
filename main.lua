@@ -11,6 +11,9 @@ function love.load()
 	config["side_next"] = false
 	config["reverse_rotate"] = true
 	config["fullscreen"] = false
+
+	love.window.setMode(love.graphics.getWidth(), love.graphics.getHeight(), {resizable = true});
+
 	if not config.input then
 		config.input = {}
 		scene = InputConfigScene()
@@ -61,18 +64,18 @@ end
 
 function love.draw()
 	love.graphics.push()
-	if love.window.getFullscreen() then
-		-- get offset matrix
-		love.graphics.setDefaultFilter("linear", "nearest")
-		local width = love.graphics.getWidth()
-		local height = love.graphics.getHeight()
-		local scale_factor = math.min(width / 640, height / 480)
-		love.graphics.translate(
-			(width - scale_factor * 640) / 2,
-			(height - scale_factor * 480) / 2
-		)
-		love.graphics.scale(scale_factor)
-	end
+	
+	-- get offset matrix
+	love.graphics.setDefaultFilter("linear", "nearest")
+	local width = love.graphics.getWidth()
+	local height = love.graphics.getHeight()
+	local scale_factor = math.min(width / 640, height / 480)
+	love.graphics.translate(
+		(width - scale_factor * 640) / 2,
+		(height - scale_factor * 480) / 2
+	)
+	love.graphics.scale(scale_factor)
+
 	scene:render()
 	love.graphics.pop()
 end
