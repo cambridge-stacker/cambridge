@@ -113,7 +113,7 @@ function PacerTest:checkSectionStatus()
 		self.section_clear = false
 	else
 		self.strikes = self.strikes + 1
-		if self.strikes >= 200 then
+		if self.strikes >= 2 then
 			self.game_over = true
 			fadeoutBGM(2.5)
 		end
@@ -164,7 +164,7 @@ function PacerTest:drawScoringInfo()
 end
 
 function PacerTest:getBackground()
-	return self.level - 1
+	return math.min(self.level - 1, 20)
 end
 
 return PacerTest
