@@ -1,5 +1,3 @@
-The code in Cambridge is licensed under the MIT license.
-
 Copyright (c) 2018-2019 Joe Zeng
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -19,11 +17,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
--------------------------
-
-Some code and assets in this repository are contributed by members of the
-community, as well as borrowed from other places, either with licensing
-or as placeholders until suitable material can be found that is properly
-licensed. Their original sources, and copyright notices if applicable, are
-listed in the file SOURCES.
