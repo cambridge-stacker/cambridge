@@ -6,6 +6,7 @@ Coding conventions
 	* The sole exception is in a multiline `if` statement; the initial `if` should have four spaces before it to align it with an `elseif` on the next line. For example:
 
 ```lua
+	---- 4 spaces
 	    if self.level <  900 then return 12
 	elseif self.level < 1200 then return 8
 	else return 6 end
@@ -15,8 +16,10 @@ Coding conventions
 
 ```lua
 	if self.piece:isDropBlocked(self.grid) then
-		-- for bottomed out pieces, decrease the drop bonus if they stall on dropping it
-		self.drop_bonus = math.min(self.drop_bonus - 1, 0) -- by 1 point per frame
+		-- this is a comment that appears in a block of its own, separate from any code
+		-- consecutive multiline comments must have the same indentation level and
+		-- not appear next on the same line as actual code
+		self.drop_bonus = math.min(self.drop_bonus - 1, 0) -- comments at the end of a line must stay on that line
 	else                                                            
 		if piece_dy >= 1 then                                       -- basically
 			self.drop_bonus = self.drop_bonus + piece_dy * 20       -- this sort of
@@ -26,6 +29,17 @@ Coding conventions
 ```
 
 * Use `snake_case` for variables, `camelCase` for functions.
+
+```lua
+	function MyGameMode:on_activate_bleep_bloop()
+		-- no, bad, use "onActivateBleepBloop"
+		local bleepBloopFrames = 240
+		-- this is also bad, use "bleep_bloop_frames"
+		local bleep_bloop_bonus = self.lock_delay * 150
+		self.bleepBloopSubscore = self.bleepBloopSubscore + bleep_bloop_bonus
+		-- member variables are also variables, this should be "bleep_bloop_subscore"
+	end
+```
 
 
 Contributor's License Agreement
