@@ -141,8 +141,8 @@ function SurvivalA3Game:onLineClear(cleared_row_count)
 	end
 end
 
-function SurvivalA3Game:onPieceLock()
-	self:advanceBottomRow(1)
+function SurvivalA3Game:onPieceLock(piece, cleared_row_count)
+	if cleared_row_count == 0 then self:advanceBottomRow(1) end
 end
 
 function SurvivalA3Game:updateScore(level, drop_bonus, cleared_lines)

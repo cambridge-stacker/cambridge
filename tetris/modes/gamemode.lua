@@ -145,17 +145,17 @@ function GameMode:update(inputs, ruleset)
 
 		if self.piece.locked == true then
 			self.grid:applyPiece(self.piece)
-			self:onPieceLock(self.piece)
-			self.piece = nil
-			if self.enable_hold then
-				self.held = false
-			end
-			
 			self.grid:markClearedRows()
 
 			local cleared_row_count = self.grid:getClearedRowCount()
 
+			self:onPieceLock(self.piece, cleared_row_count)
 			self:updateScore(self.level, self.drop_bonus, cleared_row_count)
+
+			self.piece = nil
+			if self.enable_hold then
+				self.held = false
+			end
 
 			if cleared_row_count > 0 then
 				self.lcd = self:getLineClearDelay()
@@ -191,7 +191,7 @@ end
 
 -- event functions
 function GameMode:whilePieceActive() end
-function GameMode:onPieceLock(piece) end
+function GameMode:onPieceLock(piece, cleared_row_count) end
 function GameMode:onLineClear(cleared_row_count) end
 function GameMode:onPieceEnter() end
 function GameMode:onHold() end

@@ -92,7 +92,7 @@ function PhantomMania2Game:hitTorikan(old_level, new_level)
 		self.level = 500
 		return true
 	end
-	if old_level < 800 and new_level >= 800 and self.frames > sp(4,40) then
+	if old_level < 800 and new_level >= 800 and self.frames > sp(4,45) then
 		self.level = 800
 		return true
 	end
@@ -155,8 +155,8 @@ function PhantomMania2Game:onLineClear(cleared_row_count)
 	end
 end
 
-function PhantomMania2Game:onPieceLock()
-	self:advanceBottomRow(1)
+function PhantomMania2Game:onPieceLock(piece, cleared_row_count)
+	if cleared_row_count == 0 then self:advanceBottomRow(1) end
 end
 
 function PhantomMania2Game:onHold()
