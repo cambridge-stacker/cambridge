@@ -21,7 +21,28 @@ For the time being, the file `cambridge.love` only works on the command line. In
 
 ### Linux
 
-Same as macOS, except use your favourite package manager.
+Same as macOS, except install `love` with your favourite package manager.
+
+
+Running from source
+-------------------
+
+If you want the bleeding-edge release, you can also clone the code straight from this repository.
+
+### macOS, Linux
+
+If you haven't already, install `love` with your favourite package manager (Homebrew on macOS, your system's default on Linux). **Make sure you're using LÖVE 11, because it won't work with earlier versions!**
+
+Clone the repository in git:
+
+    git clone https://github.com/joezeng/cambridge
+
+Then, navigate to the root directory that you just cloned, and type:
+
+    love .
+
+It should run automatically!
+
 
 License
 -------
