@@ -164,7 +164,7 @@ function PacerTest:drawScoringInfo()
 end
 
 function PacerTest:getBackground()
-	return math.min(self.level - 1, 20)
+	return math.min(self.level - 1, 19)
 end
 
 return PacerTest
