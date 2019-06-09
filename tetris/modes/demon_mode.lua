@@ -104,7 +104,7 @@ function DemonModeGame:advanceOneFrame()
 	if self.clear then
 		self.roll_frames = self.roll_frames + 1
 		if self.roll_frames < 0 then
-			return
+			return false
 		elseif self.roll_frames >= 1337 then
 			self.completed = true
 		end

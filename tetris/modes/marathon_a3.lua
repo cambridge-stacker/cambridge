@@ -67,7 +67,9 @@ function MarathonA3Game:getLineClearDelay()
     elseif self.speed_level < 600 then return 25
     elseif self.speed_level < 700 then return 16
     elseif self.speed_level < 800 then return 12
-    else return 6 end
+    elseif self.speed_level < 1100 then return 6
+    elseif self.speed_level < 1200 then return 5
+    else return 4 end
 end
 
 function MarathonA3Game:getLockDelay()
@@ -117,7 +119,7 @@ function MarathonA3Game:advanceOneFrame()
 			if self.roll_frames + 1 == 0 then
 				switchBGM("credit_roll", "gm3")
 			end
-			return
+			return false
 		elseif self.roll_frames > 3238 then
 			if self:qualifiesForMRoll() then
 				self.roll_points = self.roll_points + 160
@@ -181,7 +183,7 @@ function MarathonA3Game:updateSectionTimes(old_level, new_level)
 			self.section_cool_grade = self.section_cool_grade - 1
 			table.insert(self.section_status, "regret")
 		elseif section <= 9 and self.section_status[section - 1] == "cool" and
-		self.section_70_times[section] < self.section_70_times[section - 1] + 1000 then
+		self.section_70_times[section] < self.section_70_times[section - 1] + 120 then
 			self.section_cool_grade = self.section_cool_grade + 1
 			self.speed_level = self.speed_level + 100
 			table.insert(self.section_status, "cool")
