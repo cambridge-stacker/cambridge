@@ -11,9 +11,6 @@ PhantomManiaGame.name = "Phantom Mania"
 PhantomManiaGame.hash = "PhantomMania"
 PhantomManiaGame.tagline = "The blocks disappear as soon as they're locked! Can you remember where everything is?"
 
-
-
-
 function PhantomManiaGame:new()
 	PhantomManiaGame.super:new()
 
@@ -102,7 +99,7 @@ end
 function PhantomManiaGame:onLineClear(cleared_row_count)
 	if not self.clear then
 		local new_level = self.level + cleared_row_count
-		if self:hitTorikan(self.level, new_level) then
+		if new_level >= 999 or self:hitTorikan(self.level, new_level) then
 			if new_level >= 999 then
 				self.level = 999
 			end
