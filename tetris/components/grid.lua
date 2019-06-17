@@ -38,6 +38,10 @@ function Grid:isRowFull(row)
 end
 
 function Grid:canPlacePiece(piece)
+	if piece.big then
+		return self:canPlaceBigPiece(piece)
+	end
+
 	local offsets = piece:getBlockOffsets()
 	for index, offset in pairs(offsets) do
 		local x = piece.position.x + offset.x
@@ -49,7 +53,29 @@ function Grid:canPlacePiece(piece)
 	return true
 end
 
+function Grid:canPlaceBigPiece(piece)
+	local offsets = piece:getBlockOffsets()
+	for index, offset in pairs(offsets) do
+		local x = piece.position.x + offset.x
+		local y = piece.position.y + offset.y
+		if x >= 5 or x < 0 or y >= 12 or y < 0 or
+			self.grid[y * 2 + 1][x * 2 + 1] ~= empty or
+			self.grid[y * 2 + 1][x * 2 + 2] ~= empty or
+			self.grid[y * 2 + 2][x * 2 + 1] ~= empty or
+			self.grid[y * 2 + 2][x * 2 + 2] ~= empty
+		then
+			return false
+		end
+	end
+	return true
+end
+
 function Grid:canPlacePieceInVisibleGrid(piece)
+	if piece.big then
+		return self:canPlaceBigPiece(piece)
+		-- forget canPlaceBigPieceInVisibleGrid for now
+	end
+
 	local offsets = piece:getBlockOffsets()
 	for index, offset in pairs(offsets) do
 		local x = piece.position.x + offset.x
@@ -116,6 +142,10 @@ function Grid:copyBottomRow()
 end
 
 function Grid:applyPiece(piece)
+	if piece.big then
+		self:applyBigPiece(piece)
+		return
+	end
 	offsets = piece:getBlockOffsets()
 	for index, offset in pairs(offsets) do
 		x = piece.position.x + offset.x
@@ -124,6 +154,22 @@ function Grid:applyPiece(piece)
 			skin = piece.skin,
 			colour = piece.shape
 		}
+	end
+end
+
+function Grid:applyBigPiece(piece)
+	offsets = piece:getBlockOffsets()
+	for index, offset in pairs(offsets) do
+		x = piece.position.x + offset.x
+		y = piece.position.y + offset.y
+		for a = 1, 2 do
+			for b = 1, 2 do
+				self.grid[y*2+a][x*2+b] = {
+					skin = piece.skin,
+					colour = piece.shape
+				}
+			end
+		end
 	end
 end
 
@@ -148,19 +194,21 @@ function Grid:draw()
 					love.graphics.setColor(0.5, 0.5, 0.5, 1)
 					love.graphics.draw(blocks[self.grid[y][x].skin][self.grid[y][x].colour], 48+x*16, y*16)
 				end
-				love.graphics.setColor(0.8, 0.8, 0.8, 1)
-				love.graphics.setLineWidth(1)
-				if y > 1 and self.grid[y-1][x] == empty then
-					love.graphics.line(48.0+x*16, -0.5+y*16, 64.0+x*16, -0.5+y*16)
-				end
-				if y < 24 and self.grid[y+1][x] == empty then
-					love.graphics.line(48.0+x*16, 16.5+y*16, 64.0+x*16, 16.5+y*16)
-				end
-				if x > 1 and self.grid[y][x-1] == empty then
-					love.graphics.line(47.5+x*16, -0.0+y*16, 47.5+x*16, 16.0+y*16)
-				end
-				if x < 10 and self.grid[y][x+1] == empty then
-					love.graphics.line(64.5+x*16, -0.0+y*16, 64.5+x*16, 16.0+y*16)
+				if self.grid[y][x].skin ~= "bone" then
+					love.graphics.setColor(0.8, 0.8, 0.8, 1)
+					love.graphics.setLineWidth(1)
+					if y > 1 and self.grid[y-1][x] == empty then
+						love.graphics.line(48.0+x*16, -0.5+y*16, 64.0+x*16, -0.5+y*16)
+					end
+					if y < 24 and self.grid[y+1][x] == empty then
+						love.graphics.line(48.0+x*16, 16.5+y*16, 64.0+x*16, 16.5+y*16)
+					end
+					if x > 1 and self.grid[y][x-1] == empty then
+						love.graphics.line(47.5+x*16, -0.0+y*16, 47.5+x*16, 16.0+y*16)
+					end
+					if x < 10 and self.grid[y][x+1] == empty then
+						love.graphics.line(64.5+x*16, -0.0+y*16, 64.5+x*16, 16.0+y*16)
+					end
 				end
 			end
 		end

@@ -25,6 +25,8 @@ function PhantomMania2Game:new()
 	self.combo = 1
 	self.hold_age = 0
 	self.queue_age = 0
+	self.roll_points = 0
+
 	self.randomizer = History6RollsRandomizer()
 
 	self.lock_drop = true
@@ -135,7 +137,7 @@ function PhantomMania2Game:onPieceEnter()
 end
 
 local cleared_row_levels = {1, 2, 4, 6}
-local cleared_row_points = {0.02, 0.05, 0.15, 0.6}
+local cleared_row_points = {2, 6, 15, 40}
 
 function PhantomMania2Game:onLineClear(cleared_row_count)
 	if not self.clear then
@@ -144,6 +146,7 @@ function PhantomMania2Game:onLineClear(cleared_row_count)
 		if new_level >= 1300 or self:hitTorikan(self.level, new_level) then
 			if new_level >= 1300 then
 				self.level = 1300
+				self.big_mode = true
 			end
 			self.clear = true
 			self.grid:clear()
@@ -152,6 +155,12 @@ function PhantomMania2Game:onLineClear(cleared_row_count)
 			self.level = math.min(new_level, 1300)
 		end
 		self:advanceBottomRow(-cleared_row_count)
+	else
+		self.roll_points = self.roll_points + cleared_row_points[cleared_row_count / 2]
+		if self.roll_points >= 100 then
+			self.roll_points = self.roll_points - 100
+			self.grade = self.grade + 1
+		end
 	end
 end
 
@@ -225,7 +234,7 @@ PhantomMania2Game.garbageOpacityFunction = function(age)
 end
 
 function PhantomMania2Game:drawGrid()
-	if not (self.game_over or self.clear) then
+	if not (self.game_over or (self.clear and self.level < 1300)) then
 		self.grid:drawInvisible(self.rollOpacityFunction, self.garbageOpacityFunction)
 	else
 		self.grid:draw()
@@ -243,7 +252,7 @@ local function getLetterGrade(grade)
 end
 
 function PhantomMania2Game:setNextOpacity(i)
-	if self.level > 1000 then
+	if self.level > 1000 and self.level < 1300 then
 		local hidden_next_pieces = math.floor(self.level / 100) - 10
 		if i < hidden_next_pieces then
 			love.graphics.setColor(1, 1, 1, 0)
@@ -258,7 +267,7 @@ function PhantomMania2Game:setNextOpacity(i)
 end
 
 function PhantomMania2Game:setHoldOpacity()
-	if self.level > 1000 then
+	if self.level > 1000 and self.level < 1300 then
 		love.graphics.setColor(1, 1, 1, 1 - math.min(1, self.hold_age / 15))
 	else
 		love.graphics.setColor(1, 1, 1, 1)

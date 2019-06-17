@@ -16,6 +16,16 @@ ARS.spawn_positions = {
 	Z = { x=4, y=5 },
 }
 
+ARS.big_spawn_positions = {
+	I = { x=2, y=2 },
+	J = { x=2, y=3 },
+	L = { x=2, y=3 },
+	O = { x=2, y=3 },
+	S = { x=2, y=3 },
+	T = { x=2, y=3 },
+	Z = { x=2, y=3 },
+}
+
 ARS.block_offsets = {
 	I={
 		{ {x=0, y=0}, {x=-1, y=0}, {x=-2, y=0}, {x=1, y=0} },

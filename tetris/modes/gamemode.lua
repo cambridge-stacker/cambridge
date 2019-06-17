@@ -38,6 +38,7 @@ function GameMode:new()
 	self.next_queue_length = 1
 	self.draw_section_times = false
 	self.draw_secondary_section_times = false
+	self.big_mode = false
 	-- variables related to configurable parameters
 	self.drop_locked = false
 	self.hard_drop_locked = false
@@ -298,7 +299,7 @@ function GameMode:initializeNextPiece(inputs, ruleset, piece_data, generate_next
 		inputs, piece_data, self.grid, gravity,
 		self.prev_inputs, self.move,
 		self:getLockDelay(), self:getDropSpeed(),
-		self.lock_drop, self.lock_hard_drop
+		self.lock_drop, self.lock_hard_drop, self.big_mode
 	)
 	if self.lock_drop then
 		self.drop_locked = true

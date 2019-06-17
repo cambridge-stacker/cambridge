@@ -49,6 +49,12 @@ blocks = {
 	}
 }
 
+for name, blockset in pairs(blocks) do
+	for shape, image in pairs(blockset) do
+		image:setFilter("nearest")
+	end
+end
+
 misc_graphics = {
 	frame = love.graphics.newImage("res/img/frame.png"),
 	ready = love.graphics.newImage("res/img/ready.png"),

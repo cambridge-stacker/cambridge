@@ -44,13 +44,14 @@ function SurvivalA3Game:getLineARE()
 end
 
 function SurvivalA3Game:getDasLimit()
-	    if self.level < 200 then return 9
+	    if self.level < 100 then return 9
 	elseif self.level < 500 then return 7
 	else return 5 end
 end
 
 function SurvivalA3Game:getLineClearDelay()
-	return self:getLineARE() - 2
+	if self.level < 1300 then return self:getLineARE() - 2
+	else return 6 end
 end
 
 function SurvivalA3Game:getLockDelay()
@@ -60,7 +61,8 @@ function SurvivalA3Game:getLockDelay()
 	elseif self.level < 600 then return 13
 	elseif self.level < 1100 then return 12
 	elseif self.level < 1200 then return 10
-	else return 8 end
+	elseif self.level < 1300 then return 8
+	else return 15 end
 end
 
 function SurvivalA3Game:getGravity()
@@ -133,6 +135,7 @@ function SurvivalA3Game:onLineClear(cleared_row_count)
 			end
 			self.clear = true
 			self.grid:clear()
+			self.big_mode = true
 			self.roll_frames = -150
 		else
 			self.level = math.min(new_level, 1300)
@@ -188,10 +191,8 @@ end
 local function getLetterGrade(grade)
 	if grade == 0 then
 		return "1"
-	elseif grade <= 9 then
-		return "S" .. tostring(grade)
 	else
-		return "M" .. tostring(grade - 9)
+		return "S" .. tostring(grade)
 	end
 end
 
