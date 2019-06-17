@@ -5,17 +5,15 @@ local Piece = require 'tetris.components.piece'
 
 local History6RollsRandomizer = require 'tetris.randomizers.history_6rolls'
 
-local LigneGame = GameMode:extend()
+local Race40Game = GameMode:extend()
 
-LigneGame.name = "Ligne"
-LigneGame.hash = "Ligne"
-LigneGame.tagline = "How fast can you clear 40 lines?"
-
-
+Race40Game.name = "Race 40"
+Race40Game.hash = "Race40"
+Race40Game.tagline = "How fast can you clear 40 lines?"
 
 
-function LigneGame:new()
-	LigneGame.super:new()
+function Race40Game:new()
+	Race40Game.super:new()
 
 	self.lines = 0
 	self.line_goal = 40
@@ -32,39 +30,39 @@ function LigneGame:new()
 	self.next_queue_length = 3
 end
 
-function LigneGame:getDropSpeed()
+function Race40Game:getDropSpeed()
 	return 20
 end
 
-function LigneGame:getARR()
+function Race40Game:getARR()
 	return 0
 end
 
-function LigneGame:getARE()
+function Race40Game:getARE()
 	return 0
 end
 
-function LigneGame:getLineARE()
+function Race40Game:getLineARE()
 	return self:getARE()
 end
 
-function LigneGame:getDasLimit()
+function Race40Game:getDasLimit()
 	return 6
 end
 
-function LigneGame:getLineClearDelay()
+function Race40Game:getLineClearDelay()
 	return 0
 end
 
-function LigneGame:getLockDelay()
+function Race40Game:getLockDelay()
 	return 15
 end
 
-function LigneGame:getGravity()
+function Race40Game:getGravity()
 	return 1/64
 end
 
-function LigneGame:advanceOneFrame()
+function Race40Game:advanceOneFrame()
 	if self.clear then
 		self.roll_frames = self.roll_frames + 1
 		if self.roll_frames > 150 then
@@ -77,11 +75,11 @@ function LigneGame:advanceOneFrame()
 	return true
 end
 
-function LigneGame:onPieceLock()
+function Race40Game:onPieceLock()
 	self.pieces = self.pieces + 1
 end
 
-function LigneGame:onLineClear(cleared_row_count)
+function Race40Game:onLineClear(cleared_row_count)
 	if not self.clear then
 		self.lines = self.lines + cleared_row_count
 		if self.lines >= self.line_goal then
@@ -90,22 +88,22 @@ function LigneGame:onLineClear(cleared_row_count)
 	end
 end
 
-function LigneGame:drawGrid(ruleset)
+function Race40Game:drawGrid(ruleset)
 	self.grid:draw()
 	if self.piece ~= nil then
 		self:drawGhostPiece(ruleset)
 	end
 end
 
-function LigneGame:getHighscoreData()
+function Race40Game:getHighscoreData()
 	return {
 		level = self.level,
 		frames = self.frames,
 	}
 end
 
-function LigneGame:drawScoringInfo()
-	LigneGame.super.drawScoringInfo(self)
+function Race40Game:drawScoringInfo()
+	Race40Game.super.drawScoringInfo(self)
 	love.graphics.setColor(1, 1, 1, 1)
 
 	local text_x = config["side_next"] and 320 or 240
@@ -124,8 +122,8 @@ function LigneGame:drawScoringInfo()
 	love.graphics.printf(math.max(0, self.line_goal - self.lines), text_x, 340, 40, "left")
 end
 
-function LigneGame:getBackground()
+function Race40Game:getBackground()
 	return 2
 end
 
-return LigneGame
+return Race40Game

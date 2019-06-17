@@ -36,6 +36,7 @@ function GameMode:new()
 	self.enable_hold = false
 	self.enable_hard_drop = true
 	self.next_queue_length = 1
+	self.additive_gravity = true
 	self.draw_section_times = false
 	self.draw_secondary_section_times = false
 	self.big_mode = false
@@ -120,7 +121,8 @@ function GameMode:update(inputs, ruleset)
 		ruleset:processPiece(
 			inputs, self.piece, self.grid, self:getGravity(), self.prev_inputs,
 			self.move, self:getLockDelay(), self:getDropSpeed(),
-			self.drop_locked, self.hard_drop_locked, self.enable_hard_drop
+			self.drop_locked, self.hard_drop_locked,
+			self.enable_hard_drop, self.additive_gravity
 		)
 
 		local piece_dy = self.piece.position.y - piece_y

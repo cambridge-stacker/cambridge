@@ -72,10 +72,17 @@ function Ruleset:movePiece(piece, grid, move)
 	end
 end
 
-function Ruleset:dropPiece(inputs, piece, grid, gravity, drop_speed, drop_locked, hard_drop_locked, hard_drop_enabled)
+function Ruleset:dropPiece(
+	inputs, piece, grid, gravity, drop_speed, drop_locked, hard_drop_locked,
+	hard_drop_enabled, additive_gravity
+)
 	local y = piece.position.y
 	if inputs["down"] == true and drop_locked == false then
-		piece:addGravity(gravity + drop_speed, grid)
+		if additive_gravity then
+			piece:addGravity(gravity + drop_speed, grid)
+		else
+			piece:addGravity(math.max(gravity, drop_speed), grid)
+		end
 	elseif inputs["up"] == true and hard_drop_enabled == true then
 		if hard_drop_locked == true or piece:isDropBlocked(grid) then
 			piece:addGravity(gravity, grid)
@@ -127,11 +134,15 @@ function Ruleset:onPieceCreate(piece) end
 function Ruleset:processPiece(
 	inputs, piece, grid, gravity, prev_inputs,
 	move, lock_delay, drop_speed,
-	drop_locked, hard_drop_locked, hard_drop_enabled
+	drop_locked, hard_drop_locked,
+	hard_drop_enabled, additive_gravity
 )
 	self:rotatePiece(inputs, piece, grid, prev_inputs, false)
 	self:movePiece(piece, grid, move)
-	self:dropPiece(inputs, piece, grid, gravity, drop_speed, drop_locked, hard_drop_locked, hard_drop_enabled)
+	self:dropPiece(
+		inputs, piece, grid, gravity, drop_speed, drop_locked, hard_drop_locked,
+		hard_drop_enabled, additive_gravity
+	)
 	self:lockPiece(piece, grid, lock_delay)
 end
 

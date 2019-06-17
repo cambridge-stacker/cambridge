@@ -15,14 +15,15 @@ game_modes = {
 	require 'tetris.modes.phantom_mania',
 	require 'tetris.modes.phantom_mania2',
 	require 'tetris.modes.phantom_mania_n',
-	require 'tetris.modes.ligne',
+	require 'tetris.modes.race_40',
 	require 'tetris.modes.marathon_a1',
 	require 'tetris.modes.marathon_a2',
 	require 'tetris.modes.marathon_a3',
+	require 'tetris.modes.marathon_ax4',
+	require 'tetris.modes.marathon_c89',
 	require 'tetris.modes.survival_a1',
 	require 'tetris.modes.survival_a2',
 	require 'tetris.modes.survival_a3',
-	require 'tetris.modes.marathon_l1',
 }
 
 rulesets = {

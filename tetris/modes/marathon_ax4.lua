@@ -5,17 +5,15 @@ local Piece = require 'tetris.components.piece'
 
 local History6RollsRandomizer = require 'tetris.randomizers.history_6rolls'
 
-local MarathonL1Game = GameMode:extend()
+local MarathonAX4Game = GameMode:extend()
 
-MarathonL1Game.name = "Line Attack"
-MarathonL1Game.hash = "MarathonL1"
-MarathonL1Game.tagline = "Can you clear the time hurdles when the game goes this fast?"
-
-
+MarathonAX4Game.name = "Marathon AX4"
+MarathonAX4Game.hash = "MarathonAX4"
+MarathonAX4Game.tagline = "Can you clear the time hurdles when the game goes this fast?"
 
 
-function MarathonL1Game:new()
-	MarathonL1Game.super:new()
+function MarathonAX4Game:new()
+	MarathonAX4Game.super:new()
 
 	self.roll_frames = 0
 	self.randomizer = History6RollsRandomizer()
@@ -30,7 +28,7 @@ function MarathonL1Game:new()
 	self.next_queue_length = 3
 end
 
-function MarathonL1Game:getARE()
+function MarathonAX4Game:getARE()
 	    if self.lines < 10 then return 18
 	elseif self.lines < 40 then return 14
 	elseif self.lines < 60 then return 12
@@ -40,24 +38,24 @@ function MarathonL1Game:getARE()
 	else return 6 end
 end
 
-function MarathonL1Game:getLineARE()
+function MarathonAX4Game:getLineARE()
 	return self:getARE()
 end
 
-function MarathonL1Game:getDasLimit()
+function MarathonAX4Game:getDasLimit()
 	    if self.lines < 20 then return 10
 	elseif self.lines < 50 then return 9
 	elseif self.lines < 70 then return 8
 	else return 7 end
 end
 
-function MarathonL1Game:getLineClearDelay()
+function MarathonAX4Game:getLineClearDelay()
 	    if self.lines < 10 then return 14
 	elseif self.lines < 30 then return 9
 	else return 5 end
 end
 
-function MarathonL1Game:getLockDelay()
+function MarathonAX4Game:getLockDelay()
 		if self.lines < 10 then return 28
 	elseif self.lines < 20 then return 24
 	elseif self.lines < 30 then return 22
@@ -67,15 +65,15 @@ function MarathonL1Game:getLockDelay()
 	else return 13 end
 end
 
-function MarathonL1Game:getGravity()
+function MarathonAX4Game:getGravity()
 	return 20
 end
 
-function MarathonL1Game:getSection()
+function MarathonAX4Game:getSection()
 	return math.floor(level / 100) + 1
 end
 
-function MarathonL1Game:advanceOneFrame()
+function MarathonAX4Game:advanceOneFrame()
 	if self.clear then
 		self.roll_frames = self.roll_frames + 1
 		if self.roll_frames < 0 then		
@@ -94,7 +92,7 @@ function MarathonL1Game:advanceOneFrame()
 	return true
 end
 
-function MarathonL1Game:onLineClear(cleared_row_count)
+function MarathonAX4Game:onLineClear(cleared_row_count)
 	if not self.clear then
 		local new_lines = self.lines + cleared_row_count
 		self:updateSectionTimes(self.lines, new_lines)
@@ -106,11 +104,11 @@ function MarathonL1Game:onLineClear(cleared_row_count)
 	end
 end
 
-function MarathonL1Game:getSectionTime()
+function MarathonAX4Game:getSectionTime()
 	return self.frames - self.section_start_time
 end
 
-function MarathonL1Game:updateSectionTimes(old_lines, new_lines)
+function MarathonAX4Game:updateSectionTimes(old_lines, new_lines)
 	if math.floor(old_lines / 10) < math.floor(new_lines / 10) then
 		-- record new section
 		table.insert(self.section_times, self:getSectionTime())
@@ -119,23 +117,23 @@ function MarathonL1Game:updateSectionTimes(old_lines, new_lines)
 	end
 end
 
-function MarathonL1Game:onPieceEnter()
+function MarathonAX4Game:onPieceEnter()
 	self.section_clear = false
 end
 
-function MarathonL1Game:drawGrid(ruleset)
+function MarathonAX4Game:drawGrid(ruleset)
 	self.grid:draw()
 end
 
-function MarathonL1Game:getHighscoreData()
+function MarathonAX4Game:getHighscoreData()
 	return {
 		lines = self.lines,
 		frames = self.frames,
 	}
 end
 
-function MarathonL1Game:drawScoringInfo()
-	MarathonL1Game.super.drawScoringInfo(self)
+function MarathonAX4Game:drawScoringInfo()
+	MarathonAX4Game.super.drawScoringInfo(self)
 
 	love.graphics.setColor(1, 1, 1, 1)
 
@@ -165,12 +163,12 @@ function MarathonL1Game:drawScoringInfo()
 	love.graphics.setColor(1, 1, 1, 1)
 end
 
-function MarathonL1Game:getSectionEndLines()
+function MarathonAX4Game:getSectionEndLines()
 	return math.floor(self.lines / 10 + 1) * 10
 end
 
-function MarathonL1Game:getBackground()
+function MarathonAX4Game:getBackground()
 	return math.floor(self.lines / 10)
 end
 
-return MarathonL1Game
+return MarathonAX4Game
