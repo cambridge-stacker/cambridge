@@ -223,30 +223,60 @@ function GameMode:onGameOver()
 	switchBGM(nil)
 end
 
-function GameMode:chargeDAS(inputs)
-	if inputs[self.das.direction] == true then
-		local das_frames = self.das.frames + 1
-		if das_frames >= self:getDasLimit() then
-			if self.das.direction == "left" then
-				self.move = (self:getARR() == 0 and "speed" or "") .. "left"
-				self.das.frames = self:getDasLimit() - self:getARR()
-			elseif self.das.direction == "right" then
-				self.move = (self:getARR() == 0 and "speed" or "") .. "right"
-				self.das.frames = self:getDasLimit() - self:getARR()
-			end
-		else
-			self.move = "none"
-			self.das.frames = das_frames
+-- DAS functions
+
+function GameMode:startRightDAS()
+	self.move = "right"
+	self.das = { direction = "right", frames = 0 }
+end
+
+function GameMode:startLeftDAS()
+	self.move = "left"
+	self.das = { direction = "left", frames = 0 }
+end
+
+function GameMode:continueDAS()
+	local das_frames = self.das.frames + 1
+	if das_frames >= self:getDasLimit() then
+		if self.das.direction == "left" then
+			self.move = (self:getARR() == 0 and "speed" or "") .. "left"
+			self.das.frames = self:getDasLimit() - self:getARR()
+		elseif self.das.direction == "right" then
+			self.move = (self:getARR() == 0 and "speed" or "") .. "right"
+			self.das.frames = self:getDasLimit() - self:getARR()
 		end
-	elseif inputs["right"] == true then
-		self.move = "right"
-		self.das = { direction = "right", frames = 0 }
-	elseif inputs["left"] == true then
-		self.move = "left"
-		self.das = { direction = "left", frames = 0 }
 	else
 		self.move = "none"
-		self.das = { direction = "none", frames = -1 }
+		self.das.frames = das_frames
+	end
+end
+
+function GameMode:stopDAS()
+	self.move = "none"
+	self.das = { direction = "none", frames = -1 }
+end
+
+function GameMode:chargeDAS(inputs)
+	if config["das_last_key"] then
+		if inputs["right"] == true and self.das.direction ~= "right" and not self.prev_inputs["right"] then
+			self:startRightDAS()
+		elseif inputs["left"] == true and self.das.direction ~= "left" and not self.prev_inputs["left"] then
+			self:startLeftDAS()
+		elseif inputs[self.das.direction] == true then
+			self:continueDAS()
+		else
+			self:stopDAS()
+		end
+	else  -- default behaviour, das first key pressed
+		if inputs[self.das.direction] == true then
+			self:continueDAS()
+		elseif inputs["right"] == true then
+			self:startRightDAS()
+		elseif inputs["left"] == true then
+			self:startLeftDAS()
+		else
+			self:stopDAS()
+		end
 	end
 end
 
