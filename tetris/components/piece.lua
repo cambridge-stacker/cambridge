@@ -78,12 +78,15 @@ function Piece:setRelativeRotation(rot)
 	return self
 end
 
-function Piece:moveInGrid(step, squares, grid)
+function Piece:moveInGrid(step, squares, grid, instant)
 	local moved = false
 	for x = 1, squares do
 		if grid:canPlacePiece(self:withOffset(step)) then
 			moved = true
 			self:setOffset(step)
+			if instant then
+				self:dropToBottom(grid)
+			end
 		else
 			break
 		end

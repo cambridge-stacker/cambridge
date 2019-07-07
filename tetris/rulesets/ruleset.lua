@@ -128,16 +128,16 @@ function Ruleset:attemptWallkicks(piece, new_piece, rot_dir, grid)
 	-- do nothing in default ruleset
 end
 
-function Ruleset:movePiece(piece, grid, move)
+function Ruleset:movePiece(piece, grid, move, instant)
 	local x = piece.position.x
 	if move == "left" then
-		piece:moveInGrid({x=-1, y=0}, 1, grid)
-	elseif move == "speedleft" then
-		piece:moveInGrid({x=-1, y=0}, 10, grid)
+		piece:moveInGrid({x=-1, y=0}, 1, grid, false)
 	elseif move == "right" then
-		piece:moveInGrid({x=1, y=0}, 1, grid)
+		piece:moveInGrid({x=1, y=0}, 1, grid, false)
+	elseif move == "speedleft" then
+		piece:moveInGrid({x=-1, y=0}, 10, grid, instant)
 	elseif move == "speedright" then
-		piece:moveInGrid({x=1, y=0}, 10, grid)
+		piece:moveInGrid({x=1, y=0}, 10, grid, instant)
 	end
 	if piece.position.x ~= x then
 		self:onPieceMove(piece, grid)
@@ -212,7 +212,7 @@ function Ruleset:processPiece(
 	hard_drop_enabled, additive_gravity
 )
 	self:rotatePiece(inputs, piece, grid, prev_inputs, false)
-	self:movePiece(piece, grid, move)
+	self:movePiece(piece, grid, move, gravity >= 20)
 	self:dropPiece(
 		inputs, piece, grid, gravity, drop_speed, drop_locked, hard_drop_locked,
 		hard_drop_enabled, additive_gravity
