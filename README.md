@@ -3,6 +3,8 @@ Cambridge
 
 Welcome to Cambridge, the next open-source falling-block game engine!
 
+This fork is written and maintained exclusively by [SashLilac](https://github.com/SashLilac)!
+
 
 Installation instructions
 -------------------------
@@ -15,7 +17,7 @@ Unzip the exe file and run it directly. All assets are currently bundled inside 
 
 ### macOS
 
-For the time being, the file `cambridge.love` only works on the command line. Install `love` with [https://brew.sh/](Homebrew), and run:
+For the time being, the file `cambridge.love` only works on the command line. Install `love` with [Homebrew](https://brew.sh), and run:
 
     $ love cambridge.love
 
@@ -35,7 +37,7 @@ If you haven't already, install `love` with your favourite package manager (Home
 
 Clone the repository in git:
 
-    git clone https://github.com/joezeng/cambridge
+    git clone https://github.com/SashLilac/cambridge
 
 Then, navigate to the root directory that you just cloned, and type:
 
