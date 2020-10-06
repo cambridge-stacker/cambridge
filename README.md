@@ -3,8 +3,13 @@ Cambridge
 
 Welcome to Cambridge, the next open-source falling-block game engine!
 
-This fork is written and maintained exclusively by [SashLilac](https://github.com/SashLilac)!
+This fork is written and maintained exclusively by [SashLilac](https://github.com/SashLilac) and [Oshisaure](https://github.com/oshisaure)!
 
+Credits
+-------
+
+- [Lilla Oshisaure](https://www.youtube.com/user/LeSpyroshisaure) for their amazing contributions to my life in general.
+- The Tetra Legends Discord for supporting me and playtesting! (Link WIP)
 
 Installation instructions
 -------------------------
