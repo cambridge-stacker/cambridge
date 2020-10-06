@@ -7,23 +7,23 @@ ARS.name = "ACE-ARS"
 ARS.hash = "ArikaACE"
 
 ARS.spawn_positions = {
-	I = { x=5, y=4 },
-	J = { x=4, y=5 },
-	L = { x=4, y=5 },
-	O = { x=5, y=5 },
-	S = { x=4, y=5 },
-	T = { x=4, y=5 },
-	Z = { x=4, y=5 },
+	I = { x=5, y=2 },
+	J = { x=4, y=3 },
+	L = { x=4, y=3 },
+	O = { x=5, y=3 },
+	S = { x=4, y=3 },
+	T = { x=4, y=3 },
+	Z = { x=4, y=3 },
 }
 
 ARS.big_spawn_positions = {
-	I = { x=2, y=2 },
-	J = { x=2, y=3 },
-	L = { x=2, y=3 },
-	O = { x=2, y=3 },
-	S = { x=2, y=3 },
-	T = { x=2, y=3 },
-	Z = { x=2, y=3 },
+	I = { x=2, y=1 },
+	J = { x=2, y=2 },
+	L = { x=2, y=2 },
+	O = { x=2, y=2 },
+	S = { x=2, y=2 },
+	T = { x=2, y=2 },
+	Z = { x=2, y=2 },
 }
 
 ARS.block_offsets = {

@@ -3,8 +3,8 @@ local Ruleset = require 'tetris.rulesets.ruleset'
 
 local SRS = Ruleset:extend()
 
-SRS.name = "Guideline SRS"
-SRS.hash = "Standard"
+SRS.name = "ACE-SRS"
+SRS.hash = "ACE Standard"
 
 SRS.enable_IRS_wallkicks = true
 
@@ -147,8 +147,7 @@ function SRS:attemptWallkicks(piece, new_piece, rot_dir, grid)
 end
 
 function SRS:onPieceCreate(piece, grid)
-	piece.rotate_counter = 0
-	piece.move_counter = 0
+	piece.manipulations = 0
 end
 
 function SRS:onPieceDrop(piece, grid)
@@ -158,8 +157,8 @@ end
 function SRS:onPieceMove(piece, grid)
 	piece.lock_delay = 0 -- move reset
 	if piece:isDropBlocked(grid) then
-		piece.move_counter = piece.move_counter + 1
-		if piece.move_counter >= 24 then
+		piece.manipulations = piece.manipulations + 1
+		if piece.manipulations >= 127 then
 			piece.locked = true
 		end
 	end
@@ -168,8 +167,8 @@ end
 function SRS:onPieceRotate(piece, grid)
 	piece.lock_delay = 0 -- rotate reset
 	if piece:isDropBlocked(grid) then
-		piece.rotate_counter = piece.rotate_counter + 1
-		if piece.rotate_counter >= 12 then
+		piece.manipulations = piece.manipulations + 1
+		if piece.manipulations >= 127 then
 			piece.locked = true
 		end
 	end

@@ -8,10 +8,10 @@ current_ruleset = 1
 game_modes = {
 	require 'tetris.modes.marathon_2020',
 	require 'tetris.modes.survival_2020',
-	require 'tetris.modes.strategy',
-	require 'tetris.modes.interval_training',
-	require 'tetris.modes.pacer_test',
-	require 'tetris.modes.demon_mode',
+	--require 'tetris.modes.strategy',
+	--require 'tetris.modes.interval_training',
+	--require 'tetris.modes.pacer_test',
+	--require 'tetris.modes.demon_mode',
 	require 'tetris.modes.phantom_mania',
 	require 'tetris.modes.phantom_mania2',
 	require 'tetris.modes.phantom_mania_n',
@@ -24,12 +24,16 @@ game_modes = {
 	require 'tetris.modes.survival_a1',
 	require 'tetris.modes.survival_a2',
 	require 'tetris.modes.survival_a3',
+	require 'tetris.modes.big_a2',
+	require 'tetris.modes.konoha',
 }
 
 rulesets = {
 	require 'tetris.rulesets.cambridge',
 	require 'tetris.rulesets.arika',
 	require 'tetris.rulesets.arika_ti',
+	require 'tetris.rulesets.arika_ace',
+	require 'tetris.rulesets.arika_srs',
 	require 'tetris.rulesets.standard_exp',
 	--require 'tetris.rulesets.bonkers',
 	--require 'tetris.rulesets.shirase',
