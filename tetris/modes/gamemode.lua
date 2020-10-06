@@ -341,8 +341,8 @@ end
 function GameMode:drawNextQueue(ruleset)
 	function drawPiece(piece, skin, offsets, pos_x, pos_y)
 		for index, offset in pairs(offsets) do
-			local x = ruleset.spawn_positions[piece].x + offset.x
-			local y = ruleset.spawn_positions[piece].y + offset.y
+			local x = offset.x + ruleset.spawn_positions[piece].x
+			local y = offset.y + 4.7
 			love.graphics.draw(blocks[skin][piece], pos_x+x*16, pos_y+y*16)
 		end
 	end
