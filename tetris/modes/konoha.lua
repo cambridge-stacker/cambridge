@@ -132,11 +132,11 @@ function KonohaGame:onLineClear(cleared_row_count)
 		self.bravos = self.bravos + 1
 		if self.level < 1000 then self.time_limit = self.time_limit + bravo_bonus[cleared_row_count / 2]
 		else self.time_limit = self.time_limit + bravo_ot_bonus[cleared_row_count / 2]
+		if self.bravos == 11 then self.randomizer = Bag5Randomizer() end
 	end
 	elseif self.level < 1000 then
 		self.time_limit = self.time_limit + non_bravo_bonus[cleared_row_count / 2]
 	end
-	if self.bravos == 11 then self.randomizer = Bag5Randomizer() end
 end
 
 function KonohaGame:getBackground()
