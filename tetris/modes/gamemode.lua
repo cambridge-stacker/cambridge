@@ -52,7 +52,7 @@ end
 
 function GameMode:initialize()
 	-- after all the variables are initialized, run initialization procedures
-	for i = 1, 30 do
+	for i = 1, self.next_queue_length do
 		table.insert(self.next_queue, self:getNextPiece(ruleset))
 	end
 end

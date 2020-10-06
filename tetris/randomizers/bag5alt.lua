@@ -4,7 +4,7 @@ local Bag5AltRandomizer = Randomizer:extend()
 
 function Bag5AltRandomizer:initialize()
 	self.bag = {"I", "J", "L", "O", "T"}
-	self.prev = "O"
+	self.prev = nil
 end
 
 function Bag5AltRandomizer:generatePiece()
