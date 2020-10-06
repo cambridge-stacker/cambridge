@@ -50,13 +50,6 @@ function GameMode:new()
 	self.secondary_section_times = { [0] = 0 }
 end
 
-function GameMode:initialize()
-	-- after all the variables are initialized, run initialization procedures
-	for i = 1, self.next_queue_length do
-		table.insert(self.next_queue, self:getNextPiece(ruleset))
-	end
-end
-
 function GameMode:getARR() return 1 end
 function GameMode:getDropSpeed() return 1 end
 function GameMode:getARE() return 25 end
