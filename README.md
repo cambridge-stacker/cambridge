@@ -8,8 +8,9 @@ This fork is written and maintained exclusively by [SashLilac](https://github.co
 Credits
 -------
 
-- [Lilla Oshisaure](https://www.youtube.com/user/LeSpyroshisaure) for their amazing contributions to my life in general.
-- The Tetra Legends Discord for supporting me and playtesting! (Link WIP)
+- [Lilla Oshisaure](https://www.youtube.com/user/LeSpyroshisaure) for their amazing contributions to my life in general!
+- [The Tetra Legends Discord](http://discord.com/invite/7hMx5r2) for supporting me and playtesting!
+- [joezeng](https://github.com/joezeng) for the original project.
 
 Installation instructions
 -------------------------
