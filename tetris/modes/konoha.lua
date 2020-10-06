@@ -3,8 +3,7 @@ require 'funcs'
 local GameMode = require 'tetris.modes.gamemode'
 local Piece = require 'tetris.components.piece'
 
-local Bag5Randomizer = require 'tetris.randomizers.bag5'
-local Bag5AltRandomizer = require 'tetris.randomizers.bag5alt'
+local KonohaRandomizer = require 'tetris.randomizers.bag_konoha'
 
 local KonohaGame = GameMode:extend()
 
@@ -15,7 +14,7 @@ KonohaGame.tagline = "Get as many bravos as you can under the time limit!"
 function KonohaGame:new()
 	KonohaGame.super:new()
 
-	self.randomizer = Bag5AltRandomizer()
+	self.randomizer = KonohaRandomizer()
 	self.bravos = 0
 	self.time_limit = 10800
 	self.big_mode = true
@@ -69,8 +68,8 @@ end
 
 function KonohaGame:getGravity()
 	    if (self.level < 30)  then return 4/256
-   	elseif (self.level < 35)  then return 8/256
-    	elseif (self.level < 40)  then return 12/256
+	elseif (self.level < 35)  then return 8/256
+	elseif (self.level < 40)  then return 12/256
 	elseif (self.level < 50)  then return 16/256
 	elseif (self.level < 60)  then return 32/256
 	elseif (self.level < 70)  then return 48/256
@@ -111,6 +110,9 @@ end
 
 function KonohaGame:drawGrid(ruleset)
 	self.grid:draw()
+	if self.piece ~= nil and self.level < 100 then
+		self:drawGhostPiece(ruleset)
+	end
 end
 
 local cleared_row_levels = {2, 4, 6, 12}
@@ -132,8 +134,8 @@ function KonohaGame:onLineClear(cleared_row_count)
 		self.bravos = self.bravos + 1
 		if self.level < 1000 then self.time_limit = self.time_limit + bravo_bonus[cleared_row_count / 2]
 		else self.time_limit = self.time_limit + bravo_ot_bonus[cleared_row_count / 2]
-		if self.bravos == 11 then self.randomizer = Bag5Randomizer() end
-	end
+		end
+		if self.bravos == 11 then self.randomizer.allowrepeat = true end
 	elseif self.level < 1000 then
 		self.time_limit = self.time_limit + non_bravo_bonus[cleared_row_count / 2]
 	end
