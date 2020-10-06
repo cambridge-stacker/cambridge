@@ -141,7 +141,7 @@ function MarathonAX4Game:drawScoringInfo()
 	love.graphics.print(
 		self.das.direction .. " " ..
 		self.das.frames .. " " ..
-		st(self.prev_inputs)
+		strTrueValues(self.prev_inputs)
 	)
 	love.graphics.printf("NEXT", 64, 40, 40, "left")
 	love.graphics.printf("TIME LEFT", 240, 250, 80, "left")
@@ -156,7 +156,7 @@ function MarathonAX4Game:drawScoringInfo()
 
 	-- draw time left, flash red if necessary
 	local time_left = self.section_time_limit - math.max(self:getSectionTime(), 0)
-	if not self.game_over and not self.clear and time_left < sp(0,10) and time_left % 4 < 2 then
+	if not self.game_over and not self.clear and time_left < frameTime(0,10) and time_left % 4 < 2 then
 		love.graphics.setColor(1, 0.3, 0.3, 1)
 	end
 	love.graphics.printf(formatTime(time_left), 240, 270, 160, "left")

@@ -159,7 +159,7 @@ function DemonModeGame:updateSectionTimes(old_level, new_level)
 			end
 		elseif old_level < 100 then
 			-- If section time is under cutoff, skip to level 500.
-			if self.frames < sp(1,00) then
+			if self.frames < frameTime(1,00) then
 				self.level = 500
 				self.grade = 5
 				self.section_tries = 0
@@ -226,7 +226,7 @@ function DemonModeGame:drawScoringInfo()
 	love.graphics.print(
 		self.das.direction .. " " ..
 		self.das.frames .. " " ..
-		st(self.prev_inputs)
+		strTrueValues(self.prev_inputs)
 	)
 	love.graphics.printf("NEXT", 64, 40, 40, "left")
 	love.graphics.printf("GRADE", 240, 120, 40, "left")

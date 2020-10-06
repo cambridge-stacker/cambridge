@@ -155,15 +155,15 @@ end
 
 function MarathonA1Game:checkGMRequirements(old_level, new_level)
 	if old_level < 300 and new_level >= 300 then
-		if self.score > 12000 and self.frames <= sp(4,15) then
+		if self.score > 12000 and self.frames <= frameTime(4,15) then
 			self.gm_conditions["level300"] = true
 		end
 	elseif old_level < 500 and new_level >= 500 then
-		if self.score > 40000 and self.frames <= sp(7,30) then
+		if self.score > 40000 and self.frames <= frameTime(7,30) then
 			self.gm_conditions["level500"] = true
 		end
 	elseif old_level < 999 and new_level >= 999 then
-		if self.score > 126000 and self.frames <= sp(13,30) then
+		if self.score > 126000 and self.frames <= frameTime(13,30) then
 			self.gm_conditions["level900"] = true
 		end
 	end
@@ -184,7 +184,7 @@ function MarathonA1Game:drawScoringInfo()
 	love.graphics.print(
 		self.das.direction .. " " ..
 		self.das.frames .. " " ..
-		st(self.prev_inputs)
+		strTrueValues(self.prev_inputs)
 	)
 	love.graphics.printf("NEXT", 64, 40, 40, "left")
 	love.graphics.printf("GRADE", 240, 120, 40, "left")

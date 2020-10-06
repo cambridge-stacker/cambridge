@@ -151,11 +151,11 @@ function Marathon2020Game:advanceOneFrame()
 end
 
 local cool_cutoffs = {
-	sp(0,45,00), sp(0,41,50), sp(0,38,50), sp(0,35,00), sp(0,32,50),
-	sp(0,29,20), sp(0,27,20), sp(0,24,80), sp(0,22,80), sp(0,20,60),
-	sp(0,19,60), sp(0,19,40), sp(0,19,40), sp(0,18,40), sp(0,18,20),
-	sp(0,16,20), sp(0,16,20), sp(0,16,20), sp(0,16,20), sp(0,16,20),
-	sp(0,15,20)
+	frameTime(0,45,00), frameTime(0,41,50), frameTime(0,38,50), frameTime(0,35,00), frameTime(0,32,50),
+	frameTime(0,29,20), frameTime(0,27,20), frameTime(0,24,80), frameTime(0,22,80), frameTime(0,20,60),
+	frameTime(0,19,60), frameTime(0,19,40), frameTime(0,19,40), frameTime(0,18,40), frameTime(0,18,20),
+	frameTime(0,16,20), frameTime(0,16,20), frameTime(0,16,20), frameTime(0,16,20), frameTime(0,16,20),
+	frameTime(0,15,20)
 }
 
 local levels_for_cleared_rows = { 1, 2, 4, 6 }
@@ -284,11 +284,11 @@ function Marathon2020Game:sectionPassed(old_level, new_level)
 end
 
 function Marathon2020Game:checkTorikan(section)
-	if section == 5 and self.frames < sp(6,00,00) then self.torikan_passed[500] = true end
-	if section == 9 and self.frames < sp(8,30,00) then self.torikan_passed[900] = true end
-	if section == 10 and self.frames < sp(8,45,00) then self.torikan_passed[1000] = true end
-	if section == 15 and self.frames < sp(11,30,00) then self.torikan_passed[1500] = true end
-	if section == 19 and self.frames < sp(13,15,00) then self.torikan_passed[1900] = true end
+	if section == 5 and self.frames < frameTime(6,00,00) then self.torikan_passed[500] = true end
+	if section == 9 and self.frames < frameTime(8,30,00) then self.torikan_passed[900] = true end
+	if section == 10 and self.frames < frameTime(8,45,00) then self.torikan_passed[1000] = true end
+	if section == 15 and self.frames < frameTime(11,30,00) then self.torikan_passed[1500] = true end
+	if section == 19 and self.frames < frameTime(13,15,00) then self.torikan_passed[1900] = true end
 end
 
 function Marathon2020Game:checkClear(level)

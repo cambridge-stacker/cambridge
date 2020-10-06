@@ -160,13 +160,13 @@ function MarathonA3Game:onLineClear(cleared_row_count)
 end
 
 local cool_cutoffs = {
-	sp(0,52), sp(0,52), sp(0,49), sp(0,45), sp(0,45),
-	sp(0,42), sp(0,42), sp(0,38), sp(0,38), 
+	frameTime(0,52), frameTime(0,52), frameTime(0,49), frameTime(0,45), frameTime(0,45),
+	frameTime(0,42), frameTime(0,42), frameTime(0,38), frameTime(0,38), 
 }
 
 local regret_cutoffs = {
-	sp(0,90), sp(0,75), sp(0,75), sp(0,68), sp(0,60),
-	sp(0,60), sp(0,50), sp(0,50), sp(0,50), sp(0,50),
+	frameTime(0,90), frameTime(0,75), frameTime(0,75), frameTime(0,68), frameTime(0,60),
+	frameTime(0,60), frameTime(0,50), frameTime(0,50), frameTime(0,50), frameTime(0,50),
 }
 
 function MarathonA3Game:updateSectionTimes(old_level, new_level)
@@ -372,7 +372,7 @@ function MarathonA3Game:drawScoringInfo()
 	love.graphics.print(
 		self.das.direction .. " " ..
 		self.das.frames .. " " ..
-		st(self.prev_inputs)
+		strTrueValues(self.prev_inputs)
 	)
 	love.graphics.printf("NEXT", 64, 40, 40, "left")
 	love.graphics.printf("GRADE", 240, 120, 40, "left")

@@ -392,7 +392,7 @@ function GameMode:drawScoringInfo()
 	love.graphics.print(
 		self.das.direction .. " " ..
 		self.das.frames .. " " ..
-		st(self.prev_inputs) ..
+		strTrueValues(self.prev_inputs) ..
 		self.drop_bonus
 	)
 

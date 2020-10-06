@@ -62,7 +62,7 @@ function SurvivalA2Game:getGravity()
 end
 
 function SurvivalA2Game:hitTorikan(old_level, new_level)
-	if old_level < 500 and new_level >= 500 and self.frames > sp(3,25) then
+	if old_level < 500 and new_level >= 500 and self.frames > frameTime(3,25) then
 		self.level = 500
 		return true
 	end
@@ -132,7 +132,7 @@ function SurvivalA2Game:drawScoringInfo()
 	love.graphics.print(
 		self.das.direction .. " " ..
 		self.das.frames .. " " ..
-		st(self.prev_inputs)
+		strTrueValues(self.prev_inputs)
 	)
 	love.graphics.printf("NEXT", 64, 40, 40, "left")
 	love.graphics.printf("GRADE", text_x, 120, 40, "left")

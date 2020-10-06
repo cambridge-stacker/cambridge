@@ -150,7 +150,7 @@ function KonohaGame:drawScoringInfo()
 	love.graphics.print(
 		self.das.direction .. " " ..
 		self.das.frames .. " " ..
-		st(self.prev_inputs)
+		strTrueValues(self.prev_inputs)
 	)
 	love.graphics.printf("NEXT", 64, 40, 40, "left")
 	love.graphics.printf("TIME LIMIT", 240, 120, 120, "left")
@@ -158,7 +158,7 @@ function KonohaGame:drawScoringInfo()
 	love.graphics.printf("LEVEL", 240, 320, 40, "left")
 	
 	love.graphics.setFont(font_3x5_3)
-	if not self.game_over and self.time_limit < sp(0,10) and self.time_limit % 4 < 2 then
+	if not self.game_over and self.time_limit < frameTime(0,10) and self.time_limit % 4 < 2 then
                 love.graphics.setColor(1, 0.3, 0.3, 1)
         end
 	love.graphics.printf(formatTime(self.time_limit), 240, 140, 120, "left")

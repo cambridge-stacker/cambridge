@@ -102,15 +102,15 @@ function Survival2020Game:getNextPiece(ruleset)
 end
 
 function Survival2020Game:hitTorikan(old_level, new_level)
-	if old_level < 500 and new_level >= 500 and self.frames > sp(3,00) then
+	if old_level < 500 and new_level >= 500 and self.frames > frameTime(3,00) then
 		self.level = 500
 		return true
 	end
-	if old_level < 1000 and new_level >= 1000 and self.frames > sp(5,00) then
+	if old_level < 1000 and new_level >= 1000 and self.frames > frameTime(5,00) then
 		self.level = 1000
 		return true
 	end
-	if old_level < 1500 and new_level >= 1500 and self.frames > sp(7,00) then
+	if old_level < 1500 and new_level >= 1500 and self.frames > frameTime(7,00) then
 		self.level = 1500
 		return true
 	end
@@ -193,7 +193,7 @@ function Survival2020Game:updateSectionTimes(old_level, new_level)
 		section_time = self.frames - self.section_start_time
 		table.insert(self.section_times, section_time)
 		self.section_start_time = self.frames
-		if section_time <= sp(0,30) then
+		if section_time <= frameTime(0,30) then
 			self.grade = self.grade + 2
 		else
 			self.grade = self.grade + 1

@@ -61,15 +61,15 @@ function PhantomManiaGame:getGravity()
 end
 
 function PhantomManiaGame:hitTorikan(old_level, new_level)
-	if old_level < 300 and new_level >= 300 and self.frames > sp(2,28) then
+	if old_level < 300 and new_level >= 300 and self.frames > frameTime(2,28) then
 		self.level = 300
 		return true
 	end
-	if old_level < 500 and new_level >= 500 and self.frames > sp(3,38) then
+	if old_level < 500 and new_level >= 500 and self.frames > frameTime(3,38) then
 		self.level = 500
 		return true
 	end
-	if old_level < 800 and new_level >= 800 and self.frames > sp(5,23) then
+	if old_level < 800 and new_level >= 800 and self.frames > frameTime(5,23) then
 		self.level = 800
 		return true
 	end

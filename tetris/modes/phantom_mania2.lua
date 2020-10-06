@@ -86,19 +86,19 @@ function PhantomMania2Game:getNextPiece(ruleset)
 end
 
 function PhantomMania2Game:hitTorikan(old_level, new_level)
-	if old_level < 300 and new_level >= 300 and self.frames > sp(2,02) then
+	if old_level < 300 and new_level >= 300 and self.frames > frameTime(2,02) then
 		self.level = 300
 		return true
 	end
-	if old_level < 500 and new_level >= 500 and self.frames > sp(3,03) then
+	if old_level < 500 and new_level >= 500 and self.frames > frameTime(3,03) then
 		self.level = 500
 		return true
 	end
-	if old_level < 800 and new_level >= 800 and self.frames > sp(4,45) then
+	if old_level < 800 and new_level >= 800 and self.frames > frameTime(4,45) then
 		self.level = 800
 		return true
 	end
-	if old_level < 1000 and new_level >= 1000 and self.frames > sp(5,38) then
+	if old_level < 1000 and new_level >= 1000 and self.frames > frameTime(5,38) then
 		self.level = 1000
 		return true
 	end
@@ -188,15 +188,15 @@ end
 
 
 local cool_cutoffs = {
-	sp(0,36), sp(0,36), sp(0,36), sp(0,36), sp(0,36),
-	sp(0,30), sp(0,30), sp(0,30), sp(0,30), sp(0,30),
-	sp(0,27), sp(0,27), sp(0,27),
+	frameTime(0,36), frameTime(0,36), frameTime(0,36), frameTime(0,36), frameTime(0,36),
+	frameTime(0,30), frameTime(0,30), frameTime(0,30), frameTime(0,30), frameTime(0,30),
+	frameTime(0,27), frameTime(0,27), frameTime(0,27),
 }
 
 local regret_cutoffs = {
-	sp(0,50), sp(0,50), sp(0,50), sp(0,50), sp(0,50),
-	sp(0,40), sp(0,40), sp(0,40), sp(0,40), sp(0,40),
-	sp(0,35), sp(0,35), sp(0,35),
+	frameTime(0,50), frameTime(0,50), frameTime(0,50), frameTime(0,50), frameTime(0,50),
+	frameTime(0,40), frameTime(0,40), frameTime(0,40), frameTime(0,40), frameTime(0,40),
+	frameTime(0,35), frameTime(0,35), frameTime(0,35),
 }
 
 function PhantomMania2Game:updateSectionTimes(old_level, new_level)

@@ -86,11 +86,11 @@ function SurvivalA3Game:getNextPiece(ruleset)
 end
 
 function SurvivalA3Game:hitTorikan(old_level, new_level)
-	if old_level < 500 and new_level >= 500 and self.frames > sp(2,28) then
+	if old_level < 500 and new_level >= 500 and self.frames > frameTime(2,28) then
 		self.level = 500
 		return true
 	end
-	if old_level < 1000 and new_level >= 1000 and self.frames > sp(4,56) then
+	if old_level < 1000 and new_level >= 1000 and self.frames > frameTime(4,56) then
 		self.level = 1000
 		return true
 	end
@@ -168,7 +168,7 @@ function SurvivalA3Game:updateSectionTimes(old_level, new_level)
 		section_time = self.frames - self.section_start_time
 		table.insert(self.section_times, section_time)
 		self.section_start_time = self.frames
-		if section_time <= sp(1,00) then
+		if section_time <= frameTime(1,00) then
 			self.grade = self.grade + 1
 		end
 	end

@@ -262,7 +262,7 @@ function MarathonA2Game:qualifiesForMRoll()
 	local section_average = 0
 	for section = 0, 4 do
 		section_average = section_average + self.section_times[section]
-		if self.section_times[section] > sp(1,05) then
+		if self.section_times[section] > frameTime(1,05) then
 			return false
 		end
 	end
@@ -275,7 +275,7 @@ function MarathonA2Game:qualifiesForMRoll()
 			return false
 		end
 	end
-	if self.grade < 17 or self.frames > sp(8,45) then
+	if self.grade < 17 or self.frames > frameTime(8,45) then
 		return false
 	end
 	return true
@@ -327,7 +327,7 @@ function MarathonA2Game:drawScoringInfo()
 	love.graphics.print(
 		self.das.direction .. " " ..
 		self.das.frames .. " " ..
-		st(self.prev_inputs)
+		strTrueValues(self.prev_inputs)
 	)
 	love.graphics.printf("NEXT", 64, 40, 40, "left")
 	love.graphics.printf("GRADE", 240, 120, 40, "left")
