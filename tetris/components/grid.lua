@@ -58,7 +58,8 @@ function Grid:canPlaceBigPiece(piece)
 	for index, offset in pairs(offsets) do
 		local x = piece.position.x + offset.x
 		local y = piece.position.y + offset.y
-		if x >= 5 or x < 0 or y >= 12 or y < 0 or
+		if y < 0 then return true
+		elseif x >= 5 or x < 0 or y >= 12 or
 			self.grid[y * 2 + 1][x * 2 + 1] ~= empty or
 			self.grid[y * 2 + 1][x * 2 + 2] ~= empty or
 			self.grid[y * 2 + 2][x * 2 + 1] ~= empty or
@@ -150,10 +151,12 @@ function Grid:applyPiece(piece)
 	for index, offset in pairs(offsets) do
 		x = piece.position.x + offset.x
 		y = piece.position.y + offset.y
-		self.grid[y+1][x+1] = {
-			skin = piece.skin,
-			colour = piece.shape
-		}
+		if y + 1 > 0 then
+			self.grid[y+1][x+1] = {
+				skin = piece.skin,
+				colour = piece.shape
+			}
+		end
 	end
 end
 
