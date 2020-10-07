@@ -3,6 +3,7 @@ local Object = require 'libs.classic'
 local Grid = Object:extend()
 
 local empty = { skin = "", colour = "" }
+local oob = { skin = "", colour = "" }
 
 function Grid:new()
 	self.grid = {}
@@ -26,8 +27,15 @@ function Grid:clear()
 	end
 end
 
+function Grid:getCell(x, y)
+    if x < 1 or x > 10 or y > 24 then return oob
+    elseif y < 1 then return empty
+    else return self.grid[y][x]
+    end
+end
+
 function Grid:isOccupied(x, y)
-	return self.grid[y+1][x+1] ~= empty
+	return self:getCell(x+1, y+1) ~= empty
 end
 
 function Grid:isRowFull(row)
@@ -46,7 +54,7 @@ function Grid:canPlacePiece(piece)
 	for index, offset in pairs(offsets) do
 		local x = piece.position.x + offset.x
 		local y = piece.position.y + offset.y
-		if x >= 10 or x < 0 or y >= 24 or y < 0 or self.grid[y+1][x+1] ~= empty then
+		if self:isOccupied(x, y) then
 			return false
 		end
 	end
@@ -58,13 +66,12 @@ function Grid:canPlaceBigPiece(piece)
 	for index, offset in pairs(offsets) do
 		local x = piece.position.x + offset.x
 		local y = piece.position.y + offset.y
-		if y < 0 then return true
-		elseif x >= 5 or x < 0 or y >= 12 or
-			self.grid[y * 2 + 1][x * 2 + 1] ~= empty or
-			self.grid[y * 2 + 1][x * 2 + 2] ~= empty or
-			self.grid[y * 2 + 2][x * 2 + 1] ~= empty or
-			self.grid[y * 2 + 2][x * 2 + 2] ~= empty
-		then
+        if (
+           self:isOccupied(x * 2 + 0, y * 2 + 0)
+        or self:isOccupied(x * 2 + 1, y * 2 + 0)
+        or self:isOccupied(x * 2 + 0, y * 2 + 1)
+        or self:isOccupied(x * 2 + 1, y * 2 + 1)
+		) then
 			return false
 		end
 	end
@@ -81,7 +88,7 @@ function Grid:canPlacePieceInVisibleGrid(piece)
 	for index, offset in pairs(offsets) do
 		local x = piece.position.x + offset.x
 		local y = piece.position.y + offset.y
-		if x >= 10 or x < 0 or y >= 24 or y < 4 or self.grid[y+1][x+1] ~= empty then
+		if y < 4 or self:isOccupied(x, y) ~= empty then
 			return false
 		end
 	end
@@ -167,10 +174,12 @@ function Grid:applyBigPiece(piece)
 		y = piece.position.y + offset.y
 		for a = 1, 2 do
 			for b = 1, 2 do
-				self.grid[y*2+a][x*2+b] = {
-					skin = piece.skin,
-					colour = piece.shape
-				}
+                if y*2+a > 0 then
+                    self.grid[y*2+a][x*2+b] = {
+                        skin = piece.skin,
+                        colour = piece.shape
+                    }
+                end
 			end
 		end
 	end
