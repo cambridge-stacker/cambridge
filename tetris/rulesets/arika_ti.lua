@@ -84,11 +84,19 @@ function ARS:attemptWallkicks(piece, new_piece, rot_dir, grid)
 		piece.shape == "J" or piece.shape == "T" or piece.shape == "L"
 	) and (
 		piece.rotation == 0 or piece.rotation == 2
-	) and (
-		grid:isOccupied(piece.position.x, piece.position.y) or
-		grid:isOccupied(piece.position.x, piece.position.y - 1) or
-		grid:isOccupied(piece.position.x, piece.position.y - 2)
-	) then return end
+	) then
+        local offsets = new_piece:getBlockOffsets()
+        table.sort(offsets, function(A, B) return A.y < B.y or A.y == B.y and A.x < B.y end)
+        for index, offset in pairs(offsets) do
+            if grid:isOccupied(piece.position.x + offset.x, piece.position.y + offset.y) then
+                if offset.x == 0 then
+                    return 
+                else
+                    break
+                end
+            end
+        end
+    end
 
 	if piece.shape == "I" then
 		-- special kick rules for I
@@ -116,14 +124,21 @@ function ARS:attemptWallkicks(piece, new_piece, rot_dir, grid)
 				piece.floorkick = 1
 			end
 		end
-	elseif piece.shape ~= "I" then
-			-- kick right, kick left
-			if (grid:canPlacePiece(new_piece:withOffset({x=1, y=0}))) then
-				piece:setRelativeRotation(rot_dir):setOffset({x=1, y=0})
-			elseif (grid:canPlacePiece(new_piece:withOffset({x=-1, y=0}))) then
-				piece:setRelativeRotation(rot_dir):setOffset({x=-1, y=0})
-			end
-		else
+	else
+        -- kick right, kick left
+        if grid:canPlacePiece(new_piece:withOffset({x=1, y=0})) then
+            piece:setRelativeRotation(rot_dir):setOffset({x=1, y=0})
+        elseif grid:canPlacePiece(new_piece:withOffset({x=-1, y=0})) then
+            piece:setRelativeRotation(rot_dir):setOffset({x=-1, y=0})
+        elseif piece.shape == "T"
+           and newpiece.rotation == 1
+           and piece.floorkick == 0
+           and grid:canPlacePiece(new_piece:withOffset({x=0, y=-1}))
+        then
+            -- T floorkick
+            piece.floorkick = piece.floorkick + 1
+            piece:setRelativeRotation(rot_dir):setOffset({x=0, y=-1})
+        end
 	end
 
 end
