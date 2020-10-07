@@ -16,6 +16,8 @@ function KonohaGame:new()
 
 	self.randomizer = KonohaRandomizer()
 	self.bravos = 0
+    self.last_bonus_amount = 0
+    self.last_bonus_display_time = 0
 	self.time_limit = 10800
 	self.big_mode = true
 	
@@ -100,6 +102,7 @@ function KonohaGame:advanceOneFrame()
 	if self.time_limit <= 0 then
 		self.game_over = true
 	end
+    self.last_bonus_display_time = self.last_bonus_display_time - 1
 end
 
 function KonohaGame:onPieceEnter()
@@ -121,7 +124,9 @@ local non_bravo_bonus = {0, 0, 20, 40}
 local bravo_ot_bonus = {0, 60, 120, 180}
 
 function KonohaGame:onLineClear(cleared_row_count)
-	self.level = self.level + cleared_row_levels[cleared_row_count / 2]
+    local oldtime = self.time_limit
+	
+    self.level = self.level + cleared_row_levels[cleared_row_count / 2]
 	self.bravo = true
 	for i = 0, 23 - cleared_row_count do
 		for j = 0, 9 do
@@ -139,6 +144,12 @@ function KonohaGame:onLineClear(cleared_row_count)
 	elseif self.level < 1000 then
 		self.time_limit = self.time_limit + non_bravo_bonus[cleared_row_count / 2]
 	end
+    
+    local bonus = self.time_limit - oldtime
+    if bonus > 0 then
+        self.last_bonus_amount = bonus
+        self.last_bonus_display_time = 120
+    end
 end
 
 function KonohaGame:getBackground()
@@ -163,7 +174,10 @@ function KonohaGame:drawScoringInfo()
 	if not self.game_over and self.time_limit < frameTime(0,10) and self.time_limit % 4 < 2 then
                 love.graphics.setColor(1, 0.3, 0.3, 1)
         end
-	love.graphics.printf(formatTime(self.time_limit), 240, 140, 120, "left")
+	love.graphics.printf(formatTime(self.time_limit), 240, 140, 120, "right")
+    if self.last_bonus_display_time > 0 then
+        love.graphics.printf("+"..formatTime(self.last_bonus_amount), 240, 160, 120, "right")
+    end
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.printf(self.bravos, 240, 220, 90, "left")
 	love.graphics.printf(self.level, 240, 340, 50, "right")
