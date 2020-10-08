@@ -57,11 +57,21 @@ end
 
 function GameScene:onKeyPress(e)
 	if (self.game.completed) and
-		e.scancode == "return" and e.isRepeat == false then
+		(e.scancode == "return" or e.scancode == "escape") and e.isRepeat == false then
 		highscore_entry = self.game:getHighscoreData()
 		highscore_hash = self.game.hash .. "-" .. self.ruleset.hash
 		submitHighscore(highscore_hash, highscore_entry)
 		scene = ModeSelectScene()
+    elseif (e.scancode == config.input.retry) then
+        -- fuck this, this is hacky but the way this codebase is setup prevents anything else
+        -- it seems like all the values that get touched in the child gamemode class
+        -- stop being linked to the values of the GameMode superclass because of how `mt.__index` works
+        -- not even sure this is the actual problem, but I don't want to have to rebuild everything about 
+        -- the core organisation of everything. this hacky way will have to do until someone figures out something.
+        love.keypressed("escape", "escape", false)
+        love.keypressed("return", "return", false)
+    elseif e.scancode == "escape" then
+        scene = ModeSelectScene()
 	end
 end
 

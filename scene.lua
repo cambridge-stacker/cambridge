@@ -7,6 +7,7 @@ function Scene:update() end
 function Scene:render() end
 function Scene:onKeyPress() end
 
+ExitScene = require "scene.exit"
 GameScene = require "scene.game"
 ModeSelectScene = require "scene.mode_select"
 InputConfigScene = require "scene.input_config"

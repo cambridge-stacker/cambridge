@@ -15,6 +15,7 @@ local configurable_inputs = {
     "rotate_right2",
     "rotate_180",
     "hold",
+    "retry",
 }
 
 function ConfigScene:new()

@@ -100,6 +100,8 @@ function ModeSelectScene:onKeyPress(e)
 	elseif (e.scancode == config.input["left"] or e.scancode == "left") or
 		(e.scancode == config.input["right"] or e.scancode == "right") then
 		self:switchSelect()
+    elseif e.scancode == "escape" then
+        scene = TitleScene()
 	end
 end
 

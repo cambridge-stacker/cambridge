@@ -3,6 +3,7 @@ local TitleScene = Scene:extend()
 local main_menu_screens = {
 	ModeSelectScene,
 	InputConfigScene,
+    ExitScene,
 }
 
 function TitleScene:new()
@@ -43,6 +44,8 @@ function TitleScene:onKeyPress(e)
 		self:changeOption(-1)
 	elseif (e.scancode == config.input["down"] or e.scancode == "down") and e.isRepeat == false then
 		self:changeOption(1)
+    elseif e.scancode == "escape" and e.isRepeat == false then
+        love.event.quit()
 	end
 end
 

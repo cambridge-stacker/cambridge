@@ -15,7 +15,7 @@ MarathonA2Game.tagline = "The points don't matter! Can you reach the invisible r
 
 
 function MarathonA2Game:new()
-    MarathonA2Game.super:new()
+    self.super:new()
     self.big_mode = true
 	self.roll_frames = 0
     self.combo = 1

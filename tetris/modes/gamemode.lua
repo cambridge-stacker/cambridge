@@ -68,6 +68,7 @@ end
 
 function GameMode:initialize(ruleset)
 	-- generate next queue
+    self:new()
 	for i = 1, self.next_queue_length do
 		table.insert(self.next_queue, self:getNextPiece(ruleset))
 	end
