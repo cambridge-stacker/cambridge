@@ -34,8 +34,8 @@ function love.load()
 			startTimestamp = now,
 			details = "Loading game...",
 			state = "",
-			largeImageKey = "",
-			largeImageText = "",
+			largeImageKey = "icon2",
+			largeImageText = "Original game by Joe Zeng",
 			smallImageKey = "",
 			smallImageText = ""
 	}
