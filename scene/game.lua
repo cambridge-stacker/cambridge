@@ -5,7 +5,11 @@ function GameScene:new(game_mode, ruleset)
 	self.game = game_mode()
 	self.ruleset = ruleset()
 	self.game:initialize(self.ruleset)
-	presence.details = "In game"
+	if game_mode.name == "Demon Mode" and math.random(1, 7) == 7 then
+		presence.details = "Suffering"
+	else
+		presence.details = "In game"
+	end
 	presence.state = game_mode.name
 	discordRPC.updatePresence(presence)
 end
