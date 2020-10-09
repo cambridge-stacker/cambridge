@@ -34,6 +34,9 @@ function SurvivalA3Game:new()
 	self.lock_drop = true
 	self.enable_hold = true
 	self.next_queue_length = 3
+
+	self.coolregret_message = "COOL!!"
+	self.coolregret_timer = 0
 end
 
 function SurvivalA3Game:getARE()
@@ -176,6 +179,9 @@ function SurvivalA3Game:updateSectionTimes(old_level, new_level)
 		self.section_start_time = self.frames
 		if section_time <= frameTime(1,00) then
 			self.grade = self.grade + 1
+		else
+			self.coolregret_message = "REGRET!!"
+			self.coolregret_timer = 300
 		end
 	end
 end
@@ -217,6 +223,11 @@ function SurvivalA3Game:drawScoringInfo()
     if sg >= 5 then 
         love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
     end
+	
+	if(self.coolregret_timer > 0) then
+		love.graphics.printf(self.coolregret_message, 64, 400, 160, "center")
+		self.coolregret_timer = self.coolregret_timer - 1
+	end
 
 	local current_section = math.floor(self.level / 100) + 1
 	self:drawSectionTimesWithSplits(current_section)
