@@ -1,38 +1,70 @@
 local Randomizer = require 'tetris.randomizers.randomizer'
 
-local History6RollsRandomizer = Randomizer:extend()
+local History6Rolls35PoolRandomizer = Randomizer:extend()
 
-function History6RollsRandomizer:initialize()
+function History6Rolls35PoolRandomizer:initialize()
+    self.first = true
 	self.history = {"Z", "S", "Z", "S"}
-	self.bag_counts = {
-		I = 5, J = 5, L = 5, O = 5, S = 3, T = 5, Z = 3
+	self.pool = {
+		"I", "I", "I", "I", "I",
+        "T", "T", "T", "T", "T",
+        "L", "L", "L", "L", "L",
+        "J", "J", "J", "J", "J",
+        "S", "S", "S", "S", "S",
+        "Z", "Z", "Z", "Z", "Z",
+        "O", "O", "O", "O", "O",
 	}
+    self.droughts = {
+        I = 0,
+        T = 0,
+        L = 0,
+        J = 0,
+        S = 0,
+        Z = 0,
+        O = 0,
+    }
 end
 
-function History6RollsRandomizer:getBagPiece(n)
-	for shape, count in pairs(self.bag_counts) do
-		n = n - count
-		if n <= 0 then
-			return shape
-		end
-	end
+function History6Rolls35PoolRandomizer:generatePiece()
+    local index, x
+    if self.first then
+        local prevent = {"S", "Z", "O"}
+        repeat
+            index = math.random(#self.pool)
+            x = self.pool[index]
+        until not inHistory(x, prevent)
+        self.first = false
+    else
+        for i = 1, 6 do
+            index = math.random(#self.pool)
+            x = self.pool[index]
+            if not inHistory(x, self.history) or i == 6 then
+                break
+            end
+        end
+    end
+    self.pool[index] = self:updateHistory(x)
+    return x
 end
 
-function History6RollsRandomizer:generatePiece()
-	for i = 1, 6 do
-		local x = self:getBagPiece(math.random(31))
-		if not inHistory(x, self.history) or i == 6 then
-			return self:updateHistory(x)
-		end
-	end
-end
-
-function History6RollsRandomizer:updateHistory(shape)
-	self.bag_counts[shape] = self.bag_counts[shape] - 1
-	local replaced_piece = table.remove(self.history, 1)
+function History6Rolls35PoolRandomizer:updateHistory(shape)
+	table.remove(self.history, 1)
 	table.insert(self.history, shape)
-	self.bag_counts[replaced_piece] = self.bag_counts[replaced_piece] + 1
-	return shape
+
+    local highdrought
+    local highdroughtcount = 0
+    for k, v in pairs(self.droughts) do 
+        if k == shape then
+            self.droughts[k] = 0
+        else
+            self.droughts[k] = v + 1
+            if v >= highdroughtcount then
+                highdrought = k
+                highdroughtcount = v
+            end
+        end
+    end
+	return highdrought
 end
 
 function inHistory(piece, history)
@@ -44,4 +76,4 @@ function inHistory(piece, history)
 	return false
 end
 
-return History6RollsRandomizer
+return History6Rolls35PoolRandomizer

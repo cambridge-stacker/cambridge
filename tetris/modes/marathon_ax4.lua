@@ -3,7 +3,7 @@ require 'funcs'
 local GameMode = require 'tetris.modes.gamemode'
 local Piece = require 'tetris.components.piece'
 
-local History6RollsRandomizer = require 'tetris.randomizers.history_6rolls'
+local Bag7NoSZOStartRandomizer = require 'tetris.randomizers.bag7noSZOstart'
 
 local MarathonAX4Game = GameMode:extend()
 
@@ -16,7 +16,7 @@ function MarathonAX4Game:new()
 	MarathonAX4Game.super:new()
 
 	self.roll_frames = 0
-	self.randomizer = History6RollsRandomizer()
+	self.randomizer = Bag7NoSZOStartRandomizer()
 
 	self.section_time_limit = 3600
 	self.section_start_time = 0
