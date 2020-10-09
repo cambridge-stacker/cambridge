@@ -145,7 +145,7 @@ function KonohaGame:onLineClear(cleared_row_count)
 end
 
 function KonohaGame:getBackground()
-	return math.min(math.floor(self.level / 100), 9)
+	return math.floor(self.level / 100)
 end
 
 function KonohaGame:drawScoringInfo()
