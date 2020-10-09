@@ -27,6 +27,12 @@ function MarathonA2Game:new()
 	self.section_times = { [0] = 0 }
 	self.section_tetrises = { [0] = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
     
+    self.SGnames = {
+        "9", "8", "7", "6", "5", "4", "3", "2", "1",
+        "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
+        "GM"
+    }
+    
 	self.randomizer = History6RollsRandomizer()
 
     self.lock_drop = false
@@ -331,12 +337,19 @@ function MarathonA2Game:drawScoringInfo()
 	love.graphics.printf("GRADE", 240, 120, 40, "left")
 	love.graphics.printf("SCORE", 240, 200, 40, "left")
 	love.graphics.printf("LEVEL", 240, 320, 40, "left")
+    local sg = self.grid:checkSecretGrade()
+    if sg >= 5 then 
+        love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
+    end
 
 	love.graphics.setFont(font_3x5_3)
 	love.graphics.printf(self:getLetterGrade(), 240, 140, 90, "left")
 	love.graphics.printf(self.score, 240, 220, 90, "left")
 	love.graphics.printf(self.level, 240, 340, 40, "right")
 	love.graphics.printf(self:getSectionEndLevel(), 240, 370, 40, "right")
+    if sg >= 5 then
+        love.graphics.printf(self.SGnames[sg], 240, 450, 180, "left")
+    end
 
 	love.graphics.setFont(font_8x11)
 	love.graphics.printf(formatTime(self.frames), 64, 420, 160, "center")

@@ -194,6 +194,40 @@ function Grid:checkForBravo(cleared_row_count)
 	return true
 end
 
+function Grid:checkSecretGrade()
+    local sgrade = 0
+    for i=23,5,-1 do
+        local validLine = true
+        local emptyCell = 0
+        if i > 13 then
+            emptyCell = 23-i
+        end
+        if i <= 13 then
+            emptyCell = i-5
+        end
+        for j=0,9 do
+            if (not self:isOccupied(j,i) and j ~= emptyCell) or (j == emptyCell and self:isOccupied(j,i)) then
+                validLine = false
+            end
+        end
+        if not self:isOccupied(emptyCell,i-1) then
+            validLine = false
+        end
+        if(validLine) then
+                    sgrade = sgrade + 1
+        else
+            -- return sgrade
+        end
+    end
+    --[[
+    if(sgrade == 0) then return ""
+    elseif(sgrade < 10) then return 10-sgrade
+    elseif(sgrade < 19) then return "S"..(sgrade-9) end
+    return "GM"
+    --]]
+    return sgrade
+end
+
 function Grid:update()
 	for y = 1, 24 do
 		for x = 1, 10 do
