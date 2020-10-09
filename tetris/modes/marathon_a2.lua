@@ -273,7 +273,7 @@ function MarathonA2Game:qualifiesForMRoll()
 			return false
 		end
 	end
-	if self.grade < 17 or self.frames > frameTime(8,45) then
+	if self.grade < 17 or self.frames > frameTime(9,30) then
 		return false
 	end
 	return true
