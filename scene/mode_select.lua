@@ -58,7 +58,7 @@ function ModeSelectScene:render()
 		0, 0, 0,
 		0.5, 0.5
 	)
-	
+
 	if self.menu_state.select == "mode" then
 		love.graphics.setColor(1, 1, 1, 0.5)
 	elseif self.menu_state.select == "ruleset" then
@@ -72,7 +72,7 @@ function ModeSelectScene:render()
 		love.graphics.setColor(1, 1, 1, 0.5)
 	end
 	love.graphics.rectangle("fill", 340, 78 + 20 * self.menu_state.ruleset, 200, 22)
-	
+
 	love.graphics.setColor(1, 1, 1, 1)
 
 	love.graphics.draw(misc_graphics["select_mode"], 20, 40)
@@ -92,15 +92,19 @@ function ModeSelectScene:onKeyPress(e)
 		current_ruleset = self.menu_state.ruleset
 		config.current_mode = current_mode
 		config.current_ruleset = current_ruleset
+		playSE("mode_decide")
 		saveConfig()
 		scene = GameScene(game_modes[self.menu_state.mode], rulesets[self.menu_state.ruleset])
 	elseif (e.scancode == config.input["up"] or e.scancode == "up") and e.isRepeat == false then
 		self:changeOption(-1)
+		playSE("cursor")
 	elseif (e.scancode == config.input["down"] or e.scancode == "down") and e.isRepeat == false then
 		self:changeOption(1)
+		playSE("cursor")
 	elseif (e.scancode == config.input["left"] or e.scancode == "left") or
 		(e.scancode == config.input["right"] or e.scancode == "right") then
 		self:switchSelect()
+		playSE("cursor_lr")
     elseif e.scancode == "escape" then
         scene = TitleScene()
 	end

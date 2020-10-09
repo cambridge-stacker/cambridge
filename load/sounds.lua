@@ -10,6 +10,10 @@ sounds = {
 	},
 	move = love.audio.newSource("res/se/move.wav", "static"),
 	bottom = love.audio.newSource("res/se/bottom.wav", "static"),
+	cursor = love.audio.newSource("res/se/cursor.wav", "static"),
+	cursor_lr = love.audio.newSource("res/se/cursor_lr.wav", "static"),
+	main_decide = love.audio.newSource("res/se/main_decide.wav", "static"),
+	mode_decide = love.audio.newSource("res/se/mode_decide.wav", "static"),
 }
 
 function playSE(sound, subsound)
