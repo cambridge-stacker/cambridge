@@ -167,10 +167,10 @@ function KonohaGame:drawScoringInfo()
                 love.graphics.setColor(1, 0.3, 0.3, 1)
         end
 	love.graphics.printf(formatTime(self.time_limit), 240, 140, 120, "right")
+	love.graphics.setColor(1, 1, 1, 1)
     if self.last_bonus_display_time > 0 then
         love.graphics.printf("+"..formatTime(self.last_bonus_amount), 240, 160, 120, "right")
     end
-	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.printf(self.bravos, 240, 220, 90, "left")
 	love.graphics.printf(self.level, 240, 340, 50, "right")
 	love.graphics.printf(self:getSectionEndLevel(), 240, 370, 50, "right")
