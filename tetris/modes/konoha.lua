@@ -127,15 +127,7 @@ function KonohaGame:onLineClear(cleared_row_count)
     local oldtime = self.time_limit
 	
     self.level = self.level + cleared_row_levels[cleared_row_count / 2]
-	self.bravo = true
-	for i = 0, 23 - cleared_row_count do
-		for j = 0, 9 do
-			if self.grid:isOccupied(j, i) then
-				self.bravo = false
-			end
-		end
-	end
-	if self.bravo then
+	if self.grid:checkForBravo(cleared_row_count) then
 		self.bravos = self.bravos + 1
 		if self.level < 1000 then self.time_limit = self.time_limit + bravo_bonus[cleared_row_count / 2]
 		else self.time_limit = self.time_limit + bravo_ot_bonus[cleared_row_count / 2]

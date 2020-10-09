@@ -185,6 +185,15 @@ function Grid:applyBigPiece(piece)
 	end
 end
 
+function Grid:checkForBravo(cleared_row_count)
+	for i = 0, 23 - cleared_row_count do
+                for j = 0, 9 do
+                        if self:isOccupied(j, i) then return false end
+                end
+        end
+	return true
+end
+
 function Grid:update()
 	for y = 1, 24 do
 		for x = 1, 10 do
