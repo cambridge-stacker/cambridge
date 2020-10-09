@@ -28,6 +28,13 @@ function ConfigScene:update()
 end
 
 function ConfigScene:render()
+	love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.draw(
+		backgrounds["input_config"],
+		0, 0, 0,
+		0.5, 0.5
+	)
+    
 	love.graphics.setFont(font_3x5_2)
 	for i, input in pairs(configurable_inputs) do
 		if config.input[input] then

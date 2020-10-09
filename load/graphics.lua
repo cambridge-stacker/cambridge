@@ -20,6 +20,7 @@ backgrounds = {
 	love.graphics.newImage("res/backgrounds/1800-railways.png"),
 	love.graphics.newImage("res/backgrounds/1900-world-wide-web.png"),
 	title = love.graphics.newImage("res/backgrounds/title_v0.1.png"),
+    input_config = love.graphics.newImage("res/backgrounds/options-gears.png")
 }
 
 blocks = {
