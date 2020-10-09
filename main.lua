@@ -1,4 +1,45 @@
+discordRPC = require("discordRPC")
+appId = "599778517789573120"
+
+function discordRPC.ready(userId, username, discriminator, avatar)
+    print(string.format("Discord: ready (%s, %s, %s, %s)", userId, username, discriminator, avatar))
+end
+
+function discordRPC.disconnected(errorCode, message)
+    print(string.format("Discord: disconnected (%d: %s)", errorCode, message))
+end
+
+function discordRPC.errored(errorCode, message)
+    print(string.format("Discord: error (%d: %s)", errorCode, message))
+end
+
+function discordRPC.joinGame(joinSecret)
+    print(string.format("Discord: join (%s)", joinSecret))
+end
+
+function discordRPC.spectateGame(spectateSecret)
+    print(string.format("Discord: spectate (%s)", spectateSecret))
+end
+
+function discordRPC.joinRequest(userId, username, discriminator, avatar)
+    print(string.format("Discord: join request (%s, %s, %s, %s)", userId, username, discriminator, avatar))
+    discordRPC.respond(userId, "yes")
+end
+
 function love.load()
+
+	discordRPC.initialize(appId, true)
+	local now = os.time(os.date("*t"))
+	presence = {
+			startTimestamp = now,
+			details = "Loading game...",
+			state = "",
+			largeImageKey = "",
+			largeImageText = "",
+			smallImageKey = "",
+			smallImageText = ""
+	}
+
 	math.randomseed(os.time())
 	highscores = {}
 	require "load.graphics"
@@ -64,7 +105,7 @@ end
 
 function love.draw()
 	love.graphics.push()
-	
+
 	-- get offset matrix
 	love.graphics.setDefaultFilter("linear", "nearest")
 	local width = love.graphics.getWidth()

@@ -47,6 +47,9 @@ function ModeSelectScene:new()
 		ruleset = current_ruleset,
 		select = "mode",
 	}
+	presence.details = "In menus"
+	presence.state = "Choosing a mode"
+	discordRPC.updatePresence(presence)
 end
 
 function ModeSelectScene:update()

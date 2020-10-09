@@ -22,6 +22,10 @@ function ConfigScene:new()
 	-- load current config
 	self.config = config.input
 	self.input_state = 1
+
+	presence.details = "In menus"
+	presence.state = "Changing input config"
+	discordRPC.updatePresence(presence)
 end
 
 function ConfigScene:update()
@@ -34,7 +38,7 @@ function ConfigScene:render()
 		0, 0, 0,
 		0.5, 0.5
 	)
-    
+
 	love.graphics.setFont(font_3x5_2)
 	for i, input in pairs(configurable_inputs) do
 		if config.input[input] then

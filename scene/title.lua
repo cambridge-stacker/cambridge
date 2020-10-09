@@ -6,8 +6,13 @@ local main_menu_screens = {
     ExitScene,
 }
 
+local mainmenuidle = {"Idle", "Twiddling their thumbs", "Admiring the main menu's BG", "Waiting for spring to come"}
+
 function TitleScene:new()
 	self.main_menu_state = 1
+	presence.details = "In menus"
+	presence.state =  mainmenuidle[math.random(#mainmenuidle)]
+	discordRPC.updatePresence(presence)
 end
 
 function TitleScene:update()
