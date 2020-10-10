@@ -11,6 +11,8 @@ Credits
 - [Lilla Oshisaure](https://www.youtube.com/user/LeSpyroshisaure) for their amazing contributions to my life in general!
 - [The Tetra Legends Discord](http://discord.com/invite/7hMx5r2) for supporting me and playtesting!
 - [joezeng](https://github.com/joezeng) for the original project.
+- [Hailey](https://github.com/haileylgbt) for some miscellaneous assets.
+- Mizu for the Cambridge logo.
 
 Installation instructions
 -------------------------
