@@ -3,7 +3,7 @@ require 'funcs'
 local GameMode = require 'tetris.modes.gamemode'
 local Piece = require 'tetris.components.piece'
 
-local History6RollsRandomizer = require 'tetris.randomizers.history_6rolls'
+local Bag7Randomiser = require 'tetris.randomizers.bag7noSZOstart'
 
 local Race40Game = GameMode:extend()
 
@@ -18,7 +18,7 @@ function Race40Game:new()
 	self.lines = 0
 	self.line_goal = 40
 	self.pieces = 0
-	self.randomizer = History6RollsRandomizer()
+	self.randomizer = Bag7Randomiser()
 
 	self.roll_frames = 0
 	
