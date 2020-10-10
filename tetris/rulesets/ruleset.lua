@@ -6,6 +6,20 @@ local Ruleset = Object:extend()
 Ruleset.name = ""
 Ruleset.hash = ""
 
+-- Arika-type ruleset defaults
+Ruleset.world = false
+Ruleset.colourscheme = {
+    I = "R",
+    L = "O",
+    J = "B",
+    S = "M",
+    Z = "G",
+    O = "Y",
+    T = "C",
+}
+Ruleset.softdrop_lock = true
+Ruleset.harddrop_lock = false
+
 Ruleset.enable_IRS_wallkicks = false
 
 -- Component functions.
@@ -39,6 +53,9 @@ function Ruleset:attemptRotate(new_inputs, piece, grid, initial)
 	end
 
 	if rot_dir == 0 then return end
+    if self.world and config.gamesettings.world_reverse == 2 then
+        rot_dir = 4 - rot_dir
+    end
 
 	local new_piece = piece:withRelativeRotation(rot_dir)
 
@@ -117,10 +134,12 @@ function Ruleset:initializePiece(
 	else
 		spawn_positions = self.spawn_positions
 	end
+    local colours = ({self.colourscheme, ColourSchemes.Arika, ColourSchemes.TTC})[config.gamesettings.piece_colour]
+    
 	local piece = Piece(data.shape, data.orientation - 1, {
 		x = spawn_positions[data.shape].x,
 		y = spawn_positions[data.shape].y
-	}, self.block_offsets, 0, 0, data.skin, big)
+	}, self.block_offsets, 0, 0, data.skin, colours[data.shape], big)
 
 	self:onPieceCreate(piece)
 	self:rotatePiece(inputs, piece, grid, {}, true)

@@ -172,7 +172,7 @@ function ARS:onPieceRotate(piece, grid)
 	end
 end
 
-function ARS:get180RotationValue() return config["reverse_rotate"] and 1 or 3 end
+function ARS:get180RotationValue() return 3 end
 function ARS:getDefaultOrientation() return 3 end  -- downward facing pieces by default
 
 return ARS

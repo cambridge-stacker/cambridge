@@ -43,6 +43,8 @@ function GameMode:new()
 	-- variables related to configurable parameters
 	self.drop_locked = false
 	self.hard_drop_locked = false
+    self.lock_on_soft_drop = false
+    self.lock_on_hard_drop = false
 	self.hold_queue = nil
 	self.held = false
 	self.section_start_time = 0
@@ -59,6 +61,7 @@ function GameMode:getLineClearDelay() return 40 end
 function GameMode:getDasLimit() return 15 end
 
 function GameMode:getNextPiece(ruleset)
+    
 	return {
 		skin = "2tie",
 		shape = self.randomizer:nextPiece(),
@@ -72,6 +75,8 @@ function GameMode:initialize(ruleset)
 	for i = 1, self.next_queue_length do
 		table.insert(self.next_queue, self:getNextPiece(ruleset))
 	end
+    self.lock_on_soft_drop = ({self.instant_soft_drop, ruleset.softdrop_lock, false, true })[config.gamesettings.manlock]
+    self.lock_on_hard_drop = ({self.instant_hard_drop, ruleset.harddrop_lock, true,  false})[config.gamesettings.manlock]
 end
 
 function GameMode:update(inputs, ruleset)
@@ -125,7 +130,7 @@ function GameMode:update(inputs, ruleset)
 			self.piece:isDropBlocked(self.grid) and
 			not self.hard_drop_locked then
 			self:onHardDrop(piece_dy)
-			if self.instant_hard_drop then
+			if self.lock_on_hard_drop then
 				self.piece.locked = true
 			end
 		end
@@ -134,7 +139,7 @@ function GameMode:update(inputs, ruleset)
 			self:onSoftDrop(piece_dy)
 			if self.piece:isDropBlocked(self.grid) and
 				not self.drop_locked and
-				self.instant_soft_drop
+				self.lock_on_soft_drop
 			then
 				self.piece.locked = true
 			end
@@ -340,11 +345,12 @@ function GameMode:drawGhostPiece(ruleset)
 end
 
 function GameMode:drawNextQueue(ruleset)
+    local colourscheme = ({ruleset.colourscheme, ColourSchemes.Arika, ColourSchemes.TTC})[config.gamesettings.piece_colour]
 	function drawPiece(piece, skin, offsets, pos_x, pos_y)
 		for index, offset in pairs(offsets) do
 			local x = offset.x + ruleset.spawn_positions[piece].x
 			local y = offset.y + 4.7
-			love.graphics.draw(blocks[skin][piece], pos_x+x*16, pos_y+y*16)
+			love.graphics.draw(blocks[skin][colourscheme[piece]], pos_x+x*16, pos_y+y*16)
 		end
 	end
 	for i = 1, self.next_queue_length do

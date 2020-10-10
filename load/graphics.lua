@@ -20,34 +20,52 @@ backgrounds = {
 	love.graphics.newImage("res/backgrounds/1800-railways.png"),
 	love.graphics.newImage("res/backgrounds/1900-world-wide-web.png"),
 	title = love.graphics.newImage("res/backgrounds/title_v0.1.png"),
-    input_config = love.graphics.newImage("res/backgrounds/options-gears.png")
+    input_config = love.graphics.newImage("res/backgrounds/options-pcb.png"),
+    game_config = love.graphics.newImage("res/backgrounds/options-gears.png"),
 }
 
 blocks = {
 	["2tie"] = {
-		I = love.graphics.newImage("res/img/s1.png"),
-		J = love.graphics.newImage("res/img/s4.png"),
-		L = love.graphics.newImage("res/img/s3.png"),
-		O = love.graphics.newImage("res/img/s7.png"),
-		S = love.graphics.newImage("res/img/s5.png"),
-		T = love.graphics.newImage("res/img/s2.png"),
-		Z = love.graphics.newImage("res/img/s6.png"),
-		F = love.graphics.newImage("res/img/s9.png"),
-		G = love.graphics.newImage("res/img/s9.png"),
+		R = love.graphics.newImage("res/img/s1.png"),
+		O = love.graphics.newImage("res/img/s4.png"),
+		Y = love.graphics.newImage("res/img/s7.png"),
+		G = love.graphics.newImage("res/img/s6.png"),
+		C = love.graphics.newImage("res/img/s2.png"),
+		B = love.graphics.newImage("res/img/s3.png"),
+		M = love.graphics.newImage("res/img/s5.png"),
 		X = love.graphics.newImage("res/img/s9.png"),
 	},
 	["bone"] = {
-		I = love.graphics.newImage("res/img/bone.png"),
-		J = love.graphics.newImage("res/img/bone.png"),
-		L = love.graphics.newImage("res/img/bone.png"),
+		R = love.graphics.newImage("res/img/bone.png"),
 		O = love.graphics.newImage("res/img/bone.png"),
-		S = love.graphics.newImage("res/img/bone.png"),
-		T = love.graphics.newImage("res/img/bone.png"),
-		Z = love.graphics.newImage("res/img/bone.png"),
-		F = love.graphics.newImage("res/img/bone.png"),
+		Y = love.graphics.newImage("res/img/bone.png"),
 		G = love.graphics.newImage("res/img/bone.png"),
+		C = love.graphics.newImage("res/img/bone.png"),
+		B = love.graphics.newImage("res/img/bone.png"),
+		M = love.graphics.newImage("res/img/bone.png"),
 		X = love.graphics.newImage("res/img/bone.png"),
 	}
+}
+
+ColourSchemes = {
+    Arika = {
+        I = "R",
+        L = "O",
+        J = "B",
+        S = "M",
+        Z = "G",
+        O = "Y",
+        T = "C",
+    },
+    TTC = {
+        I = "C",
+        L = "O",
+        J = "B",
+        S = "G",
+        Z = "R",
+        O = "Y",
+        T = "M",
+    },
 }
 
 for name, blockset in pairs(blocks) do

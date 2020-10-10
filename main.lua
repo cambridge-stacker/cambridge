@@ -1,34 +1,33 @@
-discordRPC = require("discordRPC")
-appId = "599778517789573120"
-
-function discordRPC.ready(userId, username, discriminator, avatar)
-    print(string.format("Discord: ready (%s, %s, %s, %s)", userId, username, discriminator, avatar))
-end
-
-function discordRPC.disconnected(errorCode, message)
-    print(string.format("Discord: disconnected (%d: %s)", errorCode, message))
-end
-
-function discordRPC.errored(errorCode, message)
-    print(string.format("Discord: error (%d: %s)", errorCode, message))
-end
-
-function discordRPC.joinGame(joinSecret)
-    print(string.format("Discord: join (%s)", joinSecret))
-end
-
-function discordRPC.spectateGame(spectateSecret)
-    print(string.format("Discord: spectate (%s)", spectateSecret))
-end
-
-function discordRPC.joinRequest(userId, username, discriminator, avatar)
-    print(string.format("Discord: join request (%s, %s, %s, %s)", userId, username, discriminator, avatar))
-    discordRPC.respond(userId, "yes")
-end
-
 function love.load()
+    discordRPC = require("libs.discordRPC")
+    discordRPC.appId = "599778517789573120"
 
-	discordRPC.initialize(appId, true)
+    function discordRPC.ready(userId, username, discriminator, avatar)
+        print(string.format("Discord: ready (%s, %s, %s, %s)", userId, username, discriminator, avatar))
+    end
+
+    function discordRPC.disconnected(errorCode, message)
+        print(string.format("Discord: disconnected (%d: %s)", errorCode, message))
+    end
+
+    function discordRPC.errored(errorCode, message)
+        print(string.format("Discord: error (%d: %s)", errorCode, message))
+    end
+
+    function discordRPC.joinGame(joinSecret)
+        print(string.format("Discord: join (%s)", joinSecret))
+    end
+
+    function discordRPC.spectateGame(spectateSecret)
+        print(string.format("Discord: spectate (%s)", spectateSecret))
+    end
+
+    function discordRPC.joinRequest(userId, username, discriminator, avatar)
+        print(string.format("Discord: join request (%s, %s, %s, %s)", userId, username, discriminator, avatar))
+        discordRPC.respond(userId, "yes")
+    end
+
+	discordRPC.initialize(discordRPC.appId, true)
 	local now = os.time(os.date("*t"))
 	presence = {
 			startTimestamp = now,
@@ -59,6 +58,12 @@ function love.load()
 		config.input = {}
 		scene = InputConfigScene()
 	else
+        if not config.gamesettings then config.gamesettings = {} end
+        for _, option in ipairs(GameConfigScene.options) do
+            if not config.gamesettings[option[1]] then
+                config.gamesettings[option[1]] = 1
+            end
+        end
 		if config.current_mode then current_mode = config.current_mode end
 		if config.current_ruleset then current_ruleset = config.current_ruleset end
 		scene = TitleScene()

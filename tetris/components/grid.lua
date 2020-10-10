@@ -143,7 +143,7 @@ function Grid:copyBottomRow()
 	for col = 1, 10 do
 		self.grid[24][col] = (self.grid[23][col] == empty) and empty or {
 			skin = self.grid[23][col].skin,
-			colour = "G"
+			colour = "X"
 		}
 	end
 	return true
@@ -161,7 +161,7 @@ function Grid:applyPiece(piece)
 		if y + 1 > 0 then
 			self.grid[y+1][x+1] = {
 				skin = piece.skin,
-				colour = piece.shape
+				colour = piece.colour
 			}
 		end
 	end
@@ -177,7 +177,7 @@ function Grid:applyBigPiece(piece)
                 if y*2+a > 0 then
                     self.grid[y*2+a][x*2+b] = {
                         skin = piece.skin,
-                        colour = piece.shape
+                        colour = piece.colour
                     }
                 end
 			end

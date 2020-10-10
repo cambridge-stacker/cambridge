@@ -62,3 +62,8 @@ function formatBigNum(number)
 	return string.sub(s, 1, pos)
 		.. string.gsub(string.sub(s, pos+1), "(...)", ",%1")
 end
+
+function Mod1(n, m)
+    -- returns a number congruent to n modulo m in the range [1;m] (as opposed to [0;m-1])
+    return ((n-1) % m) + 1
+end

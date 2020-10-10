@@ -2,7 +2,7 @@ local Object = require 'libs.classic'
 
 local Piece = Object:extend()
 
-function Piece:new(shape, rotation, position, block_offsets, gravity, lock_delay, skin, big)
+function Piece:new(shape, rotation, position, block_offsets, gravity, lock_delay, skin, colour, big)
 	self.shape = shape
 	self.rotation = rotation
 	self.position = position
@@ -10,6 +10,7 @@ function Piece:new(shape, rotation, position, block_offsets, gravity, lock_delay
 	self.gravity = gravity
 	self.lock_delay = lock_delay
 	self.skin = skin
+    self.colour = colour
 	self.ghost = false
 	self.locked = false
 	self.big = big
@@ -21,7 +22,7 @@ function Piece:withOffset(offset)
 	return Piece(
 		self.shape, self.rotation,
 		{x = self.position.x + offset.x, y = self.position.y + offset.y},
-		self.block_offsets, self.gravity, self.lock_delay, self.skin, self.big
+		self.block_offsets, self.gravity, self.lock_delay, self.skin, self.colour, self.big
 	)
 end
 
@@ -31,7 +32,7 @@ function Piece:withRelativeRotation(rot)
 	while new_rot >= 4 do new_rot = new_rot - 4 end
 	return Piece(
 		self.shape, new_rot, self.position,
-		self.block_offsets, self.gravity, self.lock_delay, self.skin, self.big
+		self.block_offsets, self.gravity, self.lock_delay, self.skin, self.colour, self.big
 	)
 end
 
@@ -148,13 +149,13 @@ function Piece:draw(opacity, brightness, grid, partial_das)
 		local y = self.position.y + offset.y
 		if self.big then
 			love.graphics.draw(
-				blocks[self.skin][self.shape],
+				blocks[self.skin][self.colour],
 				64+x*32+partial_das*2, 16+y*32+gravity_offset*2,
 				0, 2, 2
 			)
 		else
 			love.graphics.draw(
-				blocks[self.skin][self.shape],
+				blocks[self.skin][self.colour],
 				64+x*16+partial_das, 16+y*16+gravity_offset
 			)
 		end

@@ -5,6 +5,18 @@ local SRS = Ruleset:extend()
 
 SRS.name = "ACE-SRS"
 SRS.hash = "ACE Standard"
+SRS.world = true
+SRS.colourscheme = {
+    I = "C",
+    L = "O",
+    J = "B",
+    S = "G",
+    Z = "R",
+    O = "Y",
+    T = "M",
+}
+SRS.softdrop_lock = false
+SRS.harddrop_lock = true
 
 SRS.enable_IRS_wallkicks = true
 
