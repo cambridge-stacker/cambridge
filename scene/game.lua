@@ -5,6 +5,13 @@ function GameScene:new(game_mode, ruleset)
 	self.game = game_mode()
 	self.ruleset = ruleset()
 	self.game:initialize(self.ruleset)
+	if game_mode.name == "Demon Mode" and math.random(1, 7) == 7 then
+		presence.details = "Suffering"
+	else
+		presence.details = "In game"
+	end
+	presence.state = game_mode.name
+	discordRPC.updatePresence(presence)
 end
 
 function GameScene:update()
@@ -66,7 +73,7 @@ function GameScene:onKeyPress(e)
         -- fuck this, this is hacky but the way this codebase is setup prevents anything else
         -- it seems like all the values that get touched in the child gamemode class
         -- stop being linked to the values of the GameMode superclass because of how `mt.__index` works
-        -- not even sure this is the actual problem, but I don't want to have to rebuild everything about 
+        -- not even sure this is the actual problem, but I don't want to have to rebuild everything about
         -- the core organisation of everything. this hacky way will have to do until someone figures out something.
         love.keypressed("escape", "escape", false)
         love.keypressed("return", "return", false)
