@@ -159,19 +159,19 @@ function SRS:attemptWallkicks(piece, new_piece, rot_dir, grid)
 end
 
 function SRS:onPieceCreate(piece, grid)
-	piece.manipulations = 0
+	piece.rotate_counter = 0
+	piece.move_counter = 0
 end
 
 function SRS:onPieceDrop(piece, grid)
 	piece.lock_delay = 0 -- step reset
-	piece.manipulations = 0
 end
 
 function SRS:onPieceMove(piece, grid)
 	piece.lock_delay = 0 -- move reset
 	if piece:isDropBlocked(grid) then
-		piece.manipulations = piece.manipulations + 1
-		if piece.manipulations >= 15 then
+		piece.move_counter = piece.move_counter + 1
+		if piece.move_counter >= 24 then
 			piece.locked = true
 		end
 	end
@@ -180,8 +180,8 @@ end
 function SRS:onPieceRotate(piece, grid)
 	piece.lock_delay = 0 -- rotate reset
 	if piece:isDropBlocked(grid) then
-		piece.manipulations = piece.manipulations + 1
-		if piece.manipulations >= 15 then
+		piece.rotate_counter = piece.rotate_counter + 1
+		if piece.rotate_counter >= 12 then
 			piece.locked = true
 		end
 	end

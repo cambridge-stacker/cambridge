@@ -150,7 +150,6 @@ end
 
 function ARS:onPieceDrop(piece, grid)
 	piece.lock_delay = 0 -- step reset
-	piece.manipulations = 0
 end
 
 function ARS:onPieceMove(piece, grid)
