@@ -142,7 +142,7 @@ function SurvivalA2Game:drawScoringInfo()
 		strTrueValues(self.prev_inputs)
 	)
 	love.graphics.printf("NEXT", 64, 40, 40, "left")
-	love.graphics.printf("GRADE", text_x, 120, 40, "left")
+	if self:getLetterGrade() ~= "" then love.graphics.printf("GRADE", text_x, 120, 40, "left") end
 	love.graphics.printf("SCORE", text_x, 200, 40, "left")
 	love.graphics.printf("LEVEL", text_x, 320, 40, "left")
     local sg = self.grid:checkSecretGrade()
@@ -152,7 +152,7 @@ function SurvivalA2Game:drawScoringInfo()
 
 	love.graphics.setFont(font_3x5_3)
 	love.graphics.printf(self.score, text_x, 220, 90, "left")
-	love.graphics.printf(self:getLetterGrade(), text_x, 140, 90, "left")
+	if self:getLetterGrade() ~= "" then love.graphics.printf(self:getLetterGrade(), text_x, 140, 90, "left") end
 	love.graphics.printf(self.level, text_x, 340, 40, "right")
 	love.graphics.printf(self:getSectionEndLevel(), text_x, 370, 40, "right")
     if sg >= 5 then
