@@ -105,10 +105,11 @@ function SurvivalA2Game:onLineClear(cleared_row_count)
 end
 
 function SurvivalA2Game:updateScore(level, drop_bonus, cleared_lines)
+	if self.grid:checkForBravo(cleared_lines) then self.bravo = 4 else self.bravo = 1 end
 	if cleared_lines > 0 then
 		self.score = self.score + (
 			(math.ceil((level + cleared_lines) / 4) + drop_bonus) *
-			cleared_lines * (cleared_lines * 2 - 1) * self.combo
+			cleared_lines * self.bravo * self.combo
 		)
 		self.lines = self.lines + cleared_lines
 		self.combo = self.combo + (cleared_lines - 1) * 2

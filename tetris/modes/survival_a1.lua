@@ -19,6 +19,8 @@ function SurvivalA1Game:new()
     
 	self.roll_frames = 0
     self.combo = 1
+	self.bravos = 0
+	
 	self.gm_conditions = {
 		level300 = false,
 		level500 = false,
@@ -116,10 +118,14 @@ function SurvivalA1Game:onLineClear(cleared_row_count)
 end
 
 function SurvivalA1Game:updateScore(level, drop_bonus, cleared_lines)
+	if self.grid:checkForBravo(cleared_lines) then
+		self.bravo = 4
+		self.bravos = self.bravos + 1
+	else self.bravo = 1 end
 	if cleared_lines > 0 then
 		self.score = self.score + (
 			(math.ceil((level + cleared_lines) / 4) + drop_bonus) *
-			cleared_lines * (cleared_lines * 2 - 1) * self.combo
+			cleared_lines * self.bravo * self.combo
 		)
 		self.lines = self.lines + cleared_lines
 		self.combo = self.combo + (cleared_lines - 1) * 2
@@ -169,6 +175,8 @@ function SurvivalA1Game:drawScoringInfo()
         love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
     end
 
+	if self.bravos > 0 then love.graphics.printf("BRAVO", 300, 120, 40, "left") end
+
 	love.graphics.setFont(font_3x5_3)
 	love.graphics.printf(self.score, 240, 220, 90, "left")
 	if self.gm_conditions["level300"] and self.gm_conditions["level500"] and self.gm_conditions["level900"] then
@@ -182,6 +190,7 @@ function SurvivalA1Game:drawScoringInfo()
     if sg >= 5 then
         love.graphics.printf(self.SGnames[sg], 240, 450, 180, "left")
     end
+	if self.bravos > 0 then love.graphics.printf(self.bravos, 300, 140, 40, "left") end
 
 	love.graphics.setFont(font_8x11)
 	love.graphics.printf(formatTime(self.frames), 64, 420, 160, "center")
