@@ -40,6 +40,7 @@ function GameMode:new()
 	self.draw_section_times = false
 	self.draw_secondary_section_times = false
 	self.big_mode = false
+    self.rpc_details = "In game"
 	-- variables related to configurable parameters
 	self.drop_locked = false
 	self.hard_drop_locked = false

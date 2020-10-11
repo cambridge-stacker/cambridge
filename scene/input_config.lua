@@ -23,9 +23,10 @@ function ConfigScene:new()
 	self.config = config.input
 	self.input_state = 1
 
-	presence.details = "In menus"
-	presence.state = "Changing input config"
-	discordRPC.updatePresence(presence)
+	DiscordRPC:update({
+        details = "In menus",
+        state = "Changing input config",
+    })
 end
 
 function ConfigScene:update()

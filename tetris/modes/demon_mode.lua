@@ -11,9 +11,6 @@ DemonModeGame.name = "Demon Mode"
 DemonModeGame.hash = "DemonMode"
 DemonModeGame.tagline = "Can you handle the ludicrous speed past level 20?"
 
-
-
-
 function DemonModeGame:new()
 	DemonModeGame.super:new()
 	self.roll_frames = 0
@@ -29,6 +26,9 @@ function DemonModeGame:new()
 	self.enable_hold = true
 	self.lock_drop = true
 	self.next_queue_length = 3
+    if math.random() < 1/6.66 then
+        self.rpc_details = "Suffering"
+    end
 end
 
 function DemonModeGame:getARE()

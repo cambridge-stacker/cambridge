@@ -16,10 +16,11 @@ function ConfigScene:new()
 	-- load current config
 	self.config = config.input
 	self.highlight = 1
-
-	presence.details = "In menus"
-	presence.state = "Changing game config"
-	discordRPC.updatePresence(presence)
+    
+	DiscordRPC:update({
+        details = "In menus",
+        state = "Changing game settings",
+    })
 end
 
 function ConfigScene:update()
