@@ -27,11 +27,11 @@ backgrounds = {
 blocks = {
 	["2tie"] = {
 		R = love.graphics.newImage("res/img/s1.png"),
-		O = love.graphics.newImage("res/img/s4.png"),
+		O = love.graphics.newImage("res/img/s3.png"),
 		Y = love.graphics.newImage("res/img/s7.png"),
 		G = love.graphics.newImage("res/img/s6.png"),
 		C = love.graphics.newImage("res/img/s2.png"),
-		B = love.graphics.newImage("res/img/s3.png"),
+		B = love.graphics.newImage("res/img/s4.png"),
 		M = love.graphics.newImage("res/img/s5.png"),
 		X = love.graphics.newImage("res/img/s9.png"),
 	},
