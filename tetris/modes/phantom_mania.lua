@@ -161,12 +161,12 @@ function PhantomManiaGame:drawScoringInfo()
 	local text_x = config["side_next"] and 320 or 240
 
 	love.graphics.setFont(font_3x5_2)
-	love.graphics.printf("GRADE", text_x, 120, 40, "left")
+	if getLetterGrade(self.level, self.clear) ~= "" then love.graphics.printf("GRADE", text_x, 120, 40, "left") end
 	love.graphics.printf("SCORE", text_x, 200, 40, "left")
 	love.graphics.printf("LEVEL", text_x, 320, 40, "left")
 
 	love.graphics.setFont(font_3x5_3)
-	love.graphics.printf(getLetterGrade(self.level, self.clear), text_x, 140, 90, "left")
+	if getLetterGrade(self.level, self.clear) ~= "" then love.graphics.printf(getLetterGrade(self.level, self.clear), text_x, 140, 90, "left") end
 	love.graphics.printf(self.score, text_x, 220, 90, "left")
 	love.graphics.printf(self.level, text_x, 340, 40, "right")
 	if self.clear then
