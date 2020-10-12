@@ -34,15 +34,6 @@ if success then
 
     RPC.initialize(DiscordRPC.appId, true)
     local now = os.time(os.date("*t"))
-	RPC.updatePresence({
-            startTimestamp = now,
-            details = "Loading game...",
-            state = "",
-            largeImageKey = "icon2",
-            largeImageText = "Original game by Joe Zeng",
-            smallImageKey = "",
-            smallImageText = ""
-    })
     
     DiscordRPC.RPC = RPC
     print("DiscordRPC successfully loaded.")
@@ -51,6 +42,17 @@ else
     print(RPC)
 end
 
+DiscordRPC.presence = {
+        startTimestamp = now,
+        details = "Loading game...",
+        state = "",
+        largeImageKey = "icon2",
+        largeImageText = "Original game by Joe Zeng",
+        smallImageKey = "",
+        smallImageText = ""
+}
+
 function DiscordRPC:update(newstuff)
-    if self.loaded then self.RPC.updatePresence(newstuff) end
+    for k, v in pairs(newstuff) do self.presence[k] = v end
+    if self.loaded then self.RPC.updatePresence(self.presence) end
 end
