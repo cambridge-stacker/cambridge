@@ -16,6 +16,8 @@ Credits
 - [Hailey](https://github.com/haileylgbt) for some miscellaneous assets.
 - Mizu for the Cambridge logo.
 
+![Cambridge Logo](https://cdn.discordapp.com/attachments/625496179433668635/763363717730664458/Icon_2.png)
+
 Installation instructions
 -------------------------
 
