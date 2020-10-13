@@ -47,7 +47,7 @@ DiscordRPC.presence = {
         details = "Loading game...",
         state = "",
         largeImageKey = "icon2",
-        largeImageText = "Original game by Joe Zeng",
+        largeImageText = "Arcade Stacker",
         smallImageKey = "",
         smallImageText = ""
 }
