@@ -31,10 +31,10 @@ SRS.spawn_positions = {
 }
 
 SRS.big_spawn_positions = {
-	I = { x=2, y=0 },
+	I = { x=3, y=0 },
 	J = { x=2, y=1 },
 	L = { x=2, y=1 },
-	O = { x=2, y=1 },
+	O = { x=3, y=1 },
 	S = { x=2, y=1 },
 	T = { x=2, y=1 },
 	Z = { x=2, y=1 },
