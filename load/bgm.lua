@@ -6,7 +6,7 @@ bgm = {
 }
 
 local current_bgm = nil
-local bgm_locked = false
+local bgm_locked = true
 
 function switchBGM(sound, subsound)
 	if bgm_locked then return end
