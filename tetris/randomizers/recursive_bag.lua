@@ -12,7 +12,7 @@ function RecursiveRandomizer:generatePiece()
 	--end
 	local x = math.random(table.getn(self.bag) + 1)
 	while x == table.getn(self.bag) + 1 do
-		print("Refill piece pulled")
+		--print("Refill piece pulled")
 		table.insert(self.bag, "I")
 		table.insert(self.bag, "J")
 		table.insert(self.bag, "L")
