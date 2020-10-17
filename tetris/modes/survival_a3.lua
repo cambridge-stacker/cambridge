@@ -43,7 +43,6 @@ function SurvivalA3Game:initialize(ruleset)
 
     self.torikan_time = frameTime(2,28)
     if ruleset.world then self.torikan_time = frameTime(3,03) end
-    print(ruleset.name, ruleset.world, formatTime(self.torikan_time))
     self.super.initialize(self, ruleset)
     --        ^ notice the . here instead of the :
 end
@@ -147,7 +146,6 @@ function SurvivalA3Game:onLineClear(cleared_row_count)
 	if not self.clear then
 		local new_level = self.level + cleared_row_levels[cleared_row_count]
 		self:updateSectionTimes(self.level, new_level)
-        print(formatTime(self.torikan_time))
 		if new_level >= 1300 or self:hitTorikan(self.level, new_level) then
 			if new_level >= 1300 then
 				self.level = 1300
