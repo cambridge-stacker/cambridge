@@ -16,6 +16,12 @@ function PhantomManiaGame:new()
 
 	self.lock_drop = true
 	self.next_queue_length = 1
+    
+    self.SGnames = {
+        "9",  "8",  "7",  "6",  "5",  "4",  "3",  "2",  "1",
+        "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
+        "GM"
+    }
 
 	self.roll_frames = 0
 	self.combo = 1
@@ -164,6 +170,10 @@ function PhantomManiaGame:drawScoringInfo()
 	if getLetterGrade(self.level, self.clear) ~= "" then love.graphics.printf("GRADE", text_x, 120, 40, "left") end
 	love.graphics.printf("SCORE", text_x, 200, 40, "left")
 	love.graphics.printf("LEVEL", text_x, 320, 40, "left")
+    local sg = self.grid:checkSecretGrade()
+    if sg >= 5 then 
+        love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
+    end
 
 	love.graphics.setFont(font_3x5_3)
 	if getLetterGrade(self.level, self.clear) ~= "" then love.graphics.printf(getLetterGrade(self.level, self.clear), text_x, 140, 90, "left") end
@@ -175,6 +185,9 @@ function PhantomManiaGame:drawScoringInfo()
 		love.graphics.printf(self:getSectionEndLevel(), text_x, 370, 40, "right")
 	end
 
+    if sg >= 5 then
+        love.graphics.printf(self.SGnames[sg], 240, 450, 180, "left")
+    end
 end
 
 function PhantomManiaGame:getSectionEndLevel()
