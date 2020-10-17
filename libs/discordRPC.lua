@@ -2,20 +2,18 @@ local ffi = require "ffi"
 
 
 -- Get the host os to load correct lib
-local os = love.system.getOS()
+local osname = love.system.getOS()
 local discordRPClib = nil
 
-
-if os == "Linux" then
-  discordRPClib = ffi.load(love.filesystem.getSource().."/libs/discord-rpc.so")
-elseif os == "OS X" then
-  discordRPClib = ffi.load(love.filesystem.getSource().."/libs/discord-rpc.dylib")
-elseif os == "Windows" then
-  discordRPClib = ffi.load(love.filesystem.getSource().."/libs/discord-rpc.dll")
+if osname == "Linux" then
+    discordRPClib = ffi.load(love.filesystem.getSource().."/libs/discord-rpc.so")
+elseif osname == "OS X" then
+    discordRPClib = ffi.load(love.filesystem.getSource().."/libs/discord-rpc.dylib")
+elseif osname == "Windows" then
+    discordRPClib = ffi.load(love.filesystem.getSource().."/libs/discord-rpc.dll")
 else
-  -- Else it crashes later on
-  discordRPClib = ffi.load(love.filesystem.getSource().."/libs/discord-rpc.e")
-  print("Discord rpc not supported on platform")
+    -- Else it crashes later on
+    error(string.format("Discord rpc not supported on platform (%s)", osname))
 end
 
 
