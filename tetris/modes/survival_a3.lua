@@ -30,13 +30,22 @@ function SurvivalA3Game:new()
         "m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8", "m9",
         "GM"
     }
-
+    
 	self.lock_drop = true
 	self.enable_hold = true
 	self.next_queue_length = 3
 
 	self.coolregret_message = "COOL!!"
 	self.coolregret_timer = 0
+end
+
+function SurvivalA3Game:initialize(ruleset)
+
+    self.torikan_time = frameTime(2,28)
+    if ruleset.world then self.torikan_time = frameTime(3,03) end
+    print(ruleset.name, ruleset.world, formatTime(self.torikan_time))
+    self.super.initialize(self, ruleset)
+    --        ^ notice the . here instead of the :
 end
 
 function SurvivalA3Game:getARE()
@@ -95,11 +104,11 @@ function SurvivalA3Game:getNextPiece(ruleset)
 end
 
 function SurvivalA3Game:hitTorikan(old_level, new_level)
-	if old_level < 500 and new_level >= 500 and self.frames > frameTime(2,28) then
+	if old_level < 500 and new_level >= 500 and self.frames > self.torikan_time then
 		self.level = 500
 		return true
 	end
-	if old_level < 1000 and new_level >= 1000 and self.frames > frameTime(4,56) then
+	if old_level < 1000 and new_level >= 1000 and self.frames > self.torikan_time*2 then
 		self.level = 1000
 		return true
 	end
@@ -138,6 +147,7 @@ function SurvivalA3Game:onLineClear(cleared_row_count)
 	if not self.clear then
 		local new_level = self.level + cleared_row_levels[cleared_row_count]
 		self:updateSectionTimes(self.level, new_level)
+        print(formatTime(self.torikan_time))
 		if new_level >= 1300 or self:hitTorikan(self.level, new_level) then
 			if new_level >= 1300 then
 				self.level = 1300
