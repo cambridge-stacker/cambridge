@@ -3,21 +3,8 @@ local Ruleset = require 'tetris.rulesets.ruleset'
 
 local ARS = Ruleset:extend()
 
-ARS.name = "ACE-ARS"
+ARS.name = "ACE-ARS 2"
 ARS.hash = "ArikaACE"
-
-ARS.colourscheme = {
-    I = "C",
-    L = "O",
-    J = "B",
-    S = "G",
-    Z = "R",
-    O = "Y",
-    T = "M",
-}
-
-ARS.softdrop_lock = false
-ARS.harddrop_lock = true
 
 ARS.spawn_positions = {
 	I = { x=5, y=2 },
