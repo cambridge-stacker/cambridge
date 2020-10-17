@@ -160,6 +160,7 @@ end
 
 function SRS:onPieceCreate(piece, grid)
 	piece.manipulations = 0
+	piece.rotations = 0
 end
 
 function SRS:onPieceDrop(piece, grid)
@@ -170,7 +171,7 @@ function SRS:onPieceMove(piece, grid)
 	piece.lock_delay = 0 -- move reset
 	if piece:isDropBlocked(grid) then
 		piece.manipulations = piece.manipulations + 1
-		if piece.manipulations >= 8 then
+		if piece.manipulations >= 10 then
 			piece.locked = true
 		end
 	end
@@ -179,8 +180,8 @@ end
 function SRS:onPieceRotate(piece, grid)
 	piece.lock_delay = 0 -- rotate reset
 	if piece:isDropBlocked(grid) then
-		piece.manipulations = piece.manipulations + 1
-		if piece.manipulations >= 8 then
+		piece.rotations = piece.rotations + 1
+		if piece.rotations >= 8 then
 			piece.locked = true
 		end
 	end
