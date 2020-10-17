@@ -229,7 +229,7 @@ function DemonModeGame:drawScoringInfo()
 		strTrueValues(self.prev_inputs)
 	)
 	love.graphics.printf("NEXT", 64, 40, 40, "left")
-	love.graphics.printf("GRADE", 240, 120, 40, "left")
+	if self.grade ~= 0 then love.graphics.printf("GRADE", 240, 120, 40, "left") end
 	love.graphics.printf("SCORE", 240, 200, 40, "left")
 	love.graphics.printf("LEVEL", 240, 320, 40, "left")
 
