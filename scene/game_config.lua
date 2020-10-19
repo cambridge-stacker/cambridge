@@ -6,7 +6,7 @@ require 'load.save'
 
 ConfigScene.options = {
     -- this serves as reference to what the options' values mean i guess?
-    {"manlock",      "Manual locking", {"Per gamemode","Per ruleset","Harddrop", "Softdrop"}},
+    {"manlock",      "Manual locking", {"Per ruleset","Per gamemode","Harddrop", "Softdrop"}},
     {"piece_colour", "Piece Colours",  {"Per ruleset", "Arika",      "TTC"}},
     {"world_reverse", "World Reverse", {"No",          "Yes"}},
 }

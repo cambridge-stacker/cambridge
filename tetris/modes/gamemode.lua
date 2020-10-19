@@ -76,8 +76,8 @@ function GameMode:initialize(ruleset)
 	for i = 1, self.next_queue_length do
 		table.insert(self.next_queue, self:getNextPiece(ruleset))
 	end
-    self.lock_on_soft_drop = ({self.instant_soft_drop, ruleset.softdrop_lock, false, true })[config.gamesettings.manlock]
-    self.lock_on_hard_drop = ({self.instant_hard_drop, ruleset.harddrop_lock, true,  false})[config.gamesettings.manlock]
+    self.lock_on_soft_drop = ({ruleset.softdrop_lock, self.instant_soft_drop, false, true })[config.gamesettings.manlock]
+    self.lock_on_hard_drop = ({ruleset.harddrop_lock, self.instant_hard_drop, true,  false})[config.gamesettings.manlock]
 end
 
 function GameMode:update(inputs, ruleset)
