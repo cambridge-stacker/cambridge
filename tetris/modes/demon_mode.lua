@@ -166,11 +166,18 @@ function DemonModeGame:updateSectionTimes(old_level, new_level)
 				self.section_tetris_count = 0
 			else
 				self.level = math.min(new_level, 2500)
+				self.skip_failed = true
 			end
 			-- record new section
 			section_time = self.frames - self.section_start_time
 			table.insert(self.section_times, section_time)
 			self.section_start_time = self.frames
+		else
+			self.level = math.min(new_level, 2500)
+			if self.skip_failed and new_level >= 500 then
+				self.level = 500
+				self.game_over = true
+			end
 		end
 	else
 		self.level = math.min(new_level, 2500)

@@ -3,8 +3,8 @@ local Ruleset = require 'tetris.rulesets.ruleset'
 
 local ARS = Ruleset:extend()
 
-ARS.name = "ACE-ARS 2"
-ARS.hash = "ArikaACE"
+ARS.name = "ACE-ARS2"
+ARS.hash = "ArikaACE2"
 
 ARS.spawn_positions = {
 	I = { x=5, y=2 },
