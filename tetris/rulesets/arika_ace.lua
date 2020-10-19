@@ -144,7 +144,7 @@ function ARS:attemptWallkicks(piece, new_piece, rot_dir, grid)
         elseif grid:canPlacePiece(new_piece:withOffset({x=-1, y=0})) then
             piece:setRelativeRotation(rot_dir):setOffset({x=-1, y=0})
         elseif piece.shape == "T"
-           and new_piece.rotation == 1
+           and new_piece.rotation == 0
            and piece.floorkick == 0
            and grid:canPlacePiece(new_piece:withOffset({x=0, y=-1}))
         then
