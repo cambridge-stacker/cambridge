@@ -1,3 +1,5 @@
+![Cambridge Banner](https://cdn.discordapp.com/attachments/764432435802013709/767724895076614154/cambridge_logo_lt.png)
+
 Cambridge
 =========
 
@@ -14,7 +16,9 @@ Credits
 - [The Tetra Legends Discord](http://discord.com/invite/7hMx5r2) for supporting me and playtesting!
 - [joezeng](https://github.com/joezeng) for the original project.
 - [Hailey](https://github.com/haileylgbt) for some miscellaneous assets.
-- Mizu for the Cambridge logo.
+- MarkGamed7794 for some miscellaneous contributions.
+- Mizu for the Cambridge logo and the [Cambridge launcher](https://github.com/rexxt/cambridge-launcher).
+- MattMayuga for the Cambridge banner.
 
 ![Cambridge Logo](https://cdn.discordapp.com/attachments/625496179433668635/763363717730664458/Icon_2.png)
 
