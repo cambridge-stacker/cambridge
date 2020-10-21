@@ -166,6 +166,10 @@ function MarathonA3Game:onLineClear(cleared_row_count)
         self.grid:clear()
         self.roll_frames = -150
     end
+    if self.level >= 500 and self.frames >= 25200 then
+	self.level = 500
+	self.game_over = true
+    end
 end
 
 local cool_cutoffs = {
