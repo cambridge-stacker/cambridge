@@ -147,13 +147,15 @@ function SurvivalA3Game:onLineClear(cleared_row_count)
 		local new_level = self.level + cleared_row_levels[cleared_row_count]
 		self:updateSectionTimes(self.level, new_level)
 		if new_level >= 1300 or self:hitTorikan(self.level, new_level) then
+            self.clear = true
 			if new_level >= 1300 then
 				self.level = 1300
+                self.grid:clear()
+                self.big_mode = true
+                self.roll_frames = -150
+            else
+                self.game_over = true
 			end
-			self.clear = true
-			self.grid:clear()
-			self.big_mode = true
-			self.roll_frames = -150
 		else
 			self.level = math.min(new_level, 1300)
 		end

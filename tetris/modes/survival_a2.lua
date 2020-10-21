@@ -98,6 +98,9 @@ function SurvivalA2Game:onLineClear(cleared_row_count)
 		local new_level = math.min(self.level + cleared_row_count, 999)
 		if self.level == 999 or self:hitTorikan(self.level, new_level) then
 			self.clear = true
+            if self.level < 999 then
+                self.game_over = true
+            end
 		else
 			self.level = new_level
 		end
@@ -121,7 +124,8 @@ end
 
 function SurvivalA2Game:getLetterGrade()
 		if self.level >= 999 then return "GM"
-	elseif self.level >= 500 then return "M" 
+	elseif self.level >  500 then return "M" 
+	elseif self.level == 500 and not self.clear then return "M" 
 	else return "" end
 end
 
