@@ -259,7 +259,7 @@ function DemonModeGame:getHighscoreData()
 end
 
 function DemonModeGame:getBackground()
-	return math.floor(self.level / 100)
+	return math.min(math.floor(self.level / 100), 19)
 end
 
 return DemonModeGame
