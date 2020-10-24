@@ -16,6 +16,7 @@ Credits
 - [The Tetra Legends Discord](http://discord.com/invite/7hMx5r2) for supporting me and playtesting!
 - [joezeng](https://github.com/joezeng) for the original project.
 - [Hailey](https://github.com/haileylgbt) for some miscellaneous assets.
+- CylinderKnot for an amazing gamemode.
 - MarkGamed7794 for some miscellaneous contributions.
 - Mizu for the Cambridge logo and the [Cambridge launcher](https://github.com/rexxt/cambridge-launcher).
 - MattMayuga for the Cambridge banner.
