@@ -8,6 +8,7 @@ current_ruleset = 1
 game_modes = {
 	require 'tetris.modes.marathon_2020',
 	require 'tetris.modes.survival_2020',
+	require 'tetris.modes.ck',
 	--require 'tetris.modes.strategy',
 	--require 'tetris.modes.interval_training',
 	--require 'tetris.modes.pacer_test',
