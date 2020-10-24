@@ -18,8 +18,7 @@ function SurvivalCKGame:new()
 	self.roll_frames = 0
 	self.combo = 1
 	self.grade = 0
-	self.level = 99
-	self.frames = 55 * 60
+	self.level = 0
 
 	self.randomizer = History6RollsRandomizer()
 
