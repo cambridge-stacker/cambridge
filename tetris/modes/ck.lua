@@ -308,7 +308,7 @@ end
 
 function SurvivalCKGame:getHighscoreData()
 	return {
-		grade = self:getLetterGrade(),
+		grade = self.grade,
 		level = self.level,
 		frames = self.frames,
 	}
