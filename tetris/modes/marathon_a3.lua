@@ -45,6 +45,8 @@ self.SGnames = {
 	
 	self.coolregret_message = "COOL!!"
 	self.coolregret_timer = 0
+	
+	self.torikan_passed = false
 end
 
 function MarathonA3Game:getARE()
@@ -166,10 +168,10 @@ function MarathonA3Game:onLineClear(cleared_row_count)
         self.grid:clear()
         self.roll_frames = -150
     end
-    if self.level >= 500 and self.frames >= 25200 then
+    if not self.torikan_passed and self.level >= 500 and self.frames >= 25200 then
 	self.level = 500
 	self.game_over = true
-    end
+    else if self.level >= 500 then self.torikan_passed = true end
 end
 
 local cool_cutoffs = {
