@@ -171,7 +171,7 @@ function MarathonA3Game:onLineClear(cleared_row_count)
     if not self.torikan_passed and self.level >= 500 and self.frames >= 25200 then
 	self.level = 500
 	self.game_over = true
-    else if self.level >= 500 then self.torikan_passed = true end
+    elseif self.level >= 500 then self.torikan_passed = true end
 end
 
 local cool_cutoffs = {
