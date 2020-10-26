@@ -51,8 +51,10 @@ function GameScene:render()
 	-- ready/go graphics
 	if self.game.ready_frames <= 100 and self.game.ready_frames > 52 then
 		love.graphics.draw(misc_graphics["ready"], 144 - 50, 240 - 14)
+		playSEOnce("ready")
 	elseif self.game.ready_frames <= 50 and self.game.ready_frames > 2 then
 		love.graphics.draw(misc_graphics["go"], 144 - 27, 240 - 14)
+		playSEOnce("go")
 	end
 
 	self.game:drawCustom()

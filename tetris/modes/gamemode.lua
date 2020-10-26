@@ -161,6 +161,7 @@ function GameMode:update(inputs, ruleset)
 			end
 
 			if cleared_row_count > 0 then
+				playSE("erase")
 				self.lcd = self:getLineClearDelay()
 				self.are = self:getLineARE()
 				if self.lcd == 0 then
@@ -194,8 +195,12 @@ end
 
 -- event functions
 function GameMode:whilePieceActive() end
-function GameMode:onPieceLock(piece, cleared_row_count) end
+function GameMode:onPieceLock(piece, cleared_row_count) 
+	playSE("lock")
+end
+
 function GameMode:onLineClear(cleared_row_count) end
+
 function GameMode:onPieceEnter() end
 function GameMode:onHold() end
 
@@ -248,6 +253,7 @@ function GameMode:processDelays(inputs, ruleset, drop_speed)
 		self.lcd = self.lcd - 1
 		if self.lcd == 0 then
 			self.grid:clearClearedRows()
+			playSE("fall")
 			if self.are == 0 then
 				self:initializeOrHold(inputs, ruleset)
 			end
