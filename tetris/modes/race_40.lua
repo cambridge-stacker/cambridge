@@ -110,11 +110,10 @@ function Race40Game:getHighscoreData()
 	}
 end
 
-function Race40Game:getSecretGrade()
-	local sg = self.grid:checkSecretGrade()
+function Race40Game:getSecretGrade(sg)
 	if sg == 19 then self.upstacked = true end
-	if self.upstacked then return self.SGnames[15 + math.floor((20 - sg) / 5)]
-	else return self.SGnames[math.floor((sg / 19) * 15)] end
+	if self.upstacked then return self.SGnames[14 + math.floor((20 - sg) / 4)]
+	else return self.SGnames[math.floor((sg / 19) * 14)] end
 end
 
 function Race40Game:drawScoringInfo()
@@ -129,16 +128,16 @@ function Race40Game:drawScoringInfo()
 	love.graphics.printf("line/min", text_x, 160, 80, "left")
 	love.graphics.printf("piece/sec", text_x, 220, 80, "left")
 	local sg = self.grid:checkSecretGrade()
-    	--if sg >= 7 or self.upstacked then 
+    	if sg >= 7 or self.upstacked then 
         	love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
-    	--end
+    	end
 
 	love.graphics.setFont(font_3x5_3)
 	love.graphics.printf(string.format("%.02f", self.lines / math.max(1, self.frames) * 3600), text_x, 180, 80, "left")
 	love.graphics.printf(string.format("%.04f", self.pieces / math.max(1, self.frames) * 60), text_x, 240, 80, "left")
-	--if sg >= 7 or self.upstacked then
-        	love.graphics.printf(self:getSecretGrade(), 240, 450, 180, "left")
-    	--end
+	if sg >= 7 or self.upstacked then
+        	love.graphics.printf(self:getSecretGrade(sg), 240, 450, 180, "left")
+    	end
 
 	love.graphics.setFont(font_3x5_4)
 	love.graphics.printf(math.max(0, self.line_goal - self.lines), text_x, 340, 40, "left")
