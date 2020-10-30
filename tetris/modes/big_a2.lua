@@ -150,7 +150,6 @@ function MarathonA2Game:updateScore(level, drop_bonus, cleared_lines)
 		self.combo = 1
 	end
 	self.drop_bonus = 0
-endd
 end
 
 function MarathonA2Game:updateSectionTimes(old_level, new_level)
