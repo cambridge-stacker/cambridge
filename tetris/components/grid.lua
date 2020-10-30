@@ -214,9 +214,9 @@ function Grid:checkSecretGrade()
             validLine = false
         end
         if(validLine) then
-                    sgrade = sgrade + 1
+                sgrade = sgrade + 1
         else
-            -- return sgrade
+            	return sgrade
         end
     end
     --[[
