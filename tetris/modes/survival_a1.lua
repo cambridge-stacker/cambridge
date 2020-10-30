@@ -123,16 +123,16 @@ function SurvivalA1Game:updateScore(level, drop_bonus, cleared_lines)
 		self.bravos = self.bravos + 1
 	else self.bravo = 1 end
 	if cleared_lines > 0 then
+		self.combo = self.combo + (cleared_lines - 1) * 2
 		self.score = self.score + (
 			(math.ceil((level + cleared_lines) / 4) + drop_bonus) *
-			cleared_lines * self.bravo * self.combo
+			cleared_lines * self.combo * self.bravo
 		)
-		self.lines = self.lines + cleared_lines
-		self.combo = self.combo + (cleared_lines - 1) * 2
+        self.lines = self.lines + cleared_lines
 	else
-		self.drop_bonus = 0
 		self.combo = 1
 	end
+	self.drop_bonus = 0
 end
 
 function SurvivalA1Game:checkGMRequirements(old_level, new_level)

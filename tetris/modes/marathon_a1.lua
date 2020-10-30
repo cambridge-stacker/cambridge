@@ -158,9 +158,9 @@ function MarathonA1Game:updateScore(level, drop_bonus, cleared_lines)
 		)
         self.lines = self.lines + cleared_lines
 	else
-		self.drop_bonus = 0
 		self.combo = 1
 	end
+	self.drop_bonus = 0
 end
 
 function MarathonA1Game:checkGMRequirements(old_level, new_level)
