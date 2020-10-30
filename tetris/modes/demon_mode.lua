@@ -167,6 +167,7 @@ function DemonModeGame:updateSectionTimes(old_level, new_level)
 			else
 				self.level = math.min(new_level, 2500)
 				self.skip_failed = true
+				self.grade = self.grade + 1
 			end
 			-- record new section
 			section_time = self.frames - self.section_start_time
@@ -178,6 +179,7 @@ function DemonModeGame:updateSectionTimes(old_level, new_level)
 				self.level = 500
 				self.game_over = true
 			end
+			self.grade = math.min(self.grade + 1, 4)
 		end
 	else
 		self.level = math.min(new_level, 2500)
