@@ -21,6 +21,14 @@ function Race40Game:new()
 	self.randomizer = Bag7Randomiser()
 
 	self.roll_frames = 0
+
+	self.SGnames = {
+        	[0] = "",
+		"9", "8", "7", "6", "5", "4", "3", "2", "1",
+        	"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
+        	"GM"
+   	}
+	self.upstacked = false
 	
 	self.lock_drop = true
 	self.lock_hard_drop = true
@@ -35,7 +43,7 @@ function Race40Game:getDropSpeed()
 end
 
 function Race40Game:getARR()
-	return 0
+	return 1
 end
 
 function Race40Game:getARE()
@@ -47,7 +55,7 @@ function Race40Game:getLineARE()
 end
 
 function Race40Game:getDasLimit()
-	return 6
+	return 10
 end
 
 function Race40Game:getLineClearDelay()
@@ -55,7 +63,7 @@ function Race40Game:getLineClearDelay()
 end
 
 function Race40Game:getLockDelay()
-	return 15
+	return 30
 end
 
 function Race40Game:getGravity()
@@ -102,6 +110,13 @@ function Race40Game:getHighscoreData()
 	}
 end
 
+function Race40Game:getSecretGrade()
+	local sg = self.grid:checkSecretGrade()
+	if sg == 19 then self.upstacked = true end
+	if self.upstacked then return self.SGnames[15 + math.floor((20 - sg) / 5)]
+	else return self.SGnames[math.floor((sg / 19) * 15)] end
+end
+
 function Race40Game:drawScoringInfo()
 	Race40Game.super.drawScoringInfo(self)
 	love.graphics.setColor(1, 1, 1, 1)
@@ -113,10 +128,17 @@ function Race40Game:drawScoringInfo()
 	love.graphics.printf("LINES", text_x, 320, 40, "left")
 	love.graphics.printf("line/min", text_x, 160, 80, "left")
 	love.graphics.printf("piece/sec", text_x, 220, 80, "left")
+	local sg = self.grid:checkSecretGrade()
+    	--if sg >= 7 or self.upstacked then 
+        	love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
+    	--end
 
 	love.graphics.setFont(font_3x5_3)
 	love.graphics.printf(string.format("%.02f", self.lines / math.max(1, self.frames) * 3600), text_x, 180, 80, "left")
 	love.graphics.printf(string.format("%.04f", self.pieces / math.max(1, self.frames) * 60), text_x, 240, 80, "left")
+	--if sg >= 7 or self.upstacked then
+        	love.graphics.printf(self:getSecretGrade(), 240, 450, 180, "left")
+    	--end
 
 	love.graphics.setFont(font_3x5_4)
 	love.graphics.printf(math.max(0, self.line_goal - self.lines), text_x, 340, 40, "left")
