@@ -137,16 +137,16 @@ end
 
 function SurvivalA1Game:checkGMRequirements(old_level, new_level)
 	if old_level < 300 and new_level >= 300 then
-		if self.score > 12000 and self.frames <= frameTime(4,15) then
+		if self.score >= 12000 and self.frames <= frameTime(4,15) then
 			self.gm_conditions["level300"] = true
 		end
 	elseif old_level < 500 and new_level >= 500 then
-		if self.score > 40000 and self.frames <= frameTime(7,30) then
+		if self.score >= 40000 and self.frames <= frameTime(7,30) then
 			self.gm_conditions["level500"] = true
 		end
 	elseif old_level < 999 and new_level >= 999 then
-		if self.score > 126000 and self.frames <= frameTime(13,30) then
-			self.gm_conditions["level900"] = true
+		if self.score >= 126000 and self.frames <= frameTime(13,30) then
+			self.gm_conditions["level999"] = true
 		end
 	end
 end
@@ -179,7 +179,7 @@ function SurvivalA1Game:drawScoringInfo()
 
 	love.graphics.setFont(font_3x5_3)
 	love.graphics.printf(self.score, 240, 220, 90, "left")
-	if self.gm_conditions["level300"] and self.gm_conditions["level500"] and self.gm_conditions["level900"] then
+	if self.gm_conditions["level300"] and self.gm_conditions["level500"] and self.gm_conditions["level999"] then
 		love.graphics.printf("GM", 240, 140, 90, "left")
 	else
 		love.graphics.printf(getRankForScore(self.score).rank, 240, 140, 90, "left")
