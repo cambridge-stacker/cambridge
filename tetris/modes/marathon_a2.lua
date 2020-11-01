@@ -32,8 +32,6 @@ function MarathonA2Game:new()
         "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
         "GM"
     }
-    
-	self.randomizer = History6RollsRandomizer()
 
     self.lock_drop = false
 	self.enable_hold = false
