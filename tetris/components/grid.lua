@@ -4,6 +4,7 @@ local Grid = Object:extend()
 
 local empty = { skin = "", colour = "" }
 local oob = { skin = "", colour = "" }
+local block = { skin = "2tie", colour = "X" }
 
 function Grid:new()
 	self.grid = {}
@@ -141,12 +142,23 @@ function Grid:copyBottomRow()
 	self.grid[24] = {empty, empty, empty, empty, empty, empty, empty, empty, empty, empty}
 	self.grid_age[24] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	for col = 1, 10 do
-		self.grid[24][col] = (self.grid[23][col] == empty) and empty or {
-			skin = self.grid[23][col].skin,
-			colour = "X"
-		}
+		self.grid[24][col] = (self.grid[23][col] == empty) and empty or block
 	end
 	return true
+end
+
+function Grid:garbageRise(row_vals)
+	local b = {skin = "bone", colour = "X"}
+	local e = empty
+        for row = 1, 23 do
+                self.grid[row] = self.grid[row+1]
+                self.grid_age[row] = self.grid_age[row+1]
+        end
+        self.grid[24] = {empty, empty, empty, empty, empty, empty, empty, empty, empty, empty}
+        self.grid_age[24] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	for col = 1, 10 do
+		self.grid[24][col] = (row_vals[col] == "e") and empty or block
+	end
 end
 
 function Grid:applyPiece(piece)

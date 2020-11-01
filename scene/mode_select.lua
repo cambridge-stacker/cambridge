@@ -25,8 +25,7 @@ game_modes = {
 	require 'tetris.modes.survival_a1',
 	require 'tetris.modes.survival_a2',
 	require 'tetris.modes.survival_a3',
-	require 'tetris.modes.big_a2',
-	require 'tetris.modes.konoha',
+	require 'tetris.modes.tgmplus',
 }
 
 rulesets = {
@@ -38,6 +37,10 @@ rulesets = {
 	require 'tetris.rulesets.arika_ace2',
 	require 'tetris.rulesets.arika_srs',
 	require 'tetris.rulesets.standard_exp',
+	require 'tetris.rulesets.dtet',
+	require 'tetris.rulesets.crap',
+	require 'tetris.rulesets.pptprs',
+	require 'tetris.rulesets.eheart',
 	--require 'tetris.rulesets.bonkers',
 	--require 'tetris.rulesets.shirase',
 	--require 'tetris.rulesets.super302',
