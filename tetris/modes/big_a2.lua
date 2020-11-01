@@ -249,7 +249,7 @@ function MarathonA2Game:updateGrade(cleared_lines)
 	end
 end
 
-local tetris_requirements = { [0] = 2, 2, 2, 2, 2, 1, 1, 1, 1, 1 }
+local tetris_requirements = { [0] = 2, 2, 2, 2, 2, 1, 1, 1, 1, 0 }
 
 function MarathonA2Game:qualifiesForMRoll()
 	if not self.clear then return false end

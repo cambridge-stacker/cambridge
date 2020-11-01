@@ -98,6 +98,7 @@ function MarathonAX4Game:onLineClear(cleared_row_count)
 		self:updateSectionTimes(self.lines, new_lines)
 		self.lines = math.min(new_lines, 150)
 		if self.lines == 150 then
+			self.grid:clear()
 			self.clear = true
 			self.roll_frames = -150
 		end
