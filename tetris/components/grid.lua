@@ -148,8 +148,6 @@ function Grid:copyBottomRow()
 end
 
 function Grid:garbageRise(row_vals)
-	local b = {skin = "bone", colour = "X"}
-	local e = empty
         for row = 1, 23 do
                 self.grid[row] = self.grid[row+1]
                 self.grid_age[row] = self.grid_age[row+1]
