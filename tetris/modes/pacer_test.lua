@@ -50,9 +50,6 @@ function PacerTest:new()
 end
 
 function PacerTest:initialize(ruleset)
-	for i = 1, 30 do
-		table.insert(self.next_queue, self:getNextPiece(ruleset))
-	end
 	self.level_frames = getLevelFrames(1)
 	switchBGM("pacer_test")
 end

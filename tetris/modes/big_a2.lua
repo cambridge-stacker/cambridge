@@ -19,7 +19,7 @@ function MarathonA2Game:new()
     self.big_mode = true
 	self.roll_frames = 0
     self.combo = 1
-	self.randomizer = History6RollsRandomizer()
+	
 	self.grade = 0
 	self.grade_points = 0
 	self.grade_point_decay_counter = 0
