@@ -19,7 +19,7 @@ function MarathonA2Game:new()
     self.big_mode = true
 	self.roll_frames = 0
     self.combo = 1
-	
+
 	self.grade = 0
 	self.grade_points = 0
 	self.grade_point_decay_counter = 0
@@ -100,7 +100,7 @@ end
 function MarathonA2Game:advanceOneFrame()
 	if self.clear then
 		self.roll_frames = self.roll_frames + 1
-		if self.roll_frames < 0 then return true end
+		if self.roll_frames < 0 then return false end
 		if self.roll_frames > 3694 then
 			self.completed = true
 		end
@@ -122,7 +122,7 @@ function MarathonA2Game:onLineClear(cleared_row_count)
     if self.level == 999 and not self.clear then
         self.clear = true
         self.grid:clear()
-        self.roll_frames = -1500
+        self.roll_frames = -150
     end
 end
 
@@ -204,7 +204,7 @@ local grade_conversion = {
 	1, 2, 3, 4, 5, 5, 6, 6, 7, 7,
 	7, 8, 8, 8, 9, 9, 9, 10, 11, 12,
 	12, 12, 13, 13, 14, 14, 15, 15, 16, 16,
-	17, 18, 19
+	17, 18
 }
 
 function MarathonA2Game:updateGrade(cleared_lines)
@@ -270,7 +270,10 @@ function MarathonA2Game:drawScoringInfo()
 	love.graphics.printf("LEVEL", 240, 320, 40, "left")
 
 	love.graphics.setFont(font_3x5_3)
+	if self.roll_frames > 3694 then love.graphics.setColor(1, 0.5, 0, 1)
+	elseif self.clear then love.graphics.setColor(0, 1, 0, 1) end
 	love.graphics.printf(self:getLetterGrade(), 240, 140, 90, "left")
+	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.printf(self.score, 240, 220, 90, "left")
 	love.graphics.printf(self.level, 240, 340, 40, "right")
 	love.graphics.printf(self:getSectionEndLevel(), 240, 370, 40, "right")

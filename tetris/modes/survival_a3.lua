@@ -16,7 +16,6 @@ SurvivalA3Game.tagline = "The blocks turn black and white! Can you make it to le
 
 function SurvivalA3Game:new()
 	SurvivalA3Game.super:new()
-	self.level = 0
 	self.grade = 0
 	self.garbage = 0
 	self.clear = false
@@ -140,7 +139,6 @@ function SurvivalA3Game:onPieceEnter()
 end
 
 local cleared_row_levels = {1, 2, 4, 6}
-local cleared_row_points = {0.02, 0.05, 0.15, 0.6}
 
 function SurvivalA3Game:onLineClear(cleared_row_count)
 	if not self.clear then
@@ -243,7 +241,10 @@ function SurvivalA3Game:drawScoringInfo()
 	self:drawSectionTimesWithSplits(current_section)
 
 	love.graphics.setFont(font_3x5_3)
+	if self.roll_frames > 3238 then love.graphics.setColor(1, 0.5, 0, 1)
+        elseif self.clear then love.graphics.setColor(0, 1, 0, 1) end
 	love.graphics.printf(getLetterGrade(math.floor(self.grade)), text_x, 140, 90, "left")
+	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.printf(self.score, text_x, 220, 90, "left")
 	love.graphics.printf(self.level, text_x, 340, 50, "right")
 	if self.clear then

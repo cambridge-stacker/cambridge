@@ -159,6 +159,17 @@ function Grid:garbageRise(row_vals)
 	end
 end
 
+function Grid:applyFourWide()
+        for row = 1, 24 do
+                local x = self.grid[row]
+                x[1] = x[1]~=block and block or x[1]
+                x[2] = x[2]~=block and block or x[2]
+                x[3] = x[3]~=block and block or x[3]
+                x[8] = x[8]~=block and block or x[8]
+                x[9] = x[9]~=block and block or x[9]
+                x[10] = x[10]~=block and block or x[10]
+        end
+end
 function Grid:applyPiece(piece)
 	if piece.big then
 		self:applyBigPiece(piece)
@@ -249,7 +260,7 @@ function Grid:update()
 end
 
 function Grid:draw()
-	for y = 1, 24 do
+	for y = 5, 24 do
 		for x = 1, 10 do
 			if self.grid[y][x] ~= empty then
 				if self.grid_age[y][x] < 1 then
@@ -281,7 +292,7 @@ function Grid:draw()
 end
 
 function Grid:drawInvisible(opacity_function, garbage_opacity_function)
-	for y = 1, 24 do
+	for y = 5, 24 do
 		for x = 1, 10 do
 			if self.grid[y][x] ~= empty then
 				if self.grid[y][x].colour == "X" then
