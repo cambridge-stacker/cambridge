@@ -17,7 +17,6 @@ MarathonA2Game.tagline = "The points don't matter! Can you reach the invisible r
 function MarathonA2Game:new()
     MarathonA2Game.super:new()
 	
-	self.level = 900
 	self.roll_frames = 0
     self.combo = 1
 	self.randomizer = History6RollsRandomizer()

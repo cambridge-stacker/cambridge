@@ -16,7 +16,6 @@ PhantomMania2Game.tagline = "The blocks disappear even faster now! Can you make 
 
 function PhantomMania2Game:new()
 	PhantomMania2Game.super:new()
-	self.level = 99
 	self.grade = 0
 	self.garbage = 0
 	self.clear = false

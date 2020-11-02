@@ -20,8 +20,7 @@ function MarathonA2Game:new()
 	self.roll_frames = 0
     self.combo = 1
 	
-	self.level = 998
-	self.grade = 31
+	self.grade = 0
 	self.grade_points = 0
 	self.grade_point_decay_counter = 0
     
