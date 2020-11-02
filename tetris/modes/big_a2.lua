@@ -20,12 +20,10 @@ function MarathonA2Game:new()
 	self.roll_frames = 0
     self.combo = 1
 	
-	self.grade = 0
+	self.level = 998
+	self.grade = 31
 	self.grade_points = 0
 	self.grade_point_decay_counter = 0
-	self.section_start_time = 0
-	self.section_times = { [0] = 0 }
-	self.section_tetrises = { [0] = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
     
 	self.randomizer = History6RollsRandomizer()
 
@@ -103,11 +101,9 @@ end
 function MarathonA2Game:advanceOneFrame()
 	if self.clear then
 		self.roll_frames = self.roll_frames + 1
+		if self.roll_frames < 0 then return true end
 		if self.roll_frames > 3694 then
 			self.completed = true
-			if self.grade == 32 then
-				self.grade = 33
-			end
 		end
 	elseif self.ready_frames == 0 then
 		self.frames = self.frames + 1
@@ -123,15 +119,11 @@ end
 
 function MarathonA2Game:onLineClear(cleared_row_count)
 	cleared_row_count = cleared_row_count / 2
-    self:updateSectionTimes(self.level, self.level + cleared_row_count)
     self.level = math.min(self.level + cleared_row_count, 999)
     if self.level == 999 and not self.clear then
         self.clear = true
-        if self:qualifiesForMRoll() then
-            self.grade = 32
-        end
         self.grid:clear()
-        self.roll_frames = -150
+        self.roll_frames = -1500
     end
 end
 
@@ -150,17 +142,6 @@ function MarathonA2Game:updateScore(level, drop_bonus, cleared_lines)
 		self.combo = 1
 	end
 	self.drop_bonus = 0
-end
-
-function MarathonA2Game:updateSectionTimes(old_level, new_level)
-	if self.clear then return end
-	if math.floor(old_level / 100) < math.floor(new_level / 100) or
-	new_level >= 999 then
-		-- record new section
-		section_time = self.frames - self.section_start_time
-		self.section_times[math.floor(old_level / 100)] = section_time
-		self.section_start_time = self.frames
-	end
 end
 
 local grade_point_bonuses = {
@@ -249,49 +230,12 @@ function MarathonA2Game:updateGrade(cleared_lines)
 	end
 end
 
-local tetris_requirements = { [0] = 2, 2, 2, 2, 2, 1, 1, 1, 1, 0 }
-
-function MarathonA2Game:qualifiesForMRoll()
-	if not self.clear then return false end
-	-- tetris requirements
-	for section = 0, 9 do
-		if self.section_tetrises[section] < tetris_requirements[section] then
-			return false
-		end
-	end
-	-- section time requirements
-	local section_average = 0
-	for section = 0, 4 do
-		section_average = section_average + self.section_times[section]
-		if self.section_times[section] > frameTime(1,05) then
-			return false
-		end
-	end
-	-- section time average requirements
-	if self.section_times[5] > section_average / 5 then
-		return false
-	end
-	for section = 6, 9 do
-		if self.section_times[section] > self.section_times[section - 1] + 120 then
-			return false
-		end
-	end
-	if self.grade < 17 or self.frames > frameTime(8,45) then
-		return false
-	end
-	return true
-end
-
 function MarathonA2Game:getLetterGrade()
 	local grade = grade_conversion[self.grade]
 	if grade < 9 then
 		return tostring(9 - grade)
 	elseif grade < 18 then
 		return "S" .. tostring(grade - 8)
-	elseif grade == 18 then
-		return "M"
-	else
-		return "GM"
 	end
 end
 
@@ -301,18 +245,9 @@ MarathonA2Game.rollOpacityFunction = function(age)
 	else return 1 - (age - 240) / 60 end
 end
 
-MarathonA2Game.mRollOpacityFunction = function(age)
-	if age > 4 then return 0
-	else return 1 - age / 4 end
-end
-
 function MarathonA2Game:drawGrid(ruleset)
 	if self.clear and not (self.completed or self.game_over) then
-		if self:qualifiesForMRoll() then
-			self.grid:drawInvisible(self.mRollOpacityFunction)
-		else
-			self.grid:drawInvisible(self.rollOpacityFunction)
-		end
+		self.grid:drawInvisible(self.rollOpacityFunction)
 	else
 		self.grid:draw()
 		if self.piece ~= nil and self.level < 100 then

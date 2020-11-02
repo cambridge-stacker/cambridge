@@ -36,6 +36,8 @@ function Marathon2020Game:new()
 	self.grade_points = 0
 	self.grade_point_decay_counter = 0
 	self.max_grade_points = 0
+
+	self.cool_timer = 0
 end
 
 function Marathon2020Game:getARE()
@@ -327,6 +329,7 @@ function Marathon2020Game:updateSectionTimes(old_level, new_level)
 		self.section_cool_count = self.section_cool_count + 1
 		self.delay_level = math.min(20, self.delay_level + 1)
 		table.insert(self.section_status, "cool")
+		self.cool_timer = 300
 	end
 
 	local section = getSectionForLevel(old_level)
@@ -429,6 +432,11 @@ function Marathon2020Game:drawScoringInfo()
 	love.graphics.printf("LEVEL", text_x, 320, 40, "left")
 
 	self:drawSectionTimesWithSecondary(current_section)
+
+	if (self.cool_timer > 0) then
+                love.graphics.printf("COOL!!", 64, 400, 160, "center")
+                self.cool_timer = self.cool_timer - 1
+        end	
 
 	love.graphics.setFont(font_3x5_3)
 	love.graphics.printf(self:getTotalGrade(), text_x, 120, 90, "left")
