@@ -139,7 +139,7 @@ function MarathonA1Game:onLineClear(cleared_row_count)
 		local new_level = math.min(self.level + cleared_row_count, 999)
 		if new_level == 999 then
 			self.clear = true
-		else
+		end
 		self.level = new_level
 	end
 end
