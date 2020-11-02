@@ -127,20 +127,21 @@ function MarathonA2Game:onLineClear(cleared_row_count)
 end
 
 function MarathonA2Game:updateScore(level, drop_bonus, cleared_lines)
-	if self.grid:checkForBravo(cleared_lines) then self.bravo = 4 else self.bravo = 1 end
-	cleared_lines = cleared_lines / 2
-	self:updateGrade(cleared_lines)
-	if cleared_lines > 0 then
-		self.combo = self.combo + (cleared_lines - 1) * 2
-		self.score = self.score + (
-			(math.ceil((level + cleared_lines) / 4) + drop_bonus) *
-			cleared_lines * self.combo * self.bravo
-		)
-        self.lines = self.lines + cleared_lines
-	else
-		self.combo = 1
+	if not self.clear then
+		cleared_lines = cleared_lines / 2
+		self:updateGrade(cleared_lines)
+		if self.grid:checkForBravo(cleared_lines) then self.bravo = 4 else self.bravo = 1 end
+		if cleared_lines > 0 then
+			self.combo = self.combo + (cleared_lines - 1) * 2
+			self.score = self.score + (
+				(math.ceil((level + cleared_lines) / 4) + drop_bonus) *
+				cleared_lines * self.combo * self.bravo
+			)
+		else
+			self.combo = 1
+		end
+		self.drop_bonus = 0
 	end
-	self.drop_bonus = 0
 end
 
 local grade_point_bonuses = {

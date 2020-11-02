@@ -166,17 +166,18 @@ function SurvivalA3Game:onPieceLock(piece, cleared_row_count)
 end
 
 function SurvivalA3Game:updateScore(level, drop_bonus, cleared_lines)
-	if cleared_lines > 0 then
-		self.combo = self.combo + (cleared_lines - 1) * 2
-		self.score = self.score + (
-			(math.ceil((level + cleared_lines) / 4) + drop_bonus) *
-			cleared_lines * self.combo
-		)
-        self.lines = self.lines + cleared_lines
-	else
-		self.combo = 1
+	if not self.clear then
+		if cleared_lines > 0 then
+			self.combo = self.combo + (cleared_lines - 1) * 2
+			self.score = self.score + (
+				(math.ceil((level + cleared_lines) / 4) + drop_bonus) *
+				cleared_lines * self.combo
+			)
+		else
+			self.combo = 1
+		end
+		self.drop_bonus = 0
 	end
-	self.drop_bonus = 0
 end
 
 function SurvivalA3Game:updateSectionTimes(old_level, new_level)

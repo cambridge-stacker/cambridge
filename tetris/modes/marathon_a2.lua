@@ -126,17 +126,21 @@ function MarathonA2Game:onPieceEnter()
 	end
 end
 
-function MarathonA2Game:onLineClear(cleared_row_count)
-    self:updateSectionTimes(self.level, self.level + cleared_row_count)
-    self.level = math.min(self.level + cleared_row_count, 999)
-    if self.level == 999 and not self.clear then
-        self.clear = true
-        if self:qualifiesForMRoll() then
-            self.grade = 32
-        end
-        self.grid:clear()
-        self.roll_frames = -150
-    end
+function MarathonA2Game:updateScore(level, drop_bonus, cleared_lines)
+	if not self.clear then
+		self:updateGrade(cleared_lines)
+		if self.grid:checkForBravo(cleared_lines) then self.bravo = 4 else self.bravo = 1 end
+		if cleared_lines > 0 then
+			self.combo = self.combo + (cleared_lines - 1) * 2
+			self.score = self.score + (
+				(math.ceil((level + cleared_lines) / 4) + drop_bonus) *
+				cleared_lines * self.combo * self.bravo
+			)
+		else
+			self.combo = 1
+		end
+		self.drop_bonus = 0
+	end
 end
 
 function MarathonA2Game:updateScore(level, drop_bonus, cleared_lines)

@@ -137,18 +137,19 @@ function TGMPlusGame:advanceBottomRow()
 end
 
 function TGMPlusGame:updateScore(level, drop_bonus, cleared_lines)
-	if self.grid:checkForBravo(cleared_lines) then self.bravo = 4 else self.bravo = 1 end
-	if cleared_lines > 0 then
-		self.combo = self.combo + (cleared_lines - 1) * 2
-		self.score = self.score + (
-			(math.ceil((level + cleared_lines) / 4) + drop_bonus) *
-			cleared_lines * self.combo * self.bravo
-		)
-        self.lines = self.lines + cleared_lines
-	else
-		self.combo = 1
+	if not self.clear then
+		if self.grid:checkForBravo(cleared_lines) then self.bravo = 4 else self.bravo = 1 end
+		if cleared_lines > 0 then
+			self.combo = self.combo + (cleared_lines - 1) * 2
+			self.score = self.score + (
+				(math.ceil((level + cleared_lines) / 4) + drop_bonus) *
+				cleared_lines * self.combo * self.bravo
+			)
+		else
+			self.combo = 1
+		end
+		self.drop_bonus = 0
 	end
-	self.drop_bonus = 0
 end
 
 function TGMPlusGame:drawGrid(ruleset)

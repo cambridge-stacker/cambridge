@@ -99,16 +99,17 @@ function StrategyGame:onLineClear(cleared_row_count)
 end
 
 function StrategyGame:updateScore(level, drop_bonus, cleared_lines)
-	if cleared_lines > 0 then
-		self.score = self.score + (
-			(math.ceil((level + cleared_lines) / 4) + drop_bonus) *
-			cleared_lines * (cleared_lines * 2 - 1) * (self.combo * 2 - 1)
-		)
-		self.lines = self.lines + cleared_lines
-		self.combo = self.combo + cleared_lines - 1
-	else
+	if not self.clear then
+		if cleared_lines > 0 then
+			self.combo = self.combo + (cleared_lines - 1) * 2
+			self.score = self.score + (
+				(math.ceil((level + cleared_lines) / 4) + drop_bonus) *
+				cleared_lines * self.combo
+			)
+		else
+			self.combo = 1
+		end
 		self.drop_bonus = 0
-		self.combo = 1
 	end
 end
 
