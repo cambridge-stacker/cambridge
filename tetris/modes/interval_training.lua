@@ -15,6 +15,7 @@ IntervalTrainingGame.tagline = "Can you clear the time hurdles when the game goe
 
 
 function IntervalTrainingGame:new()
+	self.level = 0
 	IntervalTrainingGame.super:new()
 	self.roll_frames = 0
 	self.combo = 1
@@ -77,7 +78,7 @@ function IntervalTrainingGame:advanceOneFrame()
 end
 
 function IntervalTrainingGame:onPieceEnter()
-	if (self.level % 100 ~= 99 or self.level == 998) and not self.clear and self.frames ~= 0 then
+	if (self.level % 100 ~= 99 and self.level ~= 998) and not self.clear and self.frames ~= 0 then
 		self.level = self.level + 1
 	end
 end
