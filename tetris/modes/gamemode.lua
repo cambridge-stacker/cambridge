@@ -366,7 +366,8 @@ function GameMode:drawNextQueue(ruleset)
 		end
 	end
 	if self.hold_queue ~= nil then
-		self:setHoldOpacity()
+		local hold_color = self.held and 0.6 or 1
+		self:setHoldOpacity(1, hold_color)
 		drawPiece(
 			self.hold_queue.shape, 
 			self.hold_queue.skin, 
@@ -377,8 +378,16 @@ function GameMode:drawNextQueue(ruleset)
 	return false
 end
 
-function GameMode:setNextOpacity(i) love.graphics.setColor(1, 1, 1, 1) end
-function GameMode:setHoldOpacity() love.graphics.setColor(1, 1, 1, 1) end
+function GameMode:setNextOpacity(i, j)
+        i = i ~= nil and i or 1
+        j = j ~= nil and j or 1
+        love.graphics.setColor(j, j, j, i)
+end
+function GameMode:setHoldOpacity(i, j)
+	i = i ~= nil and i or 1
+	j = j ~= nil and j or 1
+	love.graphics.setColor(j, j, j, i)
+end
 
 function GameMode:drawScoringInfo()
 	love.graphics.setColor(1, 1, 1, 1)
