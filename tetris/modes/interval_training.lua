@@ -67,7 +67,6 @@ function IntervalTrainingGame:advanceOneFrame()
 		if self.roll_frames > 2968 then
 			self.completed = true
 		end
-		return false
 	elseif self.ready_frames == 0 then
 		self.frames = self.frames + 1
 		if self:getSectionTime() >= self.section_time_limit then
@@ -84,8 +83,9 @@ function IntervalTrainingGame:onPieceEnter()
 end
 
 function IntervalTrainingGame:onLineClear(cleared_row_count)
+	local cleared_level_bonus = {1, 2, 4, 6}
 	if not self.clear then
-		local new_level = self.level + cleared_row_count
+		local new_level = self.level + cleared_level_bonus[cleared_row_count]
 		self:updateSectionTimes(self.level, new_level)
 		self.level = math.min(new_level, 999)
 		if self.level == 999 then
@@ -103,9 +103,6 @@ function IntervalTrainingGame:updateSectionTimes(old_level, new_level)
 		-- record new section
 		table.insert(self.section_times, self:getSectionTime())
 		self.section_start_time = self.frames
-	else
-		self.level = math.min(new_level, 999)
-	end
 end
 
 function IntervalTrainingGame:drawGrid(ruleset)
@@ -129,7 +126,7 @@ function IntervalTrainingGame:drawScoringInfo()
 		strTrueValues(self.prev_inputs)
 	)
 	love.graphics.printf("NEXT", 64, 40, 40, "left")
-	love.graphics.printf("TIME LEFT", 240, 250, 80, "left")
+	if not self.clear then love.graphics.printf("TIME LEFT", 240, 250, 80, "left") end
 	love.graphics.printf("LEVEL", 240, 320, 40, "left")
 
 	local current_section = math.floor(self.level / 100) + 1
@@ -140,10 +137,10 @@ function IntervalTrainingGame:drawScoringInfo()
 
 	-- draw time left, flash red if necessary
 	local time_left = self.section_time_limit - math.max(self:getSectionTime(), 0)
-	if not self.game_over and not self.clear and time_left < frameTime(0,10) and time_left % 4 < 2 then
+	if not self.game_over and time_left < frameTime(0,10) and time_left % 4 < 2 then
 		love.graphics.setColor(1, 0.3, 0.3, 1)
 	end
-	love.graphics.printf(formatTime(time_left), 240, 270, 160, "left")
+	if not self.clear then love.graphics.printf(formatTime(time_left), 240, 270, 160, "left") end
 
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.printf(self:getSectionEndLevel(), 240, 370, 40, "right")
