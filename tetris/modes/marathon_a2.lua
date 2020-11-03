@@ -140,23 +140,7 @@ function MarathonA2Game:updateScore(level, drop_bonus, cleared_lines)
 			self.combo = 1
 		end
 		self.drop_bonus = 0
-	end
-end
-
-function MarathonA2Game:updateScore(level, drop_bonus, cleared_lines)
-	self:updateGrade(cleared_lines)
-	if self.grid:checkForBravo(cleared_lines) then self.bravo = 4 else self.bravo = 1 end
-	if cleared_lines > 0 then
-		self.combo = self.combo + (cleared_lines - 1) * 2
-		self.score = self.score + (
-			(math.ceil((level + cleared_lines) / 4) + drop_bonus) *
-			cleared_lines * self.combo * self.bravo
-		)
-        self.lines = self.lines + cleared_lines
-	else
-		self.combo = 1
-	end
-	self.drop_bonus = 0
+	else self.lines = self.lines + cleared_lines end
 end
 
 function MarathonA2Game:updateSectionTimes(old_level, new_level)
@@ -347,7 +331,17 @@ function MarathonA2Game:drawScoringInfo()
     end
 
 	love.graphics.setFont(font_3x5_3)
+	if self.clear then
+		if self:qualifiesForMRoll() then
+			if self.lines >= 32 and self.roll_frames > 3694 then love.graphics.setColor(1, 0.5, 0, 1)
+			else love.graphics.setColor(0, 1, 0, 1) end
+		else
+			if self.roll_frames > 3694 then love.graphics.setColor(1, 0.5, 0, 1)
+			else love.graphics.setColor(0, 1, 0, 1) end
+		end
+	end	
 	love.graphics.printf(self:getLetterGrade(), 240, 140, 90, "left")
+	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.printf(self.score, 240, 220, 90, "left")
 	love.graphics.printf(self.level, 240, 340, 40, "right")
 	love.graphics.printf(self:getSectionEndLevel(), 240, 370, 40, "right")

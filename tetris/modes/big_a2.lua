@@ -205,7 +205,7 @@ local grade_conversion = {
 	1, 2, 3, 4, 5, 5, 6, 6, 7, 7,
 	7, 8, 8, 8, 9, 9, 9, 10, 11, 12,
 	12, 12, 13, 13, 14, 14, 15, 15, 16, 16,
-	17, 18
+	17
 }
 
 function MarathonA2Game:updateGrade(cleared_lines)
