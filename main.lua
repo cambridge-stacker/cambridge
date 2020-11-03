@@ -30,6 +30,28 @@ function love.load()
 		if config.current_ruleset then current_ruleset = config.current_ruleset end
 		scene = TitleScene()
 	end
+
+	game_modes = {}
+	mode_list = love.filesystem.getDirectoryItems("tetris/modes")
+	for i=1,#mode_list do
+		if(mode_list[i] ~= "gamemode.lua" and mode_list[i] ~= "unrefactored_modes") then
+			game_modes[#game_modes+1] = require ("tetris.modes."..string.sub(mode_list[i],1,-5))
+		end
+	end
+	rulesets = {}
+	rule_list = love.filesystem.getDirectoryItems("tetris/rulesets")
+	for i=1,#rule_list do
+		if(rule_list[i] ~= "ruleset.lua" and rule_list[i] ~= "unrefactored_rulesets") then
+			rulesets[#rulesets+1] = require ("tetris.rulesets."..string.sub(rule_list[i],1,-5))
+		end
+	end
+	--sort mode/rule lists
+	local function padnum(d) return ("%03d%s"):format(#d, d) end
+  	table.sort(game_modes, function(a,b)
+  	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
+	table.sort(rulesets, function(a,b)
+  	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
+	
 end
 
 local TARGET_FPS = 60

@@ -3,7 +3,7 @@ require 'funcs'
 local GameMode = require 'tetris.modes.gamemode'
 local Piece = require 'tetris.components.piece'
 
-local History6RollsRandomizer = require 'tetris.randomizers.history_6rolls'
+local History6RollsRandomizer = require 'tetris.randomizers.history_6rolls_35bag'
 
 local IntervalTrainingGame = GameMode:extend()
 
@@ -19,7 +19,7 @@ function IntervalTrainingGame:new()
 	self.roll_frames = 0
 	self.combo = 1
 	self.randomizer = History6RollsRandomizer()
-	self.section_time_limit = 1800
+	
 	self.section_start_time = 0
 	self.section_times = { [0] = 0 }
 	self.lock_drop = true
@@ -27,20 +27,26 @@ function IntervalTrainingGame:new()
 	self.next_queue_length = 3
 end
 
+function IntervalTrainingGame:initialize(ruleset)
+	self.section_time_limit = 1800
+	if ruleset.world then self.section_time_limit = 37 * 60 end
+	self.super.initialize(self, ruleset)
+end
+
 function IntervalTrainingGame:getARE()
-	return 4
+	return 6
 end
 
 function IntervalTrainingGame:getLineARE()
-	return 4
+	return 6
 end
 
 function IntervalTrainingGame:getDasLimit()
-	return 6
+	return 7
 end
 
 function IntervalTrainingGame:getLineClearDelay()
-	return 6
+	return 4
 end
 
 function IntervalTrainingGame:getLockDelay()
