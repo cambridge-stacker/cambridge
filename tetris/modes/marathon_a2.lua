@@ -16,7 +16,7 @@ MarathonA2Game.tagline = "The points don't matter! Can you reach the invisible r
 
 function MarathonA2Game:new()
     MarathonA2Game.super:new()
-	
+
 	self.roll_frames = 0
     self.combo = 1
 	self.randomizer = History6RollsRandomizer()
@@ -143,6 +143,16 @@ function MarathonA2Game:updateScore(level, drop_bonus, cleared_lines)
 	else self.lines = self.lines + cleared_lines end
 end
 
+function MarathonA2Game:onLineClear(cleared_row_count)
+    self.level = math.min(self.level + cleared_row_count, 999)
+    if self.level == 999 and not self.clear then
+        self.clear = true
+        self.grid:clear()
+		if self:qualifiesForMRoll() then self.grade = 32 end
+        self.roll_frames = -150
+    end
+end
+
 function MarathonA2Game:updateSectionTimes(old_level, new_level)
 	if self.clear then return end
 	if math.floor(old_level / 100) < math.floor(new_level / 100) or
@@ -267,7 +277,7 @@ function MarathonA2Game:qualifiesForMRoll()
 			return false
 		end
 	end
-	if self.grade < 17 or self.frames > frameTime(8,45) then
+	if self.grade < 31 or self.frames > frameTime(8,45) then
 		return false
 	end
 	return true
