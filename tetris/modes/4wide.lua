@@ -8,7 +8,6 @@ FourWideGame.name = "4-wide Simulator"
 FourWideGame.hash = "4wide"
 
 function FourWideGame:initialize(ruleset)
-	self.level = 1299
 	self.super:initialize(ruleset)
 	self.grid:applyFourWide()
 end
