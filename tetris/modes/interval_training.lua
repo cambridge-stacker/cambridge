@@ -103,6 +103,7 @@ function IntervalTrainingGame:updateSectionTimes(old_level, new_level)
 		-- record new section
 		table.insert(self.section_times, self:getSectionTime())
 		self.section_start_time = self.frames
+	end
 end
 
 function IntervalTrainingGame:drawGrid(ruleset)
