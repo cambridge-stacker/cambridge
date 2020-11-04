@@ -159,7 +159,10 @@ function ScoreDrainGame:drawScoringInfo()
 
 	love.graphics.setFont(font_3x5_3)
 	love.graphics.printf(math.floor(self.drain_rate).."/s", 240, 110, 120, "left")
-	love.graphics.printf(formatTime(self.score / self.drain_rate * 60), 240, 270, 120, "left")
+	local frames_left = self.score / self.drain_rate * 60
+	if frames_left <= 600 and frames_left % 4 < 2 and not self.game_over then love.graphics.setColor(1, 0.3, 0.3, 1) end
+	love.graphics.printf(formatTime(frames_left), 240, 270, 120, "left")
+	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.printf(math.floor(self.score), 240, 190, 90, "left")
 	love.graphics.printf(self.level, 240, 340, 50, "right")
 	love.graphics.printf(self:getSectionEndLevel(), 240, 370, 50, "right")
