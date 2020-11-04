@@ -107,7 +107,7 @@ function IntervalTrainingGame:updateSectionTimes(old_level, new_level)
 	end
 end
 
-function IntervalTrainingGame:drawGrid(ruleset)
+function IntervalTrainingGame:drawGrid()
 	self.grid:draw()
 end
 

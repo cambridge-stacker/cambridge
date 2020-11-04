@@ -16,7 +16,7 @@ MarathonA3Game.tagline = "The game gets faster way more quickly! Can you get all
 
 function MarathonA3Game:new()
     MarathonA3Game.super:new()
-    
+	
 	self.speed_level = 0
 	self.roll_frames = 0
     self.combo = 1
@@ -218,7 +218,7 @@ function MarathonA3Game:updateSectionTimes(old_level, new_level)
 		else
 			table.insert(self.section_status, "none")
 		end
-	elseif section <= 9 and old_level % 100 < 70 and new_level % 100 >= 70 then
+	elseif old_level % 100 < 70 and new_level % 100 >= 70 then
 		-- record section 70 time
 		section_70_time = self.frames - self.section_start_time
 		table.insert(self.section_70_times, section_70_time)
@@ -431,7 +431,7 @@ function MarathonA3Game:drawScoringInfo()
 		current_x = section_70_x
 	end
 
-	love.graphics.printf(formatTime(self.frames - self.section_start_time), current_x, 40 + 20 * current_section, 90, "left")
+	if not self.clear then love.graphics.printf(formatTime(self.frames - self.section_start_time), current_x, 40 + 20 * current_section, 90, "left") end
 	
 	if(self.coolregret_timer > 0) then
                 love.graphics.printf(self.coolregret_message, 64, 400, 160, "center")
