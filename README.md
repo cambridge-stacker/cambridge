@@ -12,41 +12,24 @@ Join our Discord server for help and a welcoming community! https://discord.gg/m
 Credits
 -------
 
-- [Lilla Oshisaure](https://www.youtube.com/user/LeSpyroshisaure) for their amazing contributions to my life in general!
+- [Lilla Oshisaure](https://www.youtube.com/user/LeSpyroshisaure) for being my co-dev!
 - [The Tetra Legends Discord](http://discord.com/invite/7hMx5r2) for supporting me and playtesting!
+- [The Absolute Plus](https://discord.gg/6Gf2awJ) for being another source of motivation!
 - [joezeng](https://github.com/joezeng) for the original project.
-- [Hailey](https://github.com/haileylgbt) for some miscellaneous assets.
-- CylinderKnot for an amazing gamemode.
-- MarkGamed7794 for some miscellaneous contributions.
-- Mizu for the Cambridge logo and the [Cambridge launcher](https://github.com/rexxt/cambridge-launcher).
-- MattMayuga for the Cambridge banner.
+
+The following people in no particular order also helped with the project:
+- [Hailey](https://github.com/haileylgbt)
+- CylinderKnot
+- MarkGamed7794
+- [Mizu](https://github.com/rexxt)
+- MattMayuga
+- Kitaru
+- switchpalacecorner
 
 ![Cambridge Logo](https://cdn.discordapp.com/attachments/625496179433668635/763363717730664458/Icon_2.png)
 
-Installation instructions
--------------------------
-
-Pre-built releases are available on the releases page.
-
-### Windows
-
-Unzip the exe file and run it directly. All assets are currently bundled inside the executable.
-
-### macOS
-
-For the time being, the file `cambridge.love` only works on the command line. Install `love` with [Homebrew](https://brew.sh), and run:
-
-    $ love cambridge.love
-
-### Linux
-
-Same as macOS, except install `love` with your favourite package manager.
-
-
-Running from source
--------------------
-
-If you want the bleeding-edge release, you can also clone the code straight from this repository.
+Playing the game
+----------------
 
 ### macOS, Linux
 
@@ -56,12 +39,27 @@ Clone the repository in git:
 
     git clone https://github.com/SashLilac/cambridge
 
+Alternatively, download the source code ZIP in the latest release.
+
 Then, navigate to the root directory that you just cloned, and type:
 
     love .
 
 It should run automatically!
 
+## Windows
+
+You do not need LÖVE on Windows, as it comes bundled with the program. Download the source code ZIP in the latest release, or if you want the bleeding edge version, download [this](https://github.com/SashLilac/cambridge/archive/master.zip).
+
+Extract the ZIP, open a Command Prompt at the folder you extracted Cambridge to, then run this command:
+
+    dist\windows\love.exe .
+
+Alternatively, if you're on a 32-bit system, run this instead:
+
+    dist\win32\love.exe .
+
+32-bit systems do not support rich presence integration.
 
 License
 -------
