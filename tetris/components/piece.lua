@@ -98,7 +98,7 @@ end
 
 function Piece:dropToBottom(grid)
 	local piece_y = self.position.y
-	self:dropSquares(24, grid)
+	self:dropSquares(math.huge, grid)
 	self.gravity = 0
 	if self.position.y > piece_y then
 		-- if it got dropped any, also reset lock delay

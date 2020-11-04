@@ -17,7 +17,7 @@ MarathonA3Game.tagline = "The game gets faster way more quickly! Can you get all
 function MarathonA3Game:new()
     MarathonA3Game.super:new()
     
-    self.speed_level = 0
+	self.speed_level = 0
 	self.roll_frames = 0
     self.combo = 1
 	self.grade = 0
@@ -151,6 +151,7 @@ function MarathonA3Game:onPieceEnter()
         self:updateSectionTimes(self.level, self.level + 1)
         self.level = self.level + 1
         self.speed_level = self.speed_level + 1
+		self.torikan_passed = self.level >= 500 and true or false
     end
 end
 
@@ -171,7 +172,7 @@ function MarathonA3Game:onLineClear(cleared_row_count)
     if not self.torikan_passed and self.level >= 500 and self.frames >= 25200 then
 	self.level = 500
 	self.game_over = true
-    elseif self.level >= 500 then self.torikan_passed = true end
+	end
 end
 
 local cool_cutoffs = {
