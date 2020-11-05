@@ -18,8 +18,6 @@ SRS.colourscheme = {
 SRS.softdrop_lock = false
 SRS.harddrop_lock = true
 
-SRS.enable_IRS_wallkicks = true
-
 SRS.spawn_positions = {
 	I = { x=5, y=4 },
 	J = { x=4, y=5 },
