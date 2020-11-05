@@ -440,7 +440,10 @@ function MarathonA3Game:drawScoringInfo()
 
 	love.graphics.setFont(font_3x5_3)
 	love.graphics.printf(self.score, 240, 220, 90, "left")
+	if self.roll_frames > 3238 then love.graphics.setColor(1, 0.5, 0, 1)
+	elseif self.clear then love.graphics.setColor(0, 1, 0, 1) end
 	love.graphics.printf(self:getLetterGrade(), 240, 140, 90, "left")
+	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.printf(self.level, 240, 340, 40, "right")
 	love.graphics.printf(self:getSectionEndLevel(), 240, 370, 40, "right")
 	if sg >= 5 then
