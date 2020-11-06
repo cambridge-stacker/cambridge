@@ -29,6 +29,7 @@ function MarathonA3Game:new()
 	self.section_start_time = 0
 	self.section_70_times = { [0] = 0 }
 	self.section_times = { [0] = 0 }
+	self.section_cool = false
     
 	self.randomizer = History6RollsRandomizer()
 
@@ -195,33 +196,37 @@ function MarathonA3Game:updateSectionTimes(old_level, new_level)
 		table.insert(self.section_times, section_time)
 		self.section_start_time = self.frames
 
+		self.speed_level = self.section_cool and self.speed_level + 100 or self.speed_level
+
 		if section_time > regret_cutoffs[section] then
 			self.section_cool_grade = self.section_cool_grade - 1
 			table.insert(self.section_status, "regret")
 			self.coolregret_message = "REGRET!!"
 			self.coolregret_timer = 300
-		elseif section <= 9 and self.section_status[section - 1] == "cool" and
-		self.section_70_times[section] < self.section_70_times[section - 1] + 120 then
+		elseif self.section_cool then
 			self.section_cool_grade = self.section_cool_grade + 1
-			self.speed_level = self.speed_level + 100
 			table.insert(self.section_status, "cool")
-			self.coolregret_message = "COOL!!"
-			self.coolregret_timer = 300
-		elseif self.section_status[section - 1] == "cool" then
-			table.insert(self.section_status, "none")
-		elseif section <= 9 and self.section_70_times[section] < cool_cutoffs[section] then
-			self.section_cool_grade = self.section_cool_grade + 1
-			self.speed_level = self.speed_level + 100
-			table.insert(self.section_status, "cool")
-			self.coolregret_message = "COOL!!"
-			self.coolregret_timer = 300
 		else
 			table.insert(self.section_status, "none")
 		end
+
+		self.section_cool = false
 	elseif old_level % 100 < 70 and new_level % 100 >= 70 then
 		-- record section 70 time
 		section_70_time = self.frames - self.section_start_time
 		table.insert(self.section_70_times, section_70_time)
+
+		if section <= 9 and self.section_status[section - 1] == "cool" and
+                self.section_70_times[section] < self.section_70_times[section - 1] + 120 then
+			self.section_cool = true
+			self.coolregret_message = "COOL!!"
+                        self.coolregret_timer = 300
+                elseif self.section_status[section - 1] == "cool" then self.section_cool = false
+                elseif section <= 9 and self.section_70_times[section] < cool_cutoffs[section] then
+			self.section_cool = true
+			self.coolregret_message = "COOL!!"
+                        self.coolregret_timer = 300
+		end
 	end
 end
 
