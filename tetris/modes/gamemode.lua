@@ -1,6 +1,9 @@
 local Object = require 'libs.classic'
 require 'funcs'
 
+local playedReadySE = false
+local playedGoSE = false
+
 local Grid = require 'tetris.components.grid'
 local Randomizer = require 'tetris.randomizers.randomizer'
 
@@ -161,6 +164,7 @@ function GameMode:update(inputs, ruleset)
 			end
 
 			if cleared_row_count > 0 then
+				playSE("erase")
 				self.lcd = self:getLineClearDelay()
 				self.are = self:getLineARE()
 				if self.lcd == 0 then
@@ -194,10 +198,16 @@ end
 
 -- event functions
 function GameMode:whilePieceActive() end
-function GameMode:onPieceLock(piece, cleared_row_count) end
+function GameMode:onPieceLock(piece, cleared_row_count) 
+	playSE("lock")
+end
+
 function GameMode:onLineClear(cleared_row_count) end
+
 function GameMode:onPieceEnter() end
-function GameMode:onHold() end
+function GameMode:onHold() 
+	playSE("hold")
+end
 
 function GameMode:onSoftDrop(dropped_row_count)
 	self.drop_bonus = self.drop_bonus + 1 * dropped_row_count
@@ -239,8 +249,20 @@ function GameMode:chargeDAS(inputs)
 end
 
 function GameMode:processDelays(inputs, ruleset, drop_speed)
+	if self.ready_frames == 100 then
+		playedReadySE = false
+		playedGoSE = false
+	end
 	if self.ready_frames > 0 then
+		if not playedReadySE then
+			playedReadySE = true
+			playSEOnce("ready")
+		end
 		self.ready_frames = self.ready_frames - 1
+		if self.ready_frames == 50 and not playedGoSE then
+			playedGoSE = true
+			playSEOnce("go")
+		end
 		if self.ready_frames == 0 then
 			self:initializeOrHold(inputs, ruleset)
 		end
@@ -248,6 +270,7 @@ function GameMode:processDelays(inputs, ruleset, drop_speed)
 		self.lcd = self.lcd - 1
 		if self.lcd == 0 then
 			self.grid:clearClearedRows()
+			playSE("fall")
 			if self.are == 0 then
 				self:initializeOrHold(inputs, ruleset)
 			end

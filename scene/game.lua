@@ -49,6 +49,7 @@ function GameScene:render()
 	self.game:drawScoringInfo()
 
 	-- ready/go graphics
+
 	if self.game.ready_frames <= 100 and self.game.ready_frames > 52 then
 		love.graphics.draw(misc_graphics["ready"], 144 - 50, 240 - 14)
 	elseif self.game.ready_frames <= 50 and self.game.ready_frames > 2 then
