@@ -12,8 +12,6 @@ SurvivalA3Game.hash = "SurvivalA3"
 SurvivalA3Game.tagline = "The blocks turn black and white! Can you make it to level 1300?"
 
 
-
-
 function SurvivalA3Game:new()
 	SurvivalA3Game.super:new()
 	self.grade = 0
