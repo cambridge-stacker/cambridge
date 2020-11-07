@@ -5,7 +5,7 @@ Cambridge
 
 Welcome to Cambridge, the next open-source falling-block game engine!
 
-This fork is written and maintained exclusively by [SashLilac](https://github.com/SashLilac) and [Oshisaure](https://github.com/oshisaure)!
+This fork is written and maintained exclusively by [SashLilac](https://github.com/SashLilac), [joezeng](https://github.com/joezeng) and [Oshisaure](https://github.com/oshisaure)!
 
 Join our Discord server for help and a welcoming community! https://discord.gg/mteMJw4
 
@@ -13,9 +13,9 @@ Credits
 -------
 
 - [Lilla Oshisaure](https://www.youtube.com/user/LeSpyroshisaure) for being my co-dev!
+- [joezeng](https://github.com/joezeng) for the original project, and for offering to help with the expansion!
 - [The Tetra Legends Discord](http://discord.com/invite/7hMx5r2) for supporting me and playtesting!
 - [The Absolute Plus](https://discord.gg/6Gf2awJ) for being another source of motivation!
-- [joezeng](https://github.com/joezeng) for the original project.
 
 The following people in no particular order also helped with the project:
 - [Hailey](https://github.com/haileylgbt)
@@ -25,6 +25,8 @@ The following people in no particular order also helped with the project:
 - MattMayuga
 - Kitaru
 - switchpalacecorner
+- sinefuse
+- 2Tie
 
 ![Cambridge Logo](https://cdn.discordapp.com/attachments/625496179433668635/763363717730664458/Icon_2.png)
 
