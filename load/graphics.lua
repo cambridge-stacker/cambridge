@@ -34,7 +34,7 @@ blocks = {
 		B = love.graphics.newImage("res/img/s4.png"),
 		M = love.graphics.newImage("res/img/s5.png"),
 		F = love.graphics.newImage("res/img/s9.png"),
-		A = love.graphics.newImage("res/img/s9.png"),
+		A = love.graphics.newImage("res/img/s8.png"),
 		X = love.graphics.newImage("res/img/s9.png"),
 	},
 	["bone"] = {
