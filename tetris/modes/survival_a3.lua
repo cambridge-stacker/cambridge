@@ -16,6 +16,7 @@ SurvivalA3Game.tagline = "The blocks turn black and white! Can you make it to le
 
 function SurvivalA3Game:new()
 	SurvivalA3Game.super:new()
+	self.level = 0
 	self.grade = 0
 	self.garbage = 0
 	self.clear = false

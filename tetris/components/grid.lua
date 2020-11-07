@@ -4,7 +4,7 @@ local Grid = Object:extend()
 
 local empty = { skin = "", colour = "" }
 local oob = { skin = "", colour = "" }
-local block = { skin = "2tie", colour = "X" }
+local block = { skin = "2tie", colour = "A" }
 
 function Grid:new()
 	self.grid = {}
@@ -170,6 +170,7 @@ function Grid:applyFourWide()
 				x[10] = x[10]~=block and block or x[10]
 		end
 end
+
 function Grid:applyPiece(piece)
 	if piece.big then
 		self:applyBigPiece(piece)
@@ -263,7 +264,7 @@ function Grid:draw()
 	for y = 5, 24 do
 		for x = 1, 10 do
 			if self.grid[y][x] ~= empty then
-				if self.grid_age[y][x] < 1 then
+				if self.grid_age[y][x] < 2 then
 					love.graphics.setColor(1, 1, 1, 1)
 					love.graphics.draw(blocks[self.grid[y][x].skin]["F"], 48+x*16, y*16)
 				else
@@ -297,7 +298,7 @@ function Grid:drawInvisible(opacity_function, garbage_opacity_function)
 			if self.grid[y][x] ~= empty then
 				if self.grid[y][x].colour == "X" then
 					opacity = 1
-				elseif garbage_opacity_function and self.grid[y][x].colour == "G" then
+				elseif garbage_opacity_function and self.grid[y][x].colour == "A" then
 					opacity = garbage_opacity_function(self.grid_age[y][x])
 				else
 					opacity = opacity_function(self.grid_age[y][x])

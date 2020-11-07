@@ -33,6 +33,8 @@ blocks = {
 		C = love.graphics.newImage("res/img/s2.png"),
 		B = love.graphics.newImage("res/img/s4.png"),
 		M = love.graphics.newImage("res/img/s5.png"),
+		F = love.graphics.newImage("res/img/s9.png"),
+		A = love.graphics.newImage("res/img/s9.png"),
 		X = love.graphics.newImage("res/img/s9.png"),
 	},
 	["bone"] = {
@@ -43,6 +45,8 @@ blocks = {
 		C = love.graphics.newImage("res/img/bone.png"),
 		B = love.graphics.newImage("res/img/bone.png"),
 		M = love.graphics.newImage("res/img/bone.png"),
+		F = love.graphics.newImage("res/img/bone.png"),
+		A = love.graphics.newImage("res/img/bone.png"),
 		X = love.graphics.newImage("res/img/bone.png"),
 	}
 }
