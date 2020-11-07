@@ -76,7 +76,7 @@ function Ruleset:attemptRotate(new_inputs, piece, grid, initial)
 	end
 
 	if rot_dir == 0 then return end
-    if self.world and config.gamesettings.world_reverse == 2 then
+    if config.gamesettings.world_reverse == 3 or (self.world and config.gamesettings.world_reverse == 2) then
         rot_dir = 4 - rot_dir
     end
 

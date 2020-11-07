@@ -151,7 +151,14 @@ function ARS:onPieceDrop(piece, grid)
 	piece.lock_delay = 0 -- step reset
 end
 
-function ARS:get180RotationValue() return 3 end
+function ARS:get180RotationValue() 
+	if config.gamesettings.world_reverse == 3 then
+		return 3
+	else
+		return 1
+	end
+end
+
 function ARS:getDefaultOrientation() return 3 end  -- downward facing pieces by default
 
 return ARS
