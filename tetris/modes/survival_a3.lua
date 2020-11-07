@@ -23,13 +23,13 @@ function SurvivalA3Game:new()
 	self.roll_frames = 0
 	self.combo = 1
 	self.randomizer = History6RollsRandomizer()
-    
-    self.SGnames = {
-        "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
-        "m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8", "m9",
-        "GM"
-    }
-    
+	
+	self.SGnames = {
+		"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
+		"m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8", "m9",
+		"GM"
+	}
+	
 	self.lock_drop = true
 	self.enable_hold = true
 	self.next_queue_length = 3
@@ -40,19 +40,19 @@ end
 
 function SurvivalA3Game:initialize(ruleset)
 
-    self.torikan_time = frameTime(2,28)
-    if ruleset.world then self.torikan_time = frameTime(3,03) end
-    self.super.initialize(self, ruleset)
-    --        ^ notice the . here instead of the :
+	self.torikan_time = frameTime(2,28)
+	if ruleset.world then self.torikan_time = frameTime(3,03) end
+	self.super.initialize(self, ruleset)
+	--		^ notice the . here instead of the :
 end
 
 function SurvivalA3Game:getARE()
-	    if self.level < 300 then return 12
+		if self.level < 300 then return 12
 	else return 6 end
 end
 
 function SurvivalA3Game:getLineARE()
-	    if self.level < 100 then return 8
+		if self.level < 100 then return 8
 	elseif self.level < 200 then return 7
 	elseif self.level < 500 then return 6
 	elseif self.level < 1300 then return 5
@@ -60,7 +60,7 @@ function SurvivalA3Game:getLineARE()
 end
 
 function SurvivalA3Game:getDasLimit()
-	    if self.level < 100 then return 9
+		if self.level < 100 then return 9
 	elseif self.level < 500 then return 7
 	else return 5 end
 end
@@ -71,7 +71,7 @@ function SurvivalA3Game:getLineClearDelay()
 end
 
 function SurvivalA3Game:getLockDelay()
-	    if self.level < 200 then return 18
+		if self.level < 200 then return 18
 	elseif self.level < 300 then return 17
 	elseif self.level < 500 then return 15
 	elseif self.level < 600 then return 13
@@ -145,14 +145,14 @@ function SurvivalA3Game:onLineClear(cleared_row_count)
 		local new_level = self.level + cleared_row_levels[cleared_row_count]
 		self:updateSectionTimes(self.level, new_level)
 		if new_level >= 1300 or self:hitTorikan(self.level, new_level) then
-            self.clear = true
+			self.clear = true
 			if new_level >= 1300 then
 				self.level = 1300
-                self.grid:clear()
-                self.big_mode = true
-                self.roll_frames = -150
-            else
-                self.game_over = true
+				self.grid:clear()
+				self.big_mode = true
+				self.roll_frames = -150
+			else
+				self.game_over = true
 			end
 		else
 			self.level = math.min(new_level, 1300)
@@ -228,10 +228,10 @@ function SurvivalA3Game:drawScoringInfo()
 	love.graphics.printf("GRADE", text_x, 120, 40, "left")
 	love.graphics.printf("SCORE", text_x, 200, 40, "left")
 	love.graphics.printf("LEVEL", text_x, 320, 40, "left")
-    local sg = self.grid:checkSecretGrade()
-    if sg >= 5 then 
-        love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
-    end
+	local sg = self.grid:checkSecretGrade()
+	if sg >= 5 then 
+		love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
+	end
 	
 	if(self.coolregret_timer > 0) then
 		love.graphics.printf(self.coolregret_message, 64, 400, 160, "center")
@@ -243,7 +243,7 @@ function SurvivalA3Game:drawScoringInfo()
 
 	love.graphics.setFont(font_3x5_3)
 	if self.roll_frames > 3238 then love.graphics.setColor(1, 0.5, 0, 1)
-        elseif self.clear then love.graphics.setColor(0, 1, 0, 1) end
+		elseif self.clear then love.graphics.setColor(0, 1, 0, 1) end
 	love.graphics.printf(getLetterGrade(math.floor(self.grade)), text_x, 140, 90, "left")
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.printf(self.score, text_x, 220, 90, "left")
@@ -253,9 +253,9 @@ function SurvivalA3Game:drawScoringInfo()
 	else
 		love.graphics.printf(math.floor(self.level / 100 + 1) * 100, text_x, 370, 50, "right")
 	end
-    if sg >= 5 then
-        love.graphics.printf(self.SGnames[sg], 240, 450, 180, "left")
-    end
+	if sg >= 5 then
+		love.graphics.printf(self.SGnames[sg], 240, 450, 180, "left")
+	end
 end
 
 function SurvivalA3Game:getBackground()

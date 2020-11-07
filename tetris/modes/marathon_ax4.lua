@@ -29,7 +29,7 @@ function MarathonAX4Game:new()
 end
 
 function MarathonAX4Game:getARE()
-	    if self.lines < 10 then return 18
+		if self.lines < 10 then return 18
 	elseif self.lines < 40 then return 14
 	elseif self.lines < 60 then return 12
 	elseif self.lines < 70 then return 10
@@ -43,14 +43,14 @@ function MarathonAX4Game:getLineARE()
 end
 
 function MarathonAX4Game:getDasLimit()
-	    if self.lines < 20 then return 10
+		if self.lines < 20 then return 10
 	elseif self.lines < 50 then return 9
 	elseif self.lines < 70 then return 8
 	else return 7 end
 end
 
 function MarathonAX4Game:getLineClearDelay()
-	    if self.lines < 10 then return 14
+		if self.lines < 10 then return 14
 	elseif self.lines < 30 then return 9
 	else return 5 end
 end

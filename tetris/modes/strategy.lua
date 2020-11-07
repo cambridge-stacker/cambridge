@@ -27,7 +27,7 @@ function StrategyGame:new()
 end
 
 function StrategyGame:getARE()
-	    if self.level < 100 then return 60
+		if self.level < 100 then return 60
 	elseif self.level < 200 then return 54
 	elseif self.level < 300 then return 48
 	elseif self.level < 400 then return 42
@@ -52,7 +52,7 @@ function StrategyGame:getLineClearDelay()
 end
 
 function StrategyGame:getLockDelay()
-	    if self.level < 500 then return 8
+		if self.level < 500 then return 8
 	elseif self.level < 700 then return 6
 	else return 4 end
 end

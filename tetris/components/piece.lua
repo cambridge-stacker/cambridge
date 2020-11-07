@@ -10,7 +10,7 @@ function Piece:new(shape, rotation, position, block_offsets, gravity, lock_delay
 	self.gravity = gravity
 	self.lock_delay = lock_delay
 	self.skin = skin
-    self.colour = colour
+	self.colour = colour
 	self.ghost = false
 	self.locked = false
 	self.big = big

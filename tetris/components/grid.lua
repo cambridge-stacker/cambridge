@@ -29,10 +29,10 @@ function Grid:clear()
 end
 
 function Grid:getCell(x, y)
-    if x < 1 or x > 10 or y > 24 then return oob
-    elseif y < 1 then return empty
-    else return self.grid[y][x]
-    end
+	if x < 1 or x > 10 or y > 24 then return oob
+	elseif y < 1 then return empty
+	else return self.grid[y][x]
+	end
 end
 
 function Grid:isOccupied(x, y)
@@ -67,11 +67,11 @@ function Grid:canPlaceBigPiece(piece)
 	for index, offset in pairs(offsets) do
 		local x = piece.position.x + offset.x
 		local y = piece.position.y + offset.y
-        if (
-           self:isOccupied(x * 2 + 0, y * 2 + 0)
-        or self:isOccupied(x * 2 + 1, y * 2 + 0)
-        or self:isOccupied(x * 2 + 0, y * 2 + 1)
-        or self:isOccupied(x * 2 + 1, y * 2 + 1)
+		if (
+		   self:isOccupied(x * 2 + 0, y * 2 + 0)
+		or self:isOccupied(x * 2 + 1, y * 2 + 0)
+		or self:isOccupied(x * 2 + 0, y * 2 + 1)
+		or self:isOccupied(x * 2 + 1, y * 2 + 1)
 		) then
 			return false
 		end
@@ -148,27 +148,27 @@ function Grid:copyBottomRow()
 end
 
 function Grid:garbageRise(row_vals)
-        for row = 1, 23 do
-                self.grid[row] = self.grid[row+1]
-                self.grid_age[row] = self.grid_age[row+1]
-        end
-        self.grid[24] = {empty, empty, empty, empty, empty, empty, empty, empty, empty, empty}
-        self.grid_age[24] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+		for row = 1, 23 do
+				self.grid[row] = self.grid[row+1]
+				self.grid_age[row] = self.grid_age[row+1]
+		end
+		self.grid[24] = {empty, empty, empty, empty, empty, empty, empty, empty, empty, empty}
+		self.grid_age[24] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	for col = 1, 10 do
 		self.grid[24][col] = (row_vals[col] == "e") and empty or block
 	end
 end
 
 function Grid:applyFourWide()
-        for row = 1, 24 do
-                local x = self.grid[row]
-                x[1] = x[1]~=block and block or x[1]
-                x[2] = x[2]~=block and block or x[2]
-                x[3] = x[3]~=block and block or x[3]
-                x[8] = x[8]~=block and block or x[8]
-                x[9] = x[9]~=block and block or x[9]
-                x[10] = x[10]~=block and block or x[10]
-        end
+		for row = 1, 24 do
+				local x = self.grid[row]
+				x[1] = x[1]~=block and block or x[1]
+				x[2] = x[2]~=block and block or x[2]
+				x[3] = x[3]~=block and block or x[3]
+				x[8] = x[8]~=block and block or x[8]
+				x[9] = x[9]~=block and block or x[9]
+				x[10] = x[10]~=block and block or x[10]
+		end
 end
 function Grid:applyPiece(piece)
 	if piece.big then
@@ -195,12 +195,12 @@ function Grid:applyBigPiece(piece)
 		y = piece.position.y + offset.y
 		for a = 1, 2 do
 			for b = 1, 2 do
-                if y*2+a > 0 then
-                    self.grid[y*2+a][x*2+b] = {
-                        skin = piece.skin,
-                        colour = piece.colour
-                    }
-                end
+				if y*2+a > 0 then
+					self.grid[y*2+a][x*2+b] = {
+						skin = piece.skin,
+						colour = piece.colour
+					}
+				end
 			end
 		end
 	end
@@ -208,45 +208,45 @@ end
 
 function Grid:checkForBravo(cleared_row_count)
 	for i = 0, 23 - cleared_row_count do
-                for j = 0, 9 do
-                        if self:isOccupied(j, i) then return false end
-                end
-        end
+				for j = 0, 9 do
+						if self:isOccupied(j, i) then return false end
+				end
+		end
 	return true
 end
 
 function Grid:checkSecretGrade()
-    local sgrade = 0
-    for i=23,5,-1 do
-        local validLine = true
-        local emptyCell = 0
-        if i > 13 then
-            emptyCell = 23-i
-        end
-        if i <= 13 then
-            emptyCell = i-5
-        end
-        for j=0,9 do
-            if (not self:isOccupied(j,i) and j ~= emptyCell) or (j == emptyCell and self:isOccupied(j,i)) then
-                validLine = false
-            end
-        end
-        if not self:isOccupied(emptyCell,i-1) then
-            validLine = false
-        end
-        if(validLine) then
-                sgrade = sgrade + 1
-        else
-            	return sgrade
-        end
-    end
-    --[[
-    if(sgrade == 0) then return ""
-    elseif(sgrade < 10) then return 10-sgrade
-    elseif(sgrade < 19) then return "S"..(sgrade-9) end
-    return "GM"
-    --]]
-    return sgrade
+	local sgrade = 0
+	for i=23,5,-1 do
+		local validLine = true
+		local emptyCell = 0
+		if i > 13 then
+			emptyCell = 23-i
+		end
+		if i <= 13 then
+			emptyCell = i-5
+		end
+		for j=0,9 do
+			if (not self:isOccupied(j,i) and j ~= emptyCell) or (j == emptyCell and self:isOccupied(j,i)) then
+				validLine = false
+			end
+		end
+		if not self:isOccupied(emptyCell,i-1) then
+			validLine = false
+		end
+		if(validLine) then
+				sgrade = sgrade + 1
+		else
+				return sgrade
+		end
+	end
+	--[[
+	if(sgrade == 0) then return ""
+	elseif(sgrade < 10) then return 10-sgrade
+	elseif(sgrade < 19) then return "S"..(sgrade-9) end
+	return "GM"
+	--]]
+	return sgrade
 end
 
 function Grid:update()

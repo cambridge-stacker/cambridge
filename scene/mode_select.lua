@@ -12,9 +12,9 @@ function ModeSelectScene:new()
 		select = "mode",
 	}
 	DiscordRPC:update({
-        details = "In menus",
-        state = "Choosing a mode",
-    })
+		details = "In menus",
+		state = "Choosing a mode",
+	})
 end
 
 function ModeSelectScene:update()
@@ -77,8 +77,8 @@ function ModeSelectScene:onKeyPress(e)
 		(e.scancode == config.input["right"] or e.scancode == "right") then
 		self:switchSelect()
 		playSE("cursor_lr")
-    elseif e.scancode == "escape" then
-        scene = TitleScene()
+	elseif e.scancode == "escape" then
+		scene = TitleScene()
 	end
 end
 

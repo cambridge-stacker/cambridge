@@ -16,11 +16,11 @@ function ConfigScene:new()
 	-- load current config
 	self.config = config.input
 	self.highlight = 1
-    
+	
 	DiscordRPC:update({
-        details = "In menus",
-        state = "Changing game settings",
-    })
+		details = "In menus",
+		state = "Changing game settings",
+	})
 end
 
 function ConfigScene:update()
@@ -33,21 +33,21 @@ function ConfigScene:render()
 		0, 0, 0,
 		0.5, 0.5
 	)
-    
+	
 	love.graphics.setFont(font_3x5_4)
-    love.graphics.print("GAME SETTINGS", 80, 40)
-    
+	love.graphics.print("GAME SETTINGS", 80, 40)
+	
 	love.graphics.setColor(1, 1, 1, 0.5)
-    love.graphics.rectangle("fill", 20, 98 + self.highlight * 20, 170, 22)
-    
+	love.graphics.rectangle("fill", 20, 98 + self.highlight * 20, 170, 22)
+	
 	love.graphics.setFont(font_3x5_2)
 	for i, option in ipairs(ConfigScene.options) do
-        love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.printf(option[2], 40, 100 + i * 20, 150, "left")
-        for j, setting in ipairs(option[3]) do
-            love.graphics.setColor(1, 1, 1, config.gamesettings[option[1]] == j and 1 or 0.5)
-            love.graphics.printf(setting, 100 + 110 * j, 100 + i * 20, 100, "center")
-        end
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.printf(option[2], 40, 100 + i * 20, 150, "left")
+		for j, setting in ipairs(option[3]) do
+			love.graphics.setColor(1, 1, 1, config.gamesettings[option[1]] == j and 1 or 0.5)
+			love.graphics.printf(setting, 100 + 110 * j, 100 + i * 20, 100, "center")
+		end
 	end
 end
 
@@ -64,15 +64,15 @@ function ConfigScene:onKeyPress(e)
 		self.highlight = Mod1(self.highlight+1, optioncount)
 	elseif (e.scancode == config.input["left"] or e.scancode == "left") and e.isRepeat == false then
 		playSE("cursor_lr")
-        local option = ConfigScene.options[self.highlight]
-        config.gamesettings[option[1]] = Mod1(config.gamesettings[option[1]]-1, #option[3])
+		local option = ConfigScene.options[self.highlight]
+		config.gamesettings[option[1]] = Mod1(config.gamesettings[option[1]]-1, #option[3])
 	elseif (e.scancode == config.input["right"] or e.scancode == "right") and e.isRepeat == false then
 		playSE("cursor_lr")
-        local option = ConfigScene.options[self.highlight]
-        config.gamesettings[option[1]] = Mod1(config.gamesettings[option[1]]+1, #option[3])
-    elseif e.scancode == "escape" then
-        loadSave()
-        scene = TitleScene()
+		local option = ConfigScene.options[self.highlight]
+		config.gamesettings[option[1]] = Mod1(config.gamesettings[option[1]]+1, #option[3])
+	elseif e.scancode == "escape" then
+		loadSave()
+		scene = TitleScene()
 	end
 end
 

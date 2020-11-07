@@ -10,8 +10,8 @@ end
 
 function Bag7Randomizer:generatePiece()
 	if next(self.extra) == nil then
-                self.extra = {"I", "J", "L", "O", "S", "T", "Z"}
-        end
+		self.extra = {"I", "J", "L", "O", "S", "T", "Z"}
+	end
 	if next(self.bag) == nil then
 		self.bag = {"I", "J", "L", "O", "S", "T", "Z"}
 		table.insert(self.bag, table.remove(self.extra, math.random(table.getn(self.extra))))

@@ -17,15 +17,15 @@ function TGMPlusGame:new()
 	self.roll_frames = 0
 	self.combo = 1
 	
-    	self.SGnames = {
-        	"9", "8", "7", "6", "5", "4", "3", "2", "1",
-        	"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
-        	"GM"
-    	}
-    
+		self.SGnames = {
+			"9", "8", "7", "6", "5", "4", "3", "2", "1",
+			"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
+			"GM"
+		}
+	
 	self.randomizer = History6RollsRandomizer()
 
-    	self.lock_drop = false
+		self.lock_drop = false
 	self.enable_hold = false
 	self.next_queue_length = 1
 
@@ -33,29 +33,29 @@ function TGMPlusGame:new()
 	self.garbage_pos = 0
 	self.garbage_rows = {
 		[0] = {"e", "b", "b", "b", "b", "b", "b", "b", "b", "b"},
-		      {"e", "b", "b", "b", "b", "b", "b", "b", "b", "b"},
-		      {"e", "b", "b", "b", "b", "b", "b", "b", "b", "b"},
-		      {"e", "b", "b", "b", "b", "b", "b", "b", "b", "b"},
-		      {"b", "b", "b", "b", "b", "b", "b", "b", "b", "e"},
-                      {"b", "b", "b", "b", "b", "b", "b", "b", "b", "e"},
-                      {"b", "b", "b", "b", "b", "b", "b", "b", "b", "e"},
-                      {"b", "b", "b", "b", "b", "b", "b", "b", "b", "e"},
-                      {"e", "e", "b", "b", "b", "b", "b", "b", "b", "b"},
-		      {"e", "b", "b", "b", "b", "b", "b", "b", "b", "b"},
-		      {"e", "b", "b", "b", "b", "b", "b", "b", "b", "b"},
-		      {"b", "b", "b", "b", "b", "b", "b", "b", "e", "e"},
-		      {"b", "b", "b", "b", "b", "b", "b", "b", "b", "e"},
-		      {"b", "b", "b", "b", "b", "b", "b", "b", "b", "e"},
-		      {"b", "b", "e", "b", "b", "b", "b", "b", "b", "b"},
-		      {"b", "e", "e", "b", "b", "b", "b", "b", "b", "b"},
-		      {"b", "e", "b", "b", "b", "b", "b", "b", "b", "b"},
-		      {"b", "b", "b", "b", "b", "b", "b", "e", "b", "b"},
-		      {"b", "b", "b", "b", "b", "b", "b", "e", "e", "b"},
-		      {"b", "b", "b", "b", "b", "b", "b", "b", "e", "b"},
-		      {"b", "b", "b", "b", "e", "e", "b", "b", "b", "b"},
-		      {"b", "b", "b", "b", "e", "e", "b", "b", "b", "b"},
-		      {"b", "b", "b", "b", "e", "b", "b", "b", "b", "b"},
-		      {"b", "b", "b", "e", "e", "e", "b", "b", "b", "b"},
+			  {"e", "b", "b", "b", "b", "b", "b", "b", "b", "b"},
+			  {"e", "b", "b", "b", "b", "b", "b", "b", "b", "b"},
+			  {"e", "b", "b", "b", "b", "b", "b", "b", "b", "b"},
+			  {"b", "b", "b", "b", "b", "b", "b", "b", "b", "e"},
+					  {"b", "b", "b", "b", "b", "b", "b", "b", "b", "e"},
+					  {"b", "b", "b", "b", "b", "b", "b", "b", "b", "e"},
+					  {"b", "b", "b", "b", "b", "b", "b", "b", "b", "e"},
+					  {"e", "e", "b", "b", "b", "b", "b", "b", "b", "b"},
+			  {"e", "b", "b", "b", "b", "b", "b", "b", "b", "b"},
+			  {"e", "b", "b", "b", "b", "b", "b", "b", "b", "b"},
+			  {"b", "b", "b", "b", "b", "b", "b", "b", "e", "e"},
+			  {"b", "b", "b", "b", "b", "b", "b", "b", "b", "e"},
+			  {"b", "b", "b", "b", "b", "b", "b", "b", "b", "e"},
+			  {"b", "b", "e", "b", "b", "b", "b", "b", "b", "b"},
+			  {"b", "e", "e", "b", "b", "b", "b", "b", "b", "b"},
+			  {"b", "e", "b", "b", "b", "b", "b", "b", "b", "b"},
+			  {"b", "b", "b", "b", "b", "b", "b", "e", "b", "b"},
+			  {"b", "b", "b", "b", "b", "b", "b", "e", "e", "b"},
+			  {"b", "b", "b", "b", "b", "b", "b", "b", "e", "b"},
+			  {"b", "b", "b", "b", "e", "e", "b", "b", "b", "b"},
+			  {"b", "b", "b", "b", "e", "e", "b", "b", "b", "b"},
+			  {"b", "b", "b", "b", "e", "b", "b", "b", "b", "b"},
+			  {"b", "b", "b", "e", "e", "e", "b", "b", "b", "b"},
 	}
 end
 
@@ -65,37 +65,37 @@ function TGMPlusGame:getLockDelay() return 30 end
 function TGMPlusGame:getLineClearDelay() return 40 end
 
 function TGMPlusGame:getGravity()
-        if (self.level < 30)  then return 4/256
-    elseif (self.level < 35)  then return 6/256
-    elseif (self.level < 40)  then return 8/256
-    elseif (self.level < 50)  then return 10/256
-    elseif (self.level < 60)  then return 12/256
-    elseif (self.level < 70)  then return 16/256
-    elseif (self.level < 80)  then return 32/256
-    elseif (self.level < 90)  then return 48/256
-    elseif (self.level < 100) then return 64/256
-    elseif (self.level < 120) then return 80/256
-    elseif (self.level < 140) then return 96/256
-    elseif (self.level < 160) then return 112/256
-    elseif (self.level < 170) then return 128/256
-    elseif (self.level < 200) then return 144/256
-    elseif (self.level < 220) then return 4/256
-    elseif (self.level < 230) then return 32/256
-    elseif (self.level < 233) then return 64/256
-    elseif (self.level < 236) then return 96/256
-    elseif (self.level < 239) then return 128/256
-    elseif (self.level < 243) then return 160/256
-    elseif (self.level < 247) then return 192/256
-    elseif (self.level < 251) then return 224/256
-    elseif (self.level < 300) then return 1
-    elseif (self.level < 330) then return 2
-    elseif (self.level < 360) then return 3
-    elseif (self.level < 400) then return 4
-    elseif (self.level < 420) then return 5
-    elseif (self.level < 450) then return 4
-    elseif (self.level < 500) then return 3
-    else return 20
-    end
+		if (self.level < 30)  then return 4/256
+	elseif (self.level < 35)  then return 6/256
+	elseif (self.level < 40)  then return 8/256
+	elseif (self.level < 50)  then return 10/256
+	elseif (self.level < 60)  then return 12/256
+	elseif (self.level < 70)  then return 16/256
+	elseif (self.level < 80)  then return 32/256
+	elseif (self.level < 90)  then return 48/256
+	elseif (self.level < 100) then return 64/256
+	elseif (self.level < 120) then return 80/256
+	elseif (self.level < 140) then return 96/256
+	elseif (self.level < 160) then return 112/256
+	elseif (self.level < 170) then return 128/256
+	elseif (self.level < 200) then return 144/256
+	elseif (self.level < 220) then return 4/256
+	elseif (self.level < 230) then return 32/256
+	elseif (self.level < 233) then return 64/256
+	elseif (self.level < 236) then return 96/256
+	elseif (self.level < 239) then return 128/256
+	elseif (self.level < 243) then return 160/256
+	elseif (self.level < 247) then return 192/256
+	elseif (self.level < 251) then return 224/256
+	elseif (self.level < 300) then return 1
+	elseif (self.level < 330) then return 2
+	elseif (self.level < 360) then return 3
+	elseif (self.level < 400) then return 4
+	elseif (self.level < 420) then return 5
+	elseif (self.level < 450) then return 4
+	elseif (self.level < 500) then return 3
+	else return 20
+	end
 end
 
 function TGMPlusGame:getGarbageLimit() return 13 - math.floor(self.level / 100) end
@@ -123,8 +123,8 @@ function TGMPlusGame:onPieceLock(piece, cleared_row_count)
 end
 
 function TGMPlusGame:onLineClear(cleared_row_count)
-    self.level = math.min(self.level + cleared_row_count, 999)
-    if self.level == 999 and not self.clear then self.clear = true end
+	self.level = math.min(self.level + cleared_row_count, 999)
+	if self.level == 999 and not self.clear then self.clear = true end
 end
 
 function TGMPlusGame:advanceBottomRow()
@@ -188,18 +188,18 @@ function TGMPlusGame:drawScoringInfo()
 	love.graphics.printf("NEXT", 64, 40, 40, "left")
 	love.graphics.printf("SCORE", 240, 200, 40, "left")
 	love.graphics.printf("LEVEL", 240, 320, 40, "left")
-    local sg = self.grid:checkSecretGrade()
-    if sg >= 5 then 
-        love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
-    end
+	local sg = self.grid:checkSecretGrade()
+	if sg >= 5 then 
+		love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
+	end
 
 	love.graphics.setFont(font_3x5_3)
 	love.graphics.printf(self.score, 240, 220, 90, "left")
 	love.graphics.printf(self.level, 240, 340, 40, "right")
 	love.graphics.printf(self:getSectionEndLevel(), 240, 370, 40, "right")
-    if sg >= 5 then
-        love.graphics.printf(self.SGnames[sg], 240, 450, 180, "left")
-    end
+	if sg >= 5 then
+		love.graphics.printf(self.SGnames[sg], 240, 450, 180, "left")
+	end
 
 	love.graphics.setFont(font_8x11)
 	love.graphics.printf(formatTime(self.frames), 64, 420, 160, "center")

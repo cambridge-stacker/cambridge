@@ -37,13 +37,13 @@ If you haven't already, install `love` with your favourite package manager (Home
 
 Clone the repository in git:
 
-    git clone https://github.com/SashLilac/cambridge
+	git clone https://github.com/SashLilac/cambridge
 
 Alternatively, download the source code ZIP in the latest release.
 
 Then, navigate to the root directory that you just cloned, and type:
 
-    love .
+	love .
 
 It should run automatically!
 
@@ -53,11 +53,11 @@ You do not need LÖVE on Windows, as it comes bundled with the program. Download
 
 Extract the ZIP, open a Command Prompt at the folder you extracted Cambridge to, then run this command:
 
-    dist\windows\love.exe .
+	dist\windows\love.exe .
 
 Alternatively, if you're on a 32-bit system, run this instead:
 
-    dist\win32\love.exe .
+	dist\win32\love.exe .
 
 32-bit systems do not support rich presence integration.
 

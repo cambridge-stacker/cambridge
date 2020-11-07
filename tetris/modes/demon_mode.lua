@@ -26,13 +26,13 @@ function DemonModeGame:new()
 	self.enable_hold = true
 	self.lock_drop = true
 	self.next_queue_length = 3
-    if math.random() < 1/6.66 then
-        self.rpc_details = "Suffering"
-    end
+	if math.random() < 1/6.66 then
+		self.rpc_details = "Suffering"
+	end
 end
 
 function DemonModeGame:getARE()
-	    if self.level < 500 then return 30
+		if self.level < 500 then return 30
 	elseif self.level < 600 then return 25
 	elseif self.level < 700 then return 15
 	elseif self.level < 800 then return 14
@@ -53,7 +53,7 @@ function DemonModeGame:getLineARE()
 end
 
 function DemonModeGame:getDasLimit()
-	    if self.level < 500 then return 15
+		if self.level < 500 then return 15
 	elseif self.level < 1000 then return 10
 	elseif self.level < 1500 then return 5
 	elseif self.level < 1700 then return 4

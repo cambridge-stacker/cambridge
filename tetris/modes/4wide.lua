@@ -20,13 +20,13 @@ function FourWideGame:onLineClear(cleared_row_count)
 		local new_level = self.level + cleared_row_levels[cleared_row_count]
 		self:updateSectionTimes(self.level, new_level)
 		if new_level >= 1300 or self:hitTorikan(self.level, new_level) then
-            		self.clear = true
+					self.clear = true
 			if new_level >= 1300 then
 				self.level = 1300
-                		self.grid:clear()
-                		self.roll_frames = -150
-            		else
-                		self.game_over = true
+						self.grid:clear()
+						self.roll_frames = -150
+					else
+						self.game_over = true
 			end
 		else
 			self.level = math.min(new_level, 1300)

@@ -6,16 +6,16 @@ require 'load.save'
 
 local configurable_inputs = {
 	"left",
-    "right",
-    "up",
-    "down",
+	"right",
+	"up",
+	"down",
 	"rotate_left",
 	"rotate_left2",
-    "rotate_right",
-    "rotate_right2",
-    "rotate_180",
-    "hold",
-    "retry",
+	"rotate_right",
+	"rotate_right2",
+	"rotate_180",
+	"hold",
+	"retry",
 }
 
 function ConfigScene:new()
@@ -24,9 +24,9 @@ function ConfigScene:new()
 	self.input_state = 1
 
 	DiscordRPC:update({
-        details = "In menus",
-        state = "Changing input config",
-    })
+		details = "In menus",
+		state = "Changing input config",
+	})
 end
 
 function ConfigScene:update()
@@ -42,7 +42,7 @@ function ConfigScene:render()
 
 	love.graphics.setFont(font_3x5_2)
 	for i, input in pairs(configurable_inputs) do
-        love.graphics.printf(input, 40, 50 + i * 20, 200, "left")
+		love.graphics.printf(input, 40, 50 + i * 20, 200, "left")
 		if config.input[input] then
 			love.graphics.printf(
 				love.keyboard.getKeyFromScancode(config.input[input]) .. " (" .. config.input[input] .. ")",
@@ -67,13 +67,13 @@ function ConfigScene:onKeyPress(e)
 			self.input_state = 1
 		end
 	else
-        if e.scancode == "escape" then
-            loadSave()
+		if e.scancode == "escape" then
+			loadSave()
 			scene = TitleScene()
-        else
-            config.input[configurable_inputs[self.input_state]] = e.scancode
-            self.input_state = self.input_state + 1
-        end
+		else
+			config.input[configurable_inputs[self.input_state]] = e.scancode
+			self.input_state = self.input_state + 1
+		end
 	end
 end
 

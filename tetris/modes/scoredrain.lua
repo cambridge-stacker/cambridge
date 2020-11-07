@@ -20,83 +20,83 @@ function ScoreDrainGame:new()
 	self.randomizer = History6RollsRandomizer()
 	
 	self.lock_drop = true
-    self.lock_hard_drop = true
+	self.lock_hard_drop = true
 	self.enable_hold = true
 	self.next_queue_length = 3
 end
 
 function ScoreDrainGame:getARE()
-        if self.level < 700 then return 27
-    elseif self.level < 800 then return 18
-    elseif self.level < 1000 then return 14
-    elseif self.level < 1100 then return 8
-    elseif self.level < 1200 then return 7
-    else return 6 end
+		if self.level < 700 then return 27
+	elseif self.level < 800 then return 18
+	elseif self.level < 1000 then return 14
+	elseif self.level < 1100 then return 8
+	elseif self.level < 1200 then return 7
+	else return 6 end
 end
 
 function ScoreDrainGame:getLineARE()
-        if self.level < 600 then return 27
-    elseif self.level < 700 then return 18
-    elseif self.level < 800 then return 14
-    elseif self.level < 1100 then return 8
-    elseif self.level < 1200 then return 7
-    else return 6 end
+		if self.level < 600 then return 27
+	elseif self.level < 700 then return 18
+	elseif self.level < 800 then return 14
+	elseif self.level < 1100 then return 8
+	elseif self.level < 1200 then return 7
+	else return 6 end
 end
 
 function ScoreDrainGame:getDasLimit()
-        if self.level < 500 then return 15
-    elseif self.level < 900 then return 9
-    else return 7 end
+		if self.level < 500 then return 15
+	elseif self.level < 900 then return 9
+	else return 7 end
 end
 
 function ScoreDrainGame:getLineClearDelay()
-        if self.level < 500 then return 40
-    elseif self.level < 600 then return 25
-    elseif self.level < 700 then return 16
-    elseif self.level < 800 then return 12
-    elseif self.level < 1100 then return 6
-    elseif self.level < 1200 then return 5
-    else return 4 end
+		if self.level < 500 then return 40
+	elseif self.level < 600 then return 25
+	elseif self.level < 700 then return 16
+	elseif self.level < 800 then return 12
+	elseif self.level < 1100 then return 6
+	elseif self.level < 1200 then return 5
+	else return 4 end
 end
 
 function ScoreDrainGame:getLockDelay()
-        if self.level < 900 then return 30
-    elseif self.level < 1100 then return 17
-    else return 15 end
+		if self.level < 900 then return 30
+	elseif self.level < 1100 then return 17
+	else return 15 end
 end
 
 function ScoreDrainGame:getGravity()
-        if (self.level < 30)  then return 4/256
-    elseif (self.level < 35)  then return 6/256
-    elseif (self.level < 40)  then return 8/256
-    elseif (self.level < 50)  then return 10/256
-    elseif (self.level < 60)  then return 12/256
-    elseif (self.level < 70)  then return 16/256
-    elseif (self.level < 80)  then return 32/256
-    elseif (self.level < 90)  then return 48/256
-    elseif (self.level < 100) then return 64/256
-    elseif (self.level < 120) then return 80/256
-    elseif (self.level < 140) then return 96/256
-    elseif (self.level < 160) then return 112/256
-    elseif (self.level < 170) then return 128/256
-    elseif (self.level < 200) then return 144/256
-    elseif (self.level < 220) then return 4/256
-    elseif (self.level < 230) then return 32/256
-    elseif (self.level < 233) then return 64/256
-    elseif (self.level < 236) then return 96/256
-    elseif (self.level < 239) then return 128/256
-    elseif (self.level < 243) then return 160/256
-    elseif (self.level < 247) then return 192/256
-    elseif (self.level < 251) then return 224/256
-    elseif (self.level < 300) then return 1
-    elseif (self.level < 330) then return 2
-    elseif (self.level < 360) then return 3
-    elseif (self.level < 400) then return 4
-    elseif (self.level < 420) then return 5
-    elseif (self.level < 450) then return 4
-    elseif (self.level < 500) then return 3
-    else return 20
-    end
+		if (self.level < 30)  then return 4/256
+	elseif (self.level < 35)  then return 6/256
+	elseif (self.level < 40)  then return 8/256
+	elseif (self.level < 50)  then return 10/256
+	elseif (self.level < 60)  then return 12/256
+	elseif (self.level < 70)  then return 16/256
+	elseif (self.level < 80)  then return 32/256
+	elseif (self.level < 90)  then return 48/256
+	elseif (self.level < 100) then return 64/256
+	elseif (self.level < 120) then return 80/256
+	elseif (self.level < 140) then return 96/256
+	elseif (self.level < 160) then return 112/256
+	elseif (self.level < 170) then return 128/256
+	elseif (self.level < 200) then return 144/256
+	elseif (self.level < 220) then return 4/256
+	elseif (self.level < 230) then return 32/256
+	elseif (self.level < 233) then return 64/256
+	elseif (self.level < 236) then return 96/256
+	elseif (self.level < 239) then return 128/256
+	elseif (self.level < 243) then return 160/256
+	elseif (self.level < 247) then return 192/256
+	elseif (self.level < 251) then return 224/256
+	elseif (self.level < 300) then return 1
+	elseif (self.level < 330) then return 2
+	elseif (self.level < 360) then return 3
+	elseif (self.level < 400) then return 4
+	elseif (self.level < 420) then return 5
+	elseif (self.level < 450) then return 4
+	elseif (self.level < 500) then return 3
+	else return 20
+	end
 end
 
 function ScoreDrainGame:advanceOneFrame()
@@ -110,8 +110,8 @@ end
 
 function ScoreDrainGame:onPieceEnter()
 	if (self.level % 100 ~= 99) and self.frames ~= 0 then
-        self.level = self.level + 1
-    end
+		self.level = self.level + 1
+	end
 end
 
 local cleared_row_levels = {1, 2, 4, 6}

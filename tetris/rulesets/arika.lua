@@ -82,18 +82,18 @@ function ARS:attemptWallkicks(piece, new_piece, rot_dir, grid)
 	) and (
 		piece.rotation == 0 or piece.rotation == 2
 	) then
-        local offsets = new_piece:getBlockOffsets()
-        table.sort(offsets, function(A, B) return A.y < B.y or A.y == B.y and A.x < B.y end)
-        for index, offset in pairs(offsets) do
-            if grid:isOccupied(piece.position.x + offset.x, piece.position.y + offset.y) then
-                if offset.x == 0 then
-                    return 
-                else
-                    break
-                end
-            end
-        end
-    end
+		local offsets = new_piece:getBlockOffsets()
+		table.sort(offsets, function(A, B) return A.y < B.y or A.y == B.y and A.x < B.y end)
+		for index, offset in pairs(offsets) do
+			if grid:isOccupied(piece.position.x + offset.x, piece.position.y + offset.y) then
+				if offset.x == 0 then
+					return 
+				else
+					break
+				end
+			end
+		end
+	end
 
 	-- kick right, kick left
 	if (grid:canPlacePiece(new_piece:withOffset({x=1, y=0}))) then

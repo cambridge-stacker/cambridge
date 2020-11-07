@@ -20,8 +20,8 @@ backgrounds = {
 	love.graphics.newImage("res/backgrounds/1800-railways.png"),
 	love.graphics.newImage("res/backgrounds/1900-world-wide-web.png"),
 	title = love.graphics.newImage("res/backgrounds/title_v0.1.png"),
-    input_config = love.graphics.newImage("res/backgrounds/options-pcb.png"),
-    game_config = love.graphics.newImage("res/backgrounds/options-gears.png"),
+	input_config = love.graphics.newImage("res/backgrounds/options-pcb.png"),
+	game_config = love.graphics.newImage("res/backgrounds/options-gears.png"),
 }
 
 blocks = {
@@ -48,24 +48,24 @@ blocks = {
 }
 
 ColourSchemes = {
-    Arika = {
-        I = "R",
-        L = "O",
-        J = "B",
-        S = "M",
-        Z = "G",
-        O = "Y",
-        T = "C",
-    },
-    TTC = {
-        I = "C",
-        L = "O",
-        J = "B",
-        S = "G",
-        Z = "R",
-        O = "Y",
-        T = "M",
-    },
+	Arika = {
+		I = "R",
+		L = "O",
+		J = "B",
+		S = "M",
+		Z = "G",
+		O = "Y",
+		T = "C",
+	},
+	TTC = {
+		I = "C",
+		L = "O",
+		J = "B",
+		S = "G",
+		Z = "R",
+		O = "Y",
+		T = "M",
+	},
 }
 
 for name, blockset in pairs(blocks) do

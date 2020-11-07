@@ -7,7 +7,7 @@ function ExitScene:new()
 end
 
 function ExitScene:update()
-    love.event.quit()
+	love.event.quit()
 end
 
 function ExitScene:render()

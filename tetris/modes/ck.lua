@@ -29,7 +29,7 @@ function SurvivalCKGame:new()
 end
 
 function SurvivalCKGame:getARE()
-	    if self.level < 100  then return 15
+		if self.level < 100  then return 15
 	elseif self.level < 200  then return 14
 	elseif self.level < 300  then return 13
 	elseif self.level < 400  then return 12
@@ -49,7 +49,7 @@ function SurvivalCKGame:getLineARE()
 end
 
 function SurvivalCKGame:getDasLimit()
-	    if self.level < 700  then return 10
+		if self.level < 700  then return 10
 	elseif self.level < 900  then return 9
 	elseif self.level < 1100 then return 8
 	elseif self.level < 1300 then return 7
@@ -58,7 +58,7 @@ function SurvivalCKGame:getDasLimit()
 end
 
 function SurvivalCKGame:getLineClearDelay()
-	    if self.level < 100 then return 10
+		if self.level < 100 then return 10
 	elseif self.level < 200 then return 8
 	elseif self.level < 300 then return 7
 	elseif self.level < 400 then return 6
@@ -66,7 +66,7 @@ function SurvivalCKGame:getLineClearDelay()
 end
 
 function SurvivalCKGame:getLockDelay()
-	    if self.level < 600  then return 20
+		if self.level < 600  then return 20
 	elseif self.level < 700  then return 19
 	elseif self.level < 800  then return 18
 	elseif self.level < 900  then return 17
@@ -87,7 +87,7 @@ function SurvivalCKGame:getGravity()
 end
 
 function SurvivalCKGame:getGarbageLimit()
-	    if self.level < 1000 then return 20
+		if self.level < 1000 then return 20
 	elseif self.level < 1100 then return 17
 	elseif self.level < 1200 then return 14
 	elseif self.level < 1300 then return 11
@@ -95,7 +95,7 @@ function SurvivalCKGame:getGarbageLimit()
 end
 
 function SurvivalCKGame:getRegretTime()
-	    if self.level < 500  then return frameTime(0,55)
+		if self.level < 500  then return frameTime(0,55)
 	elseif self.level < 1000 then return frameTime(0,50)
 	elseif self.level < 1500 then return frameTime(0,40)
 	elseif self.level < 2000 then return frameTime(0,35)
@@ -153,11 +153,11 @@ function SurvivalCKGame:onLineClear(cleared_row_count)
 		local new_level = self.level + cleared_row_count * 2
 		self:updateSectionTimes(self.level, new_level)
 		if new_level >= 2500 or self:hitTorikan(self.level, new_level) then
-                	self.clear = true
+					self.clear = true
 			if new_level >= 2500 then
 				self.level = 2500
-                		self.grid:clear()
-                		self.big_mode = true
+						self.grid:clear()
+						self.big_mode = true
 				self.roll_frames = -150
 			end
 		else
@@ -217,11 +217,11 @@ function SurvivalCKGame:drawGrid()
 	elseif self.level >= 1600 and self.level < 1700 then
 		self.grid:drawInvisible(self.rollOpacityFunction2)
 	elseif self.level >= 1700 and self.level < 1800 then
-                self.grid:drawInvisible(self.rollOpacityFunction3)
+				self.grid:drawInvisible(self.rollOpacityFunction3)
 	elseif self.level >= 1800 and self.level < 1900 then
-                self.grid:drawInvisible(self.rollOpacityFunction4)
+				self.grid:drawInvisible(self.rollOpacityFunction4)
 	elseif self.level >= 1900 and self.level < 2000 then
-                self.grid:drawInvisible(self.rollOpacityFunction5)
+				self.grid:drawInvisible(self.rollOpacityFunction5)
 	else
 		self.grid:draw()
 	end
@@ -237,27 +237,27 @@ SurvivalCKGame.rollOpacityFunction1 = function(age)
 end
 
 SurvivalCKGame.rollOpacityFunction2 = function(age)
-        if age < 360 then return 1
-        elseif age > 420 then return 0
-        else return 1 - (age - 360) / 60 end
+		if age < 360 then return 1
+		elseif age > 420 then return 0
+		else return 1 - (age - 360) / 60 end
 end
 
 SurvivalCKGame.rollOpacityFunction3 = function(age)
-        if age < 300 then return 1
-        elseif age > 360 then return 0
-        else return 1 - (age - 300) / 60 end
+		if age < 300 then return 1
+		elseif age > 360 then return 0
+		else return 1 - (age - 300) / 60 end
 end
 
 SurvivalCKGame.rollOpacityFunction4 = function(age)
-        if age < 240 then return 1
-        elseif age > 300 then return 0
-        else return 1 - (age - 240) / 60 end
+		if age < 240 then return 1
+		elseif age > 300 then return 0
+		else return 1 - (age - 240) / 60 end
 end
 
 SurvivalCKGame.rollOpacityFunction5 = function(age)
-        if age < 180 then return 1
-        elseif age > 240 then return 0
-        else return 1 - (age - 180) / 60 end
+		if age < 180 then return 1
+		elseif age > 240 then return 0
+		else return 1 - (age - 180) / 60 end
 end
 
 local master_grades = { "M", "MK", "MV", "MO", "MM" }

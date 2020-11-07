@@ -25,12 +25,12 @@ function PhantomMania2Game:new()
 	self.hold_age = 0
 	self.queue_age = 0
 	self.roll_points = 0
-    
-    self.SGnames = {
-        "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
-        "m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8", "m9",
-        "GM"
-    }
+	
+	self.SGnames = {
+		"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
+		"m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8", "m9",
+		"GM"
+	}
 
 	self.randomizer = History6RollsRandomizer()
 
@@ -43,12 +43,12 @@ function PhantomMania2Game:new()
 end
 
 function PhantomMania2Game:getARE()
-	    if self.level < 300 then return 12
+		if self.level < 300 then return 12
 	else return 6 end
 end
 
 function PhantomMania2Game:getLineARE()
-	    if self.level < 100 then return 8
+		if self.level < 100 then return 8
 	elseif self.level < 200 then return 7
 	elseif self.level < 500 then return 6
 	elseif self.level < 1300 then return 5
@@ -56,7 +56,7 @@ function PhantomMania2Game:getLineARE()
 end
 
 function PhantomMania2Game:getDasLimit()
-	    if self.level < 200 then return 9
+		if self.level < 200 then return 9
 	elseif self.level < 500 then return 7
 	else return 5 end
 end
@@ -66,7 +66,7 @@ function PhantomMania2Game:getLineClearDelay()
 end
 
 function PhantomMania2Game:getLockDelay()
-	    if self.level < 200 then return 18
+		if self.level < 200 then return 18
 	elseif self.level < 300 then return 17
 	elseif self.level < 500 then return 15
 	elseif self.level < 600 then return 13
@@ -299,15 +299,15 @@ function PhantomMania2Game:drawScoringInfo()
 	love.graphics.printf("GRADE", text_x, 120, 40, "left")
 	love.graphics.printf("SCORE", text_x, 200, 40, "left")
 	love.graphics.printf("LEVEL", text_x, 320, 40, "left")
-    local sg = self.grid:checkSecretGrade()
-    if sg >= 5 then 
-        love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
-    end
+	local sg = self.grid:checkSecretGrade()
+	if sg >= 5 then 
+		love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
+	end
 
 	if(self.coolregret_timer > 0) then
-                love.graphics.printf(self.coolregret_message, 64, 400, 160, "center")
-                self.coolregret_timer = self.coolregret_timer - 1
-        end
+				love.graphics.printf(self.coolregret_message, 64, 400, 160, "center")
+				self.coolregret_timer = self.coolregret_timer - 1
+		end
 
 	love.graphics.setFont(font_3x5_3)
 	love.graphics.printf(getLetterGrade(math.floor(self.grade)), text_x, 140, 90, "left")
@@ -318,10 +318,10 @@ function PhantomMania2Game:drawScoringInfo()
 	else
 		love.graphics.printf(math.floor(self.level / 100 + 1) * 100, text_x, 370, 50, "right")
 	end
-    
-    if sg >= 5 then
-        love.graphics.printf(self.SGnames[sg], 240, 450, 180, "left")
-    end
+	
+	if sg >= 5 then
+		love.graphics.printf(self.SGnames[sg], 240, 450, 180, "left")
+	end
 end
 
 function PhantomMania2Game:getBackground()

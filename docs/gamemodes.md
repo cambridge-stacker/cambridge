@@ -4,17 +4,17 @@ Game modes
 There are several classes of game modes. The modes that originate from other games are organized by suffix:
 
 * The "C" series stand for "Classic" games, games that were produced before around 1992-1993 and generally have no wallkicks or lock delay.
-    * C84 - The original version from the Electronika 60.
-    * C88 - Sega Tetris.
-    * C89 - Nintendo / NES Tetris.
+	* C84 - The original version from the Electronika 60.
+	* C88 - Sega Tetris.
+	* C89 - Nintendo / NES Tetris.
 * The "A" series stand for "Arika" games, or games in the Tetris the Grand Master series.
-    * A1 - Tetris The Grand Master (the original from 1998).
-    * A2 - Tetris The Absolute The Grand Master 2 PLUS.
-    * A3 - Tetris The Grand Master 3 Terror-Instinct.
-    * AX - Tetris The Grand Master ACE (X for Xbox).
+	* A1 - Tetris The Grand Master (the original from 1998).
+	* A2 - Tetris The Absolute The Grand Master 2 PLUS.
+	* A3 - Tetris The Grand Master 3 Terror-Instinct.
+	* AX - Tetris The Grand Master ACE (X for Xbox).
 * The "G" series stand for "Guideline" games, or games that follow the Tetris Guideline.
-    * GF - Tetris Friends (2007-2019)
-    * GJ - Tetris Online Japan (2005-2011)
+	* GF - Tetris Friends (2007-2019)
+	* GJ - Tetris Online Japan (2005-2011)
 * N stands for Nullpomino, only used for Phantom Mania N.
 
 MARATHON

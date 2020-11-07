@@ -13,8 +13,8 @@ MarathonC89Game.tagline = "Can you play fast enough to reach the killscreen?"
 
 
 function MarathonC89Game:new()
-    MarathonC89Game.super:new()
-    
+	MarathonC89Game.super:new()
+	
 	self.randomizer = Randomizer()
 
 	self.ready_frames = 1
@@ -23,8 +23,8 @@ function MarathonC89Game:new()
 	self.start_level = 12
 	self.level = 12
 
-    self.lock_drop = true
-    self.enable_hard_drop = false
+	self.lock_drop = true
+	self.enable_hard_drop = false
 	self.enable_hold = false
 	self.next_queue_length = 1
 	self.additive_gravity = false
@@ -99,7 +99,7 @@ local gravity_table = {
 
 function MarathonC89Game:getGravity()
 	if self.waiting_frames > 0 then return 0 end
-	    if self.level >= 29 then return 1
+		if self.level >= 29 then return 1
 	elseif self.level >= 19 then return 1/2
 	else return gravity_table[self.level] end
 end

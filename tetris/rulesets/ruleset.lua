@@ -9,13 +9,13 @@ Ruleset.hash = ""
 -- Arika-type ruleset defaults
 Ruleset.world = false
 Ruleset.colourscheme = {
-    I = "R",
-    L = "O",
-    J = "B",
-    S = "M",
-    Z = "G",
-    O = "Y",
-    T = "C",
+	I = "R",
+	L = "O",
+	J = "B",
+	S = "M",
+	Z = "G",
+	O = "Y",
+	T = "C",
 }
 Ruleset.softdrop_lock = true
 Ruleset.harddrop_lock = false
@@ -157,8 +157,8 @@ function Ruleset:initializePiece(
 	else
 		spawn_positions = self.spawn_positions
 	end
-    local colours = ({self.colourscheme, ColourSchemes.Arika, ColourSchemes.TTC})[config.gamesettings.piece_colour]
-    
+	local colours = ({self.colourscheme, ColourSchemes.Arika, ColourSchemes.TTC})[config.gamesettings.piece_colour]
+	
 	local piece = Piece(data.shape, data.orientation - 1, {
 		x = spawn_positions[data.shape].x,
 		y = spawn_positions[data.shape].y

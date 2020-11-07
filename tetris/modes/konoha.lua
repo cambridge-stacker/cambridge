@@ -16,8 +16,8 @@ function KonohaGame:new()
 
 	self.randomizer = KonohaRandomizer()
 	self.bravos = 0
-    self.last_bonus_amount = 0
-    self.last_bonus_display_time = 0
+	self.last_bonus_amount = 0
+	self.last_bonus_display_time = 0
 	self.time_limit = 10800
 	self.big_mode = true
 	
@@ -26,7 +26,7 @@ function KonohaGame:new()
 end
 
 function KonohaGame:getARE()
-	    if self.level < 300  then return 30
+		if self.level < 300  then return 30
 	elseif self.level < 400  then return 25
 	elseif self.level < 500  then return 20
 	elseif self.level < 600  then return 17
@@ -42,14 +42,14 @@ function KonohaGame:getLineARE()
 end
 
 function KonohaGame:getDasLimit()
-	    if self.level < 500  then return 10
+		if self.level < 500  then return 10
 	elseif self.level < 800  then return 9
 	elseif self.level < 1000 then return 8
 	else return 7 end
 end
 
 function KonohaGame:getLineClearDelay()
-	    if self.level < 200  then return 14
+		if self.level < 200  then return 14
 	elseif self.level < 500  then return 9
 	elseif self.level < 800  then return 8
 	elseif self.level < 1000 then return 7
@@ -57,7 +57,7 @@ function KonohaGame:getLineClearDelay()
 end
 
 function KonohaGame:getLockDelay()
-	    if self.level < 500  then return 30
+		if self.level < 500  then return 30
 	elseif self.level < 600  then return 25
 	elseif self.level < 700  then return 23
 	elseif self.level < 800  then return 20
@@ -69,7 +69,7 @@ function KonohaGame:getLockDelay()
 end
 
 function KonohaGame:getGravity()
-	    if (self.level < 30)  then return 4/256
+		if (self.level < 30)  then return 4/256
 	elseif (self.level < 35)  then return 8/256
 	elseif (self.level < 40)  then return 12/256
 	elseif (self.level < 50)  then return 16/256
@@ -102,7 +102,7 @@ function KonohaGame:advanceOneFrame()
 	if self.time_limit <= 0 then
 		self.game_over = true
 	end
-    self.last_bonus_display_time = self.last_bonus_display_time - 1
+	self.last_bonus_display_time = self.last_bonus_display_time - 1
 end
 
 function KonohaGame:onPieceEnter()
@@ -124,9 +124,9 @@ local non_bravo_bonus = {0, 0, 20, 40}
 local bravo_ot_bonus = {0, 60, 120, 180}
 
 function KonohaGame:onLineClear(cleared_row_count)
-    local oldtime = self.time_limit
+	local oldtime = self.time_limit
 	
-    self.level = self.level + cleared_row_levels[cleared_row_count / 2]
+	self.level = self.level + cleared_row_levels[cleared_row_count / 2]
 	if self.grid:checkForBravo(cleared_row_count) then
 		self.bravos = self.bravos + 1
 		if self.level < 1000 then self.time_limit = self.time_limit + bravo_bonus[cleared_row_count / 2]
@@ -136,12 +136,12 @@ function KonohaGame:onLineClear(cleared_row_count)
 	elseif self.level < 1000 then
 		self.time_limit = self.time_limit + non_bravo_bonus[cleared_row_count / 2]
 	end
-    
-    local bonus = self.time_limit - oldtime
-    if bonus > 0 then
-        self.last_bonus_amount = bonus
-        self.last_bonus_display_time = 120
-    end
+	
+	local bonus = self.time_limit - oldtime
+	if bonus > 0 then
+		self.last_bonus_amount = bonus
+		self.last_bonus_display_time = 120
+	end
 end
 
 function KonohaGame:getBackground()
@@ -164,13 +164,13 @@ function KonohaGame:drawScoringInfo()
 	
 	love.graphics.setFont(font_3x5_3)
 	if not self.game_over and self.time_limit < frameTime(0,10) and self.time_limit % 4 < 2 then
-                love.graphics.setColor(1, 0.3, 0.3, 1)
-        end
+				love.graphics.setColor(1, 0.3, 0.3, 1)
+		end
 	love.graphics.printf(formatTime(self.time_limit), 240, 140, 120, "right")
 	love.graphics.setColor(1, 1, 1, 1)
-    if self.last_bonus_display_time > 0 then
-        love.graphics.printf("+"..formatTime(self.last_bonus_amount), 240, 160, 120, "right")
-    end
+	if self.last_bonus_display_time > 0 then
+		love.graphics.printf("+"..formatTime(self.last_bonus_amount), 240, 160, 120, "right")
+	end
 	love.graphics.printf(self.bravos, 240, 220, 90, "left")
 	love.graphics.printf(self.level, 240, 340, 50, "right")
 	love.graphics.printf(self:getSectionEndLevel(), 240, 370, 50, "right")

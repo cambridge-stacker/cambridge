@@ -4,30 +4,30 @@ local main_menu_screens = {
 	ModeSelectScene,
 	InputConfigScene,
 	GameConfigScene,
-    ExitScene,
+	ExitScene,
 }
 
 local mainmenuidle = {
-    "Idle",
-    "On title screen",
-    "On main menu screen",
-    "Twiddling their thumbs",
-    "Admiring the main menu's BG",
-    "Waiting for spring to come",
-    "Actually not playing",
-    "Contemplating collecting stars",
-    "Preparing to put the block!!",
-    "Having a nap",
-    "In menus",
-    "Bottom text",
+	"Idle",
+	"On title screen",
+	"On main menu screen",
+	"Twiddling their thumbs",
+	"Admiring the main menu's BG",
+	"Waiting for spring to come",
+	"Actually not playing",
+	"Contemplating collecting stars",
+	"Preparing to put the block!!",
+	"Having a nap",
+	"In menus",
+	"Bottom text",
 }
 
 function TitleScene:new()
 	self.main_menu_state = 1
 	DiscordRPC:update({
-        details = "In menus",
-        state =  mainmenuidle[math.random(#mainmenuidle)],
-    })
+		details = "In menus",
+		state =  mainmenuidle[math.random(#mainmenuidle)],
+	})
 end
 
 function TitleScene:update()
@@ -67,8 +67,8 @@ function TitleScene:onKeyPress(e)
 	elseif (e.scancode == config.input["down"] or e.scancode == "down") and e.isRepeat == false then
 		self:changeOption(1)
 		playSE("cursor")
-    elseif e.scancode == "escape" and e.isRepeat == false then
-        love.event.quit()
+	elseif e.scancode == "escape" and e.isRepeat == false then
+		love.event.quit()
 	end
 end
 

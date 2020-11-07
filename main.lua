@@ -15,13 +15,13 @@ function love.load()
 
 	love.window.setMode(love.graphics.getWidth(), love.graphics.getHeight(), {resizable = true});
 
-    if not config.gamesettings then config.gamesettings = {} end
-    for _, option in ipairs(GameConfigScene.options) do
-        if not config.gamesettings[option[1]] then
-            config.gamesettings[option[1]] = 1
-        end
-    end
-    
+	if not config.gamesettings then config.gamesettings = {} end
+	for _, option in ipairs(GameConfigScene.options) do
+		if not config.gamesettings[option[1]] then
+			config.gamesettings[option[1]] = 1
+		end
+	end
+	
 	if not config.input then
 		config.input = {}
 		scene = InputConfigScene()
