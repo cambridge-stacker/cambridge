@@ -185,5 +185,12 @@ function SRS:onPieceRotate(piece, grid)
 	end
 end
 
-function SRS:get180RotationValue() return 3 end
+function SRS:get180RotationValue() 
+	if config.gamesettings.world_reverse == 1 then
+		return 1
+	else
+		return 3
+	end
+end
+
 return SRS

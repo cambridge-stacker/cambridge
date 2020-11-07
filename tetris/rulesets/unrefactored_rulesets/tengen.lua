@@ -127,7 +127,14 @@ function Tengen:onPieceDrop(piece, grid)
 	piece.lock_delay = 0 -- step reset
 end
 
-function Tengen:get180RotationValue() return config["reverse_rotate"] and 1 or 3 end
+function Tengen:get180RotationValue() 
+	if config.gamesettings.world_reverse == 3 then
+		return 1
+	else
+		return 3
+	end
+end
+
 function Tengen:getDefaultOrientation() return 3 end  -- downward facing pieces by default
 
 return Tengen
