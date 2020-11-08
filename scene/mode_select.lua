@@ -58,8 +58,8 @@ function ModeSelectScene:render()
 	end
 end
 
-function ModeSelectScene:onKeyPress(e)
-	if e.scancode == "return" and e.isRepeat == false then
+function ModeSelectScene:onInputPress(e)
+	if e.input == "menu_decide" then
 		current_mode = self.menu_state.mode
 		current_ruleset = self.menu_state.ruleset
 		config.current_mode = current_mode
@@ -67,17 +67,16 @@ function ModeSelectScene:onKeyPress(e)
 		playSE("mode_decide")
 		saveConfig()
 		scene = GameScene(game_modes[self.menu_state.mode], rulesets[self.menu_state.ruleset])
-	elseif (e.scancode == config.input["up"] or e.scancode == "up") and e.isRepeat == false then
+	elseif e.input == "up" then
 		self:changeOption(-1)
 		playSE("cursor")
-	elseif (e.scancode == config.input["down"] or e.scancode == "down") and e.isRepeat == false then
+	elseif e.input == "down" then
 		self:changeOption(1)
 		playSE("cursor")
-	elseif (e.scancode == config.input["left"] or e.scancode == "left") or
-		(e.scancode == config.input["right"] or e.scancode == "right") then
+	elseif e.input == "left" or e.input == "right" then
 		self:switchSelect()
 		playSE("cursor_lr")
-	elseif e.scancode == "escape" then
+	elseif e.input == "menu_back" then
 		scene = TitleScene()
 	end
 end

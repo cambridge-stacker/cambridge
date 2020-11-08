@@ -2,9 +2,23 @@ local GameScene = Scene:extend()
 require 'load.save'
 
 function GameScene:new(game_mode, ruleset)
+	self.retry_mode = game_mode
+	self.retry_ruleset = ruleset
 	self.game = game_mode()
 	self.ruleset = ruleset()
 	self.game:initialize(self.ruleset)
+	self.inputs = {
+		left=false,
+		right=false,
+		up=false,
+		down=false,
+		rotate_left=false,
+		rotate_left2=false,
+		rotate_right=false,
+		rotate_right2=false,
+		rotate_180=false,
+		hold=false,
+	}
 	DiscordRPC:update({
 		details = self.game.rpc_details,
 		state = self.game.name,
@@ -13,18 +27,11 @@ end
 
 function GameScene:update()
 	if love.window.hasFocus() then
-		self.game:update({
-			left = love.keyboard.isScancodeDown(config.input.left),
-			right = love.keyboard.isScancodeDown(config.input.right),
-			up = love.keyboard.isScancodeDown(config.input.up),
-			down = love.keyboard.isScancodeDown(config.input.down),
-			rotate_left = love.keyboard.isScancodeDown(config.input.rotate_left),
-			rotate_left2 = love.keyboard.isScancodeDown(config.input.rotate_left2),
-			rotate_right = love.keyboard.isScancodeDown(config.input.rotate_right),
-			rotate_right2 = love.keyboard.isScancodeDown(config.input.rotate_right2),
-			rotate_180 = love.keyboard.isScancodeDown(config.input.rotate_180),
-			hold = love.keyboard.isScancodeDown(config.input.hold),
-		}, self.ruleset)
+		local inputs = {}
+		for input, value in pairs(self.inputs) do
+			inputs[input] = value
+		end
+		self.game:update(inputs, self.ruleset)
 	end
 
 	self.game.grid:update()
@@ -60,23 +67,24 @@ function GameScene:render()
 
 end
 
-function GameScene:onKeyPress(e)
-	if (self.game.completed) and
-		(e.scancode == "return" or e.scancode == "escape") and e.isRepeat == false then
+function GameScene:onInputPress(e)
+	if self.game.completed and (e.input == "menu_decide" or e.input == "menu_back") then
 		highscore_entry = self.game:getHighscoreData()
 		highscore_hash = self.game.hash .. "-" .. self.ruleset.hash
 		submitHighscore(highscore_hash, highscore_entry)
 		scene = ModeSelectScene()
-	elseif (e.scancode == config.input.retry) then
-		-- fuck this, this is hacky but the way this codebase is setup prevents anything else
-		-- it seems like all the values that get touched in the child gamemode class
-		-- stop being linked to the values of the GameMode superclass because of how `mt.__index` works
-		-- not even sure this is the actual problem, but I don't want to have to rebuild everything about
-		-- the core organisation of everything. this hacky way will have to do until someone figures out something.
-		love.keypressed("escape", "escape", false)
-		love.keypressed("return", "return", false)
-	elseif e.scancode == "escape" then
+	elseif e.input == "retry" then
+		scene = GameScene(self.retry_mode, self.retry_ruleset)
+	elseif e.input == "menu_back" then
 		scene = ModeSelectScene()
+	elseif e.input and string.sub(e.input, 1, 5) ~= "menu_" then
+		self.inputs[e.input] = true
+	end
+end
+
+function GameScene:onInputRelease(e)
+	if e.input and string.sub(e.input, 1, 5) ~= "menu_" then
+		self.inputs[e.input] = false
 	end
 end
 
