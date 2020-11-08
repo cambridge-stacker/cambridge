@@ -58,10 +58,10 @@ function ConfigScene:render()
     end
   end
 	if self.input_state > table.getn(configurable_inputs) then
-		love.graphics.print("press return to confirm, delete/backspace to retry" .. (config.input and ", escape to cancel" or ""))
+		love.graphics.print("press enter to confirm, delete/backspace to retry" .. (config.input and ", escape to cancel" or ""))
 	else
 		love.graphics.print("press key or joystick input for " .. configurable_inputs[self.input_state] .. ", tab to skip" .. (config.input and ", escape to cancel" or ""), 0, 0)
-    love.graphics.print("return, delete, backspace, tab, arrows, and escape can't be changed", 0, 20)
+    love.graphics.print("enter, delete, backspace, tab, arrows, and escape can't be changed", 0, 20)
 	end
 end
 
@@ -76,7 +76,7 @@ end
 
 function ConfigScene:onInputPress(e)
   if e.type == "key" then
-    -- return, delete, backspace, tab, arrows, and escape are reserved and can't be remapped
+    -- enter, delete, backspace, tab, arrows, and escape are reserved and can't be remapped
     if e.scancode == "escape" and config.input then
       scene = TitleScene()
     elseif self.input_state > table.getn(configurable_inputs) then
