@@ -2,23 +2,23 @@ local GameScene = Scene:extend()
 require 'load.save'
 
 function GameScene:new(game_mode, ruleset)
-  self.retry_mode = game_mode
-  self.retry_ruleset = ruleset
+	self.retry_mode = game_mode
+	self.retry_ruleset = ruleset
 	self.game = game_mode()
 	self.ruleset = ruleset()
 	self.game:initialize(self.ruleset)
-  self.inputs = {
-    left=false,
-    right=false,
-    up=false,
-    down=false,
-    rotate_left=false,
-    rotate_left2=false,
-    rotate_right=false,
-    rotate_right2=false,
-    rotate_180=false,
-    hold=false,
-  }
+	self.inputs = {
+		left=false,
+		right=false,
+		up=false,
+		down=false,
+		rotate_left=false,
+		rotate_left2=false,
+		rotate_right=false,
+		rotate_right2=false,
+		rotate_180=false,
+		hold=false,
+	}
 	DiscordRPC:update({
 		details = self.game.rpc_details,
 		state = self.game.name,
@@ -27,10 +27,10 @@ end
 
 function GameScene:update()
 	if love.window.hasFocus() then
-    local inputs = {}
-    for input, value in pairs(self.inputs) do
-      inputs[input] = value
-    end
+		local inputs = {}
+		for input, value in pairs(self.inputs) do
+			inputs[input] = value
+		end
 		self.game:update(inputs, self.ruleset)
 	end
 
@@ -67,24 +67,24 @@ function GameScene:render()
 end
 
 function GameScene:onInputPress(e)
-  if self.game.completed and (e.input == "menu_decide" or e.input == "menu_back") then
-    highscore_entry = self.game:getHighscoreData()
-    highscore_hash = self.game.hash .. "-" .. self.ruleset.hash
-    submitHighscore(highscore_hash, highscore_entry)
-    scene = ModeSelectScene()
-  elseif e.input == "retry" then
-    scene = GameScene(self.retry_mode, self.retry_ruleset)
-  elseif e.input == "menu_back" then
-    scene = ModeSelectScene()
-  elseif e.input and string.sub(e.input, 1, 5) ~= "menu_" then
-    self.inputs[e.input] = true
-  end
+	if self.game.completed and (e.input == "menu_decide" or e.input == "menu_back") then
+		highscore_entry = self.game:getHighscoreData()
+		highscore_hash = self.game.hash .. "-" .. self.ruleset.hash
+		submitHighscore(highscore_hash, highscore_entry)
+		scene = ModeSelectScene()
+	elseif e.input == "retry" then
+		scene = GameScene(self.retry_mode, self.retry_ruleset)
+	elseif e.input == "menu_back" then
+		scene = ModeSelectScene()
+	elseif e.input and string.sub(e.input, 1, 5) ~= "menu_" then
+		self.inputs[e.input] = true
+	end
 end
 
 function GameScene:onInputRelease(e)
-  if e.input and string.sub(e.input, 1, 5) ~= "menu_" then
-    self.inputs[e.input] = false
-  end
+	if e.input and string.sub(e.input, 1, 5) ~= "menu_" then
+		self.inputs[e.input] = false
+	end
 end
 
 function submitHighscore(hash, data)

@@ -26,7 +26,7 @@ function TitleScene:new()
 	self.main_menu_state = 1
 	DiscordRPC:update({
 		details = "In menus",
-		state =  mainmenuidle[math.random(#mainmenuidle)],
+		state = mainmenuidle[math.random(#mainmenuidle)],
 	})
 end
 
