@@ -51,26 +51,26 @@ function ConfigScene:render()
 	end
 end
 
-function ConfigScene:onKeyPress(e)
-	if e.scancode == "return" and e.isRepeat == false then
+function ConfigScene:onInputPress(e)
+	if e.input == "menu_decide" then
 		playSE("mode_decide")
 		saveConfig()
 		scene = TitleScene()
-	elseif (e.scancode == config.input["up"] or e.scancode == "up") and e.isRepeat == false then
+	elseif e.input == "up" then
 		playSE("cursor")
 		self.highlight = Mod1(self.highlight-1, optioncount)
-	elseif (e.scancode == config.input["down"] or e.scancode == "down") and e.isRepeat == false then
+	elseif e.input == "down" then
 		playSE("cursor")
 		self.highlight = Mod1(self.highlight+1, optioncount)
-	elseif (e.scancode == config.input["left"] or e.scancode == "left") and e.isRepeat == false then
+	elseif e.input == "left" then
 		playSE("cursor_lr")
 		local option = ConfigScene.options[self.highlight]
 		config.gamesettings[option[1]] = Mod1(config.gamesettings[option[1]]-1, #option[3])
-	elseif (e.scancode == config.input["right"] or e.scancode == "right") and e.isRepeat == false then
+	elseif e.input == "right" then
 		playSE("cursor_lr")
 		local option = ConfigScene.options[self.highlight]
 		config.gamesettings[option[1]] = Mod1(config.gamesettings[option[1]]+1, #option[3])
-	elseif e.scancode == "escape" then
+	elseif e.input == "menu_back" then
 		loadSave()
 		scene = TitleScene()
 	end

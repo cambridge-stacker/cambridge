@@ -16,7 +16,7 @@ end
 function ExitScene:changeOption(rel)
 end
 
-function ExitScene:onKeyPress(e)
+function ExitScene:onInputPress(e)
 end
 
 return ExitScene

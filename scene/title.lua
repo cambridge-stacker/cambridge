@@ -57,17 +57,17 @@ function TitleScene:changeOption(rel)
 	self.main_menu_state = (self.main_menu_state + len + rel - 1) % len + 1
 end
 
-function TitleScene:onKeyPress(e)
-	if e.scancode == "return" and e.isRepeat == false then
+function TitleScene:onInputPress(e)
+	if e.input == "menu_decide" then
 		playSE("main_decide")
 		scene = main_menu_screens[self.main_menu_state]()
-	elseif (e.scancode == config.input["up"] or e.scancode == "up") and e.isRepeat == false then
+	elseif e.input == "up" then
 		self:changeOption(-1)
 		playSE("cursor")
-	elseif (e.scancode == config.input["down"] or e.scancode == "down") and e.isRepeat == false then
+	elseif e.input == "down" then
 		self:changeOption(1)
 		playSE("cursor")
-	elseif e.scancode == "escape" and e.isRepeat == false then
+	elseif e.input == "menu_back" then
 		love.event.quit()
 	end
 end
