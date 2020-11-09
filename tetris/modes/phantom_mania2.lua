@@ -168,7 +168,7 @@ function PhantomMania2Game:onLineClear(cleared_row_count)
 		self:advanceBottomRow(-cleared_row_count)
 	else
 		if self.big_mode then self.roll_points = self.roll_points + big_roll_points[cleared_row_count / 2]
-		else self.roll_points = self.roll_points + torikan_roll_points[cleared_row_count]
+		else self.roll_points = self.roll_points + torikan_roll_points[cleared_row_count] end
 		if self.roll_points >= 100 then
 			self.roll_points = self.roll_points - 100
 			self.grade = self.grade + 1
