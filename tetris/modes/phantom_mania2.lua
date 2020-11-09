@@ -124,6 +124,8 @@ function PhantomMania2Game:advanceOneFrame()
 			return false
 		elseif self.roll_frames > 3238 then
 			switchBGM(nil)
+			self.roll_points = self.level >= 1300 and self.roll_points + 150 or self.roll_points
+			self.grade = self.grade + math.floor(self.roll_points / 100)
 			self.completed = true
 		end
 	elseif self.ready_frames == 0 then
@@ -145,7 +147,8 @@ function PhantomMania2Game:onPieceEnter()
 end
 
 local cleared_row_levels = {1, 2, 4, 6}
-local cleared_row_points = {2, 6, 15, 40}
+local torikan_roll_points = {10, 20, 30, 100}
+local big_roll_points = {10, 20, 100, 200}
 
 function PhantomMania2Game:onLineClear(cleared_row_count)
 	if not self.clear then
@@ -164,7 +167,8 @@ function PhantomMania2Game:onLineClear(cleared_row_count)
 		end
 		self:advanceBottomRow(-cleared_row_count)
 	else
-		self.roll_points = self.roll_points + cleared_row_points[cleared_row_count / 2]
+		if self.big_mode then self.roll_points = self.roll_points + big_roll_points[cleared_row_count / 2]
+		else self.roll_points = self.roll_points + torikan_roll_points[cleared_row_count]
 		if self.roll_points >= 100 then
 			self.roll_points = self.roll_points - 100
 			self.grade = self.grade + 1
