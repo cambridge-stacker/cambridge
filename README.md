@@ -25,7 +25,7 @@ The following people in no particular order also helped with the project:
 - MattMayuga
 - Kitaru
 - switchpalacecorner
-- sinefuse
+- [sinefuse](https://github.com/sinefuse)
 - [2Tie](https://github.com/2Tie)
 - [nightmareci](https://github.com/nightmareci)
 
