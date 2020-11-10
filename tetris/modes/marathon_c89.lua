@@ -114,6 +114,7 @@ function MarathonC89Game:advanceOneFrame()
 end
 
 function MarathonC89Game:onPieceLock()
+	self.super:onPieceLock()
 	self.score = self.score + self.drop_bonus
 	self.drop_bonus = 0
 end

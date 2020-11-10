@@ -160,6 +160,7 @@ function SurvivalA3Game:onLineClear(cleared_row_count)
 end
 
 function SurvivalA3Game:onPieceLock(piece, cleared_row_count)
+	self.super:onPieceLock()
 	if cleared_row_count == 0 then self:advanceBottomRow(1) end
 end
 

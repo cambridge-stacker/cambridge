@@ -84,6 +84,7 @@ function Race40Game:advanceOneFrame()
 end
 
 function Race40Game:onPieceLock()
+	self.super:onPieceLock()
 	self.pieces = self.pieces + 1
 end
 

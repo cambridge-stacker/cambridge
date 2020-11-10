@@ -120,6 +120,7 @@ function TGMPlusGame:onPieceEnter()
 end
 
 function TGMPlusGame:onPieceLock(piece, cleared_row_count)
+	self.super:onPieceLock()
 	if cleared_row_count == 0 then self:advanceBottomRow() end
 end
 
