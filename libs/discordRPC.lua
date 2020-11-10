@@ -19,8 +19,12 @@ if string.sub(source, -5) == ".love" or love.filesystem.isFused() then
     source = love.filesystem.getSourceBaseDirectory()
 end
 
-if osname == "Linux" or osname == "OS X" or osname == "Windows" then
-    discordRPClib = ffi.load(source.."/libs/discord-rpc")
+if osname == "Linux" then
+    discordRPClib = ffi.load(source.."/libs/discord-rpc.so")
+elseif osname == "OS X" then
+    discordRPClib = ffi.load(source.."/libs/discord-rpc.dylib")
+elseif osname == "Windows" then
+    discordRPClib = ffi.load(source.."/libs/discord-rpc.dll")
 else
     -- Else it crashes later on
     error(string.format("Discord rpc not supported on platform (%s)", osname))
