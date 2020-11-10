@@ -362,6 +362,8 @@ function MarathonA3Game:getLetterGrade()
 		return "M" .. tostring(grade - 17)
 	elseif grade < 32 then
 		return master_grades[grade - 26]
+	elseif grade >= 32 and self.roll_frames < 3238 then
+		return "MM"
 	else
 		return "GM"
 	end
