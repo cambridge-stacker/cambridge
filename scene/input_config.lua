@@ -61,7 +61,7 @@ function ConfigScene:render()
 		love.graphics.print("press enter to confirm, delete/backspace to retry" .. (config.input and ", escape to cancel" or ""))
 	else
 		love.graphics.print("press key or joystick input for " .. configurable_inputs[self.input_state] .. ", tab to skip" .. (config.input and ", escape to cancel" or ""), 0, 0)
-		love.graphics.print("enter, delete, backspace, tab, arrows, and escape can't be changed", 0, 20)
+		love.graphics.print("function keys (F1, F2, etc.), escape, and tab can't be changed", 0, 20)
 	end
 end
 
@@ -76,8 +76,9 @@ end
 
 function ConfigScene:onInputPress(e)
 	if e.type == "key" then
-		-- enter, delete, backspace, tab, arrows, and escape are reserved and can't be remapped
+		-- function keys, escape, and tab are reserved and can't be remapped
 		if e.scancode == "escape" and config.input then
+			-- cancel only if there was an input config already
 			scene = TitleScene()
 		elseif self.input_state > table.getn(configurable_inputs) then
 			if e.scancode == "return" then
@@ -90,30 +91,18 @@ function ConfigScene:onInputPress(e)
 				self.input_state = 1
 				self.set_inputs = newSetInputs()
 				self.new_input = {}
-			elseif e.scancode == "escape" and config.input then
-				-- cancel only if there was an input config already
-				scene = TitleScene()
 			end
-		elseif
-			e.scancode ~= "delete" and
-			e.scancode ~= "backspace" and
-			e.scancode ~= "return" and
-			e.scancode ~= "left" and
-			e.scancode ~= "right" and
-			e.scancode ~= "up" and
-			e.scancode ~= "down"
-		then
-			if e.scancode == "tab" then
-				self.set_inputs[configurable_inputs[self.input_state]] = "skipped"
-				self.input_state = self.input_state + 1
-			else
-				if not self.new_input.keys then
-					self.new_input.keys = {}
-				end
-				self.set_inputs[configurable_inputs[self.input_state]] = "key " .. love.keyboard.getKeyFromScancode(e.scancode) .. " (" .. e.scancode .. ")"
-				self.new_input.keys[e.scancode] = configurable_inputs[self.input_state]
-				self.input_state = self.input_state + 1
+		elseif e.scancode == "tab" then
+			self.set_inputs[configurable_inputs[self.input_state]] = "skipped"
+			self.input_state = self.input_state + 1
+		elseif e.scancode ~= "escape" then
+			-- all other keys can be configured
+			if not self.new_input.keys then
+				self.new_input.keys = {}
 			end
+			self.set_inputs[configurable_inputs[self.input_state]] = "key " .. love.keyboard.getKeyFromScancode(e.scancode) .. " (" .. e.scancode .. ")"
+			self.new_input.keys[e.scancode] = configurable_inputs[self.input_state]
+			self.input_state = self.input_state + 1
 		end
 	elseif string.sub(e.type, 1, 3) == "joy" then
 		if self.input_state <= table.getn(configurable_inputs) then

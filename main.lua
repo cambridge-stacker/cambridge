@@ -114,14 +114,15 @@ function love.keypressed(key, scancode)
 	if scancode == "f4" then
 		config["fullscreen"] = not config["fullscreen"]
 		love.window.setFullscreen(config["fullscreen"])
-	-- reserved keys, so the user can always get back to configure input
-	elseif scancode == "return" then
-		scene:onInputPress({input="menu_decide", type="key", key=key, scancode=scancode})
+	elseif scancode == "f2" and scene.title ~= "Input Config" and scene.title ~= "Game" then
+		scene = InputConfigScene()
+	-- function keys are reserved
+	elseif string.match(scancode, "^f[1-9]$") or string.match(scancode, "^f[1-9][0-9]+$") then
+		return	
+	-- escape is reserved for menu_back
 	elseif scancode == "escape" then
 		scene:onInputPress({input="menu_back", type="key", key=key, scancode=scancode})
-	elseif scancode == "left" or scancode == "right" or scancode == "up" or scancode == "down" then
-		scene:onInputPress({input=scancode, type="key", key=key, scancode=scancode})
-	-- other keys can be configured
+	-- pass any other key to the scene, with its configured mapping
 	else
 		local input_pressed = nil
 		if config.input and config.input.keys then
@@ -132,14 +133,13 @@ function love.keypressed(key, scancode)
 end
 
 function love.keyreleased(key, scancode)
-	-- reserved keys, so the user can always get back to configure input
-	if scancode == "return" then
-		scene:onInputRelease({input="menu_decide", type="key", key=key, scancode=scancode})
-	elseif scancode == "escape" then
+	-- escape is reserved for menu_back
+	if scancode == "escape" then
 		scene:onInputRelease({input="menu_back", type="key", key=key, scancode=scancode})
-	elseif scancode == "left" or scancode == "right" or scancode == "up" or scancode == "down" then
-		scene:onInputRelease({input=scancode, type="key", key=key, scancode=scancode})
-	-- other keys can be configured
+	-- function keys are reserved
+	elseif string.match(scancode, "^f[1-9]$") or string.match(scancode, "^f[1-9][0-9]+$") then
+		return	
+	-- handle all other keys; tab is reserved, but the input config scene keeps it from getting configured as a game input, so pass tab to the scene here
 	else
 		local input_released = nil
 		if config.input and config.input.keys then

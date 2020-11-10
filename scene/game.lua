@@ -1,4 +1,7 @@
 local GameScene = Scene:extend()
+
+GameScene.title = "Game"
+
 require 'load.save'
 
 function GameScene:new(game_mode, ruleset)
