@@ -34,6 +34,8 @@ function Ruleset:new()
 		C = love.graphics.newImage("res/img/bone.png"),
 		B = love.graphics.newImage("res/img/bone.png"),
 		M = love.graphics.newImage("res/img/bone.png"),
+		F = love.graphics.newImage("res/img/bone.png"),
+		A = love.graphics.newImage("res/img/bone.png"),
 		X = love.graphics.newImage("res/img/bone.png"),
 	} or {
 		R = love.graphics.newImage("res/img/bonew.png"),
@@ -43,6 +45,8 @@ function Ruleset:new()
 		C = love.graphics.newImage("res/img/bonew.png"),
 		B = love.graphics.newImage("res/img/bonew.png"),
 		M = love.graphics.newImage("res/img/bonew.png"),
+		F = love.graphics.newImage("res/img/bonew.png"),
+		A = love.graphics.newImage("res/img/bonew.png"),
 		X = love.graphics.newImage("res/img/bonew.png"),
 	}
 end

@@ -268,7 +268,11 @@ function Grid:draw()
 					love.graphics.setColor(1, 1, 1, 1)
 					love.graphics.draw(blocks[self.grid[y][x].skin]["F"], 48+x*16, y*16)
 				else
-					love.graphics.setColor(0.5, 0.5, 0.5, 1)
+					if self.grid[y][x].skin == "bone" then
+						love.graphics.setColor(1, 1, 1, 1)
+					else 
+						love.graphics.setColor(0.5, 0.5, 0.5, 1)
+					end
 					love.graphics.draw(blocks[self.grid[y][x].skin][self.grid[y][x].colour], 48+x*16, y*16)
 				end
 				if self.grid[y][x].skin ~= "bone" then

@@ -22,6 +22,7 @@ function SurvivalCKGame:new()
 
 	self.randomizer = History6RollsRandomizer()
 
+	self.lock_drop = true
 	self.enable_hold = true
 	self.next_queue_length = 3
 
@@ -153,11 +154,11 @@ function SurvivalCKGame:onLineClear(cleared_row_count)
 		local new_level = self.level + cleared_row_count * 2
 		self:updateSectionTimes(self.level, new_level)
 		if new_level >= 2500 or self:hitTorikan(self.level, new_level) then
-					self.clear = true
+			self.clear = true
 			if new_level >= 2500 then
 				self.level = 2500
-						self.grid:clear()
-						self.big_mode = true
+				self.grid:clear()
+				self.big_mode = true
 				self.roll_frames = -150
 			end
 		else
@@ -217,11 +218,11 @@ function SurvivalCKGame:drawGrid()
 	elseif self.level >= 1600 and self.level < 1700 then
 		self.grid:drawInvisible(self.rollOpacityFunction2)
 	elseif self.level >= 1700 and self.level < 1800 then
-				self.grid:drawInvisible(self.rollOpacityFunction3)
+		self.grid:drawInvisible(self.rollOpacityFunction3)
 	elseif self.level >= 1800 and self.level < 1900 then
-				self.grid:drawInvisible(self.rollOpacityFunction4)
+		self.grid:drawInvisible(self.rollOpacityFunction4)
 	elseif self.level >= 1900 and self.level < 2000 then
-				self.grid:drawInvisible(self.rollOpacityFunction5)
+		self.grid:drawInvisible(self.rollOpacityFunction5)
 	else
 		self.grid:draw()
 	end
