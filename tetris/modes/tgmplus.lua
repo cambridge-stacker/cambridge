@@ -126,6 +126,7 @@ end
 function TGMPlusGame:onLineClear(cleared_row_count)
 	self.level = math.min(self.level + cleared_row_count, 999)
 	if self.level == 999 and not self.clear then self.clear = true end
+	if self.level >= 900 then self.lock_drop = true end
 end
 
 function TGMPlusGame:advanceBottomRow()

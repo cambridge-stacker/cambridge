@@ -20,7 +20,8 @@ function KonohaGame:new()
 	self.last_bonus_display_time = 0
 	self.time_limit = 10800
 	self.big_mode = true
-	
+
+	self.lock_drop = true	
 	self.enable_hold = true
 	self.next_queue_length = 3
 end

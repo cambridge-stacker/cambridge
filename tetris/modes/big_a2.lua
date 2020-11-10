@@ -124,6 +124,7 @@ function MarathonA2Game:onLineClear(cleared_row_count)
 		self.grid:clear()
 		self.roll_frames = -150
 	end
+	if self.level >= 900 then self.lock_drop = true end
 end
 
 function MarathonA2Game:updateScore(level, drop_bonus, cleared_lines)

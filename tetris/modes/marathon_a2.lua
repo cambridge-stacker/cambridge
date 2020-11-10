@@ -151,6 +151,7 @@ function MarathonA2Game:onLineClear(cleared_row_count)
 		if self:qualifiesForMRoll() then self.grade = 32 end
 		self.roll_frames = -150
 	end
+	if self.level >= 900 then self.lock_drop = true end
 end
 
 function MarathonA2Game:updateSectionTimes(old_level, new_level)
