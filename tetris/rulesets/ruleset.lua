@@ -9,13 +9,13 @@ Ruleset.hash = ""
 -- Arika-type ruleset defaults
 Ruleset.world = false
 Ruleset.colourscheme = {
-    I = "R",
-    L = "O",
-    J = "B",
-    S = "M",
-    Z = "G",
-    O = "Y",
-    T = "C",
+	I = "R",
+	L = "O",
+	J = "B",
+	S = "M",
+	Z = "G",
+	O = "Y",
+	T = "C",
 }
 Ruleset.softdrop_lock = true
 Ruleset.harddrop_lock = false
@@ -23,6 +23,60 @@ Ruleset.harddrop_lock = false
 Ruleset.enable_IRS_wallkicks = false
 
 -- Component functions.
+
+function Ruleset:new()
+	if config.gamesettings.piece_colour == 1 then
+		blocks["bone"] = (not self.world) and
+		{
+			R = love.graphics.newImage("res/img/bone.png"),
+			O = love.graphics.newImage("res/img/bone.png"),
+			Y = love.graphics.newImage("res/img/bone.png"),
+			G = love.graphics.newImage("res/img/bone.png"),
+			C = love.graphics.newImage("res/img/bone.png"),
+			B = love.graphics.newImage("res/img/bone.png"),
+			M = love.graphics.newImage("res/img/bone.png"),
+			F = love.graphics.newImage("res/img/bone.png"),
+			A = love.graphics.newImage("res/img/bone.png"),
+			X = love.graphics.newImage("res/img/bone.png"),
+		} or {
+			R = love.graphics.newImage("res/img/bonew.png"),
+			O = love.graphics.newImage("res/img/bonew.png"),
+			Y = love.graphics.newImage("res/img/bonew.png"),
+			G = love.graphics.newImage("res/img/bonew.png"),
+			C = love.graphics.newImage("res/img/bonew.png"),
+			B = love.graphics.newImage("res/img/bonew.png"),
+			M = love.graphics.newImage("res/img/bonew.png"),
+			F = love.graphics.newImage("res/img/bonew.png"),
+			A = love.graphics.newImage("res/img/bonew.png"),
+			X = love.graphics.newImage("res/img/bonew.png"),
+		}
+	else
+		blocks["bone"] = (config.gamesettings.piece_colour == 2) and
+                {
+                        R = love.graphics.newImage("res/img/bone.png"),
+                        O = love.graphics.newImage("res/img/bone.png"),
+                        Y = love.graphics.newImage("res/img/bone.png"),
+                        G = love.graphics.newImage("res/img/bone.png"),
+                        C = love.graphics.newImage("res/img/bone.png"),
+                        B = love.graphics.newImage("res/img/bone.png"),
+                        M = love.graphics.newImage("res/img/bone.png"),
+                        F = love.graphics.newImage("res/img/bone.png"),
+                        A = love.graphics.newImage("res/img/bone.png"),
+                        X = love.graphics.newImage("res/img/bone.png"),
+                } or {
+                        R = love.graphics.newImage("res/img/bonew.png"),
+                        O = love.graphics.newImage("res/img/bonew.png"),
+                        Y = love.graphics.newImage("res/img/bonew.png"),
+                        G = love.graphics.newImage("res/img/bonew.png"),
+                        C = love.graphics.newImage("res/img/bonew.png"),
+                        B = love.graphics.newImage("res/img/bonew.png"),
+                        M = love.graphics.newImage("res/img/bonew.png"),
+                        F = love.graphics.newImage("res/img/bonew.png"),
+                        A = love.graphics.newImage("res/img/bonew.png"),
+                        X = love.graphics.newImage("res/img/bonew.png"),
+                }
+	end
+end
 
 function Ruleset:rotatePiece(inputs, piece, grid, prev_inputs, initial)
 	local new_inputs = {}
@@ -53,7 +107,7 @@ function Ruleset:attemptRotate(new_inputs, piece, grid, initial)
 	end
 
 	if rot_dir == 0 then return end
-    if self.world and config.gamesettings.world_reverse == 2 then
+    if config.gamesettings.world_reverse == 3 or (self.world and config.gamesettings.world_reverse == 2) then
         rot_dir = 4 - rot_dir
     end
 
@@ -134,8 +188,8 @@ function Ruleset:initializePiece(
 	else
 		spawn_positions = self.spawn_positions
 	end
-    local colours = ({self.colourscheme, ColourSchemes.Arika, ColourSchemes.TTC})[config.gamesettings.piece_colour]
-    
+	local colours = ({self.colourscheme, ColourSchemes.Arika, ColourSchemes.TTC})[config.gamesettings.piece_colour]
+	
 	local piece = Piece(data.shape, data.orientation - 1, {
 		x = spawn_positions[data.shape].x,
 		y = spawn_positions[data.shape].y

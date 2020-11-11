@@ -5,12 +5,26 @@ local ffi = require "ffi"
 local osname = love.system.getOS()
 local discordRPClib = nil
 
+-- FFI requires the libraries really be files just sitting in the filesystem. It
+-- can't load libraries from a .love archive, nor a fused executable on Windows.
+-- Merely using love.filesystem.getSource() only works when running LOVE with
+-- the game unarchived from command line, like "love .".
+--
+-- The code here setting "source" will set the directory where the game was run
+-- from, so FFI can load discordRPC. We assume that the discordRPC library's
+-- libs directory is in the same directory as the .love archive; if it's
+-- missing, it just won't load.
+local source = love.filesystem.getSource()
+if string.sub(source, -5) == ".love" or love.filesystem.isFused() then
+    source = love.filesystem.getSourceBaseDirectory()
+end
+
 if osname == "Linux" then
-    discordRPClib = ffi.load(love.filesystem.getSource().."/libs/discord-rpc.so")
+    discordRPClib = ffi.load(source.."/libs/discord-rpc.so")
 elseif osname == "OS X" then
-    discordRPClib = ffi.load(love.filesystem.getSource().."/libs/discord-rpc.dylib")
+    discordRPClib = ffi.load(source.."/libs/discord-rpc.dylib")
 elseif osname == "Windows" then
-    discordRPClib = ffi.load(love.filesystem.getSource().."/libs/discord-rpc.dll")
+    discordRPClib = ffi.load(source.."/libs/discord-rpc.dll")
 else
     -- Else it crashes later on
     error(string.format("Discord rpc not supported on platform (%s)", osname))

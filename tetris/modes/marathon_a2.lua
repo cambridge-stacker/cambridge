@@ -15,10 +15,10 @@ MarathonA2Game.tagline = "The points don't matter! Can you reach the invisible r
 
 
 function MarathonA2Game:new()
-    MarathonA2Game.super:new()
-    
+	MarathonA2Game.super:new()
+
 	self.roll_frames = 0
-    self.combo = 1
+	self.combo = 1
 	self.randomizer = History6RollsRandomizer()
 	self.grade = 0
 	self.grade_points = 0
@@ -26,89 +26,89 @@ function MarathonA2Game:new()
 	self.section_start_time = 0
 	self.section_times = { [0] = 0 }
 	self.section_tetrises = { [0] = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
-    
-    self.SGnames = {
-        "9", "8", "7", "6", "5", "4", "3", "2", "1",
-        "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
-        "GM"
-    }
-    
-	self.randomizer = History6RollsRandomizer()
+	
+	self.SGnames = {
+		"9", "8", "7", "6", "5", "4", "3", "2", "1",
+		"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
+		"GM"
+	}
 
-    self.lock_drop = false
+	self.lock_drop = false
+	self.lock_hard_drop = false
 	self.enable_hold = false
 	self.next_queue_length = 1
 end
 
 function MarathonA2Game:getARE()
-        if self.level < 700 then return 27
-    elseif self.level < 800 then return 18
-    else return 14 end
+		if self.level < 700 then return 27
+	elseif self.level < 800 then return 18
+	else return 14 end
 end
 
 function MarathonA2Game:getLineARE()
-        if self.level < 600 then return 27
-    elseif self.level < 700 then return 18
-    elseif self.level < 800 then return 14
-    else return 8 end
+		if self.level < 600 then return 27
+	elseif self.level < 700 then return 18
+	elseif self.level < 800 then return 14
+	else return 8 end
 end
 
 function MarathonA2Game:getDasLimit()
-        if self.level < 500 then return 15
-    elseif self.level < 900 then return 9
-    else return 7 end
+		if self.level < 500 then return 15
+	elseif self.level < 900 then return 9
+	else return 7 end
 end
 
 function MarathonA2Game:getLineClearDelay()
-        if self.level < 500 then return 40
-    elseif self.level < 600 then return 25
-    elseif self.level < 700 then return 16
-    elseif self.level < 800 then return 12
-    else return 6 end
+		if self.level < 500 then return 40
+	elseif self.level < 600 then return 25
+	elseif self.level < 700 then return 16
+	elseif self.level < 800 then return 12
+	else return 6 end
 end
 
 function MarathonA2Game:getLockDelay()
-        if self.level < 900 then return 30
-    else return 17 end
+		if self.level < 900 then return 30
+	else return 17 end
 end
 
 function MarathonA2Game:getGravity()
-        if (self.level < 30)  then return 4/256
-    elseif (self.level < 35)  then return 6/256
-    elseif (self.level < 40)  then return 8/256
-    elseif (self.level < 50)  then return 10/256
-    elseif (self.level < 60)  then return 12/256
-    elseif (self.level < 70)  then return 16/256
-    elseif (self.level < 80)  then return 32/256
-    elseif (self.level < 90)  then return 48/256
-    elseif (self.level < 100) then return 64/256
-    elseif (self.level < 120) then return 80/256
-    elseif (self.level < 140) then return 96/256
-    elseif (self.level < 160) then return 112/256
-    elseif (self.level < 170) then return 128/256
-    elseif (self.level < 200) then return 144/256
-    elseif (self.level < 220) then return 4/256
-    elseif (self.level < 230) then return 32/256
-    elseif (self.level < 233) then return 64/256
-    elseif (self.level < 236) then return 96/256
-    elseif (self.level < 239) then return 128/256
-    elseif (self.level < 243) then return 160/256
-    elseif (self.level < 247) then return 192/256
-    elseif (self.level < 251) then return 224/256
-    elseif (self.level < 300) then return 1
-    elseif (self.level < 330) then return 2
-    elseif (self.level < 360) then return 3
-    elseif (self.level < 400) then return 4
-    elseif (self.level < 420) then return 5
-    elseif (self.level < 450) then return 4
-    elseif (self.level < 500) then return 3
-    else return 20
-    end
+		if (self.level < 30)  then return 4/256
+	elseif (self.level < 35)  then return 6/256
+	elseif (self.level < 40)  then return 8/256
+	elseif (self.level < 50)  then return 10/256
+	elseif (self.level < 60)  then return 12/256
+	elseif (self.level < 70)  then return 16/256
+	elseif (self.level < 80)  then return 32/256
+	elseif (self.level < 90)  then return 48/256
+	elseif (self.level < 100) then return 64/256
+	elseif (self.level < 120) then return 80/256
+	elseif (self.level < 140) then return 96/256
+	elseif (self.level < 160) then return 112/256
+	elseif (self.level < 170) then return 128/256
+	elseif (self.level < 200) then return 144/256
+	elseif (self.level < 220) then return 4/256
+	elseif (self.level < 230) then return 32/256
+	elseif (self.level < 233) then return 64/256
+	elseif (self.level < 236) then return 96/256
+	elseif (self.level < 239) then return 128/256
+	elseif (self.level < 243) then return 160/256
+	elseif (self.level < 247) then return 192/256
+	elseif (self.level < 251) then return 224/256
+	elseif (self.level < 300) then return 1
+	elseif (self.level < 330) then return 2
+	elseif (self.level < 360) then return 3
+	elseif (self.level < 400) then return 4
+	elseif (self.level < 420) then return 5
+	elseif (self.level < 450) then return 4
+	elseif (self.level < 500) then return 3
+	else return 20
+	end
 end
 
 function MarathonA2Game:advanceOneFrame()
 	if self.clear then
 		self.roll_frames = self.roll_frames + 1
+		if self.roll_frames < 0 then return false end
 		if self.roll_frames > 3694 then
 			self.completed = true
 			if self.grade == 32 then
@@ -127,33 +127,33 @@ function MarathonA2Game:onPieceEnter()
 	end
 end
 
-function MarathonA2Game:onLineClear(cleared_row_count)
-    self:updateSectionTimes(self.level, self.level + cleared_row_count)
-    self.level = math.min(self.level + cleared_row_count, 999)
-    if self.level == 999 and not self.clear then
-        self.clear = true
-        if self:qualifiesForMRoll() then
-            self.grade = 32
-        end
-        self.grid:clear()
-        self.roll_frames = -150
-    end
+function MarathonA2Game:updateScore(level, drop_bonus, cleared_lines)
+	if not self.clear then
+		self:updateGrade(cleared_lines)
+		if self.grid:checkForBravo(cleared_lines) then self.bravo = 4 else self.bravo = 1 end
+		if cleared_lines > 0 then
+			self.combo = self.combo + (cleared_lines - 1) * 2
+			self.score = self.score + (
+				(math.ceil((level + cleared_lines) / 4) + drop_bonus) *
+				cleared_lines * self.combo * self.bravo
+			)
+		else
+			self.combo = 1
+		end
+		self.drop_bonus = 0
+	else self.lines = self.lines + cleared_lines end
 end
 
-function MarathonA2Game:updateScore(level, drop_bonus, cleared_lines)
-    self:updateGrade(cleared_lines)
-	if self.grid:checkForBravo(cleared_lines) then self.bravo = 4 else self.bravo = 1 end
-	if cleared_lines > 0 then
-		self.score = self.score + (
-			(math.ceil((level + cleared_lines) / 4) + 2 * drop_bonus) *
-			cleared_lines * self.combo * self.bravo
-		)
-		self.lines = self.lines + cleared_lines
-		self.combo = self.combo + (cleared_lines - 1) * 2
-	else
-		self.drop_bonus = 0
-		self.combo = 1
+function MarathonA2Game:onLineClear(cleared_row_count)
+	self.level = math.min(self.level + cleared_row_count, 999)
+	if self.level == 999 and not self.clear then
+		self.clear = true
+		self.grid:clear()
+		if self:qualifiesForMRoll() then self.grade = 32 end
+		self.roll_frames = -150
 	end
+	self.lock_drop = self.level >= 900
+	self.lock_hard_drop = self.level >= 900
 end
 
 function MarathonA2Game:updateSectionTimes(old_level, new_level)
@@ -253,7 +253,7 @@ function MarathonA2Game:updateGrade(cleared_lines)
 	end
 end
 
-local tetris_requirements = { [0] = 2, 2, 2, 2, 2, 1, 1, 1, 1, 1 }
+local tetris_requirements = { [0] = 2, 2, 2, 2, 2, 1, 1, 1, 1, 0 }
 
 function MarathonA2Game:qualifiesForMRoll()
 	if not self.clear then return false end
@@ -280,7 +280,7 @@ function MarathonA2Game:qualifiesForMRoll()
 			return false
 		end
 	end
-	if self.grade < 17 or self.frames > frameTime(9,30) then
+	if self.grade < 31 or self.frames > frameTime(8,45) then
 		return false
 	end
 	return true
@@ -338,19 +338,29 @@ function MarathonA2Game:drawScoringInfo()
 	love.graphics.printf("GRADE", 240, 120, 40, "left")
 	love.graphics.printf("SCORE", 240, 200, 40, "left")
 	love.graphics.printf("LEVEL", 240, 320, 40, "left")
-    local sg = self.grid:checkSecretGrade()
-    if sg >= 5 then 
-        love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
-    end
+	local sg = self.grid:checkSecretGrade()
+	if sg >= 5 then 
+		love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
+	end
 
 	love.graphics.setFont(font_3x5_3)
+	if self.clear then
+		if self:qualifiesForMRoll() then
+			if self.lines >= 32 and self.roll_frames > 3694 then love.graphics.setColor(1, 0.5, 0, 1)
+			else love.graphics.setColor(0, 1, 0, 1) end
+		else
+			if self.roll_frames > 3694 then love.graphics.setColor(1, 0.5, 0, 1)
+			else love.graphics.setColor(0, 1, 0, 1) end
+		end
+	end	
 	love.graphics.printf(self:getLetterGrade(), 240, 140, 90, "left")
+	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.printf(self.score, 240, 220, 90, "left")
 	love.graphics.printf(self.level, 240, 340, 40, "right")
 	love.graphics.printf(self:getSectionEndLevel(), 240, 370, 40, "right")
-    if sg >= 5 then
-        love.graphics.printf(self.SGnames[sg], 240, 450, 180, "left")
-    end
+	if sg >= 5 then
+		love.graphics.printf(self.SGnames[sg], 240, 450, 180, "left")
+	end
 
 	love.graphics.setFont(font_8x11)
 	love.graphics.printf(formatTime(self.frames), 64, 420, 160, "center")

@@ -10,7 +10,7 @@ function Piece:new(shape, rotation, position, block_offsets, gravity, lock_delay
 	self.gravity = gravity
 	self.lock_delay = lock_delay
 	self.skin = skin
-    self.colour = colour
+	self.colour = colour
 	self.ghost = false
 	self.locked = false
 	self.big = big
@@ -98,7 +98,7 @@ end
 
 function Piece:dropToBottom(grid)
 	local piece_y = self.position.y
-	self:dropSquares(24, grid)
+	self:dropSquares(math.huge, grid)
 	self.gravity = 0
 	if self.position.y > piece_y then
 		-- if it got dropped any, also reset lock delay

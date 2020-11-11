@@ -19,14 +19,15 @@ function SurvivalA2Game:new()
 	self.roll_frames = 0
 	self.combo = 1
 	self.randomizer = History6RollsRandomizer()
-    
-    self.SGnames = {
-        "9", "8", "7", "6", "5", "4", "3", "2", "1",
-        "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
-        "GM"
-    }
+	
+	self.SGnames = {
+		"9", "8", "7", "6", "5", "4", "3", "2", "1",
+		"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
+		"GM"
+	}
 
 	self.lock_drop = true
+	self.lock_hard_drop = true
 end
 
 function SurvivalA2Game:getARE()
@@ -88,7 +89,7 @@ function SurvivalA2Game:advanceOneFrame()
 end
 
 function SurvivalA2Game:onPieceEnter()
-	if (self.level % 100 ~= 99 or self.level == 998) and not self.clear and self.frames ~= 0 then
+	if (self.level % 100 ~= 99 and self.level ~= 998) and not self.clear and self.frames ~= 0 then
 		self.level = self.level + 1
 	end
 end
@@ -98,9 +99,9 @@ function SurvivalA2Game:onLineClear(cleared_row_count)
 		local new_level = math.min(self.level + cleared_row_count, 999)
 		if self.level == 999 or self:hitTorikan(self.level, new_level) then
 			self.clear = true
-            if self.level < 999 then
-                self.game_over = true
-            end
+			if self.level < 999 then
+				self.game_over = true
+			end
 		else
 			self.level = new_level
 		end
@@ -108,17 +109,18 @@ function SurvivalA2Game:onLineClear(cleared_row_count)
 end
 
 function SurvivalA2Game:updateScore(level, drop_bonus, cleared_lines)
-	if self.grid:checkForBravo(cleared_lines) then self.bravo = 4 else self.bravo = 1 end
-	if cleared_lines > 0 then
-		self.score = self.score + (
-			(math.ceil((level + cleared_lines) / 4) + drop_bonus) *
-			cleared_lines * self.bravo * self.combo
-		)
-		self.lines = self.lines + cleared_lines
-		self.combo = self.combo + (cleared_lines - 1) * 2
-	else
+	if not self.clear then
+		if self.grid:checkForBravo(cleared_lines) then self.bravo = 4 else self.bravo = 1 end
+		if cleared_lines > 0 then
+			self.combo = self.combo + (cleared_lines - 1) * 2
+			self.score = self.score + (
+				(math.ceil((level + cleared_lines) / 4) + drop_bonus) *
+				cleared_lines * self.combo * self.bravo
+			)
+		else
+			self.combo = 1
+		end
 		self.drop_bonus = 0
-		self.combo = 1
 	end
 end
 
@@ -149,19 +151,21 @@ function SurvivalA2Game:drawScoringInfo()
 	if self:getLetterGrade() ~= "" then love.graphics.printf("GRADE", text_x, 120, 40, "left") end
 	love.graphics.printf("SCORE", text_x, 200, 40, "left")
 	love.graphics.printf("LEVEL", text_x, 320, 40, "left")
-    local sg = self.grid:checkSecretGrade()
-    if sg >= 5 then 
-        love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
-    end
+	local sg = self.grid:checkSecretGrade()
+	if sg >= 5 then 
+		love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
+	end
 
 	love.graphics.setFont(font_3x5_3)
 	love.graphics.printf(self.score, text_x, 220, 90, "left")
+	if self.roll_frames > 2968 then love.graphics.setColor(1, 0.5, 0, 1)
+	elseif self.clear then love.graphics.setColor(0, 1, 0, 1) end
 	if self:getLetterGrade() ~= "" then love.graphics.printf(self:getLetterGrade(), text_x, 140, 90, "left") end
 	love.graphics.printf(self.level, text_x, 340, 40, "right")
 	love.graphics.printf(self:getSectionEndLevel(), text_x, 370, 40, "right")
-    if sg >= 5 then
-        love.graphics.printf(self.SGnames[sg], 240, 450, 180, "left")
-    end
+	if sg >= 5 then
+		love.graphics.printf(self.SGnames[sg], 240, 450, 180, "left")
+	end
 end
 
 function SurvivalA2Game:getSectionEndLevel()

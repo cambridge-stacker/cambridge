@@ -5,48 +5,55 @@ Cambridge
 
 Welcome to Cambridge, the next open-source falling-block game engine!
 
-This fork is written and maintained exclusively by [SashLilac](https://github.com/SashLilac) and [Oshisaure](https://github.com/oshisaure)!
+This fork is written and maintained exclusively by [SashLilac](https://github.com/SashLilac), [joezeng](https://github.com/joezeng) and [Oshisaure](https://github.com/oshisaure)!
 
 Join our Discord server for help and a welcoming community! https://discord.gg/mteMJw4
 
 Credits
 -------
 
-- [Lilla Oshisaure](https://www.youtube.com/user/LeSpyroshisaure) for their amazing contributions to my life in general!
+- [Lilla Oshisaure](https://www.youtube.com/user/LeSpyroshisaure) for being my co-dev!
+- [joezeng](https://github.com/joezeng) for the original project, and for offering to help with the expansion!
 - [The Tetra Legends Discord](http://discord.com/invite/7hMx5r2) for supporting me and playtesting!
-- [joezeng](https://github.com/joezeng) for the original project.
-- [Hailey](https://github.com/haileylgbt) for some miscellaneous assets.
-- CylinderKnot for an amazing gamemode.
-- MarkGamed7794 for some miscellaneous contributions.
-- Mizu for the Cambridge logo and the [Cambridge launcher](https://github.com/rexxt/cambridge-launcher).
-- MattMayuga for the Cambridge banner.
+- [The Absolute Plus](https://discord.gg/6Gf2awJ) for being another source of motivation!
+
+The following people in no particular order also helped with the project:
+- [Hailey](https://github.com/haileylgbt)
+- CylinderKnot
+- MarkGamed7794
+- [Mizu](https://github.com/rexxt)
+- MattMayuga
+- Kitaru
+- switchpalacecorner
+- [sinefuse](https://github.com/sinefuse)
+- [2Tie](https://github.com/2Tie)
+- [nightmareci](https://github.com/nightmareci)
+- [MyPasswordIsWeak](https://github.com/MyPasswordIsWeak)
 
 ![Cambridge Logo](https://cdn.discordapp.com/attachments/625496179433668635/763363717730664458/Icon_2.png)
 
-Installation instructions
--------------------------
-
-Pre-built releases are available on the releases page.
+Playing the game
+----------------
 
 ### Windows
 
-Unzip the exe file and run it directly. All assets are currently bundled inside the executable.
+You do not need LÖVE on Windows, as it comes bundled with the program.  
 
-### macOS
+To get the stable release, simply download the ZIP in the latest release. All assets needed are bundled with the executable.
 
-For the time being, the file `cambridge.love` only works on the command line. Install `love` with [Homebrew](https://brew.sh), and run:
+If you want the bleeding edge version, or want mod pack support, download [this](https://github.com/SashLilac/cambridge/archive/master.zip).
 
-    $ love cambridge.love
+Extract the ZIP, open a Command Prompt at the folder you extracted Cambridge to, then run this command:
 
-### Linux
+	dist\windows\love.exe .
 
-Same as macOS, except install `love` with your favourite package manager.
+Alternatively, if you're on a 32-bit system, run this instead:
 
+	dist\win32\love.exe .
 
-Running from source
--------------------
+32-bit systems do not support rich presence integration.
 
-If you want the bleeding-edge release, you can also clone the code straight from this repository.
+Then, check the mod pack section at the bottom of this page.
 
 ### macOS, Linux
 
@@ -54,14 +61,21 @@ If you haven't already, install `love` with your favourite package manager (Home
 
 Clone the repository in git:
 
-    git clone https://github.com/SashLilac/cambridge
+	git clone https://github.com/SashLilac/cambridge
+
+Alternatively, download the source code ZIP in the latest release.
 
 Then, navigate to the root directory that you just cloned, and type:
 
-    love .
+	love .
 
 It should run automatically!
 
+## Installing modpacks
+
+Simply drag your mode, ruleset, and randomizer Lua files into their respective directory, and they should appear automatically.  
+
+Alternatively, install [this](https://github.com/SashLilac/cambridge/releases/download/v0.2.1/modpackv1.zip) mod pack to get a taste of the mod potential.
 
 License
 -------

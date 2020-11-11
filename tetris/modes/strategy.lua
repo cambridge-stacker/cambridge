@@ -16,7 +16,6 @@ StrategyGame.tagline = "You have lots of time to think! Can you use it to place 
 
 function StrategyGame:new()
 	StrategyGame.super:new()
-	self.level = 0
 	self.clear = false
 	self.completed = false
 	self.roll_frames = 0
@@ -28,7 +27,7 @@ function StrategyGame:new()
 end
 
 function StrategyGame:getARE()
-	    if self.level < 100 then return 60
+		if self.level < 100 then return 60
 	elseif self.level < 200 then return 54
 	elseif self.level < 300 then return 48
 	elseif self.level < 400 then return 42
@@ -53,7 +52,7 @@ function StrategyGame:getLineClearDelay()
 end
 
 function StrategyGame:getLockDelay()
-	    if self.level < 500 then return 8
+		if self.level < 500 then return 8
 	elseif self.level < 700 then return 6
 	else return 4 end
 end
@@ -84,7 +83,7 @@ function StrategyGame:advanceOneFrame()
 end
 
 function StrategyGame:onPieceEnter()
-	if (self.level % 100 ~= 99) and not self.clear and self.frames ~= 0 then
+	if (self.level % 100 ~= 99 and self.level ~= 998) and not self.clear and self.frames ~= 0 then
 		self.level = self.level + 1
 	end
 end
@@ -99,16 +98,17 @@ function StrategyGame:onLineClear(cleared_row_count)
 end
 
 function StrategyGame:updateScore(level, drop_bonus, cleared_lines)
-	if cleared_lines > 0 then
-		self.score = self.score + (
-			(math.ceil((level + cleared_lines) / 4) + drop_bonus) *
-			cleared_lines * (cleared_lines * 2 - 1) * (self.combo * 2 - 1)
-		)
-		self.lines = self.lines + cleared_lines
-		self.combo = self.combo + cleared_lines - 1
-	else
+	if not self.clear then
+		if cleared_lines > 0 then
+			self.combo = self.combo + (cleared_lines - 1) * 2
+			self.score = self.score + (
+				(math.ceil((level + cleared_lines) / 4) + drop_bonus) *
+				cleared_lines * self.combo
+			)
+		else
+			self.combo = 1
+		end
 		self.drop_bonus = 0
-		self.combo = 1
 	end
 end
 
@@ -135,11 +135,11 @@ function StrategyGame:drawScoringInfo()
 
 	love.graphics.setFont(font_3x5_3)
 	love.graphics.printf(self.score, text_x, 220, 90, "left")
-	love.graphics.printf(self.level, text_x, 340, 50, "right")
+	love.graphics.printf(self.level, text_x, 340, 40, "right")
 	if self.clear then
-		love.graphics.printf(self.level, text_x, 370, 50, "right")
+		love.graphics.printf(self.level, text_x, 370, 40, "right")
 	else
-		love.graphics.printf(math.floor(self.level / 100 + 1) * 100, text_x, 370, 50, "right")
+		love.graphics.printf(self.level < 900 and math.floor(self.level / 100 + 1) * 100 or 999, text_x, 370, 40, "right")
 	end
 end
 
