@@ -34,6 +34,26 @@ The following people in no particular order also helped with the project:
 Playing the game
 ----------------
 
+### Windows
+
+You do not need LÖVE on Windows, as it comes bundled with the program.  
+
+To get the stable release, simply download the ZIP in the latest release. All assets needed are bundled with the executable.
+
+If you want the bleeding edge version, or want mod pack support, download [this](https://github.com/SashLilac/cambridge/archive/master.zip).
+
+Extract the ZIP, open a Command Prompt at the folder you extracted Cambridge to, then run this command:
+
+	dist\windows\love.exe .
+
+Alternatively, if you're on a 32-bit system, run this instead:
+
+	dist\win32\love.exe .
+
+32-bit systems do not support rich presence integration.
+
+Then, check the mod pack section at the bottom of this page.
+
 ### macOS, Linux
 
 If you haven't already, install `love` with your favourite package manager (Homebrew on macOS, your system's default on Linux). **Make sure you're using LÖVE 11, because it won't work with earlier versions!**
@@ -50,25 +70,11 @@ Then, navigate to the root directory that you just cloned, and type:
 
 It should run automatically!
 
-### Windows
-
-You do not need LÖVE on Windows, as it comes bundled with the program. Download the source code ZIP in the latest release, or if you want the bleeding edge version, download [this](https://github.com/SashLilac/cambridge/archive/master.zip).
-
-Extract the ZIP, open a Command Prompt at the folder you extracted Cambridge to, then run this command:
-
-	dist\windows\love.exe .
-
-Alternatively, if you're on a 32-bit system, run this instead:
-
-	dist\win32\love.exe .
-
-32-bit systems do not support rich presence integration.
-
 ## Installing modpacks
 
 Simply drag your mode, ruleset, and randomizer Lua files into their respective directory, and they should appear automatically.  
 
-Alternatively, install [this](https://files.catbox.moe/66td2i.zip) mod pack to get a taste of the mod potential.
+Alternatively, install [this](https://github.com/SashLilac/cambridge/releases/download/v0.2.1/modpackv1.zip) mod pack to get a taste of the mod potential.
 
 License
 -------
