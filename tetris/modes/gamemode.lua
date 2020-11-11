@@ -43,12 +43,12 @@ function GameMode:new()
 	self.draw_section_times = false
 	self.draw_secondary_section_times = false
 	self.big_mode = false
-    self.rpc_details = "In game"
+	self.rpc_details = "In game"
 	-- variables related to configurable parameters
 	self.drop_locked = false
 	self.hard_drop_locked = false
-    self.lock_on_soft_drop = false
-    self.lock_on_hard_drop = false
+	self.lock_on_soft_drop = false
+	self.lock_on_hard_drop = false
 	self.hold_queue = nil
 	self.held = false
 	self.section_start_time = 0
@@ -65,7 +65,7 @@ function GameMode:getLineClearDelay() return 40 end
 function GameMode:getDasLimit() return 15 end
 
 function GameMode:getNextPiece(ruleset)
-    
+	
 	return {
 		skin = "2tie",
 		shape = self.randomizer:nextPiece(),
@@ -75,12 +75,12 @@ end
 
 function GameMode:initialize(ruleset)
 	-- generate next queue
-    self:new()
+	self:new()
 	for i = 1, self.next_queue_length do
 		table.insert(self.next_queue, self:getNextPiece(ruleset))
 	end
-    self.lock_on_soft_drop = ({ruleset.softdrop_lock, self.instant_soft_drop, false, true })[config.gamesettings.manlock]
-    self.lock_on_hard_drop = ({ruleset.harddrop_lock, self.instant_hard_drop, true,  false})[config.gamesettings.manlock]
+	self.lock_on_soft_drop = ({ruleset.softdrop_lock, self.instant_soft_drop, false, true })[config.gamesettings.manlock]
+	self.lock_on_hard_drop = ({ruleset.harddrop_lock, self.instant_hard_drop, true,  false})[config.gamesettings.manlock]
 end
 
 function GameMode:update(inputs, ruleset)
@@ -369,7 +369,7 @@ function GameMode:drawGhostPiece(ruleset)
 end
 
 function GameMode:drawNextQueue(ruleset)
-    local colourscheme = ({ruleset.colourscheme, ColourSchemes.Arika, ColourSchemes.TTC})[config.gamesettings.piece_colour]
+	local colourscheme = ({ruleset.colourscheme, ColourSchemes.Arika, ColourSchemes.TTC})[config.gamesettings.piece_colour]
 	function drawPiece(piece, skin, offsets, pos_x, pos_y)
 		for index, offset in pairs(offsets) do
 			local x = offset.x + ruleset.spawn_positions[piece].x
@@ -389,7 +389,8 @@ function GameMode:drawNextQueue(ruleset)
 		end
 	end
 	if self.hold_queue ~= nil then
-		self:setHoldOpacity()
+		local hold_color = self.held and 0.6 or 1
+		self:setHoldOpacity(1, hold_color)
 		drawPiece(
 			self.hold_queue.shape, 
 			self.hold_queue.skin, 
@@ -400,8 +401,16 @@ function GameMode:drawNextQueue(ruleset)
 	return false
 end
 
-function GameMode:setNextOpacity(i) love.graphics.setColor(1, 1, 1, 1) end
-function GameMode:setHoldOpacity() love.graphics.setColor(1, 1, 1, 1) end
+function GameMode:setNextOpacity(i, j)
+		i = i ~= nil and i or 1
+		j = j ~= nil and j or 1
+		love.graphics.setColor(j, j, j, i)
+end
+function GameMode:setHoldOpacity(i, j)
+	i = i ~= nil and i or 1
+	j = j ~= nil and j or 1
+	love.graphics.setColor(j, j, j, i)
+end
 
 function GameMode:drawScoringInfo()
 	love.graphics.setColor(1, 1, 1, 1)

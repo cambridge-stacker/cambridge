@@ -5,7 +5,8 @@ Scene = Object:extend()
 function Scene:new() end
 function Scene:update() end
 function Scene:render() end
-function Scene:onKeyPress() end
+function Scene:onInputPress() end
+function Scene:onInputRelease() end
 
 ExitScene = require "scene.exit"
 GameScene = require "scene.game"

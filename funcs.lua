@@ -1,11 +1,11 @@
 function copy(t)
 	-- returns deep copy of t (as opposed to the shallow copy you get from var = t)
 	if type(t) ~= "table" then return t end
-    local meta = getmetatable(t)
-    local target = {}
-    for k, v in pairs(t) do target[k] = v end
-    setmetatable(target, meta)
-    return target
+	local meta = getmetatable(t)
+	local target = {}
+	for k, v in pairs(t) do target[k] = v end
+	setmetatable(target, meta)
+	return target
 end
 
 function strTrueValues(tbl)
@@ -64,6 +64,6 @@ function formatBigNum(number)
 end
 
 function Mod1(n, m)
-    -- returns a number congruent to n modulo m in the range [1;m] (as opposed to [0;m-1])
-    return ((n-1) % m) + 1
+	-- returns a number congruent to n modulo m in the range [1;m] (as opposed to [0;m-1])
+	return ((n-1) % m) + 1
 end

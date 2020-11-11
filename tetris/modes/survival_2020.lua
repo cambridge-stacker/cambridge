@@ -27,6 +27,7 @@ function Survival2020Game:new()
 	self.randomizer = History6RollsRandomizer()
 
 	self.lock_drop = true
+	self.lock_hard_drop = true
 	self.enable_hold = true
 	self.next_queue_length = 3
 end
@@ -45,7 +46,7 @@ function Survival2020Game:getLineARE()
 end
  
 function Survival2020Game:getDasLimit()
-	    if self.level < 200 then return 9
+		if self.level < 200 then return 9
 	elseif self.level < 500 then return 7
 	elseif self.level < 1000 then return 5
 	elseif self.level < 1500 then return 4
@@ -174,16 +175,17 @@ function Survival2020Game:onLineClear(cleared_row_count)
 end
 
 function Survival2020Game:updateScore(level, drop_bonus, cleared_lines)
-	if cleared_lines > 0 then
-		self.score = self.score + (
-			(math.ceil((level + cleared_lines) / 4) + drop_bonus) *
-			cleared_lines * (cleared_lines * 2 - 1) * (self.combo * 2 - 1)
-		)
-		self.lines = self.lines + cleared_lines
-		self.combo = self.combo + cleared_lines - 1
-	else
+	if not self.clear then
+		if cleared_lines > 0 then
+			self.combo = self.combo + (cleared_lines - 1) * 2
+			self.score = self.score + (
+				(math.ceil((level + cleared_lines) / 4) + drop_bonus) *
+				cleared_lines * self.combo
+			)
+		else
+			self.combo = 1
+		end
 		self.drop_bonus = 0
-		self.combo = 1
 	end
 end
 

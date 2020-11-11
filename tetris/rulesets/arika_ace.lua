@@ -7,13 +7,13 @@ ARS.name = "ACE-ARS"
 ARS.hash = "ArikaACE"
 
 ARS.colourscheme = {
-    I = "C",
-    L = "O",
-    J = "B",
-    S = "G",
-    Z = "R",
-    O = "Y",
-    T = "M",
+	I = "C",
+	L = "O",
+	J = "B",
+	S = "G",
+	Z = "R",
+	O = "Y",
+	T = "M",
 }
 
 ARS.softdrop_lock = false
@@ -98,18 +98,18 @@ function ARS:attemptWallkicks(piece, new_piece, rot_dir, grid)
 	) and (
 		piece.rotation == 0 or piece.rotation == 2
 	) then
-        local offsets = new_piece:getBlockOffsets()
-        table.sort(offsets, function(A, B) return A.y < B.y or A.y == B.y and A.x < B.y end)
-        for index, offset in pairs(offsets) do
-            if grid:isOccupied(piece.position.x + offset.x, piece.position.y + offset.y) then
-                if offset.x == 0 then
-                    return 
-                else
-                    break
-                end
-            end
-        end
-    end
+		local offsets = new_piece:getBlockOffsets()
+		table.sort(offsets, function(A, B) return A.y < B.y or A.y == B.y and A.x < B.y end)
+		for index, offset in pairs(offsets) do
+			if grid:isOccupied(piece.position.x + offset.x, piece.position.y + offset.y) then
+				if offset.x == 0 then
+					return 
+				else
+					break
+				end
+			end
+		end
+	end
 
 	if piece.shape == "I" then
 		-- special kick rules for I
@@ -138,20 +138,20 @@ function ARS:attemptWallkicks(piece, new_piece, rot_dir, grid)
 			end
 		end
 	else
-        -- kick right, kick left
-        if grid:canPlacePiece(new_piece:withOffset({x=1, y=0})) then
-            piece:setRelativeRotation(rot_dir):setOffset({x=1, y=0})
-        elseif grid:canPlacePiece(new_piece:withOffset({x=-1, y=0})) then
-            piece:setRelativeRotation(rot_dir):setOffset({x=-1, y=0})
-        elseif piece.shape == "T"
-           and new_piece.rotation == 0
-           and piece.floorkick == 0
-           and grid:canPlacePiece(new_piece:withOffset({x=0, y=-1}))
-        then
-            -- T floorkick
-            piece.floorkick = piece.floorkick + 1
-            piece:setRelativeRotation(rot_dir):setOffset({x=0, y=-1})
-        end
+		-- kick right, kick left
+		if grid:canPlacePiece(new_piece:withOffset({x=1, y=0})) then
+			piece:setRelativeRotation(rot_dir):setOffset({x=1, y=0})
+		elseif grid:canPlacePiece(new_piece:withOffset({x=-1, y=0})) then
+			piece:setRelativeRotation(rot_dir):setOffset({x=-1, y=0})
+		elseif piece.shape == "T"
+		   and new_piece.rotation == 0
+		   and piece.floorkick == 0
+		   and grid:canPlacePiece(new_piece:withOffset({x=0, y=-1}))
+		then
+			-- T floorkick
+			piece.floorkick = piece.floorkick + 1
+			piece:setRelativeRotation(rot_dir):setOffset({x=0, y=-1})
+		end
 	end
 
 end
@@ -185,7 +185,14 @@ function ARS:onPieceRotate(piece, grid)
 	end
 end
 
-function ARS:get180RotationValue() return 3 end
+function ARS:get180RotationValue()
+	if config.gamesettings.world_reverse == 3 then
+		return 3
+	else
+		return 1
+    end
+end
+
 function ARS:getDefaultOrientation() return 3 end  -- downward facing pieces by default
 
 return ARS

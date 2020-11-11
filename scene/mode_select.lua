@@ -5,44 +5,6 @@ ModeSelectScene.title = "Game Start"
 current_mode = 1
 current_ruleset = 1
 
-game_modes = {
-	require 'tetris.modes.marathon_2020',
-	require 'tetris.modes.survival_2020',
-	require 'tetris.modes.ck',
-	--require 'tetris.modes.strategy',
-	--require 'tetris.modes.interval_training',
-	--require 'tetris.modes.pacer_test',
-	require 'tetris.modes.demon_mode',
-	require 'tetris.modes.phantom_mania',
-	require 'tetris.modes.phantom_mania2',
-	require 'tetris.modes.phantom_mania_n',
-	require 'tetris.modes.race_40',
-	require 'tetris.modes.marathon_a1',
-	require 'tetris.modes.marathon_a2',
-	require 'tetris.modes.marathon_a3',
-	require 'tetris.modes.marathon_ax4',
-	require 'tetris.modes.marathon_c89',
-	require 'tetris.modes.survival_a1',
-	require 'tetris.modes.survival_a2',
-	require 'tetris.modes.survival_a3',
-	require 'tetris.modes.big_a2',
-	require 'tetris.modes.konoha',
-}
-
-rulesets = {
-	require 'tetris.rulesets.cambridge',
-	require 'tetris.rulesets.arika',
-	require 'tetris.rulesets.arika_ti',
-	require 'tetris.rulesets.ti_srs',
-	require 'tetris.rulesets.arika_ace',
-	require 'tetris.rulesets.arika_ace2',
-	require 'tetris.rulesets.arika_srs',
-	require 'tetris.rulesets.standard_exp',
-	--require 'tetris.rulesets.bonkers',
-	--require 'tetris.rulesets.shirase',
-	--require 'tetris.rulesets.super302',
-}
-
 function ModeSelectScene:new()
 	self.menu_state = {
 		mode = current_mode,
@@ -50,9 +12,9 @@ function ModeSelectScene:new()
 		select = "mode",
 	}
 	DiscordRPC:update({
-        details = "In menus",
-        state = "Choosing a mode",
-    })
+		details = "In menus",
+		state = "Choosing a mode",
+	})
 end
 
 function ModeSelectScene:update()
@@ -70,14 +32,14 @@ function ModeSelectScene:render()
 	elseif self.menu_state.select == "ruleset" then
 		love.graphics.setColor(1, 1, 1, 0.25)
 	end
-	love.graphics.rectangle("fill", 20, 78 + 20 * self.menu_state.mode, 240, 22)
+	love.graphics.rectangle("fill", 20, 258, 240, 22)
 
 	if self.menu_state.select == "mode" then
 		love.graphics.setColor(1, 1, 1, 0.25)
 	elseif self.menu_state.select == "ruleset" then
 		love.graphics.setColor(1, 1, 1, 0.5)
 	end
-	love.graphics.rectangle("fill", 340, 78 + 20 * self.menu_state.ruleset, 200, 22)
+	love.graphics.rectangle("fill", 340, 258, 200, 22)
 
 	love.graphics.setColor(1, 1, 1, 1)
 
@@ -85,15 +47,19 @@ function ModeSelectScene:render()
 
 	love.graphics.setFont(font_3x5_2)
 	for idx, mode in pairs(game_modes) do
-		love.graphics.printf(mode.name, 40, 80 + 20 * idx, 200, "left")
+		if(idx >= self.menu_state.mode-9 and idx <= self.menu_state.mode+9) then
+			love.graphics.printf(mode.name, 40, (260 - 20*(self.menu_state.mode)) + 20 * idx, 200, "left")
+		end
 	end
 	for idx, ruleset in pairs(rulesets) do
-		love.graphics.printf(ruleset.name, 360, 80 + 20 * idx, 160, "left")
+		if(idx >= self.menu_state.ruleset-9 and idx <= self.menu_state.ruleset+9) then
+			love.graphics.printf(ruleset.name, 360, (260 - 20*(self.menu_state.ruleset)) + 20 * idx, 160, "left")
+		end
 	end
 end
 
-function ModeSelectScene:onKeyPress(e)
-	if e.scancode == "return" and e.isRepeat == false then
+function ModeSelectScene:onInputPress(e)
+	if e.input == "menu_decide" or e.scancode == "return" then
 		current_mode = self.menu_state.mode
 		current_ruleset = self.menu_state.ruleset
 		config.current_mode = current_mode
@@ -101,18 +67,17 @@ function ModeSelectScene:onKeyPress(e)
 		playSE("mode_decide")
 		saveConfig()
 		scene = GameScene(game_modes[self.menu_state.mode], rulesets[self.menu_state.ruleset])
-	elseif (e.scancode == config.input["up"] or e.scancode == "up") and e.isRepeat == false then
+	elseif e.input == "up" or e.scancode == "up" then
 		self:changeOption(-1)
 		playSE("cursor")
-	elseif (e.scancode == config.input["down"] or e.scancode == "down") and e.isRepeat == false then
+	elseif e.input == "down" or e.scancode == "down" then
 		self:changeOption(1)
 		playSE("cursor")
-	elseif (e.scancode == config.input["left"] or e.scancode == "left") or
-		(e.scancode == config.input["right"] or e.scancode == "right") then
+	elseif e.input == "left" or e.input == "right" or e.scancode == "left" or e.scancode == "right" then
 		self:switchSelect()
 		playSE("cursor_lr")
-    elseif e.scancode == "escape" then
-        scene = TitleScene()
+	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
+		scene = TitleScene()
 	end
 end
 

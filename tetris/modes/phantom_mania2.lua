@@ -16,7 +16,6 @@ PhantomMania2Game.tagline = "The blocks disappear even faster now! Can you make 
 
 function PhantomMania2Game:new()
 	PhantomMania2Game.super:new()
-	self.level = 0
 	self.grade = 0
 	self.garbage = 0
 	self.clear = false
@@ -26,27 +25,31 @@ function PhantomMania2Game:new()
 	self.hold_age = 0
 	self.queue_age = 0
 	self.roll_points = 0
-    
-    self.SGnames = {
-        "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
-        "m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8", "m9",
-        "GM"
-    }
+	
+	self.SGnames = {
+		"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
+		"m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8", "m9",
+		"GM"
+	}
 
 	self.randomizer = History6RollsRandomizer()
 
 	self.lock_drop = true
+	self.lock_hard_drop = true
 	self.enable_hold = true
 	self.next_queue_length = 3
+
+	self.coolregret_message = ""
+	self.coolregret_timer = 0
 end
 
 function PhantomMania2Game:getARE()
-	    if self.level < 300 then return 12
+		if self.level < 300 then return 12
 	else return 6 end
 end
 
 function PhantomMania2Game:getLineARE()
-	    if self.level < 100 then return 8
+		if self.level < 100 then return 8
 	elseif self.level < 200 then return 7
 	elseif self.level < 500 then return 6
 	elseif self.level < 1300 then return 5
@@ -54,7 +57,7 @@ function PhantomMania2Game:getLineARE()
 end
 
 function PhantomMania2Game:getDasLimit()
-	    if self.level < 200 then return 9
+		if self.level < 200 then return 9
 	elseif self.level < 500 then return 7
 	else return 5 end
 end
@@ -64,7 +67,7 @@ function PhantomMania2Game:getLineClearDelay()
 end
 
 function PhantomMania2Game:getLockDelay()
-	    if self.level < 200 then return 18
+		if self.level < 200 then return 18
 	elseif self.level < 300 then return 17
 	elseif self.level < 500 then return 15
 	elseif self.level < 600 then return 13
@@ -122,6 +125,8 @@ function PhantomMania2Game:advanceOneFrame()
 			return false
 		elseif self.roll_frames > 3238 then
 			switchBGM(nil)
+			self.roll_points = self.level >= 1300 and self.roll_points + 150 or self.roll_points
+			self.grade = self.grade + math.floor(self.roll_points / 100)
 			self.completed = true
 		end
 	elseif self.ready_frames == 0 then
@@ -143,7 +148,8 @@ function PhantomMania2Game:onPieceEnter()
 end
 
 local cleared_row_levels = {1, 2, 4, 6}
-local cleared_row_points = {2, 6, 15, 40}
+local torikan_roll_points = {10, 20, 30, 100}
+local big_roll_points = {10, 20, 100, 200}
 
 function PhantomMania2Game:onLineClear(cleared_row_count)
 	if not self.clear then
@@ -162,7 +168,8 @@ function PhantomMania2Game:onLineClear(cleared_row_count)
 		end
 		self:advanceBottomRow(-cleared_row_count)
 	else
-		self.roll_points = self.roll_points + cleared_row_points[cleared_row_count / 2]
+		if self.big_mode then self.roll_points = self.roll_points + big_roll_points[cleared_row_count / 2]
+		else self.roll_points = self.roll_points + torikan_roll_points[cleared_row_count] end
 		if self.roll_points >= 100 then
 			self.roll_points = self.roll_points - 100
 			self.grade = self.grade + 1
@@ -171,24 +178,27 @@ function PhantomMania2Game:onLineClear(cleared_row_count)
 end
 
 function PhantomMania2Game:onPieceLock(piece, cleared_row_count)
+	self.super:onPieceLock()
 	if cleared_row_count == 0 then self:advanceBottomRow(1) end
 end
 
 function PhantomMania2Game:onHold()
+	self.super.onHold()
 	self.hold_age = 0
 end
 
 function PhantomMania2Game:updateScore(level, drop_bonus, cleared_lines)
-	if cleared_lines > 0 then
-		self.score = self.score + (
-			(math.ceil((level + cleared_lines) / 4) + drop_bonus) *
-			cleared_lines * (cleared_lines * 2 - 1) * (self.combo * 2 - 1)
-		)
-		self.lines = self.lines + cleared_lines
-		self.combo = self.combo + cleared_lines - 1
-	else
+	if not self.clear then
+		if cleared_lines > 0 then
+			self.combo = self.combo + (cleared_lines - 1) * 2
+			self.score = self.score + (
+				(math.ceil((level + cleared_lines) / 4) + drop_bonus) *
+				cleared_lines * self.combo
+			)
+		else
+			self.combo = 1
+		end
 		self.drop_bonus = 0
-		self.combo = 1
 	end
 end
 
@@ -213,8 +223,13 @@ function PhantomMania2Game:updateSectionTimes(old_level, new_level)
 		self.section_start_time = self.frames
 		if section_time <= cool_cutoffs[section] then
 			self.grade = self.grade + 2
+			self.coolregret_message = "COOL!!"
+			self.coolregret_timer = 300
 		elseif section_time <= regret_cutoffs[section] then
 			self.grade = self.grade + 1
+		else
+			self.coolregret_message = "REGRET!!"
+			self.coolregret_timer = 300
 		end
 	end
 end
@@ -291,10 +306,17 @@ function PhantomMania2Game:drawScoringInfo()
 	love.graphics.printf("GRADE", text_x, 120, 40, "left")
 	love.graphics.printf("SCORE", text_x, 200, 40, "left")
 	love.graphics.printf("LEVEL", text_x, 320, 40, "left")
-    local sg = self.grid:checkSecretGrade()
-    if sg >= 5 then 
-        love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
-    end
+	local sg = self.grid:checkSecretGrade()
+	if sg >= 5 then 
+		love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
+	end
+
+	self:drawSectionTimesWithSplits(math.floor(self.level / 100) + 1)
+
+	if(self.coolregret_timer > 0) then
+				love.graphics.printf(self.coolregret_message, 64, 400, 160, "center")
+				self.coolregret_timer = self.coolregret_timer - 1
+		end
 
 	love.graphics.setFont(font_3x5_3)
 	love.graphics.printf(getLetterGrade(math.floor(self.grade)), text_x, 140, 90, "left")
@@ -305,10 +327,10 @@ function PhantomMania2Game:drawScoringInfo()
 	else
 		love.graphics.printf(math.floor(self.level / 100 + 1) * 100, text_x, 370, 50, "right")
 	end
-    
-    if sg >= 5 then
-        love.graphics.printf(self.SGnames[sg], 240, 450, 180, "left")
-    end
+	
+	if sg >= 5 then
+		love.graphics.printf(self.SGnames[sg], 240, 450, 180, "left")
+	end
 end
 
 function PhantomMania2Game:getBackground()

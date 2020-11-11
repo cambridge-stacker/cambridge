@@ -7,7 +7,7 @@ function ExitScene:new()
 end
 
 function ExitScene:update()
-    love.event.quit()
+	love.event.quit()
 end
 
 function ExitScene:render()
@@ -16,7 +16,7 @@ end
 function ExitScene:changeOption(rel)
 end
 
-function ExitScene:onKeyPress(e)
+function ExitScene:onInputPress(e)
 end
 
 return ExitScene

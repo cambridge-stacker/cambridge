@@ -17,7 +17,7 @@ function ConfigScene:changeOption(rel)
 	self.main_menu_state = (self.main_menu_state + len + rel - 1) % len + 1
 end
 
-function ConfigScene:onKeyPress(e)
+function ConfigScene:onInputPress(e)
 end
 
 return ConfigScene

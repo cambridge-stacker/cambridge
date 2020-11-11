@@ -36,10 +36,12 @@ function Marathon2020Game:new()
 	self.grade_points = 0
 	self.grade_point_decay_counter = 0
 	self.max_grade_points = 0
+
+	self.cool_timer = 0
 end
 
 function Marathon2020Game:getARE()
-	    if self.delay_level < 1 then return 27
+		if self.delay_level < 1 then return 27
 	elseif self.delay_level < 2 then return 24
 	elseif self.delay_level < 3 then return 21
 	elseif self.delay_level < 4 then return 18
@@ -58,7 +60,7 @@ function Marathon2020Game:getLineARE()
 end
 
 function Marathon2020Game:getDasLimit()
-	    if self.delay_level < 1 then return 15
+		if self.delay_level < 1 then return 15
 	elseif self.delay_level < 3 then return 12
 	elseif self.delay_level < 5 then return 9
 	elseif self.delay_level < 8 then return 8
@@ -70,7 +72,7 @@ function Marathon2020Game:getDasLimit()
 end
 
 function Marathon2020Game:getLineClearDelay()
-	    if self.delay_level < 1 then return 40
+		if self.delay_level < 1 then return 40
 	elseif self.delay_level < 3 then return 25
 	elseif self.delay_level < 4 then return 20
 	elseif self.delay_level < 5 then return 15
@@ -82,7 +84,7 @@ function Marathon2020Game:getLineClearDelay()
 end
 
 function Marathon2020Game:getLockDelay()
-	    if self.delay_level < 6 then return 30
+		if self.delay_level < 6 then return 30
 	elseif self.delay_level < 7 then return 26
 	elseif self.delay_level < 8 then return 22
 	elseif self.delay_level < 9 then return 19
@@ -96,35 +98,35 @@ function Marathon2020Game:getLockDelay()
 end
 
 function Marathon2020Game:getGravity()
-	    if self.level < 30  then return 4/256
+		if self.level < 30  then return 4/256
 	elseif self.level < 35  then return 6/256
-    elseif self.level < 40  then return 8/256
-    elseif self.level < 50  then return 10/256
-    elseif self.level < 60  then return 12/256
-    elseif self.level < 70  then return 16/256
-    elseif self.level < 80  then return 32/256
-    elseif self.level < 90  then return 48/256
-    elseif self.level < 100 then return 64/256
-    elseif self.level < 120 then return 80/256
-    elseif self.level < 140 then return 96/256
-    elseif self.level < 160 then return 112/256
-    elseif self.level < 170 then return 128/256
-    elseif self.level < 200 then return 144/256
-    elseif self.level < 220 then return 4/256
-    elseif self.level < 230 then return 32/256
-    elseif self.level < 233 then return 64/256
-    elseif self.level < 236 then return 96/256
-    elseif self.level < 239 then return 128/256
-    elseif self.level < 243 then return 160/256
-    elseif self.level < 247 then return 192/256
-    elseif self.level < 251 then return 224/256
+	elseif self.level < 40  then return 8/256
+	elseif self.level < 50  then return 10/256
+	elseif self.level < 60  then return 12/256
+	elseif self.level < 70  then return 16/256
+	elseif self.level < 80  then return 32/256
+	elseif self.level < 90  then return 48/256
+	elseif self.level < 100 then return 64/256
+	elseif self.level < 120 then return 80/256
+	elseif self.level < 140 then return 96/256
+	elseif self.level < 160 then return 112/256
+	elseif self.level < 170 then return 128/256
+	elseif self.level < 200 then return 144/256
+	elseif self.level < 220 then return 4/256
+	elseif self.level < 230 then return 32/256
+	elseif self.level < 233 then return 64/256
+	elseif self.level < 236 then return 96/256
+	elseif self.level < 239 then return 128/256
+	elseif self.level < 243 then return 160/256
+	elseif self.level < 247 then return 192/256
+	elseif self.level < 251 then return 224/256
 	elseif self.level < 300 then return 1
-    elseif self.level < 330 then return 2
-    elseif self.level < 360 then return 3
-    elseif self.level < 400 then return 4
-    elseif self.level < 420 then return 5
-    elseif self.level < 450 then return 4
-    elseif self.level < 500 then return 3
+	elseif self.level < 330 then return 2
+	elseif self.level < 360 then return 3
+	elseif self.level < 400 then return 4
+	elseif self.level < 420 then return 5
+	elseif self.level < 450 then return 4
+	elseif self.level < 500 then return 3
 	else return 20 end
 end
 
@@ -258,7 +260,7 @@ local function getSectionForLevel(level)
 end
 
 function Marathon2020Game:getEndOfSectionForSection(section)
-	    if self.torikan_passed[900] == false and section == 10 then return 999
+		if self.torikan_passed[900] == false and section == 10 then return 999
 	elseif self.torikan_passed[1900] == false and section == 20 then return 2000
 	elseif section == 20 then return 2020
 	else return section * 100 end
@@ -301,7 +303,7 @@ function Marathon2020Game:checkClear(level)
 		level >= 2020
 	) then
 
-		    if self.torikan_passed[500] == false then self.level = 500
+			if self.torikan_passed[500] == false then self.level = 500
 		elseif self.torikan_passed[900] == false then self.level = 999
 		elseif self.torikan_passed[1000] == false then self.level = 1000
 		elseif self.torikan_passed[1500] == false then self.level = 1500
@@ -327,6 +329,7 @@ function Marathon2020Game:updateSectionTimes(old_level, new_level)
 		self.section_cool_count = self.section_cool_count + 1
 		self.delay_level = math.min(20, self.delay_level + 1)
 		table.insert(self.section_status, "cool")
+		self.cool_timer = 300
 	end
 
 	local section = getSectionForLevel(old_level)
@@ -429,6 +432,11 @@ function Marathon2020Game:drawScoringInfo()
 	love.graphics.printf("LEVEL", text_x, 320, 40, "left")
 
 	self:drawSectionTimesWithSecondary(current_section)
+
+	if (self.cool_timer > 0) then
+				love.graphics.printf("COOL!!", 64, 400, 160, "center")
+				self.cool_timer = self.cool_timer - 1
+		end	
 
 	love.graphics.setFont(font_3x5_3)
 	love.graphics.printf(self:getTotalGrade(), text_x, 120, 90, "left")
