@@ -35,6 +35,7 @@ function PhantomMania2Game:new()
 	self.randomizer = History6RollsRandomizer()
 
 	self.lock_drop = true
+	self.lock_hard_drop = true
 	self.enable_hold = true
 	self.next_queue_length = 3
 

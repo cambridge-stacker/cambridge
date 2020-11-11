@@ -15,6 +15,7 @@ function PhantomManiaGame:new()
 	PhantomManiaGame.super:new()
 
 	self.lock_drop = true
+	self.lock_hard_drop = true
 	self.next_queue_length = 1
 	
 	self.SGnames = {
