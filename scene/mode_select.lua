@@ -59,7 +59,7 @@ function ModeSelectScene:render()
 end
 
 function ModeSelectScene:onInputPress(e)
-	if e.input == "menu_decide" then
+	if e.input == "menu_decide" or e.scancode == "return" then
 		current_mode = self.menu_state.mode
 		current_ruleset = self.menu_state.ruleset
 		config.current_mode = current_mode
@@ -76,7 +76,7 @@ function ModeSelectScene:onInputPress(e)
 	elseif e.input == "left" or e.input == "right" or e.scancode == "left" or e.scancode == "right" then
 		self:switchSelect()
 		playSE("cursor_lr")
-	elseif e.input == "menu_back" then
+	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
 		scene = TitleScene()
 	end
 end
