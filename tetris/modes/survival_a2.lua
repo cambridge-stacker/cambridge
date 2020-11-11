@@ -27,6 +27,7 @@ function SurvivalA2Game:new()
 	}
 
 	self.lock_drop = true
+	self.lock_hard_drop = true
 end
 
 function SurvivalA2Game:getARE()

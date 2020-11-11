@@ -34,6 +34,7 @@ function MarathonA2Game:new()
 	}
 
 	self.lock_drop = false
+	self.lock_hard_drop = false
 	self.enable_hold = false
 	self.next_queue_length = 1
 end
@@ -151,7 +152,8 @@ function MarathonA2Game:onLineClear(cleared_row_count)
 		if self:qualifiesForMRoll() then self.grade = 32 end
 		self.roll_frames = -150
 	end
-	if self.level >= 900 then self.lock_drop = true end
+	self.lock_drop = self.level >= 900
+	self.lock_hard_drop = self.level >= 900
 end
 
 function MarathonA2Game:updateSectionTimes(old_level, new_level)
