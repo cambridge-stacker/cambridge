@@ -50,7 +50,7 @@ Then, navigate to the root directory that you just cloned, and type:
 
 It should run automatically!
 
-## Windows
+### Windows
 
 You do not need LÖVE on Windows, as it comes bundled with the program. Download the source code ZIP in the latest release, or if you want the bleeding edge version, download [this](https://github.com/SashLilac/cambridge/archive/master.zip).
 
@@ -63,6 +63,12 @@ Alternatively, if you're on a 32-bit system, run this instead:
 	dist\win32\love.exe .
 
 32-bit systems do not support rich presence integration.
+
+## Installing modpacks
+
+Simply drag your mode, ruleset, and randomizer Lua files into their respective directory, and they should appear automatically.  
+
+Alternatively, install [this](https://files.catbox.moe/66td2i.zip) mod pack to get a taste of the mod potential.
 
 License
 -------

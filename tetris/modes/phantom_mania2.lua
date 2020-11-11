@@ -310,6 +310,8 @@ function PhantomMania2Game:drawScoringInfo()
 		love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
 	end
 
+	self:drawSectionTimesWithSplits(math.floor(self.level / 100) + 1)
+
 	if(self.coolregret_timer > 0) then
 				love.graphics.printf(self.coolregret_message, 64, 400, 160, "center")
 				self.coolregret_timer = self.coolregret_timer - 1
