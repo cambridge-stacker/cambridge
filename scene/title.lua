@@ -61,10 +61,10 @@ function TitleScene:onInputPress(e)
 	if e.input == "menu_decide" then
 		playSE("main_decide")
 		scene = main_menu_screens[self.main_menu_state]()
-	elseif e.input == "up" then
+	elseif e.input == "up" or e.scancode == "up" then
 		self:changeOption(-1)
 		playSE("cursor")
-	elseif e.input == "down" then
+	elseif e.input == "down" or e.scancode == "down" then
 		self:changeOption(1)
 		playSE("cursor")
 	elseif e.input == "menu_back" then

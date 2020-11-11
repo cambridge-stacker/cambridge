@@ -67,13 +67,13 @@ function ModeSelectScene:onInputPress(e)
 		playSE("mode_decide")
 		saveConfig()
 		scene = GameScene(game_modes[self.menu_state.mode], rulesets[self.menu_state.ruleset])
-	elseif e.input == "up" then
+	elseif e.input == "up" or e.scancode == "up" then
 		self:changeOption(-1)
 		playSE("cursor")
-	elseif e.input == "down" then
+	elseif e.input == "down" or e.scancode == "down" then
 		self:changeOption(1)
 		playSE("cursor")
-	elseif e.input == "left" or e.input == "right" then
+	elseif e.input == "left" or e.input == "right" or e.scancode == "left" or e.scancode == "right" then
 		self:switchSelect()
 		playSE("cursor_lr")
 	elseif e.input == "menu_back" then

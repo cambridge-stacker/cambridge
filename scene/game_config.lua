@@ -56,17 +56,17 @@ function ConfigScene:onInputPress(e)
 		playSE("mode_decide")
 		saveConfig()
 		scene = TitleScene()
-	elseif e.input == "up" then
+	elseif e.input == "up" or e.scancode == "up" then
 		playSE("cursor")
 		self.highlight = Mod1(self.highlight-1, optioncount)
-	elseif e.input == "down" then
+	elseif e.input == "down" or e.scancode == "down" then
 		playSE("cursor")
 		self.highlight = Mod1(self.highlight+1, optioncount)
-	elseif e.input == "left" then
+	elseif e.input == "left" or e.scancode == "left" then
 		playSE("cursor_lr")
 		local option = ConfigScene.options[self.highlight]
 		config.gamesettings[option[1]] = Mod1(config.gamesettings[option[1]]-1, #option[3])
-	elseif e.input == "right" then
+	elseif e.input == "right" or e.scancode == "right" then
 		playSE("cursor_lr")
 		local option = ConfigScene.options[self.highlight]
 		config.gamesettings[option[1]] = Mod1(config.gamesettings[option[1]]+1, #option[3])

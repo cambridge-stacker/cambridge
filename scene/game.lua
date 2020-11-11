@@ -71,11 +71,11 @@ function GameScene:render()
 end
 
 function GameScene:onInputPress(e)
-	if self.game.completed and (e.input == "menu_decide" or e.input == "menu_back") then
+	if self.game.completed and (e.input == "menu_decide" or e.input == "menu_back" or e.input == "retry") then
 		highscore_entry = self.game:getHighscoreData()
 		highscore_hash = self.game.hash .. "-" .. self.ruleset.hash
 		submitHighscore(highscore_hash, highscore_entry)
-		scene = ModeSelectScene()
+		scene = e.input == "retry" and GameScene(self.retry_mode, self.retry_ruleset) or ModeSelectScene()
 	elseif e.input == "retry" then
 		scene = GameScene(self.retry_mode, self.retry_ruleset)
 	elseif e.input == "menu_back" then
