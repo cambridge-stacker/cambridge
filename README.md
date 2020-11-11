@@ -28,6 +28,7 @@ The following people in no particular order also helped with the project:
 - [sinefuse](https://github.com/sinefuse)
 - [2Tie](https://github.com/2Tie)
 - [nightmareci](https://github.com/nightmareci)
+- [MyPasswordIsWeak](https://github.com/MyPasswordIsWeak)
 
 ![Cambridge Logo](https://cdn.discordapp.com/attachments/625496179433668635/763363717730664458/Icon_2.png)
 
