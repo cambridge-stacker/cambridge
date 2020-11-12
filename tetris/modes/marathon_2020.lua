@@ -144,6 +144,7 @@ function Marathon2020Game:advanceOneFrame()
 		if self.roll_frames < 0 then
 			return false
 		elseif self.roll_frames > 4000 then
+			if self.grade >= 30 and self.section_cool_count >= 20 then self.grade = 31 end
 			self.completed = true
 		end
 	elseif self.ready_frames == 0 then
@@ -248,6 +249,7 @@ function Marathon2020Game:updateGrade(cleared_lines)
 end
 
 function Marathon2020Game:getTotalGrade()
+	if self.grade + self.section_cool_count > 50 then return "GM" end
 	return self.grade + self.section_cool_count
 end
 
@@ -392,7 +394,6 @@ Marathon2020Game.mRollOpacityFunction = function(age)
 end
 
 function Marathon2020Game:qualifiesForMRoll()
-	return false -- until I actually have grading working
 --[[
 
 GM-roll requirements
@@ -403,6 +404,8 @@ You qualify for the GM roll if you:
 - in less than 13:30.00 total.
 
 ]]--
+	
+	return self.level >= 2020 and self:getTotalGrade() == 50 and self.frames <= frameTime(13,30)
 end
 
 function Marathon2020Game:drawGrid()
