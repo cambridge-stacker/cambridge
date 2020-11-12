@@ -171,6 +171,20 @@ function Grid:applyFourWide()
 		end
 end
 
+function Grid:applyCeiling(lines)
+	for row = 1, lines do
+		for col = 1, 9 do
+			self.grid[row][col] = block
+		end
+	end
+end
+
+function Grid:clearSpecificRow(row)
+	for col = 1, 10 do
+		self.grid[row][col] = empty
+	end
+end
+
 function Grid:applyPiece(piece)
 	if piece.big then
 		self:applyBigPiece(piece)
