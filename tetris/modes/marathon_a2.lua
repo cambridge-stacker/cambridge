@@ -305,16 +305,9 @@ MarathonA2Game.rollOpacityFunction = function(age)
 	else return 1 - (age - 240) / 60 end
 end
 
-MarathonA2Game.mRollOpacityFunction = function(age)
-	if age > 4 then return 0
-	else return 1 - age / 4 end
-end
-
 function MarathonA2Game:drawGrid(ruleset)
 	if self.clear and not (self.completed or self.game_over) then
-		if self:qualifiesForMRoll() then
-			self.grid:drawInvisible(self.mRollOpacityFunction)
-		else
+		if not self:qualifiesForMRoll() then
 			self.grid:drawInvisible(self.rollOpacityFunction)
 		end
 	else
