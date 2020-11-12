@@ -75,7 +75,7 @@ It should run automatically!
 
 Simply drag your mode, ruleset, and randomizer Lua files into their respective directory, and they should appear automatically.  
 
-Alternatively, install [this](https://github.com/SashLilac/cambridge/releases/download/v0.2.1/modpackv1.zip) mod pack to get a taste of the mod potential.
+Alternatively, install [this](https://github.com/SashLilac/cambridge-modpack) mod pack to get a taste of the mod potential.
 
 License
 -------
