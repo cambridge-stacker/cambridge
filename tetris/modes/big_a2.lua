@@ -250,7 +250,7 @@ end
 
 function MarathonA2Game:drawGrid(ruleset)
 	if self.clear and not (self.completed or self.game_over) then
-		self.grid:drawInvisible(self.rollOpacityFunction)
+		self.grid:drawInvisible(self.rollOpacityFunction, nil, false)
 	else
 		self.grid:draw()
 		if self.piece ~= nil and self.level < 100 then

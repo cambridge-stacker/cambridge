@@ -231,8 +231,8 @@ function MarathonA3Game:updateSectionTimes(old_level, new_level)
 end
 
 function MarathonA3Game:updateScore(level, drop_bonus, cleared_lines)
-	if not self.clear then
-		self:updateGrade(cleared_lines)
+	self:updateGrade(cleared_lines)
+	if not self.clear then	
 		if cleared_lines > 0 then
 			self.combo = self.combo + (cleared_lines - 1) * 2
 			self.score = self.score + (

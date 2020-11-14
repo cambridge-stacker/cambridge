@@ -139,7 +139,7 @@ end
 
 function PhantomManiaGame:drawGrid()
 	if not (self.game_over or self.clear) then
-		self.grid:drawInvisible(self.rollOpacityFunction)
+		self.grid:drawInvisible(self.rollOpacityFunction, nil, false)
 	else
 		self.grid:draw()
 	end
