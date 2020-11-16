@@ -43,6 +43,8 @@ function GameMode:new()
 	self.draw_section_times = false
 	self.draw_secondary_section_times = false
 	self.big_mode = false
+	self.irs = true
+	self.ihs = true
 	self.rpc_details = "In game"
 	-- variables related to configurable parameters
 	self.drop_locked = false
@@ -105,7 +107,7 @@ function GameMode:update(inputs, ruleset)
 		self:whilePieceActive()
 		local gravity = self:getGravity()
 
-		if self.enable_hold and inputs["hold"] == true and self.held == false then
+		if self.enable_hold and inputs["hold"] == true and self.held == false and self.prev_inputs["hold"] == false then
 			self:hold(inputs, ruleset)
 			self.prev_inputs = inputs
 			return
@@ -284,7 +286,7 @@ function GameMode:processDelays(inputs, ruleset, drop_speed)
 end
 
 function GameMode:initializeOrHold(inputs, ruleset)
-	if self.enable_hold and inputs["hold"] == true then
+	if self.ihs and self.enable_hold and inputs["hold"] == true then
 		self:hold(inputs, ruleset)
 	else
 		self:initializeNextPiece(inputs, ruleset, self.next_queue[1])
@@ -324,7 +326,8 @@ function GameMode:initializeNextPiece(inputs, ruleset, piece_data, generate_next
 		inputs, piece_data, self.grid, gravity,
 		self.prev_inputs, self.move,
 		self:getLockDelay(), self:getDropSpeed(),
-		self.lock_drop, self.lock_hard_drop, self.big_mode
+		self.lock_drop, self.lock_hard_drop, self.big_mode,
+		self.irs
 	)
 	if self.lock_drop then
 		self.drop_locked = true
