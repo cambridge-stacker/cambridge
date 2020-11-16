@@ -180,7 +180,7 @@ function Ruleset:getDefaultOrientation() return 1 end
 function Ruleset:initializePiece(
 	inputs, data, grid, gravity, prev_inputs,
 	move, lock_delay, drop_speed,
-	drop_locked, hard_drop_locked, big
+	drop_locked, hard_drop_locked, big, irs
 )
 	local spawn_positions
 	if big then
@@ -196,7 +196,7 @@ function Ruleset:initializePiece(
 	}, self.block_offsets, 0, 0, data.skin, colours[data.shape], big)
 
 	self:onPieceCreate(piece)
-	self:rotatePiece(inputs, piece, grid, {}, true)
+	if irs then self:rotatePiece(inputs, piece, grid, {}, true) end
 	self:dropPiece(inputs, piece, grid, gravity, drop_speed, drop_locked, hard_drop_locked)
 	return piece
 end
