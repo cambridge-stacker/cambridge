@@ -21,6 +21,7 @@ Ruleset.softdrop_lock = true
 Ruleset.harddrop_lock = false
 
 Ruleset.enable_IRS_wallkicks = false
+Ruleset.are_cancel = false
 
 -- Component functions.
 
