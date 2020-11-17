@@ -285,7 +285,7 @@ function GameMode:processDelays(inputs, ruleset, drop_speed)
 			inputs["rotate_left"] or inputs["rotate_left2"] or
 			inputs["rotate_right"] or inputs["rotate_right2"] or
 			inputs["rotate_180"]) then
-			self.are = 0
+			self.are = 1
 		end
 		if self.are == 0 then
 			self:initializeOrHold(inputs, ruleset)
