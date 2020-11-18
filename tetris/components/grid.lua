@@ -319,6 +319,29 @@ function Grid:draw()
 	end
 end
 
+function Grid:drawOutline()
+	for y = 5, 24 do
+		for x = 1, 10 do
+			if self.grid[y][x] ~= empty then
+				love.graphics.setColor(0.8, 0.8, 0.8, 1)
+				love.graphics.setLineWidth(1)
+				if y > 1 and self.grid[y-1][x] == empty then
+					love.graphics.line(48.0+x*16, -0.5+y*16, 64.0+x*16, -0.5+y*16)
+				end
+				if y < 24 and self.grid[y+1][x] == empty then
+					love.graphics.line(48.0+x*16, 16.5+y*16, 64.0+x*16, 16.5+y*16)
+				end
+				if x > 1 and self.grid[y][x-1] == empty then
+					love.graphics.line(47.5+x*16, -0.0+y*16, 47.5+x*16, 16.0+y*16)
+				end
+				if x < 10 and self.grid[y][x+1] == empty then
+					love.graphics.line(64.5+x*16, -0.0+y*16, 64.5+x*16, 16.0+y*16)
+				end
+			end
+		end
+	end
+end
+
 function Grid:drawInvisible(opacity_function, garbage_opacity_function, lock_flash, brightness)
 	lock_flash = lock_flash == nil and true or lock_flash
 	brightness = brightness == nil and 0.5 or brightness
