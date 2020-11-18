@@ -230,6 +230,15 @@ function Grid:checkForBravo(cleared_row_count)
 	return true
 end
 
+function Grid:checkStackHeight()
+	for i = 0, 23 do
+		for j = 0, 9 do
+			if self:isOccupied(j, i) then return 24 - i end
+		end
+	end
+	return 0
+end
+
 function Grid:checkSecretGrade()
 	local sgrade = 0
 	for i=23,5,-1 do
