@@ -270,6 +270,18 @@ function GameMode:processDelays(inputs, ruleset, drop_speed)
 		end
 	elseif self.lcd > 0 then
 		self.lcd = self.lcd - 1
+		if ruleset.are_cancel and
+			(self.move == "none" and
+			not self.prev_inputs["rotate_left"] and not self.prev_inputs["rotate_left2"] and
+			not self.prev_inputs["rotate_right"] and not self.prev_inputs["rotate_right2"] and
+			not self.prev_inputs["rotate_180"]) and
+			(inputs["left"] or inputs["right"] or
+			inputs["rotate_left"] or inputs["rotate_left2"] or
+			inputs["rotate_right"] or inputs["rotate_right2"] or
+			inputs["rotate_180"]) then
+			self.lcd = 0
+			self.are = 0
+		end
 		if self.lcd == 0 then
 			self.grid:clearClearedRows()
 			playSE("fall")
