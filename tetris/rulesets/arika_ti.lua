@@ -149,6 +149,15 @@ end
 
 function ARS:onPieceDrop(piece, grid)
 	piece.lock_delay = 0 -- step reset
+	if piece.floorkick >= 2 and piece:isDropBlocked(grid) then
+		piece.locked = true
+	end
+end
+
+function ARS:onPieceRotate(piece, grid)
+	if piece.floorkick >= 1 then
+		piece.floorkick = piece.floorkick + 1
+	end
 end
 
 function ARS:get180RotationValue() 

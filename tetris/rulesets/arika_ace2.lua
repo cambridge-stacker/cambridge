@@ -150,13 +150,16 @@ end
 
 function ARS:onPieceDrop(piece, grid)
 	piece.lock_delay = 0 -- step reset
+	if piece.floorkick >= 2 and piece:isDropBlocked(grid) then
+		piece.locked = true
+	end
 end
 
 function ARS:onPieceMove(piece, grid)
 	piece.lock_delay = 0 -- move reset
 	if piece:isDropBlocked(grid) then
 		piece.manipulations = piece.manipulations + 1
-		if piece.manipulations >= 127 then
+		if piece.manipulations >= 128 then
 			piece.locked = true
 		end
 	end
@@ -166,9 +169,12 @@ function ARS:onPieceRotate(piece, grid)
 	piece.lock_delay = 0 -- rotate reset
 	if piece:isDropBlocked(grid) then
 		piece.manipulations = piece.manipulations + 1
-		if piece.manipulations >= 127 then
+		if piece.manipulations >= 128 then
 			piece.locked = true
 		end
+	end
+	if piece.floorkick >= 1 then
+		piece.floorkick = piece.floorkick + 1
 	end
 end
 
