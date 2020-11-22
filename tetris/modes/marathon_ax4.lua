@@ -146,7 +146,7 @@ function MarathonAX4Game:drawScoringInfo()
 		strTrueValues(self.prev_inputs)
 	)
 	love.graphics.printf("NEXT", 64, 40, 40, "left")
-	love.graphics.printf("TIME LEFT", 240, 250, 80, "left")
+	if self.lines < 150 then love.graphics.printf("TIME LEFT", 240, 250, 80, "left") end
 	love.graphics.printf("LINES", 240, 320, 40, "left")
 
 	local current_section = math.floor(self.lines / 10) + 1
@@ -161,7 +161,7 @@ function MarathonAX4Game:drawScoringInfo()
 	if not self.game_over and not self.clear and time_left < frameTime(0,10) and time_left % 4 < 2 then
 		love.graphics.setColor(1, 0.3, 0.3, 1)
 	end
-	love.graphics.printf(formatTime(time_left), 240, 270, 160, "left")
+	if self.lines < 150 then love.graphics.printf(formatTime(time_left), 240, 270, 160, "left") end
 	love.graphics.setColor(1, 1, 1, 1)
 end
 
