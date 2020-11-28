@@ -161,6 +161,7 @@ function SurvivalA2Game:drawScoringInfo()
 	if self.roll_frames > 2968 then love.graphics.setColor(1, 0.5, 0, 1)
 	elseif self.clear then love.graphics.setColor(0, 1, 0, 1) end
 	if self:getLetterGrade() ~= "" then love.graphics.printf(self:getLetterGrade(), text_x, 140, 90, "left") end
+	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.printf(self.level, text_x, 340, 40, "right")
 	love.graphics.printf(self:getSectionEndLevel(), text_x, 370, 40, "right")
 	if sg >= 5 then
