@@ -100,6 +100,16 @@ function GameMode:update(inputs, ruleset)
 
 	self:chargeDAS(inputs, self:getDasLimit(), self.getARR())
 
+	-- set attempt flags
+	if inputs["left"] or inputs["right"] then self:onAttemptPieceMove(self.piece) end
+	if
+		inputs["rotate_left"] or inputs["rotate_right"] or
+		inputs["rotate_left2"] or inputs["rotate_right2"] or
+		inputs["rotate_180"]
+	then
+		self:onAttemptPieceRotate(self.piece)
+	end
+	
 	if self.piece == nil then
 		self:processDelays(inputs, ruleset)
 	else
@@ -200,6 +210,8 @@ end
 
 -- event functions
 function GameMode:whilePieceActive() end
+function GameMode:onAttemptPieceMove(piece) end
+function GameMode:onAttemptPieceRotate(piece) end
 function GameMode:onPieceLock(piece, cleared_row_count) 
 	playSE("lock")
 end
@@ -228,11 +240,17 @@ end
 function GameMode:startRightDAS()
 	self.move = "right"
 	self.das = { direction = "right", frames = 0 }
+	if self:getDasLimit() == 0 then
+		self:continueDAS()
+	end
 end
 
 function GameMode:startLeftDAS()
 	self.move = "left"
 	self.das = { direction = "left", frames = 0 }
+	if self:getDasLimit() == 0 then
+		self:continueDAS()
+	end
 end
 
 function GameMode:continueDAS()
