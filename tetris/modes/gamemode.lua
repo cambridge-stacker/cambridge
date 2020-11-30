@@ -96,7 +96,7 @@ function GameMode:update(inputs, ruleset)
 	if self.completed then return end
 
 	-- advance one frame
-	if self:advanceOneFrame(inputs) == false then return end
+	if self:advanceOneFrame(inputs, ruleset) == false then return end
 
 	self:chargeDAS(inputs, self:getDasLimit(), self.getARR())
 
