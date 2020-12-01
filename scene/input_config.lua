@@ -3,7 +3,6 @@ local ConfigScene = Scene:extend()
 ConfigScene.title = "Input Config"
 
 require 'load.save'
-local socket = require 'socket'
 
 local configurable_inputs = {
 	"menu_decide",
