@@ -3,6 +3,7 @@ local ConfigScene = Scene:extend()
 ConfigScene.title = "Input Config"
 
 require 'load.save'
+local socket = require 'socket'
 
 local configurable_inputs = {
 	"menu_decide",
@@ -32,6 +33,7 @@ function ConfigScene:new()
 	self.input_state = 1
 	self.set_inputs = newSetInputs()
 	self.new_input = {}
+	self.axis_timer = 0
 
 	DiscordRPC:update({
 		details = "In menus",
@@ -63,6 +65,8 @@ function ConfigScene:render()
 		love.graphics.print("press key or joystick input for " .. configurable_inputs[self.input_state] .. ", tab to skip" .. (config.input and ", escape to cancel" or ""), 0, 0)
 		love.graphics.print("function keys (F1, F2, etc.), escape, and tab can't be changed", 0, 20)
 	end
+
+	self.axis_timer = self.axis_timer + 1
 end
 
 local function addJoystick(input, name)
@@ -118,7 +122,7 @@ function ConfigScene:onInputPress(e)
 				self.new_input.joysticks[e.name].buttons[e.button] = configurable_inputs[self.input_state]
 				self.input_state = self.input_state + 1
 			elseif e.type == "joyaxis" then
-				if math.abs(e.value) >= 0.5 then
+				if (e.axis ~= self.last_axis or self.axis_timer > 30) and math.abs(e.value) >= 1 then
 					addJoystick(self.new_input, e.name)
 					if not self.new_input.joysticks[e.name].axes then
 						self.new_input.joysticks[e.name].axes = {}
@@ -128,10 +132,12 @@ function ConfigScene:onInputPress(e)
 					end
 					self.set_inputs[configurable_inputs[self.input_state]] =
 						"jaxis " ..
-						(e.value >= 0.5 and "+" or "-") .. e.axis ..
+						(e.value >= 1 and "+" or "-") .. e.axis ..
 						" " .. string.sub(e.name, 1, 10) .. (string.len(e.name) > 10 and "..." or "")
-					self.new_input.joysticks[e.name].axes[e.axis][e.value >= 0.5 and "positive" or "negative"] = configurable_inputs[self.input_state]
+					self.new_input.joysticks[e.name].axes[e.axis][e.value >= 1 and "positive" or "negative"] = configurable_inputs[self.input_state]
 					self.input_state = self.input_state + 1
+					self.last_axis = e.axis
+					self.axis_timer = 0
 				end
 			elseif e.type == "joyhat" then
 				if e.direction ~= "c" then
