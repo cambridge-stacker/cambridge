@@ -255,7 +255,7 @@ PhantomMania2Game.garbageOpacityFunction = function(age)
 end
 
 function PhantomMania2Game:drawGrid()
-	if not (self.game_over or (self.clear and self.level < 1300)) then
+	if not (self.game_over) then
 		self.grid:drawInvisible(self.rollOpacityFunction, self.garbageOpacityFunction)
 	else
 		self.grid:draw()
