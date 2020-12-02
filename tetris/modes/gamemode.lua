@@ -462,7 +462,7 @@ function GameMode:drawNextQueue(ruleset)
 			drawPiece(next_piece, skin, ruleset.block_offsets[next_piece][rotation], -16+i*80, -32)
 		end
 	end
-	if self.hold_queue ~= nil then
+	if self.hold_queue ~= nil and self.enable_hold then
 		local hold_color = self.held and 0.6 or 1
 		self:setHoldOpacity(1, hold_color)
 		drawPiece(
