@@ -4,7 +4,19 @@ local Ruleset = require 'tetris.rulesets.ti_srs'
 local SRS = Ruleset:extend()
 
 SRS.name = "ACE-SRS"
-SRS.hash = "ACE Standard"
+SRS.hash = "StandardACE"
+SRS.world = true
+SRS.colourscheme = {
+	I = "C",
+	L = "O",
+	J = "B",
+	S = "G",
+	Z = "R",
+	O = "Y",
+	T = "M",
+}
+SRS.softdrop_lock = false
+SRS.harddrop_lock = true
 
 SRS.MANIPULATIONS_MAX = 128
 

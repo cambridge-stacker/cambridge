@@ -364,9 +364,9 @@ function CRS:attemptRotate(new_inputs, piece, grid, initial)
 
 	if rot_dir == 0 then return end
 	
-	if self.world and config.gamesettings.world_reverse == 2 then
-		rot_dir = 4 - rot_dir
-	end
+    if config.gamesettings.world_reverse == 3 or (self.world and config.gamesettings.world_reverse == 2) then
+        rot_dir = 4 - rot_dir
+    end
 
 	local new_piece = piece:withRelativeRotation(rot_dir)
 	self:attemptWallkicks(piece, new_piece, rot_dir, grid)
