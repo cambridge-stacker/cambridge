@@ -9,6 +9,7 @@ ConfigScene.options = {
 	{"manlock",			"Manual locking",{"Per ruleset","Per gamemode","Harddrop", "Softdrop"}},
 	{"piece_colour", "Piece Colours", {"Per ruleset","Arika"			 ,"TTC"}},
 	{"world_reverse","A Button Rotation", {"Left"				 ,"Auto"		,"Right"}},
+	{"das_last_key", "DAS Switch", {"Default", "Instant"}}
 }
 local optioncount = #ConfigScene.options
 
@@ -24,6 +25,7 @@ function ConfigScene:new()
 end
 
 function ConfigScene:update()
+	config["das_last_key"] = config.gamesettings.das_last_key == 2
 end
 
 function ConfigScene:render()
