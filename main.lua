@@ -12,7 +12,7 @@ function love.load()
 	config["side_next"] = false
 	config["reverse_rotate"] = true
 	config["fullscreen"] = false
-	config["das_last_key"] = config.gamesettings.das_last_key == 2
+	config["das_last_key"] = false
 
 	love.window.setMode(love.graphics.getWidth(), love.graphics.getHeight(), {resizable = true});
 
