@@ -12,11 +12,15 @@ function love.load()
 	config["side_next"] = false
 	config["reverse_rotate"] = true
 	config["fullscreen"] = false
-	config["das_last_key"] = false
 
 	love.window.setMode(love.graphics.getWidth(), love.graphics.getHeight(), {resizable = true});
 
-	if not config.gamesettings then config.gamesettings = {} end
+	if not config.gamesettings then
+		config.gamesettings = {}
+		config["das_last_key"] = false
+	else
+		config["das_last_key"] = config.gamesettings.das_last_key == 2
+	end
 	for _, option in ipairs(GameConfigScene.options) do
 		if not config.gamesettings[option[1]] then
 			config.gamesettings[option[1]] = 1
