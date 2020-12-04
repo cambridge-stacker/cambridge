@@ -211,8 +211,16 @@ function Ruleset:processPiece(
 	drop_locked, hard_drop_locked,
 	hard_drop_enabled, additive_gravity
 )
-	self:rotatePiece(inputs, piece, grid, prev_inputs, false)
-	self:movePiece(piece, grid, move, gravity >= 20)
+
+	local synchroes_allowed = ({not self.world, true, false})[config.gamesettings.synchroes_allowed]
+
+	if synchroes_allowed then
+		self:rotatePiece(inputs, piece, grid, prev_inputs, false)
+		self:movePiece(piece, grid, move, gravity >= 20)
+	else
+		self:movePiece(piece, grid, move, gravity >= 20)
+		self:rotatePiece(inputs, piece, grid, prev_inputs, false)
+	end
 	self:dropPiece(
 		inputs, piece, grid, gravity, drop_speed, drop_locked, hard_drop_locked,
 		hard_drop_enabled, additive_gravity

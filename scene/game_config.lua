@@ -9,7 +9,8 @@ ConfigScene.options = {
 	{"manlock",			"Manual locking",{"Per ruleset","Per gamemode","Harddrop", "Softdrop"}},
 	{"piece_colour", "Piece Colours", {"Per ruleset","Arika"			 ,"TTC"}},
 	{"world_reverse","A Button Rotation", {"Left"				 ,"Auto"		,"Right"}},
-	{"das_last_key", "DAS Switch", {"Default", "Instant"}}
+	{"das_last_key", "DAS Switch", {"Default", "Instant"}},
+	{"synchroes_allowed", "Synchroes", {"Per ruleset", "On", "Off"}}
 }
 local optioncount = #ConfigScene.options
 
