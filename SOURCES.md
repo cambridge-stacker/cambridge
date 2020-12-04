@@ -8,7 +8,7 @@ Some of the assets are used without proper licenses. We aim to have fully licens
 Backgrounds
 -----------
 
-1. Title: "Motus Glacies." Contributed by Daniel "Explo" McCarthy.
+1. Title: Original picrute found on the Wikipedia article for Cambridge
 
 1. *Gameplay level 0: "Quantum foam." Alex Sukontsev. https://www.flickr.com/photos/control9/14957509814/
 2. *Gameplay level 1: No name. http://www.onekind.tv/univision-mqb/q5mqh5brlvuuj2nhdx7ch7eum183uu
