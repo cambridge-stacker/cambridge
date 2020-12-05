@@ -5,7 +5,6 @@ local Ruleset = Object:extend()
 
 Ruleset.name = ""
 Ruleset.hash = ""
-Ruleset.tagline = ""
 
 -- Arika-type ruleset defaults
 Ruleset.world = false
@@ -99,7 +98,7 @@ end
 
 function Ruleset:attemptRotate(new_inputs, piece, grid, initial)
 	local rot_dir = 0
-
+	
 	if (new_inputs["rotate_left"] or new_inputs["rotate_left2"]) then
 		rot_dir = 3
 	elseif (new_inputs["rotate_right"] or new_inputs["rotate_right2"]) then
@@ -191,7 +190,7 @@ function Ruleset:initializePiece(
 		spawn_positions = self.spawn_positions
 	end
 	local colours = ({self.colourscheme, ColourSchemes.Arika, ColourSchemes.TTC})[config.gamesettings.piece_colour]
-
+	
 	local piece = Piece(data.shape, data.orientation - 1, {
 		x = spawn_positions[data.shape].x,
 		y = spawn_positions[data.shape].y

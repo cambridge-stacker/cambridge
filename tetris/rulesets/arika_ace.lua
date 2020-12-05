@@ -5,7 +5,6 @@ local ARS = Ruleset:extend()
 
 ARS.name = "ACE-ARS"
 ARS.hash = "ArikaACE"
-ARS.tagline = "The rotation system used in TGM ACE."
 
 ARS.colourscheme = {
 	I = "C",
