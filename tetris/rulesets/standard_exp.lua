@@ -53,4 +53,6 @@ function SRS:onPieceRotate(piece, grid)
 	end
 end
 
+function SRS:get180RotationValue() return 2 end
+
 return SRS
