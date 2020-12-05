@@ -30,7 +30,7 @@ function playSE(sound, subsound)
 		end
 		sounds[sound]:play()
 	else
-		sounds[sound][subsound]:setVolume(0.1)
+		sounds[sound][subsound]:setVolume(1)
 		if sounds[sound][subsound]:isPlaying() then
 			sounds[sound][subsound]:stop()
 		end
