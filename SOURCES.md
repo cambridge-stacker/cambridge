@@ -34,6 +34,13 @@ Backgrounds
 Backgrounds marked with a * are placeholders that will be replaced in later versions due to incompatible licenses. We are generally aiming for public domain background images, but will also accept backgrounds given proper licenses to be included within Cambridge.
 
 
+Sounds
+------
+
+All piece sounds are (c) 2020 Damian Yerrick.
+Ready / go sounds from NullpoMino.
+Menu sounds from TGM3 (will be replaced.)
+
 Music
 -----
 
