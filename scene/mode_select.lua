@@ -26,7 +26,7 @@ function ModeSelectScene:render()
 		0, 0, 0,
 		0.5, 0.5
 	)
-
+-- i really wanna display taglines somehow for both modes and rules.
 	if self.menu_state.select == "mode" then
 		love.graphics.setColor(1, 1, 1, 0.5)
 	elseif self.menu_state.select == "ruleset" then
