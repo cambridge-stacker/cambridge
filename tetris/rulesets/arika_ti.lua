@@ -70,6 +70,7 @@ function ARS:attemptWallkicks(piece, new_piece, rot_dir, grid)
 		elseif piece.shape == "T"
 		   and new_piece.rotation == 0
 		   and piece.floorkick == 0
+		   and piece:isDropBlocked(grid)
 		   and grid:canPlacePiece(new_piece:withOffset({x=0, y=-1}))
 		then
 			-- T floorkick
