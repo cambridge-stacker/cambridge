@@ -115,8 +115,8 @@ function Ruleset:attemptRotate(new_inputs, piece, grid, initial)
 	local new_piece = piece:withRelativeRotation(rot_dir)
 
 	if (grid:canPlacePiece(new_piece)) then
-		piece:setRelativeRotation(rot_dir)
 		self:onPieceRotate(piece, grid)
+		piece:setRelativeRotation(rot_dir)
 	else
 		if not(initial and self.enable_IRS_wallkicks == false) then
 			self:attemptWallkicks(piece, new_piece, rot_dir, grid)

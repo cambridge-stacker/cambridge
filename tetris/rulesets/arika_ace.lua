@@ -1,5 +1,5 @@
 local Piece = require 'tetris.components.piece'
-local Ruleset = require 'tetris.rulesets.ruleset'
+local Ruleset = require 'tetris.rulesets.arika_ti'
 
 local ARS = Ruleset:extend()
 
@@ -39,134 +39,9 @@ ARS.big_spawn_positions = {
 	Z = { x=2, y=1 },
 }
 
-ARS.block_offsets = {
-	I={
-		{ {x=0, y=0}, {x=-1, y=0}, {x=-2, y=0}, {x=1, y=0} },
-		{ {x=0, y=0}, {x=0, y=-1}, {x=0, y=1}, {x=0, y=2} },
-		{ {x=0, y=0}, {x=-1, y=0}, {x=-2, y=0}, {x=1, y=0} },
-		{ {x=0, y=0}, {x=0, y=-1}, {x=0, y=1}, {x=0, y=2} },
-	},
-	J={
-		{ {x=0, y=0}, {x=-1, y=0}, {x=1, y=0}, {x=-1, y=-1} },
-		{ {x=0, y=-1}, {x=1, y=-2}, {x=0, y=-2}, {x=0, y=0} },
-		{ {x=0, y=-1}, {x=-1, y=-1}, {x=1, y=-1}, {x=1, y=0} },
-		{ {x=0, y=-1}, {x=0, y=-2}, {x=0, y=0}, {x=-1, y=0} },
-	},
-	L={
-		{ {x=0, y=0}, {x=-1, y=0}, {x=1, y=0}, {x=1, y=-1} },
-		{ {x=0, y=-2}, {x=0, y=-1}, {x=1, y=0}, {x=0, y=0} },
-		{ {x=0, y=-1}, {x=-1, y=-1}, {x=1, y=-1}, {x=-1, y=0} },
-		{ {x=0, y=-1}, {x=-1, y=-2}, {x=0, y=-2}, {x=0, y=0} },
-	},
-	O={
-		{ {x=0, y=0}, {x=-1, y=0}, {x=-1, y=-1}, {x=0, y=-1} },
-		{ {x=0, y=0}, {x=-1, y=0}, {x=-1, y=-1}, {x=0, y=-1} },
-		{ {x=0, y=0}, {x=-1, y=0}, {x=-1, y=-1}, {x=0, y=-1} },
-		{ {x=0, y=0}, {x=-1, y=0}, {x=-1, y=-1}, {x=0, y=-1} },
-	},
-	S={
-		{ {x=1, y=-1}, {x=0, y=-1}, {x=0, y=0}, {x=-1, y=0} },
-		{ {x=-1, y=-2}, {x=-1, y=-1}, {x=0, y=-1}, {x=0, y=0} },
-		{ {x=1, y=-1}, {x=0, y=-1}, {x=0, y=0}, {x=-1, y=0} },
-		{ {x=-1, y=-2}, {x=-1, y=-1}, {x=0, y=-1}, {x=0, y=0} },
-	},
-	T={
-		{ {x=0, y=0}, {x=-1, y=0}, {x=1, y=0}, {x=0, y=-1} },
-		{ {x=0, y=-1}, {x=0, y=0}, {x=1, y=-1}, {x=0, y=-2} },
-		{ {x=0, y=-1}, {x=-1, y=-1}, {x=1, y=-1}, {x=0, y=0} },
-		{ {x=0, y=-1}, {x=0, y=0}, {x=-1, y=-1}, {x=0, y=-2} },
-	},
-	Z={
-		{ {x=0, y=-1}, {x=-1, y=-1}, {x=1, y=0}, {x=0, y=0} },
-		{ {x=0, y=-1}, {x=0, y=0}, {x=1, y=-2}, {x=1, y=-1} },
-		{ {x=0, y=-1}, {x=-1, y=-1}, {x=1, y=0}, {x=0, y=0} },
-		{ {x=0, y=-1}, {x=0, y=0}, {x=1, y=-2}, {x=1, y=-1} },
-	}
-}
-
-
--- Component functions.
-
-function ARS:attemptWallkicks(piece, new_piece, rot_dir, grid)
-
-	-- O doesn't kick
-	if (piece.shape == "O") then return end
-
-	-- center column rule
-	if (
-		piece.shape == "J" or piece.shape == "T" or piece.shape == "L"
-	) and (
-		piece.rotation == 0 or piece.rotation == 2
-	) then
-		local offsets = new_piece:getBlockOffsets()
-		table.sort(offsets, function(A, B) return A.y < B.y or A.y == B.y and A.x < B.y end)
-		for index, offset in pairs(offsets) do
-			if grid:isOccupied(piece.position.x + offset.x, piece.position.y + offset.y) then
-				if offset.x == 0 then
-					return 
-				else
-					break
-				end
-			end
-		end
-	end
-
-	if piece.shape == "I" then
-		-- special kick rules for I
-		if new_piece.rotation == 0 or new_piece.rotation == 2 and 
-		(piece:isMoveBlocked(grid, {x=-1, y=0}) or piece:isMoveBlocked(grid, {x=1, y=0})) then
-			-- kick right, right2, left
-			if grid:canPlacePiece(new_piece:withOffset({x=1, y=0})) then
-				piece:setRelativeRotation(rot_dir):setOffset({x=1, y=0})
-				self:onPieceRotate(piece, grid)
-			elseif grid:canPlacePiece(new_piece:withOffset({x=2, y=0})) then
-				piece:setRelativeRotation(rot_dir):setOffset({x=2, y=0})
-				self:onPieceRotate(piece, grid)
-			elseif grid:canPlacePiece(new_piece:withOffset({x=-1, y=0})) then
-				piece:setRelativeRotation(rot_dir):setOffset({x=-1, y=0})
-				self:onPieceRotate(piece, grid)
-			end
-		elseif piece:isDropBlocked(grid) and (new_piece.rotation == 1 or new_piece.rotation == 3) and piece.floorkick == 0 then
-			-- kick up, up2
-			if grid:canPlacePiece(new_piece:withOffset({x=0, y=-1})) then
-				piece:setRelativeRotation(rot_dir):setOffset({x=0, y=-1})
-				self:onPieceRotate(piece, grid)
-				piece.floorkick = 1
-			elseif grid:canPlacePiece(new_piece:withOffset({x=0, y=-2})) then
-				piece:setRelativeRotation(rot_dir):setOffset({x=0, y=-2})
-				self:onPieceRotate(piece, grid)
-				piece.floorkick = 1
-			end
-		end
-	else
-		-- kick right, kick left
-		if grid:canPlacePiece(new_piece:withOffset({x=1, y=0})) then
-			piece:setRelativeRotation(rot_dir):setOffset({x=1, y=0})
-		elseif grid:canPlacePiece(new_piece:withOffset({x=-1, y=0})) then
-			piece:setRelativeRotation(rot_dir):setOffset({x=-1, y=0})
-		elseif piece.shape == "T"
-		   and new_piece.rotation == 0
-		   and piece.floorkick == 0
-		   and grid:canPlacePiece(new_piece:withOffset({x=0, y=-1}))
-		then
-			-- T floorkick
-			piece.floorkick = piece.floorkick + 1
-			piece:setRelativeRotation(rot_dir):setOffset({x=0, y=-1})
-		end
-	end
-
-end
-
 function ARS:onPieceCreate(piece, grid)
 	piece.floorkick = 0
 	piece.manipulations = 0
-end
-
-function ARS:onPieceDrop(piece, grid)
-	piece.lock_delay = 0 -- step reset
-	if piece.floorkick >= 2 and piece:isDropBlocked(grid) then
-		piece.locked = true
-	end
 end
 
 function ARS:onPieceMove(piece, grid)
@@ -191,15 +66,5 @@ function ARS:onPieceRotate(piece, grid)
 		piece.floorkick = piece.floorkick + 1
 	end
 end
-
-function ARS:get180RotationValue()
-	if config.gamesettings.world_reverse == 3 then
-		return 1
-	else
-		return 3
-    end
-end
-
-function ARS:getDefaultOrientation() return 3 end  -- downward facing pieces by default
 
 return ARS
