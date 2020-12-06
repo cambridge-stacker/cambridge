@@ -423,14 +423,6 @@ function Marathon2020Game:drawGrid()
 	end
 end
 
-function Marathon2020Game:sectionColourFunction(section)
-	if self.section_status[section] == "cool" then
-		return { 0, 1, 0, 1 }
-	else
-		return { 1, 1, 1, 1 }
-	end
-end
-
 function Marathon2020Game:drawScoringInfo()
 	Marathon2020Game.super.drawScoringInfo(self)
 
@@ -442,7 +434,7 @@ function Marathon2020Game:drawScoringInfo()
 	love.graphics.printf("GRADE PTS.", text_x, 200, 90, "left")
 	love.graphics.printf("LEVEL", text_x, 320, 40, "left")
 
-	self:drawSectionTimesWithSecondary(current_section, self.sectionColourFunction)
+	self:drawSectionTimesWithSecondary(current_section)
 
 	if (self.cool_timer > 0) then
 				love.graphics.printf("COOL!!", 64, 400, 160, "center")
