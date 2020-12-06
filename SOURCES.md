@@ -38,8 +38,9 @@ Sounds
 ------
 
 All piece sounds are (c) 2020 Damian Yerrick.
-Ready / go sounds from NullpoMino.
-Menu sounds from TGM3 (will be replaced.)
+Other sounds from:
+- NullpoMino
+- DTET, (c) 2003 Mihys.
 
 Music
 -----

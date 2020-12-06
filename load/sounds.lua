@@ -20,6 +20,8 @@ sounds = {
 	fall = love.audio.newSource("res/se/fall.wav", "static"),
 	ready = love.audio.newSource("res/se/ready.wav", "static"),
 	go = love.audio.newSource("res/se/go.wav", "static"),
+	irs = love.audio.newSource("res/se/irs.wav", "static"),
+	ihs = love.audio.newSource("res/se/ihs.wav", "static"),
 }
 
 function playSE(sound, subsound)

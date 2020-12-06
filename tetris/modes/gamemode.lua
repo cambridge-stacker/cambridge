@@ -224,9 +224,7 @@ end
 function GameMode:onLineClear(cleared_row_count) end
 
 function GameMode:onPieceEnter() end
-function GameMode:onHold() 
-	playSE("hold")
-end
+function GameMode:onHold() end
 
 function GameMode:onSoftDrop(dropped_row_count)
 	self.drop_bonus = self.drop_bonus + 1 * dropped_row_count
@@ -363,7 +361,7 @@ end
 
 function GameMode:initializeOrHold(inputs, ruleset)
 	if self.ihs and self.enable_hold and inputs["hold"] == true then
-		self:hold(inputs, ruleset)
+		self:hold(inputs, ruleset, true)
 	else
 		self:initializeNextPiece(inputs, ruleset, self.next_queue[1])
 	end
@@ -374,7 +372,7 @@ function GameMode:initializeOrHold(inputs, ruleset)
 	end
 end
 
-function GameMode:hold(inputs, ruleset)
+function GameMode:hold(inputs, ruleset, ihs)
 	local data = copy(self.hold_queue)
 	if self.piece == nil then
 		self.hold_queue = self.next_queue[1]
@@ -393,6 +391,8 @@ function GameMode:hold(inputs, ruleset)
 		self:initializeNextPiece(inputs, ruleset, data, false)
 	end
 	self.held = true
+	if ihs then playSE("ihs")
+	else playSE("hold") end
 	self:onHold()
 end
 

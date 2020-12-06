@@ -197,7 +197,14 @@ function Ruleset:initializePiece(
 	}, self.block_offsets, 0, 0, data.skin, colours[data.shape], big)
 
 	self:onPieceCreate(piece)
-	if irs then self:rotatePiece(inputs, piece, grid, {}, true) end
+	if irs then
+		if inputs.rotate_left or inputs.rotate_left2 or
+		   inputs.rotate_right or inputs.rotate_right2 or
+		   inputs.rotate_180 then
+			playSE("irs")
+		end
+		self:rotatePiece(inputs, piece, grid, {}, true)
+	end
 	self:dropPiece(inputs, piece, grid, gravity, drop_speed, drop_locked, hard_drop_locked)
 	return piece
 end
