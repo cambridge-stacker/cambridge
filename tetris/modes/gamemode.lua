@@ -524,6 +524,10 @@ function GameMode:drawSectionTimes(current_section)
 	love.graphics.printf(formatTime(self.frames - self.section_start_time), section_x, 40 + 20 * current_section, 90, "left")
 end
 
+function GameMode:sectionColourFunction(section)
+	return { 1, 1, 1, 1 }
+end
+
 function GameMode:drawSectionTimesWithSecondary(current_section)
 	local section_x = 530
 	local section_secondary_x = 440
@@ -535,9 +539,11 @@ function GameMode:drawSectionTimesWithSecondary(current_section)
 	end
 
 	for section, time in pairs(self.secondary_section_times) do
+		love.graphics.setColor(self:sectionColourFunction(section))
 		if section > 0 then
 			love.graphics.printf(formatTime(time), section_secondary_x, 40 + 20 * section, 90, "left")
 		end
+		love.graphics.setColor(1, 1, 1, 1)
 	end
 
 	local current_x

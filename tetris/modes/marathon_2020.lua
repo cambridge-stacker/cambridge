@@ -423,6 +423,14 @@ function Marathon2020Game:drawGrid()
 	end
 end
 
+function Marathon2020Game:sectionColourFunction(section)
+	if self.section_status[section] == "cool" then
+		return { 0, 1, 0, 1 }
+	else
+		return { 1, 1, 1, 1 }
+	end
+end
+
 function Marathon2020Game:drawScoringInfo()
 	Marathon2020Game.super.drawScoringInfo(self)
 
