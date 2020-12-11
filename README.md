@@ -1,5 +1,11 @@
 ![Cambridge Banner](https://cdn.discordapp.com/attachments/764432435802013709/767724895076614154/cambridge_logo_lt.png)
 
+Important notice
+================
+
+Tetra Online was recently struck by an illegal DMCA claim from the Tetris Company.
+Please, spread awareness of this, and use the hashtag #DMCAgaming in your posts.
+
 Cambridge
 =========
 
