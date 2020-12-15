@@ -11,7 +11,8 @@ ConfigScene.options = {
 	{"world_reverse","A Button Rotation", {"Left"				 ,"Auto"		,"Right"}},
 	{"next_se", "Next Piece SFX", {"On", "Off"}},
 	{"das_last_key", "DAS Switch", {"Default", "Instant"}},
-	{"synchroes_allowed", "Synchroes", {"Per ruleset", "On", "Off"}}
+	{"synchroes_allowed", "Synchroes", {"Per ruleset", "On", "Off"}},
+	{"diagonal_input", "Diagonal Input", {"On", "Off"}}
 }
 local optioncount = #ConfigScene.options
 

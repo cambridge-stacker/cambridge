@@ -100,6 +100,16 @@ function GameMode:update(inputs, ruleset)
 	end
 	if self.completed then return end
 
+	if config.gamesettings.diagonal_input == 2 then
+		if inputs["left"] or inputs["right"] then
+			inputs["up"] = false
+			inputs["down"] = false
+		elseif inputs["up"] or inputs["down"] then
+			inputs["left"] = false
+			inputs["right"] = false
+		end
+	end
+
 	-- advance one frame
 	if self:advanceOneFrame(inputs, ruleset) == false then return end
 
