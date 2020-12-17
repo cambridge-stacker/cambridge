@@ -3,8 +3,7 @@
 Important notice
 ================
 
-Tetra Online was recently struck by an illegal DMCA claim from the Tetris Company.
-Please, spread awareness of this, and use the hashtag #DMCAgaming in your posts.
+![Tetra Online Notice](https://pbs.twimg.com/media/Eo3CkIHW8AEoK_U?format=png&name=small)
 
 Cambridge
 =========
