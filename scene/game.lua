@@ -68,6 +68,10 @@ function GameScene:render()
 
 	self.game:drawCustom()
 
+	love.graphics.setFont(font_3x5_2)
+	if config.gamesettings.display_gamemode == 1 then
+		love.graphics.printf(self.game.name .. " - " .. self.ruleset.name, 0, 460, 640, "left")
+	end
 end
 
 function GameScene:onInputPress(e)
