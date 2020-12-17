@@ -48,7 +48,7 @@ You do not need LÖVE on Windows, as it comes bundled with the program.
 
 To get the stable release, simply download the ZIP in the latest release. All assets needed are bundled with the executable.
 
-If you want the bleeding edge version, or want mod pack support, download [this](https://github.com/SashLilac/cambridge/archive/master.zip).
+If you want the bleeding edge version, download [this](https://github.com/SashLilac/cambridge/archive/master.zip).
 
 Extract the ZIP, open a Command Prompt at the folder you extracted Cambridge to, then run this command:
 
@@ -80,9 +80,9 @@ It should run automatically!
 
 ## Installing modpacks
 
-Simply drag your mode, ruleset, and randomizer Lua files into their respective directory, and they should appear automatically.  
+Simply drag your mode, ruleset, and randomizer Lua files into their respective [directory](https://love2d.org/wiki/love.filesystem), and they should appear automatically.  
 
-Alternatively, install [this](https://github.com/SashLilac/cambridge-modpack) mod pack to get a taste of the mod potential.
+For more detailed instructions, install [this](https://github.com/SashLilac/cambridge-modpack) mod pack to get a taste of the mod potential.
 
 License
 -------
