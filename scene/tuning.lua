@@ -11,8 +11,8 @@ function TuningScene:new()
         state = "Changing tuning settings",
     })
 
-    self.dasSlider = newSlider(290, 200, 400, config.das, 0, 20, function(v) config.das = math.floor(v) end, {width=20})
-    self.arrSlider = newSlider(290, 300, 400, config.arr, 0, 6, function(v) config.arr = math.floor(v) end, {width=20})
+    self.dasSlider = newSlider(290, 225, 400, config.das, 0, 20, function(v) config.das = math.floor(v) end, {width=20})
+    self.arrSlider = newSlider(290, 325, 400, config.arr, 0, 6, function(v) config.arr = math.floor(v) end, {width=20})
 end
 
 function TuningScene:update()
@@ -32,11 +32,11 @@ function TuningScene:render()
     love.graphics.print("TUNING SETTINGS", 80, 40)
     
     love.graphics.setFont(font_3x5_2)
-    love.graphics.print("These settings will not apply to every gamemode!", 80, 90)
+    love.graphics.print("These settings will only apply to modes\nthat do not use their own tunings.", 80, 90)
     
     love.graphics.setFont(font_3x5_3)
-    love.graphics.print("Delayed Auto-Shift (DAS): " .. math.floor(self.dasSlider:getValue()) .. "F", 80, 150)
-    love.graphics.print("Auto-Repeat Rate (ARR): " .. math.floor(self.arrSlider:getValue()) .. "F", 80, 250)
+    love.graphics.print("Delayed Auto-Shift (DAS): " .. math.floor(self.dasSlider:getValue()) .. "F", 80, 175)
+    love.graphics.print("Auto-Repeat Rate (ARR): " .. math.floor(self.arrSlider:getValue()) .. "F", 80, 275)
 
     love.graphics.setColor(1, 1, 1, 0.75)
     self.dasSlider:draw()
