@@ -15,6 +15,9 @@ function love.load()
 
 	love.window.setMode(love.graphics.getWidth(), love.graphics.getHeight(), {resizable = true});
 
+	if not config.das then config.das = 10 end
+	if not config.arr then config.arr = 2 end
+
 	if not config.gamesettings then
 		config.gamesettings = {}
 		config["das_last_key"] = false

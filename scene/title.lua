@@ -4,6 +4,7 @@ local main_menu_screens = {
 	ModeSelectScene,
 	InputConfigScene,
 	GameConfigScene,
+	TuningScene,
 	ExitScene,
 }
 
