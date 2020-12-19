@@ -87,6 +87,7 @@ function SRS:onPieceMove(piece, grid)
 	if piece:isDropBlocked(grid) then
 		piece.manipulations = piece.manipulations + 1
 		if piece.manipulations >= 15 then
+			piece:dropToBottom(grid)
 			piece.locked = true
 		end
 	end
@@ -98,6 +99,7 @@ function SRS:onPieceRotate(piece, grid)
 	piece.manipulations = piece.manipulations + 1
 	if piece:isDropBlocked(grid) then
 		if piece.manipulations >= 15 then
+			piece:dropToBottom(grid)
 			piece.locked = true
 		end
 	end

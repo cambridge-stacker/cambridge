@@ -36,6 +36,7 @@ function ARS:onPieceMove(piece, grid)
 	if piece:isDropBlocked(grid) then
 		piece.manipulations = piece.manipulations + 1
 		if piece.manipulations >= 128 then
+			piece:dropToBottom(grid)
 			piece.locked = true
 		end
 	end
@@ -46,6 +47,7 @@ function ARS:onPieceRotate(piece, grid)
 	if piece:isDropBlocked(grid) then
 		piece.manipulations = piece.manipulations + 1
 		if piece.manipulations >= 128 then
+			piece:dropToBottom(grid)
 			piece.locked = true
 		end
 	end
