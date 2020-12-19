@@ -406,6 +406,7 @@ function CRS:onPieceMove(piece, grid)
 	if piece:isDropBlocked(grid) then
 		piece.move_counter = piece.move_counter + 1
 		if piece.move_counter >= 24 then
+			piece:dropToBottom(grid)
 			piece.locked = true
 		end
 	end
@@ -415,6 +416,7 @@ function CRS:onPieceRotate(piece, grid)
 	if piece:isDropBlocked(grid) then
 		piece.rotate_counter = piece.rotate_counter + 1
 		if piece.rotate_counter >= 12 then
+			piece:dropToBottom(grid)
 			piece.locked = true
 		end
 	end
