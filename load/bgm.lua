@@ -47,7 +47,7 @@ function fadeoutBGM(time)
 end
 
 function resetBGMFadeout(time)
-	current_bgm:setVolume(config.sfx_volume)
+	current_bgm:setVolume(config.bgm_volume)
 	fading_bgm = false
 	current_bgm:play()
 end
@@ -59,7 +59,7 @@ function processBGMFadeout(dt)
 			fadeout_time = 0
 			fading_bgm = false
 		end
-		current_bgm:setVolume(fadeout_time * config.sfx_volume / total_fadeout_time)
+		current_bgm:setVolume(fadeout_time * config.bgm_volume / total_fadeout_time)
 	end
 end
 

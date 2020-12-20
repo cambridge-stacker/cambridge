@@ -18,6 +18,7 @@ function love.load()
 	if not config.das then config.das = 10 end
 	if not config.arr then config.arr = 2 end
 	if not config.sfx_volume then config.sfx_volume = 0.5 end
+	if not config.bgm_volume then config.bgm_volume = 0.5 end
 	
 	if config.secret == nil  then config.secret = false
 	elseif config.secret == true then playSE("welcome") end

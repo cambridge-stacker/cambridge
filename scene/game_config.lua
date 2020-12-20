@@ -28,12 +28,14 @@ function ConfigScene:new()
 		state = "Changing game settings",
 	})
 
-	self.sfxSlider = newSlider(290, 375, 400, config.sfx_volume * 100, 0, 100, function(v) config.sfx_volume = v / 100 end, {width=20})
+	self.sfxSlider = newSlider(165, 375, 225, config.sfx_volume * 100, 0, 100, function(v) config.sfx_volume = v / 100 end, {width=20})
+	self.bgmSlider = newSlider(465, 375, 225, config.bgm_volume * 100, 0, 100, function(v) config.bgm_volume = v / 100 end, {width=20})
 end
 
 function ConfigScene:update()
 	config["das_last_key"] = config.gamesettings.das_last_key == 2
 	self.sfxSlider:update()
+	self.bgmSlider:update()
 end
 
 function ConfigScene:render()
@@ -43,10 +45,11 @@ function ConfigScene:render()
 		0, 0, 0,
 		0.5, 0.5
 	)
-
-	love.graphics.setFont(font_3x5_3)
-	love.graphics.print("Master Volume: " .. math.floor(self.sfxSlider:getValue()) .. "%", 80, 325)
 	
+	love.graphics.setFont(font_3x5_3)
+	love.graphics.print("SFX Volume: " .. math.floor(self.sfxSlider:getValue()) .. "%", 70, 325)
+	love.graphics.print("BGM Volume: " .. math.floor(self.bgmSlider:getValue()) .. "%", 370, 325)
+
 	love.graphics.setFont(font_3x5_4)
 	love.graphics.print("GAME SETTINGS", 80, 40)
 	
@@ -62,9 +65,10 @@ function ConfigScene:render()
 			love.graphics.printf(setting, 100 + 110 * j, 100 + i * 20, 100, "center")
 		end
 	end
-	
+
 	love.graphics.setColor(1, 1, 1, 0.75)
 	self.sfxSlider:draw()
+	self.bgmSlider:draw()
 end
 
 function ConfigScene:onInputPress(e)
