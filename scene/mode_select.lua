@@ -18,6 +18,7 @@ function ModeSelectScene:new()
 end
 
 function ModeSelectScene:update()
+	switchBGM(nil) -- experimental
 end
 
 function ModeSelectScene:render()

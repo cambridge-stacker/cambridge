@@ -18,6 +18,7 @@ local configurable_inputs = {
 	"rotate_180",
 	"hold",
 	"retry",
+	"pause",
 }
 
 local function newSetInputs()

@@ -22,6 +22,7 @@ function GameScene:new(game_mode, ruleset)
 		rotate_180=false,
 		hold=false,
 	}
+	self.paused = false
 	DiscordRPC:update({
 		details = self.game.rpc_details,
 		state = self.game.name,
@@ -29,7 +30,7 @@ function GameScene:new(game_mode, ruleset)
 end
 
 function GameScene:update()
-	if love.window.hasFocus() then
+	if love.window.hasFocus() and not self.paused then
 		local inputs = {}
 		for input, value in pairs(self.inputs) do
 			inputs[input] = value
@@ -72,6 +73,9 @@ function GameScene:render()
 	if config.gamesettings.display_gamemode == 1 then
 		love.graphics.printf(self.game.name .. " - " .. self.ruleset.name, 0, 460, 640, "left")
 	end
+
+	love.graphics.setFont(font_3x5_3)
+	if self.paused then love.graphics.print("PAUSED!", 80, 100) end
 end
 
 function GameScene:onInputPress(e)
@@ -82,6 +86,10 @@ function GameScene:onInputPress(e)
 		scene = e.input == "retry" and GameScene(self.retry_mode, self.retry_ruleset) or ModeSelectScene()
 	elseif e.input == "retry" then
 		scene = GameScene(self.retry_mode, self.retry_ruleset)
+	elseif e.input == "pause" and not (self.game.game_over or self.game.completed) then
+		if not self.paused then pauseBGM()
+		else resumeBGM() end
+		self.paused = not self.paused
 	elseif e.input == "menu_back" then
 		scene = ModeSelectScene()
 	elseif e.input and string.sub(e.input, 1, 5) ~= "menu_" then
