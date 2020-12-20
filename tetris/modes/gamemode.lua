@@ -425,7 +425,7 @@ function GameMode:initializeNextPiece(inputs, ruleset, piece_data, generate_next
 		table.remove(self.next_queue, 1)
 		table.insert(self.next_queue, self:getNextPiece(ruleset))
 	end
-	if config.gamesettings.next_se == 1 then self:playNextSound() end
+	self:playNextSound()
 end
 
 function GameMode:playNextSound()
