@@ -15,6 +15,9 @@ function love.load()
 
 	love.window.setMode(love.graphics.getWidth(), love.graphics.getHeight(), {resizable = true});
 
+	    if config.secret == nil  then config.secret = false
+	elseif config.secret == true then playSE("welcome") end
+
 	if not config.das then config.das = 10 end
 	if not config.arr then config.arr = 2 end
 
@@ -124,6 +127,14 @@ function love.keypressed(key, scancode)
 		love.window.setFullscreen(config["fullscreen"])
 	elseif scancode == "f2" and scene.title ~= "Input Config" and scene.title ~= "Game" then
 		scene = InputConfigScene()
+	-- secret sound playing :eyes:
+	elseif scancode == "f8" and scene.title == "Title" then
+		config.secret = not config.secret
+		saveConfig()
+		love.graphics.setFont(font_3x5_2)
+		love.graphics.print("Restart Cambridge...", 0, 450)
+		if config.secret then playSE("mode_decide")
+		else playSE("erase") end
 	-- function keys are reserved
 	elseif string.match(scancode, "^f[1-9]$") or string.match(scancode, "^f[1-9][0-9]+$") then
 		return	

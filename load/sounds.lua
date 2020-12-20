@@ -22,6 +22,8 @@ sounds = {
 	go = love.audio.newSource("res/se/go.wav", "static"),
 	irs = love.audio.newSource("res/se/irs.wav", "static"),
 	ihs = love.audio.newSource("res/se/ihs.wav", "static"),
+	-- a secret sound!
+	welcome = love.audio.newSource("res/se/welcomeToCambridge.wav", "static"),
 }
 
 function playSE(sound, subsound)

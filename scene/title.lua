@@ -1,5 +1,7 @@
 local TitleScene = Scene:extend()
 
+TitleScene.title = "Title"
+
 local main_menu_screens = {
 	ModeSelectScene,
 	InputConfigScene,
