@@ -6,6 +6,7 @@ TitleScene.restart_message = false
 local main_menu_screens = {
 	ModeSelectScene,
 	SettingsScene,
+	CreditsScene,
 	ExitScene,
 }
 
