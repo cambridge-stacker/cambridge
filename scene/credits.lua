@@ -8,7 +8,7 @@ end
 
 function CreditsScene:update()
     self.frames = self.frames + 1
-    if self.frames >= 2500 then
+    if self.frames >= 2200 then
         playSE("mode_decide")
         scene = TitleScene()
     end
