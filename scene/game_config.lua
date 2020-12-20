@@ -3,14 +3,14 @@ local ConfigScene = Scene:extend()
 ConfigScene.title = "Game Settings"
 
 require 'load.save'
+require 'libs.simple-slider'
 
 ConfigScene.options = {
 	-- this serves as reference to what the options' values mean i guess?
-	{"manlock",			"Manual locking",{"Per ruleset","Per gamemode","Harddrop", "Softdrop"}},
+	{"manlock",			"Manual Locking",{"Per ruleset","Per gamemode","Harddrop", "Softdrop"}},
 	{"piece_colour", "Piece Colours", {"Per ruleset","Arika"			 ,"TTC"}},
 	{"world_reverse","A Button Rotation", {"Left"				 ,"Auto"		,"Right"}},
 	{"display_gamemode", "Display Gamemode", {"On", "Off"}},
-	{"next_se", "Next Piece SFX", {"On", "Off"}},
 	{"das_last_key", "DAS Switch", {"Default", "Instant"}},
 	{"smooth_movement", "Smooth Piece Drop", {"On", "Off"}},
 	{"synchroes_allowed", "Synchroes", {"Per ruleset", "On", "Off"}},
@@ -27,10 +27,13 @@ function ConfigScene:new()
 		details = "In menus",
 		state = "Changing game settings",
 	})
+
+	self.sfxSlider = newSlider(290, 375, 400, config.sfx_volume * 100, 0, 100, function(v) config.sfx_volume = v / 100 end, {width=20})
 end
 
 function ConfigScene:update()
 	config["das_last_key"] = config.gamesettings.das_last_key == 2
+	self.sfxSlider:update()
 end
 
 function ConfigScene:render()
@@ -40,6 +43,9 @@ function ConfigScene:render()
 		0, 0, 0,
 		0.5, 0.5
 	)
+
+	love.graphics.setFont(font_3x5_3)
+	love.graphics.print("Master Volume: " .. math.floor(self.sfxSlider:getValue()) .. "%", 80, 325)
 	
 	love.graphics.setFont(font_3x5_4)
 	love.graphics.print("GAME SETTINGS", 80, 40)
@@ -56,13 +62,16 @@ function ConfigScene:render()
 			love.graphics.printf(setting, 100 + 110 * j, 100 + i * 20, 100, "center")
 		end
 	end
+	
+	love.graphics.setColor(1, 1, 1, 0.75)
+	self.sfxSlider:draw()
 end
 
 function ConfigScene:onInputPress(e)
 	if e.input == "menu_decide" or e.scancode == "return" then
 		playSE("mode_decide")
 		saveConfig()
-		scene = TitleScene()
+		scene = SettingsScene()
 	elseif e.input == "up" or e.scancode == "up" then
 		playSE("cursor")
 		self.highlight = Mod1(self.highlight-1, optioncount)
@@ -79,7 +88,7 @@ function ConfigScene:onInputPress(e)
 		config.gamesettings[option[1]] = Mod1(config.gamesettings[option[1]]+1, #option[3])
 	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
 		loadSave()
-		scene = TitleScene()
+		scene = SettingsScene()
 	end
 end
 

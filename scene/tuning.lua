@@ -47,10 +47,10 @@ function TuningScene:onInputPress(e)
 	if e.input == "menu_decide" or e.scancode == "return" then
 		playSE("mode_decide")
 		saveConfig()
-		scene = TitleScene()
+		scene = SettingsScene()
 	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
 		loadSave()
-		scene = TitleScene()
+		scene = SettingsScene()
 	end
 end
 

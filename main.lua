@@ -9,17 +9,18 @@ function love.load()
 	require "load.save"
 	loadSave()
 	require "scene"
-	config["side_next"] = false
-	config["reverse_rotate"] = true
+	--config["side_next"] = false
+	--config["reverse_rotate"] = true
 	config["fullscreen"] = false
 
 	love.window.setMode(love.graphics.getWidth(), love.graphics.getHeight(), {resizable = true});
 
-	    if config.secret == nil  then config.secret = false
-	elseif config.secret == true then playSE("welcome") end
-
 	if not config.das then config.das = 10 end
 	if not config.arr then config.arr = 2 end
+	if not config.sfx_volume then config.sfx_volume = 0.5 end
+	
+	if config.secret == nil  then config.secret = false
+	elseif config.secret == true then playSE("welcome") end
 
 	if not config.gamesettings then
 		config.gamesettings = {}

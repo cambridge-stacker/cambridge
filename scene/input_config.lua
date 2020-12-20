@@ -82,7 +82,7 @@ function ConfigScene:onInputPress(e)
 		-- function keys, escape, and tab are reserved and can't be remapped
 		if e.scancode == "escape" and config.input then
 			-- cancel only if there was an input config already
-			scene = TitleScene()
+			scene = SettingsScene()
 		elseif self.input_state > table.getn(configurable_inputs) then
 			if e.scancode == "return" then
 				-- save new input, then load next scene
