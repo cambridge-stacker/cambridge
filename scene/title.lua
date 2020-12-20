@@ -1,6 +1,7 @@
 local TitleScene = Scene:extend()
 
 TitleScene.title = "Title"
+TitleScene.restart_message = false
 
 local main_menu_screens = {
 	ModeSelectScene,
@@ -44,6 +45,8 @@ function TitleScene:render()
 		0, 0, 0,
 		0.5, 0.5
 	)
+
+	love.graphics.print(self.restart_message and "Restart Cambridge..." or "", 0, 0)
 
 	love.graphics.setColor(1, 1, 1, 0.5)
 	love.graphics.rectangle("fill", 20, 278 + 20 * self.main_menu_state, 160, 22)
