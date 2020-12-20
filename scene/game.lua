@@ -87,9 +87,9 @@ function GameScene:onInputPress(e)
 	elseif e.input == "retry" then
 		scene = GameScene(self.retry_mode, self.retry_ruleset)
 	elseif e.input == "pause" and not (self.game.game_over or self.game.completed) then
-		if not self.paused then pauseBGM()
-		else resumeBGM() end
 		self.paused = not self.paused
+		if self.paused then pauseBGM()
+		else resumeBGM() end
 	elseif e.input == "menu_back" then
 		scene = ModeSelectScene()
 	elseif e.input and string.sub(e.input, 1, 5) ~= "menu_" then

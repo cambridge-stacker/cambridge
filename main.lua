@@ -20,7 +20,7 @@ function love.load()
 	if not config.sfx_volume then config.sfx_volume = 0.5 end
 	if not config.bgm_volume then config.bgm_volume = 0.5 end
 	
-	if config.secret == nil  then config.secret = false
+	if config.secret == nil then config.secret = false
 	elseif config.secret == true then playSE("welcome") end
 
 	if not config.gamesettings then
@@ -251,7 +251,7 @@ function love.joystickhat(joystick, hat, direction)
 end
 
 function love.focus(f)
-	if f then
+	if f and (scene.title ~= "Game" or not scene.paused) then
 		resumeBGM()
 	else
 		pauseBGM()
