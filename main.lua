@@ -131,8 +131,7 @@ function love.keypressed(key, scancode)
 	elseif scancode == "f8" and scene.title == "Title" then
 		config.secret = not config.secret
 		saveConfig()
-		love.graphics.setFont(font_3x5_2)
-		love.graphics.print("Restart Cambridge...", 0, 450)
+		scene.restart_message = true
 		if config.secret then playSE("mode_decide")
 		else playSE("erase") end
 	-- function keys are reserved
