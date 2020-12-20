@@ -47,8 +47,8 @@ function ConfigScene:render()
 	)
 	
 	love.graphics.setFont(font_3x5_3)
-	love.graphics.print("SFX Volume: " .. math.floor(self.sfxSlider:getValue()) .. "%", 70, 325)
-	love.graphics.print("BGM Volume: " .. math.floor(self.bgmSlider:getValue()) .. "%", 370, 325)
+	love.graphics.print("SFX Volume: " .. math.floor(self.sfxSlider:getValue()) .. "%", 75, 325)
+	love.graphics.print("BGM Volume: " .. math.floor(self.bgmSlider:getValue()) .. "%", 375, 325)
 
 	love.graphics.setFont(font_3x5_4)
 	love.graphics.print("GAME SETTINGS", 80, 40)
