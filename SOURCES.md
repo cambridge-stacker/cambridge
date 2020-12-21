@@ -45,7 +45,7 @@ Other sounds from:
 Music
 -----
 
-1. TGM3 credit roll music.
+1. Second Reality opening scene music (1993).
 2. The FitnessGram™ Pacer Test.
 
 All background music is (currently) only unofficially included. In later releases they may be replaced with specifically licensed music as applicable.
