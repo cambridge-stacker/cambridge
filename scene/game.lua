@@ -36,9 +36,8 @@ function GameScene:update()
 			inputs[input] = value
 		end
 		self.game:update(inputs, self.ruleset)
+		self.game.grid:update()
 	end
-
-	self.game.grid:update()
 end
 
 function GameScene:render()
