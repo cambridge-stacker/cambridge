@@ -129,6 +129,7 @@ function love.keypressed(key, scancode)
 		love.window.setFullscreen(config["fullscreen"])
 	elseif scancode == "f2" and scene.title ~= "Input Config" and scene.title ~= "Game" then
 		scene = InputConfigScene()
+		switchBGM(nil)
 	-- secret sound playing :eyes:
 	elseif scancode == "f8" and scene.title == "Title" then
 		config.secret = not config.secret

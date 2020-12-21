@@ -12,6 +12,7 @@ function CreditsScene:update()
     if self.frames >= 4200 then
         playSE("mode_decide")
         scene = TitleScene()
+        switchBGM(nil)
     elseif self.frames == 3600 then
         fadeoutBGM(2)
     end
@@ -53,7 +54,8 @@ end
 function CreditsScene:onInputPress(e)
     if e.input == "menu_decide" or e.scancode == "return" or
        e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
-		scene = TitleScene()
+        scene = TitleScene()
+        switchBGM(nil)
 	end
 end
 
