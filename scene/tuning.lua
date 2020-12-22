@@ -5,11 +5,20 @@ TuningScene.title = "Tuning Settings"
 require 'load.save'
 require 'libs.simple-slider'
 
+TuningScene.options = {
+	-- Serves as a reference for the options available in the menu. Format: {name in config, name as displayed if applicable, slider name}
+	{"das", "DAS", "dasSlider"},
+	{"arr", "ARR", "arrSlider"},
+}
+
+local optioncount = #TuningScene.options
+
 function TuningScene:new()
     DiscordRPC:update({
         details = "In menus",
         state = "Changing tuning settings",
     })
+    self.highlight = 1
 
     self.dasSlider = newSlider(290, 225, 400, config.das, 0, 20, function(v) config.das = math.floor(v) end, {width=20})
     self.arrSlider = newSlider(290, 325, 400, config.arr, 0, 6, function(v) config.arr = math.floor(v) end, {width=20})
@@ -27,6 +36,11 @@ function TuningScene:render()
 		0, 0, 0,
 		0.5, 0.5
     )
+
+    love.graphics.setColor(1, 1, 1, 0.5)
+    love.graphics.rectangle("fill", 75, 73 + self.highlight * 100, 400, 33)
+
+    love.graphics.setColor(1, 1, 1, 1)
     
     love.graphics.setFont(font_3x5_4)
     love.graphics.print("TUNING SETTINGS", 80, 40)
@@ -48,6 +62,20 @@ function TuningScene:onInputPress(e)
 		playSE("mode_decide")
 		saveConfig()
 		scene = SettingsScene()
+	elseif e.input == "up" or e.scancode == "up" then
+		playSE("cursor")
+		self.highlight = Mod1(self.highlight-1, optioncount)
+	elseif e.input == "down" or e.scancode == "down" then
+		playSE("cursor")
+		self.highlight = Mod1(self.highlight+1, optioncount)
+	elseif e.input == "left" or e.scancode == "left" then
+		playSE("cursor")
+		sld = self[self.options[self.highlight][3]]
+		sld.value = math.max(sld.min, math.min(sld.max, (sld:getValue() - 1) / (sld.max - sld.min)))
+	elseif e.input == "right" or e.scancode == "right" then
+		playSE("cursor")
+		sld = self[self.options[self.highlight][3]]
+		sld.value = math.max(sld.min, math.min(sld.max, (sld:getValue() + 1) / (sld.max - sld.min)))
 	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
 		loadSave()
 		scene = SettingsScene()

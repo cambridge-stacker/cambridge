@@ -7,14 +7,17 @@ require 'libs.simple-slider'
 
 ConfigScene.options = {
 	-- this serves as reference to what the options' values mean i guess?
-	{"manlock",			"Manual Locking",{"Per ruleset","Per gamemode","Harddrop", "Softdrop"}},
-	{"piece_colour", "Piece Colours", {"Per ruleset","Arika"			 ,"TTC"}},
-	{"world_reverse","A Button Rotation", {"Left"				 ,"Auto"		,"Right"}},
-	{"display_gamemode", "Display Gamemode", {"On", "Off"}},
-	{"das_last_key", "DAS Switch", {"Default", "Instant"}},
-	{"smooth_movement", "Smooth Piece Drop", {"On", "Off"}},
-	{"synchroes_allowed", "Synchroes", {"Per ruleset", "On", "Off"}},
-	{"diagonal_input", "Diagonal Input", {"On", "Off"}}
+	-- Format: {name in config, displayed name, uses slider?, options OR slider name}
+	{"manlock", "Manual Locking", false, {"Per ruleset", "Per gamemode", "Harddrop", "Softdrop"}},
+	{"piece_colour", "Piece Colours", false, {"Per ruleset", "Arika", "TTC"}},
+	{"world_reverse", "A Button Rotation", false, {"Left", "Auto", "Right"}},
+	{"display_gamemode", "Display Gamemode", false, {"On", "Off"}},
+	{"das_last_key", "DAS Switch", false, {"Default", "Instant"}},
+	{"smooth_movement", "Smooth Piece Drop", false, {"On", "Off"}},
+	{"synchroes_allowed", "Synchroes", false, {"Per ruleset", "On", "Off"}},
+	{"diagonal_input", "Diagonal Input", false, {"On", "Off"}},
+	{"sfx_volume", "SFX", true, "sfxSlider"},
+	{"bgm_volume", "BGM", true, "bgmSlider"},
 }
 local optioncount = #ConfigScene.options
 
@@ -45,26 +48,34 @@ function ConfigScene:render()
 		0, 0, 0,
 		0.5, 0.5
 	)
-	
-	love.graphics.setFont(font_3x5_3)
-	love.graphics.print("SFX Volume: " .. math.floor(self.sfxSlider:getValue()) .. "%", 75, 325)
-	love.graphics.print("BGM Volume: " .. math.floor(self.bgmSlider:getValue()) .. "%", 375, 325)
 
 	love.graphics.setFont(font_3x5_4)
 	love.graphics.print("GAME SETTINGS", 80, 40)
 	
+	--Lazy check to see if we're on the SFX or BGM slider. Probably will need to be rewritten if more options get added.
 	love.graphics.setColor(1, 1, 1, 0.5)
-	love.graphics.rectangle("fill", 20, 98 + self.highlight * 20, 170, 22)
+	if not ConfigScene.options[self.highlight][3] then
+		love.graphics.rectangle("fill", 20, 98 + self.highlight * 20, 170, 22)
+	else
+		love.graphics.rectangle("fill", 65 + (1+self.highlight-#self.options) * 300, 322, 215, 33)
+	end
 	
 	love.graphics.setFont(font_3x5_2)
 	for i, option in ipairs(ConfigScene.options) do
-		love.graphics.setColor(1, 1, 1, 1)
-		love.graphics.printf(option[2], 40, 100 + i * 20, 150, "left")
-		for j, setting in ipairs(option[3]) do
-			love.graphics.setColor(1, 1, 1, config.gamesettings[option[1]] == j and 1 or 0.5)
-			love.graphics.printf(setting, 100 + 110 * j, 100 + i * 20, 100, "center")
+		if not option[3] then
+			love.graphics.setColor(1, 1, 1, 1)
+			love.graphics.printf(option[2], 40, 100 + i * 20, 150, "left")
+			for j, setting in ipairs(option[4]) do
+				love.graphics.setColor(1, 1, 1, config.gamesettings[option[1]] == j and 1 or 0.5)
+				love.graphics.printf(setting, 100 + 110 * j, 100 + i * 20, 100, "center")
+			end
 		end
 	end
+
+	love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.setFont(font_3x5_3)
+	love.graphics.print("SFX Volume: " .. math.floor(self.sfxSlider:getValue()) .. "%", 75, 325)
+	love.graphics.print("BGM Volume: " .. math.floor(self.bgmSlider:getValue()) .. "%", 375, 325)
 
 	love.graphics.setColor(1, 1, 1, 0.75)
 	self.sfxSlider:draw()
@@ -83,13 +94,25 @@ function ConfigScene:onInputPress(e)
 		playSE("cursor")
 		self.highlight = Mod1(self.highlight+1, optioncount)
 	elseif e.input == "left" or e.scancode == "left" then
-		playSE("cursor_lr")
-		local option = ConfigScene.options[self.highlight]
-		config.gamesettings[option[1]] = Mod1(config.gamesettings[option[1]]-1, #option[3])
+		if not self.options[self.highlight][3] then
+			playSE("cursor_lr")
+			local option = ConfigScene.options[self.highlight]
+			config.gamesettings[option[1]] = Mod1(config.gamesettings[option[1]]-1, #option[4])
+		else
+			playSE("cursor")
+			sld = self[self.options[self.highlight][4]]
+			sld.value = math.max(sld.min, math.min(sld.max, (sld:getValue() - 3) / (sld.max - sld.min)))
+		end
 	elseif e.input == "right" or e.scancode == "right" then
-		playSE("cursor_lr")
-		local option = ConfigScene.options[self.highlight]
-		config.gamesettings[option[1]] = Mod1(config.gamesettings[option[1]]+1, #option[3])
+		if not self.options[self.highlight][3] then
+			playSE("cursor_lr")
+			local option = ConfigScene.options[self.highlight]
+			config.gamesettings[option[1]] = Mod1(config.gamesettings[option[1]]+1, #option[4])
+		else
+			playSE("cursor")
+			sld = self[self.options[self.highlight][4]]
+			sld.value = math.max(sld.min, math.min(sld.max, (sld:getValue() + 3) / (sld.max - sld.min)))--math.max(0, (math.floor(sld:getValue())+2)/(sld.max-sld.min))
+		end
 	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
 		loadSave()
 		scene = SettingsScene()
