@@ -27,7 +27,7 @@ function MarathonA3Game:new()
 	self.section_cool_grade = 0
 	self.section_status = { [0] = "none" }
 	self.section_start_time = 0
-	self.section_70_times = { [0] = 0 }
+	self.secondary_section_times = { [0] = 0 }
 	self.section_times = { [0] = 0 }
 	self.section_cool = false
 	
@@ -163,8 +163,8 @@ function MarathonA3Game:onLineClear(cleared_row_count)
 	self:updateSectionTimes(self.level, self.level + advanced_levels)
 	if not self.clear then
 		self.level = math.min(self.level + advanced_levels, 999)
+		self.speed_level = self.speed_level + advanced_levels
 	end
-	self.speed_level = self.speed_level + advanced_levels
 	if self.level == 999 and not self.clear then
 		self.clear = true
 		self.grid:clear()
@@ -194,7 +194,7 @@ function MarathonA3Game:updateSectionTimes(old_level, new_level)
 		-- record new section
 		section_time = self.frames - self.section_start_time
 		table.insert(self.section_times, section_time)
-		self.section_start_time = self.frames
+		if new_level < 999 then self.section_start_time = self.frames end
 
 		self.speed_level = self.section_cool and self.speed_level + 100 or self.speed_level
 
@@ -214,15 +214,15 @@ function MarathonA3Game:updateSectionTimes(old_level, new_level)
 	elseif old_level % 100 < 70 and new_level % 100 >= 70 then
 		-- record section 70 time
 		section_70_time = self.frames - self.section_start_time
-		table.insert(self.section_70_times, section_70_time)
+		table.insert(self.secondary_section_times, section_70_time)
 
 		if section <= 9 and self.section_status[section - 1] == "cool" and
-				self.section_70_times[section] < self.section_70_times[section - 1] + 120 then
+				self.secondary_section_times[section] < self.secondary_section_times[section - 1] + 120 then
 			self.section_cool = true
 			self.coolregret_message = "COOL!!"
 						self.coolregret_timer = 300
 				elseif self.section_status[section - 1] == "cool" then self.section_cool = false
-				elseif section <= 9 and self.section_70_times[section] < cool_cutoffs[section] then
+				elseif section <= 9 and self.secondary_section_times[section] < cool_cutoffs[section] then
 			self.section_cool = true
 			self.coolregret_message = "COOL!!"
 						self.coolregret_timer = 300
@@ -395,6 +395,16 @@ MarathonA3Game.mRollOpacityFunction = function(age)
 	else return 1 - age / 4 end
 end
 
+function MarathonA3Game:sectionColourFunction(section)
+	if self.section_status[section] == "cool" then
+		return { 0, 1, 0, 1 }
+	elseif self.section_status[section] == "regret" then
+		return { 1, 0, 0, 1 }
+	else
+		return { 1, 1, 1, 1 }
+	end
+end
+
 function MarathonA3Game:drawScoringInfo()
 	love.graphics.setColor(1, 1, 1, 1)
 
@@ -415,6 +425,8 @@ function MarathonA3Game:drawScoringInfo()
 
 	-- draw section time data
 	current_section = math.floor(self.level / 100) + 1
+	self:drawSectionTimesWithSecondary(current_section)
+	--[[
 
 	section_x = 530
 	section_70_x = 440
@@ -425,21 +437,22 @@ function MarathonA3Game:drawScoringInfo()
 		end
 	end
 
-	for section, time in pairs(self.section_70_times) do
+	for section, time in pairs(self.secondary_section_times) do
 		if section > 0 then
 			love.graphics.printf(formatTime(time), section_70_x, 40 + 20 * section, 90, "left")
 		end
 	end
 	
 	local current_x
-	if table.getn(self.section_times) < table.getn(self.section_70_times) then
+	if table.getn(self.section_times) < table.getn(self.secondary_section_times) then
 		current_x = section_x
 	else
 		current_x = section_70_x
 	end
 
 	if not self.clear then love.graphics.printf(formatTime(self.frames - self.section_start_time), current_x, 40 + 20 * current_section, 90, "left") end
-	
+	]]--
+
 	if(self.coolregret_timer > 0) then
 				love.graphics.printf(self.coolregret_message, 64, 400, 160, "center")
 				self.coolregret_timer = self.coolregret_timer - 1
@@ -475,7 +488,7 @@ function MarathonA3Game:getSectionEndLevel()
 end
 
 function MarathonA3Game:getBackground()
-	return math.floor(self.level / 100)
+	return math.floor(self.speed_level / 100)
 end
 
 return MarathonA3Game
