@@ -194,7 +194,7 @@ function Grid:applyPiece(piece)
 	for index, offset in pairs(offsets) do
 		x = piece.position.x + offset.x
 		y = piece.position.y + offset.y
-		if y + 1 > 0 then
+		if y + 1 > 0 and y < 24 then
 			self.grid[y+1][x+1] = {
 				skin = piece.skin,
 				colour = piece.colour
