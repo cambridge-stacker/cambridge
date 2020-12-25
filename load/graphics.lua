@@ -20,6 +20,7 @@ backgrounds = {
 	love.graphics.newImage("res/backgrounds/1800.png"),
 	love.graphics.newImage("res/backgrounds/1900.png"),
 	title = love.graphics.newImage("res/backgrounds/title.png"),
+	snow = love.graphics.newImage("res/backgrounds/snow.png"),
 	input_config = love.graphics.newImage("res/backgrounds/options-input.png"),
 	game_config = love.graphics.newImage("res/backgrounds/options-game.png"),
 }
@@ -84,4 +85,5 @@ misc_graphics = {
 	go = love.graphics.newImage("res/img/go.png"),
 	select_mode = love.graphics.newImage("res/img/select_mode.png"),
 	strike = love.graphics.newImage("res/img/strike.png"),
+	santa = love.graphics.newImage("res/img/santa.png")
 }
