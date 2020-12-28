@@ -8,6 +8,8 @@ SRS.hash = "Standard"
 
 SRS.enable_IRS_wallkicks = true
 
+SRS.MANIPULATIONS_MAX = 15
+
 function SRS:check_new_low(piece)
 	for _, block in pairs(piece:getBlockOffsets()) do
 		local y = piece.position.y + block.y
@@ -75,7 +77,7 @@ end
 
 function SRS:onPieceDrop(piece, grid)
 	self:check_new_low(piece)
-	if piece.manipulations >= 15 and piece:isDropBlocked(grid) then
+	if piece.manipulations >= self.MANIPULATIONS_MAX and piece:isDropBlocked(grid) then
 		piece.locked = true
 	else
 		piece.lock_delay = 0 -- step reset
@@ -86,8 +88,7 @@ function SRS:onPieceMove(piece, grid)
 	piece.lock_delay = 0 -- move reset
 	if piece:isDropBlocked(grid) then
 		piece.manipulations = piece.manipulations + 1
-		if piece.manipulations >= 15 then
-			piece:dropToBottom(grid)
+		if piece.manipulations >= self.MANIPULATIONS_MAX then
 			piece.locked = true
 		end
 	end
@@ -97,12 +98,12 @@ function SRS:onPieceRotate(piece, grid)
 	piece.lock_delay = 0 -- rotate reset
 	self:check_new_low(piece)
 	piece.manipulations = piece.manipulations + 1
-	if piece:isDropBlocked(grid) then
-		if piece.manipulations >= 15 then
-			piece:dropToBottom(grid)
-			piece.locked = true
-		end
-	end
+    if piece.manipulations >= self.MANIPULATIONS_MAX then
+        piece:moveInGrid({ x = 0, y = 1 }, 1, grid)
+        if piece:isDropBlocked(grid) then
+            piece.locked = true
+        end
+    end
 end
 
 function SRS:get180RotationValue() return 2 end

@@ -18,6 +18,9 @@ SRS.colourscheme = {
 SRS.softdrop_lock = false
 SRS.harddrop_lock = true
 
+SRS.MANIPULATIONS_MAX = 10
+SRS.ROTATIONS_MAX = 8
+
 SRS.spawn_positions = {
 	I = { x=5, y=4 },
 	J = { x=4, y=5 },
@@ -162,15 +165,18 @@ function SRS:onPieceCreate(piece, grid)
 end
 
 function SRS:onPieceDrop(piece, grid)
-	piece.lock_delay = 0 -- step reset
+    if (piece.manipulations >= self.MANIPULATIONS_MAX or piece.rotations >= self.ROTATIONS_MAX) and piece:isDropBlocked(grid) then
+        piece.locked = true
+    else
+        piece.lock_delay = 0 -- step reset
+    end
 end
 
 function SRS:onPieceMove(piece, grid)
 	piece.lock_delay = 0 -- move reset
 	if piece:isDropBlocked(grid) then
 		piece.manipulations = piece.manipulations + 1
-		if piece.manipulations >= 10 then
-			piece:dropToBottom(grid)
+		if piece.manipulations >= self.MANIPULATIONS_MAX then
 			piece.locked = true
 		end
 	end
@@ -179,9 +185,8 @@ end
 function SRS:onPieceRotate(piece, grid)
 	piece.lock_delay = 0 -- rotate reset
 	if piece:isDropBlocked(grid) then
-		piece.rotations = piece.rotations + 1
-		if piece.rotations >= 8 then
-			piece:dropToBottom(grid)
+        piece.rotations = piece.rotations + 1
+		if piece.rotations >= self.ROTATIONS_MAX then
 			piece.locked = true
 		end
 	end

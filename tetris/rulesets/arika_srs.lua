@@ -6,6 +6,8 @@ local SRS = Ruleset:extend()
 SRS.name = "ACE-SRS"
 SRS.hash = "ACE Standard"
 
+SRS.MANIPULATIONS_MAX = 128
+
 SRS.spawn_positions = {
 	I = { x=5, y=2 },
 	J = { x=4, y=3 },
@@ -26,23 +28,11 @@ SRS.big_spawn_positions = {
 	Z = { x=2, y=1 },
 }
 
-function SRS:onPieceMove(piece, grid)
-	piece.lock_delay = 0 -- move reset
-	if piece:isDropBlocked(grid) then
-		piece.manipulations = piece.manipulations + 1
-		if piece.manipulations >= 128 then
-			piece:dropToBottom(grid)
-			piece.locked = true
-		end
-	end
-end
-
 function SRS:onPieceRotate(piece, grid)
 	piece.lock_delay = 0 -- rotate reset
 	if piece:isDropBlocked(grid) then
-		piece.manipulations = piece.manipulations + 1
-		if piece.manipulations >= 128 then
-			piece:dropToBottom(grid)
+        piece.manipulations = piece.manipulations + 1
+		if piece.manipulations >= self.MANIPULATIONS_MAX then
 			piece.locked = true
 		end
 	end
