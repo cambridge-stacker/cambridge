@@ -162,6 +162,7 @@ function GameMode:update(inputs, ruleset)
 			not self.hard_drop_locked then
 			self:onHardDrop(piece_dy)
 			if self.lock_on_hard_drop then
+				self.piece_hard_dropped = true
 				self.piece.locked = true
 			end
 		end
@@ -311,6 +312,21 @@ function GameMode:chargeDAS(inputs)
 	end
 end
 
+function GameMode:areCancel(inputs, ruleset)
+	if ruleset.are_cancel and self.piece_hard_dropped and
+	(self.move == "none" and not self.prev_inputs["up"] and
+	not self.prev_inputs["rotate_left"] and not self.prev_inputs["rotate_left2"] and
+	not self.prev_inputs["rotate_right"] and not self.prev_inputs["rotate_right2"] and
+	not self.prev_inputs["rotate_180"]) and
+	(inputs["left"] or inputs["right"] or inputs["up"] or
+	inputs["rotate_left"] or inputs["rotate_left2"] or
+	inputs["rotate_right"] or inputs["rotate_right2"] or
+	inputs["rotate_180"]) then
+		self.lcd = 0
+		self.are = 0
+	end
+end
+
 function GameMode:processDelays(inputs, ruleset, drop_speed)
 	if self.ready_frames == 100 then
 		playedReadySE = false
@@ -331,18 +347,7 @@ function GameMode:processDelays(inputs, ruleset, drop_speed)
 		end
 	elseif self.lcd > 0 then
 		self.lcd = self.lcd - 1
-		if ruleset.are_cancel and
-			(self.move == "none" and not self.prev_inputs["up"] and
-			not self.prev_inputs["rotate_left"] and not self.prev_inputs["rotate_left2"] and
-			not self.prev_inputs["rotate_right"] and not self.prev_inputs["rotate_right2"] and
-			not self.prev_inputs["rotate_180"]) and
-			(inputs["left"] or inputs["right"] or inputs["up"] or
-			inputs["rotate_left"] or inputs["rotate_left2"] or
-			inputs["rotate_right"] or inputs["rotate_right2"] or
-			inputs["rotate_180"]) then
-			self.lcd = 0
-			self.are = 0
-		end
+		self:areCancel(inputs, ruleset)
 		if self.lcd == 0 then
 			self.grid:clearClearedRows()
 			playSE("fall")
@@ -352,17 +357,7 @@ function GameMode:processDelays(inputs, ruleset, drop_speed)
 		end
 	elseif self.are > 0 then
 		self.are = self.are - 1
-		if ruleset.are_cancel and
-			(self.move == "none" and not self.prev_inputs["up"] and
-			not self.prev_inputs["rotate_left"] and not self.prev_inputs["rotate_left2"] and
-			not self.prev_inputs["rotate_right"] and not self.prev_inputs["rotate_right2"] and
-			not self.prev_inputs["rotate_180"]) and
-			(inputs["left"] or inputs["right"] or inputs["up"] or
-			inputs["rotate_left"] or inputs["rotate_left2"] or
-			inputs["rotate_right"] or inputs["rotate_right2"] or
-			inputs["rotate_180"]) then
-			self.are = 0
-		end
+		self:areCancel(inputs, ruleset)
 		if self.are == 0 then
 			self:initializeOrHold(inputs, ruleset)
 		end
@@ -407,6 +402,7 @@ function GameMode:hold(inputs, ruleset, ihs)
 end
 
 function GameMode:initializeNextPiece(inputs, ruleset, piece_data, generate_next_piece)
+	self.piece_hard_dropped = false
 	local gravity = self:getGravity()
 	self.piece = ruleset:initializePiece(
 		inputs, piece_data, self.grid, gravity,
