@@ -102,7 +102,7 @@ function TitleScene:onInputPress(e)
 	elseif e.input == "menu_back" or e.scancode == "backspace" or e.scancode == "delete" then
 		love.event.quit()
 	else
-		self.text = self.text .. e.scancode
+		self.text = self.text .. (e.scancode ~= nil and e.scancode or "")
 		if self.text == "ffffff" then
 			self.text_flag = true
 		end
