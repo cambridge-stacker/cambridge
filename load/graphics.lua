@@ -49,6 +49,18 @@ blocks = {
 		F = love.graphics.newImage("res/img/bone.png"),
 		A = love.graphics.newImage("res/img/bone.png"),
 		X = love.graphics.newImage("res/img/bone.png"),
+	},
+	["gem"] = {
+		R = love.graphics.newImage("res/img/gem1.png"),
+		O = love.graphics.newImage("res/img/gem3.png"),
+		Y = love.graphics.newImage("res/img/gem7.png"),
+		G = love.graphics.newImage("res/img/gem6.png"),
+		C = love.graphics.newImage("res/img/gem2.png"),
+		B = love.graphics.newImage("res/img/gem4.png"),
+		M = love.graphics.newImage("res/img/gem5.png"),
+		F = love.graphics.newImage("res/img/gem9.png"),
+		A = love.graphics.newImage("res/img/gem9.png"),
+		X = love.graphics.newImage("res/img/gem9.png"),
 	}
 }
 

@@ -273,6 +273,26 @@ function Grid:checkSecretGrade()
 	return sgrade
 end
 
+function Grid:hasGemBlocks()
+	for y = 1, 24 do
+		for x = 1, 10 do
+			if self.grid[y][x].skin == "gem" then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+function Grid:applyMap(map)
+	for y, row in pairs(map) do
+		for x, block in pairs(row) do
+			self.grid_age[y][x] = 0
+			self.grid[y][x] = block
+		end
+	end
+end
+
 function Grid:update()
 	for y = 1, 24 do
 		for x = 1, 10 do
