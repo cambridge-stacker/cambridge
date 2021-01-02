@@ -441,7 +441,9 @@ function SakuraGame:drawCustom()
         love.graphics.printf("EXCELLENT!", 64, 180, 160, "center")
 
         love.graphics.setFont(font_3x5_2)
-        love.graphics.printf("...but let's go\nbetter next time", 64, 220, 160, "center")
+        if self.current_map ~= 27 then
+            love.graphics.printf("...but let's go\nbetter next time", 64, 220, 160, "center")
+        end
     end
 end
 
