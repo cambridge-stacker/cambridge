@@ -413,7 +413,8 @@ function SakuraGame:drawCustom()
     end
 
     if self.cleared_frames > 0 and
-    (not self.grid:hasGemBlocks() or self.stage_frames >= 3600) then
+    (not self.grid:hasGemBlocks() or
+    (self.stage_frames >= 3600 and self.current_map <= 20)) then
         love.graphics.setFont(font_3x5_2)
         love.graphics.printf("TIME LIMIT", 64, 180, 160, "center")
         love.graphics.printf("TIME EXTEND", 64, 240, 160, "center")
