@@ -284,6 +284,16 @@ function Grid:hasGemBlocks()
 	return false
 end
 
+function Grid:mirror()
+	local new_grid = {}
+	for y = 1, 24 do
+		for x = 1, 10 do
+			new_grid[y][x] = self.grid[y][11 - x]
+		end
+	end
+	self.grid = new_grid
+end
+
 function Grid:applyMap(map)
 	for y, row in pairs(map) do
 		for x, block in pairs(row) do

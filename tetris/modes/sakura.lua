@@ -7,7 +7,7 @@ local History6RollsRandomizer = require 'tetris.randomizers.history_6rolls_35bag
 
 local SakuraGame = GameMode:extend()
 
-SakuraGame.name = "Sakura Beta"
+SakuraGame.name = "Sakura Beta v2"
 SakuraGame.hash = "SakuraBeta"
 SakuraGame.tagline = "Test mode for gem blocks"
 
@@ -26,6 +26,15 @@ local b = {
     ["C"] = { skin = "gem", colour = "C" },
     ["B"] = { skin = "gem", colour = "B" },
     ["M"] = { skin = "gem", colour = "M" },
+}
+
+local effects = {
+    [4] = "mirror",
+    [8] = "xray",
+    [12] = "color",
+    [13] = "mirror",
+    [16] = "roll",
+    [23] = "big"
 }
 
 local maps = {
@@ -185,6 +194,72 @@ local maps = {
         [23] = {b.y, b.y, b.o, nil, nil, nil, nil, b.Y, b.y, b.y},
         [24] = {b.r, b.r, b.r, b.R, nil, nil, b.M, b.r, b.r, b.r},
     },
+    [21] = {
+        [16] = {nil, nil, b.g, b.g, b.g, b.g, b.g, nil, nil, nil},
+        [17] = {nil, b.g, b.g, b.g, b.g, b.g, b.g, b.B, b.g, nil},
+        [18] = {b.g, b.g, b.g, b.g, b.g, b.g, b.g, b.g, b.C, nil},
+        [19] = {b.g, nil, nil, b.g, b.o, b.o, b.g, nil, nil, b.g},
+        [20] = {nil, b.R, nil, b.g, b.o, b.o, nil, b.M, nil, b.G},
+        [21] = {nil, nil, nil, nil, b.o, b.o, nil, nil, nil, nil},
+        [22] = {nil, nil, nil, nil, b.o, b.o, nil, nil, nil, nil},
+        [23] = {nil, nil, nil, nil, b.o, b.o, nil, nil, nil, nil},
+        [24] = {nil, nil, nil, nil, b.Y, b.O, nil, nil, nil, nil},
+    },
+    [22] = {
+        [15] = {nil, nil, b.b, nil, nil, nil, nil, b.b, nil, nil},
+        [16] = {nil, b.b, b.O, b.b, nil, nil, b.b, b.Y, b.b, nil},
+        [17] = {nil, nil, b.b, nil, nil, nil, nil, b.b, nil, nil},
+        [20] = {nil, nil, nil, nil, b.R, b.M, nil, nil, nil, nil},
+        [23] = {nil, nil, nil, b.b, b.C, b.G, b.b, nil, nil, nil},
+        [24] = {nil, nil, nil, b.b, b.b, b.B, b.b, nil, nil, nil},
+    },
+    [23] = {
+        [13] = {nil, nil, nil, nil, nil, nil, nil, nil, b.c, b.m},
+        [14] = {nil, nil, nil, nil, nil, nil, nil, nil, b.y, b.g},
+        [15] = {b.G, b.B, nil, nil, nil, nil, nil, nil, nil, nil},
+        [16] = {b.r, b.O, nil, nil, nil, nil, nil, nil, nil, nil},
+        [23] = {nil, nil, nil, nil, b.C, b.M, nil, nil, nil, nil},
+        [24] = {nil, nil, nil, nil, b.R, b.Y, nil, nil, nil, nil},
+    },
+    [24] = {
+        [20] = {b.g, b.g, b.g, b.g, b.G, nil, nil, nil, nil, nil},
+        [21] = {nil, nil, nil, nil, nil, b.O, b.y, b.y, b.y, b.Y},
+        [23] = {b.M, b.r, b.r, b.r, b.R, nil, nil, nil, nil, nil},
+        [24] = {nil, nil, nil, nil, nil, b.M, b.r, b.r, b.r, b.R},
+    },
+    [25] = {
+        [18] = {nil, nil, nil, nil, nil, b.B, nil, nil, nil, nil},
+        [19] = {nil, nil, nil, b.G, nil, nil, nil, b.C, nil, nil},
+        [20] = {nil, nil, nil, nil, nil, b.Y, nil, nil, nil, nil},
+        [21] = {nil, nil, nil, b.M, nil, nil, nil, b.O, nil, nil},
+        [22] = {nil, nil, nil, nil, nil, b.R, nil, nil, nil, nil},
+    },
+    [26] = {
+        [13] = {nil, nil, nil, nil, b.r, b.r, nil, nil, nil, nil},
+        [14] = {nil, nil, nil, nil, b.o, b.o, nil, nil, nil, nil},
+        [15] = {nil, nil, nil, nil, b.o, b.o, nil, nil, nil, nil},
+        [16] = {nil, nil, nil, nil, b.o, b.o, nil, nil, nil, nil},
+        [17] = {nil, nil, nil, b.O, b.o, b.o, b.Y, nil, nil, nil},
+        [18] = {nil, nil, b.o, b.c, b.c, b.c, b.c, b.o, nil, nil},
+        [19] = {nil, nil, b.o, b.c, b.c, b.c, b.c, b.o, nil, nil},
+        [20] = {nil, nil, b.o, nil, nil, b.G, nil, b.o, nil, nil},
+        [21] = {nil, nil, b.o, nil, b.M, b.R, nil, b.o, nil, nil},
+        [22] = {nil, nil, b.o, b.b, b.b, b.b, b.B, b.o, nil, nil},
+        [23] = {nil, nil, b.o, b.C, b.b, b.b, b.b, b.o, nil, nil},
+        [24] = {nil, nil, b.o, b.o, b.o, b.o, b.o, b.o, nil, nil},
+    },
+    [27] = {
+        [15] = {nil, b.C, b.o, b.g, b.g, b.g, b.g, b.g, b.B, nil},
+        [16] = {b.g, nil, b.y, b.o, b.g, b.g, b.g, b.g, nil, b.y},
+        [17] = {b.g, b.g, nil, b.y, b.o, b.g, b.g, nil, b.y, b.o},
+        [18] = {b.g, b.g, b.g, nil, b.y, b.o, nil, b.y, b.o, b.g},
+        [19] = {b.g, b.g, b.g, b.o, nil, b.G, b.y, b.o, b.g, b.g},
+        [20] = {b.g, b.g, b.o, b.o, b.Y, nil, b.o, b.g, b.g, b.g},
+        [21] = {b.g, b.o, b.y, nil, b.o, b.O, nil, b.g, b.g, b.g},
+        [22] = {b.o, b.y, nil, b.g, b.g, b.o, b.y, nil, b.g, b.g},
+        [23] = {b.y, nil, b.g, b.g, b.g, b.g, b.o, b.y, nil, b.g},
+        [24] = {nil, b.M, b.g, b.g, b.g, b.g, b.g, b.o, b.R, nil},
+    },
 }
 
 function SakuraGame:new()
@@ -197,6 +272,8 @@ function SakuraGame:new()
     self.cleared_frames = 300
     self.stage_frames = 0
     self.time_extend = 0
+    self.maps_cleared = 0
+    self.map_20_time = 0
     self.grid:applyMap(maps[self.current_map])
     
     self.lock_drop = true
@@ -205,8 +282,28 @@ function SakuraGame:new()
     self.next_queue_length = 3
 end
 
+function SakuraGame:checkRequirements()
+    if self.maps_cleared >= 14 + 2 * (self.current_map - 20) and
+    self.map_20_time <= frameTime(8,00) - frameTime(0,30) * (self.current_map - 20)
+    then 
+        return true
+    end
+    return false
+end
+
 function SakuraGame:getGravity()
     return 1/64
+end
+
+function SakuraGame:onLineClear()
+    for i = 13, 24 do
+        for j = 1, 10 do
+            local block = self.grid.grid[i][j]
+            if block and block.skin == "gem" and block.colour == "X" then
+                self.time_limit = self.time_limit + 60
+            end
+        end
+    end
 end
 
 function SakuraGame:advanceOneFrame(inputs, ruleset)
@@ -217,11 +314,15 @@ function SakuraGame:advanceOneFrame(inputs, ruleset)
             else self.time_extend = 0 end
         end
 
-        if not self.grid:hasGemBlocks() then
+        if not self.grid:hasGemBlocks() or
+        (self.stage_frames >= 3600 and self.current_map <= 20) then
+            if self.stage_frames >= 3600 then self.time_extend = 0 end
+            self.piece = nil
+
             -- transition to next map
             if self.cleared_frames > 0 then
                 self.cleared_frames = self.cleared_frames - 1
-                if self.time_extend >= 0 then
+                if self.time_extend > 0 then
                     self.time_limit = self.time_limit + 3
                     self.time_extend = self.time_extend - 3
                 end
@@ -229,14 +330,16 @@ function SakuraGame:advanceOneFrame(inputs, ruleset)
             end
             
             self.hold_queue = nil
+            if (self.stage_frames < 3600 and self.current_map <= 20) then self.maps_cleared = self.maps_cleared + 1 end
             self.stage_frames = -1
-            self.current_map = self.current_map + 1
             self.grid:clear()
-            if self.current_map >= 21 then
+            if (self.current_map == 20) then self.map_20_time = self.frames end
+            if self.current_map >= 20 and self:checkRequirements() then
                 self.clear = true
                 self.completed = true
                 return false
             else
+                self.current_map = self.current_map + 1
                 self.ready_frames = 100
                 self.grid:applyMap(maps[self.current_map])
             end
@@ -277,7 +380,9 @@ function SakuraGame:drawScoringInfo()
     love.graphics.printf("NEXT", 64, 40, 40, "left")
     love.graphics.printf("STAGE", 240, 120, 80, "left")
     love.graphics.printf("TIME LIMIT", 240, 180, 80, "left")
-    love.graphics.printf("STAGE TIME", 240, 240, 80, "left")
+    if self.current_map <= 20 then
+        love.graphics.printf("STAGE LIMIT", 240, 240, 100, "left")
+    end
 
     love.graphics.setFont(font_3x5_3)
     love.graphics.setColor(
@@ -290,7 +395,9 @@ function SakuraGame:drawScoringInfo()
     )
     love.graphics.printf(formatTime(self.time_limit), 240, 200, 120, "left")
     love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.printf(formatTime(self.stage_frames), 240, 260, 120, "left")
+    if self.current_map <= 20 then
+        love.graphics.printf(formatTime(3600 - self.stage_frames), 240, 260, 120, "left")
+    end
 
     love.graphics.setFont(font_8x11)
     love.graphics.printf(formatTime(self.frames), 64, 420, 160, "center")
@@ -305,7 +412,8 @@ function SakuraGame:drawCustom()
         love.graphics.printf("STAGE " .. self.current_map, 64, 170, 160, "center")
     end
 
-    if self.cleared_frames > 0 and not self.grid:hasGemBlocks() then
+    if self.cleared_frames > 0 and
+    (not self.grid:hasGemBlocks() or self.stage_frames >= 3600) then
         love.graphics.setFont(font_3x5_2)
         love.graphics.printf("TIME LIMIT", 64, 180, 160, "center")
         love.graphics.printf("TIME EXTEND", 64, 240, 160, "center")
@@ -324,7 +432,7 @@ function SakuraGame:drawCustom()
         love.graphics.printf(formatTime(self.stage_frames), 64, 320, 160, "center")
 
         love.graphics.setFont(font_3x5_4)
-        love.graphics.printf("CLEAR!", 64, 130, 160, "center")
+        love.graphics.printf(self.stage_frames >= 3600 and "" or "CLEAR!", 64, 130, 160, "center")
     end
 
     if self.clear then
@@ -342,7 +450,8 @@ end
 
 function SakuraGame:getHighscoreData()
     return {
-        map = self.current_map,
+        maps = self.maps_cleared,
+        current_map = self.current_map,
         frames = self.frames,
     }
 end
