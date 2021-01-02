@@ -433,7 +433,7 @@ function SakuraGame:drawCustom()
         love.graphics.printf(formatTime(self.stage_frames), 64, 320, 160, "center")
 
         love.graphics.setFont(font_3x5_4)
-        love.graphics.printf(self.stage_frames >= 3600 and "" or "CLEAR!", 64, 130, 160, "center")
+        love.graphics.printf((self.stage_frames >= 3600 and self.current_map <= 20) and "" or "CLEAR!", 64, 130, 160, "center")
     end
 
     if self.clear then
