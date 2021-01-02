@@ -286,9 +286,9 @@ function SakuraGame:checkRequirements()
     if self.maps_cleared >= 14 + 2 * (self.current_map - 20) and
     self.map_20_time <= frameTime(8,00) - frameTime(0,30) * (self.current_map - 20)
     then 
-        return true
+        return false
     end
-    return false
+    return true
 end
 
 function SakuraGame:getGravity()
