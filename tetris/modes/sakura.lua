@@ -262,6 +262,8 @@ local maps = {
     },
 }
 
+local STAGE_TRANSITION_TIME = 300
+
 function SakuraGame:new()
     self.super:new()
 
@@ -269,11 +271,12 @@ function SakuraGame:new()
     
     self.current_map = 1
     self.time_limit = 10800
-    self.cleared_frames = 300
+    self.cleared_frames = STAGE_TRANSITION_TIME
     self.stage_frames = 0
     self.time_extend = 0
     self.maps_cleared = 0
     self.map_20_time = 0
+    self.stage_pieces = 0
     self.grid:applyMap(maps[self.current_map])
     
     self.lock_drop = true
@@ -306,6 +309,10 @@ function SakuraGame:onLineClear()
     end
 end
 
+function SakuraGame:onPieceEnter()
+    self.stage_pieces = self.stage_pieces + 1
+end
+
 function SakuraGame:advanceOneFrame(inputs, ruleset)
     if self.ready_frames == 0 then
         if self.lcd > 0 then
@@ -332,7 +339,7 @@ function SakuraGame:advanceOneFrame(inputs, ruleset)
             end
             
             self.hold_queue = nil
-            if (self.stage_frames < 3600 and self.current_map <= 20) then self.maps_cleared = self.maps_cleared + 1 end
+            if self.current_map > 20 or (self.stage_frames < 3600 and self.current_map <= 20) then self.maps_cleared = self.maps_cleared + 1 end
             self.stage_frames = -1
             self.grid:clear()
             if (self.current_map == 20) then self.map_20_time = self.frames end
@@ -343,6 +350,7 @@ function SakuraGame:advanceOneFrame(inputs, ruleset)
             else
                 self.current_map = self.current_map + 1
                 self.ready_frames = 100
+                self.stage_pieces = 0
                 self.grid:applyMap(maps[self.current_map])
             end
             
@@ -356,7 +364,7 @@ function SakuraGame:advanceOneFrame(inputs, ruleset)
         self.time_limit = self.time_limit - 1
         if self.time_limit <= 0 then self.game_over = true end
     else
-        self.cleared_frames = 300
+        self.cleared_frames = STAGE_TRANSITION_TIME
         if not self.prev_inputs.hold and inputs.hold then
             self.hold_queue = table.remove(self.next_queue, 1)
             table.insert(self.next_queue, self:getNextPiece(ruleset))
@@ -365,9 +373,41 @@ function SakuraGame:advanceOneFrame(inputs, ruleset)
     return true
 end
 
+local function colourXRay(game, block, x, y, age)
+    local r, g, b, a = .75,.75,.75
+    if ((game.stage_frames/2 - x) % 30 < 1)
+    or game.stage_frames == 0
+    or game.cleared_frames ~= STAGE_TRANSITION_TIME
+    or game.stage_pieces % 2 == 0
+    then
+        a = 1
+    else
+        a = 0
+    end
+    return r, g, b, a, a
+end
+
+local function colourColor(game, block, x, y, age)
+    local r, g, b, a = .75,.75,.75
+    if game.stage_frames == 0 or game.cleared_frames ~= STAGE_TRANSITION_TIME then
+        a = 1
+    else
+        a = (game.stage_frames/60 + (y + math.abs(x-5.5))/5) % 1
+    end
+    return r, g, b, a, 0
+end
+
 function SakuraGame:drawGrid()
-    self.grid:draw()
-    self:drawGhostPiece()
+    if effects[self.current_map] == "xray" then
+        self.grid:drawCustom(colourXRay, self)
+	elseif effects[self.current_map] == "color" then
+        self.grid:drawCustom(colourColor, self)
+	else
+        self.grid:draw()
+        -- if self.piece ~= nil and self.level < 100 then
+            self:drawGhostPiece(ruleset)
+        -- end
+	end
 end
 
 function SakuraGame:drawScoringInfo()

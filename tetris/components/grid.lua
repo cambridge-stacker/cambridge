@@ -410,4 +410,44 @@ function Grid:drawInvisible(opacity_function, garbage_opacity_function, lock_fla
 	end
 end
 
+function Grid:drawCustom(colour_function, gamestate)
+    --[[
+        colour_function: (game, block, x, y, age) -> (R, G, B, A, outlineA)
+        When called, calls the supplied function on every block passing the block itself as argument
+        as well as coordinates and the grid_age value of the same cell.
+        Should return a RGBA colour for the block, as well as the opacity of the stack outline (0 for no outline).
+        
+        gamestate: the gamemode instance itself to pass in colour_function
+    ]]
+	for y = 5, 24 do
+		for x = 1, 10 do
+            local block = self.grid[y][x]
+			if block ~= empty then
+                local R, G, B, A, outline = colour_function(gamestate, block, x, y, self.grid_age[y][x])
+				if self.grid[y][x].colour == "X" then
+					A = 1
+				end
+				love.graphics.setColor(R, G, B, A)
+				love.graphics.draw(blocks[self.grid[y][x].skin][self.grid[y][x].colour], 48+x*16, y*16)
+                if outline > 0 and self.grid[y][x].colour ~= "X" then
+                    love.graphics.setColor(0.64, 0.64, 0.64, outline)
+                    love.graphics.setLineWidth(1)
+                    if y > 1 and self.grid[y-1][x] == empty then
+                        love.graphics.line(48.0+x*16, -0.5+y*16, 64.0+x*16, -0.5+y*16)
+                    end
+                    if y < 24 and self.grid[y+1][x] == empty then
+                        love.graphics.line(48.0+x*16, 16.5+y*16, 64.0+x*16, 16.5+y*16)
+                    end
+                    if x > 1 and self.grid[y][x-1] == empty then
+                        love.graphics.line(47.5+x*16, -0.0+y*16, 47.5+x*16, 16.0+y*16)
+                    end
+                    if x < 10 and self.grid[y][x+1] == empty then
+                        love.graphics.line(64.5+x*16, -0.0+y*16, 64.5+x*16, 16.0+y*16)
+                    end
+                end
+			end
+		end
+	end
+end
+
 return Grid
