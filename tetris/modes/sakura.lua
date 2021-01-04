@@ -7,9 +7,9 @@ local SakuraRandomizer = require 'tetris.randomizers.sakura'
 
 local SakuraGame = GameMode:extend()
 
-SakuraGame.name = "Sakura Beta v2"
-SakuraGame.hash = "SakuraBeta"
-SakuraGame.tagline = "Test mode for gem blocks"
+SakuraGame.name = "Sakura A3"
+SakuraGame.hash = "SakuraA3"
+SakuraGame.tagline = "Clear away the Gem Blocks as fast as possible!"
 
 local b = {
     ["r"] = { skin = "2tie", colour = "R" },
@@ -295,10 +295,42 @@ function SakuraGame:checkRequirements()
 end
 
 function SakuraGame:getGravity()
-    return 1/64
+    if self.level < 8   then return 4/256
+elseif self.level < 19  then return 5/256
+elseif self.level < 35  then return 6/256
+elseif self.level < 40  then return 8/256
+elseif self.level < 50  then return 10/256
+elseif self.level < 60  then return 12/256
+elseif self.level < 70  then return 16/256
+elseif self.level < 80  then return 32/256
+elseif self.level < 90  then return 48/256
+elseif self.level < 100 then return 64/256
+elseif self.level < 108 then return 4/256
+elseif self.level < 119 then return 5/256
+elseif self.level < 125 then return 6/256
+elseif self.level < 131 then return 8/256
+elseif self.level < 139 then return 12/256
+elseif self.level < 149 then return 32/256
+elseif self.level < 156 then return 48/256
+elseif self.level < 164 then return 80/256
+elseif self.level < 174 then return 112/256
+elseif self.level < 180 then return 128/256
+elseif self.level < 200 then return 144/256
+elseif self.level < 212 then return 16/256
+elseif self.level < 221 then return 48/256
+elseif self.level < 232 then return 80/256
+elseif self.level < 244 then return 112/256
+elseif self.level < 256 then return 144/256
+elseif self.level < 267 then return 176/256
+elseif self.level < 277 then return 192/256
+elseif self.level < 287 then return 208/256
+elseif self.level < 295 then return 224/256
+elseif self.level < 300 then return 240/256
+else return 20 end
 end
 
-function SakuraGame:onLineClear()
+function SakuraGame:onLineClear(cleared_row_count)
+    self.level = self.level + cleared_row_count
     for i = 13, 24 do
         for j = 1, 10 do
             local block = self.grid.grid[i][j]
@@ -310,13 +342,15 @@ function SakuraGame:onLineClear()
 end
 
 function SakuraGame:onPieceEnter()
-    self.stage_pieces = self.stage_pieces + 1
-end
-
-function SakuraGame:onPieceLock()
-    if effects[self.current_map] == "mirror" and self.stage_pieces % 3 == 0 then
+    if self.level % 100 ~= 99 and not self.clear and self.stage_frames ~= 0 then
+		self.level = self.level + 1
+	end
+    if effects[self.current_map] == "mirror" and
+       self.stage_pieces % 3 == 0 and self.stage_pieces ~= 0
+       then
         self.grid:mirror()
     end
+    self.stage_pieces = self.stage_pieces + 1
 end
 
 function SakuraGame:advanceOneFrame(inputs, ruleset)
@@ -347,6 +381,7 @@ function SakuraGame:advanceOneFrame(inputs, ruleset)
             self.hold_queue = nil
             if self.current_map > 20 or (self.stage_frames < 3600 and self.current_map <= 20) then self.maps_cleared = self.maps_cleared + 1 end
             self.stage_frames = -1
+            self.level = 0
             self.grid:clear()
             if (self.current_map == 20) then self.map_20_time = self.frames end
             if self.current_map >= 20 and self:checkRequirements() then
@@ -355,6 +390,7 @@ function SakuraGame:advanceOneFrame(inputs, ruleset)
                 return false
             else
                 self.current_map = self.current_map + 1
+                self.big_mode = effects[self.current_map] == "big"
                 self.ready_frames = 100
                 self.stage_pieces = 0
                 self.grid:applyMap(maps[self.current_map])
@@ -369,6 +405,17 @@ function SakuraGame:advanceOneFrame(inputs, ruleset)
         self.stage_frames = self.stage_frames + 1
         self.time_limit = self.time_limit - 1
         if self.time_limit <= 0 then self.game_over = true end
+
+        if self.piece ~= nil and self.frames % 30 == 0 and
+           effects[self.current_map] == "roll"
+           then
+            ruleset:attemptRotate(
+                {[config.gamesettings.world_reverse == 3 or
+                (ruleset.world and config.gamesettings.world_reverse == 2)
+                and "rotate_left" or "rotate_right"] = true},
+                self.piece, self.grid, false
+            )
+        end
     else
         self.cleared_frames = STAGE_TRANSITION_TIME
         if not self.prev_inputs.hold and inputs.hold then
@@ -380,7 +427,7 @@ function SakuraGame:advanceOneFrame(inputs, ruleset)
 end
 
 local function colourXRay(game, block, x, y, age)
-    local r, g, b, a = .75,.75,.75
+    local r, g, b, a = .5,.5,.5
     if ((game.stage_frames/2 - x) % 30 < 1)
     or game.stage_frames == 0
     or game.cleared_frames ~= STAGE_TRANSITION_TIME
@@ -388,17 +435,17 @@ local function colourXRay(game, block, x, y, age)
     then
         a = 1
     else
-        a = 0
+        a = 1 - age / 4
     end
     return r, g, b, a, a
 end
 
 local function colourColor(game, block, x, y, age)
-    local r, g, b, a = .75,.75,.75
+    local r, g, b, a = .5,.5,.5
     if game.stage_frames == 0 or game.cleared_frames ~= STAGE_TRANSITION_TIME then
         a = 1
     else
-        a = (game.stage_frames/60 + (y + math.abs(x-5.5))/5) % 1
+        a = (game.stage_frames/30 + (y + math.abs(x-5.5))/5) % 1
     end
     return r, g, b, a, 0
 end
@@ -428,8 +475,12 @@ function SakuraGame:drawScoringInfo()
     love.graphics.printf("NEXT", 64, 40, 40, "left")
     love.graphics.printf("STAGE", 240, 120, 80, "left")
     love.graphics.printf("TIME LIMIT", 240, 180, 80, "left")
+    love.graphics.printf("LEVEL", 240, 320, 40, "left")
     if self.current_map <= 20 then
         love.graphics.printf("STAGE LIMIT", 240, 240, 100, "left")
+    end
+    if effects[self.current_map] then
+        love.graphics.printf("EFFECT: " .. effects[self.current_map], 240, 300, 160, "left")
     end
 
     love.graphics.setFont(font_3x5_3)
@@ -446,6 +497,8 @@ function SakuraGame:drawScoringInfo()
     if self.current_map <= 20 then
         love.graphics.printf(formatTime(3600 - self.stage_frames), 240, 260, 120, "left")
     end
+    love.graphics.printf(self.level, 240, 340, 40, "right")
+	love.graphics.printf(math.floor((self.level + 100) / 100) * 100, 240, 370, 40, "right")
 
     love.graphics.setFont(font_8x11)
     love.graphics.printf(formatTime(self.frames), 64, 420, 160, "center")
@@ -458,6 +511,11 @@ function SakuraGame:drawCustom()
     if self.ready_frames ~= 0 and not self.clear then
         love.graphics.setFont(font_3x5_4)
         love.graphics.printf("STAGE " .. self.current_map, 64, 170, 160, "center")
+
+        love.graphics.setFont(font_3x5_3)
+        if effects[self.current_map] then
+            love.graphics.printf("EFFECT: " .. effects[self.current_map], 64, 270, 160, "center")
+        end
     end
 
     if self.cleared_frames > 0 and
