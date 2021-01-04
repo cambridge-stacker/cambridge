@@ -288,6 +288,7 @@ function Grid:mirror()
 	local new_grid = {}
 	for y = 1, 24 do
 		for x = 1, 10 do
+			print(#self.grid)
 			new_grid[y][x] = self.grid[y][11 - x]
 		end
 	end

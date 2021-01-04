@@ -3,7 +3,7 @@ require 'funcs'
 local GameMode = require 'tetris.modes.gamemode'
 local Piece = require 'tetris.components.piece'
 
-local History6RollsRandomizer = require 'tetris.randomizers.history_6rolls_35bag'
+local SakuraRandomizer = require 'tetris.randomizers.sakura'
 
 local SakuraGame = GameMode:extend()
 
@@ -267,7 +267,7 @@ local STAGE_TRANSITION_TIME = 300
 function SakuraGame:new()
     self.super:new()
 
-    self.randomizer = History6RollsRandomizer()
+    self.randomizer = SakuraRandomizer()
     
     self.current_map = 1
     self.time_limit = 10800
@@ -311,6 +311,12 @@ end
 
 function SakuraGame:onPieceEnter()
     self.stage_pieces = self.stage_pieces + 1
+end
+
+function SakuraGame:onPieceLock()
+    if effects[self.current_map] == "mirror" and self.stage_pieces % 3 == 0 then
+        self.grid:mirror()
+    end
 end
 
 function SakuraGame:advanceOneFrame(inputs, ruleset)
