@@ -65,6 +65,14 @@ Then, check the mod pack section at the bottom of this page.
 
 If you haven't already, install `love` with your favourite package manager (Homebrew on macOS, your system's default on Linux). **Make sure you're using LÖVE 11, because it won't work with earlier versions!**
 
+#### Downloading a release
+
+You can download the .love file in the latest release, and run it with:
+
+    love cambridge.love
+
+#### Installing from source
+
 Clone the repository in git:
 
 	git clone https://github.com/SashLilac/cambridge
