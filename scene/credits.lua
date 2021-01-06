@@ -8,7 +8,9 @@ function CreditsScene:new()
 end
 
 function CreditsScene:update()
-    self.frames = self.frames + 1
+    if love.window.hasFocus() then
+        self.frames = self.frames + 1
+    end
     if self.frames >= 4200 then
         playSE("mode_decide")
         scene = TitleScene()
