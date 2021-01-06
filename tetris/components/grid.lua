@@ -341,10 +341,11 @@ function Grid:draw()
 				if self.grid[y][x].skin ~= "bone" and self.grid[y][x].colour ~= "X" then
 					love.graphics.setColor(0.8, 0.8, 0.8, 1)
 					love.graphics.setLineWidth(1)
-					if y > 1 and self.grid[y-1][x] == empty then
+					if y > 1 and self.grid[y-1][x] == empty or self.grid[y-1][x].colour == "X" then
 						love.graphics.line(48.0+x*16, -0.5+y*16, 64.0+x*16, -0.5+y*16)
 					end
-					if y < 24 and self.grid[y+1][x] == empty then
+					if y < 24 and self.grid[y+1][x] == empty or
+					(y + 1 > 24 or self.grid[y+1][x].colour == "X") then
 						love.graphics.line(48.0+x*16, 16.5+y*16, 64.0+x*16, 16.5+y*16)
 					end
 					if x > 1 and self.grid[y][x-1] == empty then
