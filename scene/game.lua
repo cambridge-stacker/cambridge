@@ -4,12 +4,13 @@ GameScene.title = "Game"
 
 require 'load.save'
 
-function GameScene:new(game_mode, ruleset)
+function GameScene:new(game_mode, ruleset, inputs)
 	self.retry_mode = game_mode
 	self.retry_ruleset = ruleset
-	self.game = game_mode()
+	self.secret_inputs = copy(inputs)
+	self.game = game_mode(self.secret_inputs)
 	self.ruleset = ruleset()
-	self.game:initialize(self.ruleset)
+	self.game:initialize(self.ruleset, self.secret_inputs)
 	self.inputs = {
 		left=false,
 		right=false,
@@ -82,9 +83,9 @@ function GameScene:onInputPress(e)
 		highscore_entry = self.game:getHighscoreData()
 		highscore_hash = self.game.hash .. "-" .. self.ruleset.hash
 		submitHighscore(highscore_hash, highscore_entry)
-		scene = e.input == "retry" and GameScene(self.retry_mode, self.retry_ruleset) or ModeSelectScene()
+		scene = e.input == "retry" and GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs) or ModeSelectScene()
 	elseif e.input == "retry" then
-		scene = GameScene(self.retry_mode, self.retry_ruleset)
+		scene = GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs)
 	elseif e.input == "pause" and not (self.game.game_over or self.game.completed) then
 		self.paused = not self.paused
 		if self.paused then pauseBGM()

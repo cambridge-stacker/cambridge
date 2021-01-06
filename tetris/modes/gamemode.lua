@@ -11,7 +11,7 @@ local GameMode = Object:extend()
 
 GameMode.rollOpacityFunction = function(age) return 0 end
 
-function GameMode:new()
+function GameMode:new(secret_inputs)
 	self.grid = Grid()
 	self.randomizer = Randomizer()
 	self.piece = nil
@@ -80,9 +80,9 @@ function GameMode:getNextPiece(ruleset)
 	}
 end
 
-function GameMode:initialize(ruleset)
+function GameMode:initialize(ruleset, secret_inputs)
 	-- generate next queue
-	self:new()
+	self:new(secret_inputs)
 	for i = 1, self.next_queue_length do
 		table.insert(self.next_queue, self:getNextPiece(ruleset))
 	end

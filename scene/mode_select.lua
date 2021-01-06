@@ -11,6 +11,14 @@ function ModeSelectScene:new()
 		ruleset = current_ruleset,
 		select = "mode",
 	}
+	self.secret_inputs = {
+		rotate_left = false,
+		rotate_left2 = false,
+		rotate_right = false,
+		rotate_right2 = false,
+		rotate_180 = false,
+		hold = false,
+	}
 	DiscordRPC:update({
 		details = "In menus",
 		state = "Choosing a mode",
@@ -67,7 +75,7 @@ function ModeSelectScene:onInputPress(e)
 		config.current_ruleset = current_ruleset
 		playSE("mode_decide")
 		saveConfig()
-		scene = GameScene(game_modes[self.menu_state.mode], rulesets[self.menu_state.ruleset])
+		scene = GameScene(game_modes[self.menu_state.mode], rulesets[self.menu_state.ruleset], self.secret_inputs)
 	elseif e.input == "up" or e.scancode == "up" then
 		self:changeOption(-1)
 		playSE("cursor")
@@ -79,6 +87,14 @@ function ModeSelectScene:onInputPress(e)
 		playSE("cursor_lr")
 	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
 		scene = TitleScene()
+	else
+		self.secret_inputs[e.input] = true
+	end
+end
+
+function ModeSelectScene:onInputRelease(e)
+	if e.input == "hold" or (e.input and string.sub(e.input, 1, 7) == "rotate_") then
+		self.secret_inputs[e.input] = false
 	end
 end
 

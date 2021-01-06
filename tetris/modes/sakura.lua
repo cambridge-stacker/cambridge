@@ -4,6 +4,7 @@ local GameMode = require 'tetris.modes.gamemode'
 local Piece = require 'tetris.components.piece'
 
 local SakuraRandomizer = require 'tetris.randomizers.sakura'
+local History6RollsRandomizer = require 'tetris.randomizers.history_6rolls_35bag'
 
 local SakuraGame = GameMode:extend()
 
@@ -264,10 +265,14 @@ local maps = {
 
 local STAGE_TRANSITION_TIME = 300
 
-function SakuraGame:new()
+function SakuraGame:new(secret_inputs)
     self.super:new()
 
-    self.randomizer = SakuraRandomizer()
+    self.randomizer = (
+        (
+            secret_inputs.rotate_left and secret_inputs.rotate_right
+        ) and History6RollsRandomizer() or SakuraRandomizer()
+    )
     
     self.current_map = 1
     self.time_limit = 10800
@@ -481,6 +486,9 @@ function SakuraGame:drawScoringInfo()
     end
     if effects[self.current_map] then
         love.graphics.printf("EFFECT: " .. effects[self.current_map], 240, 300, 160, "left")
+    end
+    if self.randomizer.history then
+        love.graphics.printf("RANDOM PIECES ACTIVE!", 240, 295, 200, "left")
     end
 
     love.graphics.setFont(font_3x5_3)
