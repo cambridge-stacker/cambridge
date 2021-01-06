@@ -16,6 +16,7 @@ ConfigScene.options = {
 	{"smooth_movement", "Smooth Piece Drop", false, {"On", "Off"}},
 	{"synchroes_allowed", "Synchroes", false, {"Per ruleset", "On", "Off"}},
 	{"diagonal_input", "Diagonal Input", false, {"On", "Off"}},
+	{"buffer_lock", "Buffer Lock Inputs", false, {"On", "Off"}},
 	{"sfx_volume", "SFX", true, "sfxSlider"},
 	{"bgm_volume", "BGM", true, "bgmSlider"},
 }
@@ -55,7 +56,7 @@ function ConfigScene:render()
 	--Lazy check to see if we're on the SFX or BGM slider. Probably will need to be rewritten if more options get added.
 	love.graphics.setColor(1, 1, 1, 0.5)
 	if not ConfigScene.options[self.highlight][3] then
-		love.graphics.rectangle("fill", 20, 98 + self.highlight * 20, 170, 22)
+		love.graphics.rectangle("fill", 25, 98 + self.highlight * 20, 170, 22)
 	else
 		love.graphics.rectangle("fill", 65 + (1+self.highlight-#self.options) * 300, 322, 215, 33)
 	end

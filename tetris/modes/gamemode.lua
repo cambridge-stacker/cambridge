@@ -327,6 +327,12 @@ function GameMode:processDelays(inputs, ruleset, drop_speed)
 		playedGoSE = false
 	end
 	if self.ready_frames > 0 then
+		if not self.prev_inputs["up"] and inputs["up"] then
+			self.buffer_hard_drop = true
+		end
+		if not self.prev_inputs["down"] and inputs["down"] then
+			self.buffer_soft_drop = true
+		end
 		if not playedReadySE then
 			playedReadySE = true
 			playSEOnce("ready")
@@ -340,6 +346,12 @@ function GameMode:processDelays(inputs, ruleset, drop_speed)
 			self:initializeOrHold(inputs, ruleset)
 		end
 	elseif self.lcd > 0 then
+		if not self.prev_inputs["up"] and inputs["up"] then
+			self.buffer_hard_drop = true
+		end
+		if not self.prev_inputs["down"] and inputs["down"] then
+			self.buffer_soft_drop = true
+		end
 		self.lcd = self.lcd - 1
 		self:areCancel(inputs, ruleset)
 		if self.lcd == 0 then
@@ -350,6 +362,12 @@ function GameMode:processDelays(inputs, ruleset, drop_speed)
 			end
 		end
 	elseif self.are > 0 then
+		if not self.prev_inputs["up"] and inputs["up"] then
+			self.buffer_hard_drop = true
+		end
+		if not self.prev_inputs["down"] and inputs["down"] then
+			self.buffer_soft_drop = true
+		end
 		self.are = self.are - 1
 		self:areCancel(inputs, ruleset)
 		if self.are == 0 then
@@ -403,8 +421,20 @@ function GameMode:initializeNextPiece(inputs, ruleset, piece_data, generate_next
 		self.prev_inputs, self.move,
 		self:getLockDelay(), self:getDropSpeed(),
 		self.lock_drop, self.lock_hard_drop, self.big_mode,
-		self.irs
+		self.irs, self.buffer_hard_drop, self.buffer_soft_drop,
+		self.lock_on_hard_drop, self.lock_on_soft_drop
 	)
+	if self.buffer_hard_drop then
+		self.buffer_hard_drop = false
+		self:onHardDrop(self.piece.position.y - (
+			self.big_mode and
+			ruleset.big_spawn_positions[self.piece.shape].y or
+			ruleset.spawn_positions[self.piece.shape].y)
+		)
+	end
+	if self.buffer_soft_drop then
+		self.buffer_soft_drop = false
+	end
 	if self.lock_drop then
 		self.drop_locked = true
 	end

@@ -181,7 +181,9 @@ function Ruleset:getDefaultOrientation() return 1 end
 function Ruleset:initializePiece(
 	inputs, data, grid, gravity, prev_inputs,
 	move, lock_delay, drop_speed,
-	drop_locked, hard_drop_locked, big, irs
+	drop_locked, hard_drop_locked, big, irs,
+	buffer_hard_drop, buffer_soft_drop,
+	lock_on_hard_drop, lock_on_soft_drop
 )
 	local spawn_positions
 	if big then
@@ -206,6 +208,13 @@ function Ruleset:initializePiece(
 		self:rotatePiece(inputs, piece, grid, {}, true)
 	end
 	self:dropPiece(inputs, piece, grid, gravity, drop_speed, drop_locked, hard_drop_locked)
+	if (buffer_hard_drop and config.gamesettings.buffer_lock == 1) then
+		piece:dropToBottom(grid)
+		if lock_on_hard_drop then piece.locked = true end
+	end
+	if (buffer_soft_drop and lock_on_soft_drop and piece:isDropBlocked(grid) and config.gamesettings.buffer_lock == 1) then
+		piece.locked = true
+	end
 	return piece
 end
 
