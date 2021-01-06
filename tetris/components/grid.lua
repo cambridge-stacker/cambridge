@@ -114,6 +114,7 @@ function Grid:markClearedRows()
 					skin = self.grid[row][x].skin,
 					colour = "X"
 				}
+				self.grid_age[row][x] = 0
 			end
 		end
 	end
@@ -330,12 +331,14 @@ function Grid:draw()
 				else
 					if self.grid[y][x].skin == "bone" then
 						love.graphics.setColor(1, 1, 1, 1)
-					else 
+					elseif self.grid[y][x].colour == "X" then
+						love.graphics.setColor(0.5, 0.5, 0.5, 1 - self.grid_age[y][x] / 15)
+					else
 						love.graphics.setColor(0.5, 0.5, 0.5, 1)
 					end
 					love.graphics.draw(blocks[self.grid[y][x].skin][self.grid[y][x].colour], 48+x*16, y*16)
 				end
-				if self.grid[y][x].skin ~= "bone" then
+				if self.grid[y][x].skin ~= "bone" and self.grid[y][x].colour ~= "X" then
 					love.graphics.setColor(0.8, 0.8, 0.8, 1)
 					love.graphics.setLineWidth(1)
 					if y > 1 and self.grid[y-1][x] == empty then
@@ -386,7 +389,7 @@ function Grid:drawInvisible(opacity_function, garbage_opacity_function, lock_fla
 		for x = 1, 10 do
 			if self.grid[y][x] ~= empty then
 				if self.grid[y][x].colour == "X" then
-					opacity = 1
+					opacity = 1 - self.grid_age[y][x] / 15
 				elseif garbage_opacity_function and self.grid[y][x].colour == "A" then
 					opacity = garbage_opacity_function(self.grid_age[y][x])
 				else
@@ -432,7 +435,7 @@ function Grid:drawCustom(colour_function, gamestate)
 			if block ~= empty then
                 local R, G, B, A, outline = colour_function(gamestate, block, x, y, self.grid_age[y][x])
 				if self.grid[y][x].colour == "X" then
-					A = 1
+					A = 1 - self.grid_age[y][x] / 15
 				end
 				love.graphics.setColor(R, G, B, A)
 				love.graphics.draw(blocks[self.grid[y][x].skin][self.grid[y][x].colour], 48+x*16, y*16)
