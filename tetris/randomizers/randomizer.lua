@@ -3,6 +3,7 @@ local Object = require 'libs.classic'
 local Randomizer = Object:extend()
 
 function Randomizer:new()
+	self.possible_pieces = 7
 	self:initialize()
 end
 

@@ -72,12 +72,19 @@ function GameMode:getLineClearDelay() return 40 end
 function GameMode:getDasLimit() return 15 end
 
 function GameMode:getNextPiece(ruleset)
-	
 	return {
-		skin = "2tie",
-		shape = self.randomizer:nextPiece(),
+		skin = self:getSkin(),
+		shape = (
+			ruleset.pieces == self.randomizer.possible_pieces and
+			self.randomizer:nextPiece() or
+			ruleset.fallback_randomizer:nextPiece()
+		),
 		orientation = ruleset:getDefaultOrientation(),
 	}
+end
+
+function GameMode:getSkin()
+	return "2tie"
 end
 
 function GameMode:initialize(ruleset, secret_inputs)
@@ -445,11 +452,11 @@ function GameMode:initializeNextPiece(inputs, ruleset, piece_data, generate_next
 		table.remove(self.next_queue, 1)
 		table.insert(self.next_queue, self:getNextPiece(ruleset))
 	end
-	self:playNextSound()
+	self:playNextSound(ruleset)
 end
 
-function GameMode:playNextSound()
-	playSE("blocks", self.next_queue[1].shape)
+function GameMode:playNextSound(ruleset)
+	playSE("blocks", ruleset.next_sounds[self.next_queue[1].shape])
 end
 
 function GameMode:getHighScoreData()

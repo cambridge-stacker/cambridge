@@ -86,12 +86,8 @@ function PhantomMania2Game:getGarbageLimit()
 	else return 8 end
 end
 
-function PhantomMania2Game:getNextPiece(ruleset)
-	return {
-		skin = self.level >= 1000 and "bone" or "2tie",
-		shape = self.randomizer:nextPiece(),
-		orientation = ruleset:getDefaultOrientation(),
-	}
+function PhantomMania2Game:getSkin()
+	return self.level >= 1000 and "bone" or "2tie"
 end
 
 function PhantomMania2Game:hitTorikan(old_level, new_level)

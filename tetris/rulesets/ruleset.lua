@@ -1,5 +1,6 @@
 local Object = require 'libs.classic'
 local Piece = require 'tetris.components.piece'
+local Bag7Randomizer = require "tetris.randomizers.bag7"
 
 local Ruleset = Object:extend()
 
@@ -22,10 +23,24 @@ Ruleset.harddrop_lock = false
 
 Ruleset.enable_IRS_wallkicks = false
 Ruleset.are_cancel = false
+Ruleset.fallback_randomizer = Bag7Randomizer()
+
+Ruleset.next_sounds = {
+		I = "I",
+		L = "L",
+		J = "J",
+		S = "S",
+		Z = "Z",
+		O = "O",
+		T = "T"
+}
+
+Ruleset.pieces = 7
 
 -- Component functions.
 
 function Ruleset:new()
+	
 	if config.gamesettings.piece_colour == 1 then
 		blocks["bone"] = (not self.world) and
 		{
