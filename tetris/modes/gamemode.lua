@@ -334,7 +334,7 @@ function GameMode:processDelays(inputs, ruleset, drop_speed)
 		playedGoSE = false
 	end
 	if self.ready_frames > 0 then
-		if not self.prev_inputs["up"] and inputs["up"] then
+		if not self.prev_inputs["up"] and inputs["up"] and self.enable_hard_drop then
 			self.buffer_hard_drop = true
 		end
 		if not self.prev_inputs["down"] and inputs["down"] then
@@ -353,7 +353,7 @@ function GameMode:processDelays(inputs, ruleset, drop_speed)
 			self:initializeOrHold(inputs, ruleset)
 		end
 	elseif self.lcd > 0 then
-		if not self.prev_inputs["up"] and inputs["up"] then
+		if not self.prev_inputs["up"] and inputs["up"] and self.enable_hard_drop then
 			self.buffer_hard_drop = true
 		end
 		if not self.prev_inputs["down"] and inputs["down"] then
@@ -369,7 +369,7 @@ function GameMode:processDelays(inputs, ruleset, drop_speed)
 			end
 		end
 	elseif self.are > 0 then
-		if not self.prev_inputs["up"] and inputs["up"] then
+		if not self.prev_inputs["up"] and inputs["up"] and self.enable_hard_drop then
 			self.buffer_hard_drop = true
 		end
 		if not self.prev_inputs["down"] and inputs["down"] then
