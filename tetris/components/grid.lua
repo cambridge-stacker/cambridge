@@ -363,13 +363,14 @@ end
 function Grid:drawOutline()
 	for y = 5, 24 do
 		for x = 1, 10 do
-			if self.grid[y][x] ~= empty then
+			if self.grid[y][x] ~= empty and self.grid[y][x].colour ~= "X" then
 				love.graphics.setColor(0.8, 0.8, 0.8, 1)
 				love.graphics.setLineWidth(1)
-				if y > 1 and self.grid[y-1][x] == empty then
+				if y > 1 and self.grid[y-1][x] == empty or self.grid[y-1][x].colour == "X" then
 					love.graphics.line(48.0+x*16, -0.5+y*16, 64.0+x*16, -0.5+y*16)
 				end
-				if y < 24 and self.grid[y+1][x] == empty then
+				if y < 24 and self.grid[y+1][x] == empty or
+				(y + 1 > 24 or self.grid[y+1][x].colour == "X") then
 					love.graphics.line(48.0+x*16, 16.5+y*16, 64.0+x*16, 16.5+y*16)
 				end
 				if x > 1 and self.grid[y][x-1] == empty then
@@ -402,10 +403,11 @@ function Grid:drawInvisible(opacity_function, garbage_opacity_function, lock_fla
 					if opacity > 0 and self.grid[y][x].colour ~= "X" then
 						love.graphics.setColor(0.64, 0.64, 0.64)
 						love.graphics.setLineWidth(1)
-						if y > 1 and self.grid[y-1][x] == empty then
+						if y > 1 and self.grid[y-1][x] == empty or self.grid[y-1][x].colour == "X" then
 							love.graphics.line(48.0+x*16, -0.5+y*16, 64.0+x*16, -0.5+y*16)
 						end
-						if y < 24 and self.grid[y+1][x] == empty then
+						if y < 24 and self.grid[y+1][x] == empty or
+						(y + 1 > 24 or self.grid[y+1][x].colour == "X") then
 							love.graphics.line(48.0+x*16, 16.5+y*16, 64.0+x*16, 16.5+y*16)
 						end
 						if x > 1 and self.grid[y][x-1] == empty then
@@ -443,18 +445,19 @@ function Grid:drawCustom(colour_function, gamestate)
                 if outline > 0 and self.grid[y][x].colour ~= "X" then
                     love.graphics.setColor(0.64, 0.64, 0.64, outline)
                     love.graphics.setLineWidth(1)
-                    if y > 1 and self.grid[y-1][x] == empty then
-                        love.graphics.line(48.0+x*16, -0.5+y*16, 64.0+x*16, -0.5+y*16)
-                    end
-                    if y < 24 and self.grid[y+1][x] == empty then
-                        love.graphics.line(48.0+x*16, 16.5+y*16, 64.0+x*16, 16.5+y*16)
-                    end
-                    if x > 1 and self.grid[y][x-1] == empty then
-                        love.graphics.line(47.5+x*16, -0.0+y*16, 47.5+x*16, 16.0+y*16)
-                    end
-                    if x < 10 and self.grid[y][x+1] == empty then
-                        love.graphics.line(64.5+x*16, -0.0+y*16, 64.5+x*16, 16.0+y*16)
-                    end
+                    if y > 1 and self.grid[y-1][x] == empty or self.grid[y-1][x].colour == "X" then
+						love.graphics.line(48.0+x*16, -0.5+y*16, 64.0+x*16, -0.5+y*16)
+					end
+					if y < 24 and self.grid[y+1][x] == empty or
+					(y + 1 > 24 or self.grid[y+1][x].colour == "X") then
+						love.graphics.line(48.0+x*16, 16.5+y*16, 64.0+x*16, 16.5+y*16)
+					end
+					if x > 1 and self.grid[y][x-1] == empty then
+						love.graphics.line(47.5+x*16, -0.0+y*16, 47.5+x*16, 16.0+y*16)
+					end
+					if x < 10 and self.grid[y][x+1] == empty then
+						love.graphics.line(64.5+x*16, -0.0+y*16, 64.5+x*16, 16.0+y*16)
+					end
                 end
 			end
 		end
