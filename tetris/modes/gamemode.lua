@@ -5,7 +5,7 @@ local playedReadySE = false
 local playedGoSE = false
 
 local Grid = require 'tetris.components.grid'
-local Randomizer = require 'tetris.randomizers.randomizer'
+local Randomizer = require 'tetris.randomizers.bag7'
 local BagRandomizer = require 'tetris.randomizers.bag'
 
 local GameMode = Object:extend()

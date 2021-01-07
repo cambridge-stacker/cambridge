@@ -488,7 +488,7 @@ function SakuraGame:drawScoringInfo()
         love.graphics.printf("EFFECT: " .. effects[self.current_map], 240, 300, 160, "left")
     end
     if self.randomizer.history then
-        love.graphics.printf("RANDOM PIECES ACTIVE!", 240, 295, 200, "left")
+        love.graphics.printf("RANDOM PIECES ACTIVE!", 240, 150, 200, "left")
     end
 
     love.graphics.setFont(font_3x5_3)
