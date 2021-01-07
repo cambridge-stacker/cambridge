@@ -6,6 +6,7 @@ local playedGoSE = false
 
 local Grid = require 'tetris.components.grid'
 local Randomizer = require 'tetris.randomizers.randomizer'
+local BagRandomizer = require 'tetris.randomizers.bag'
 
 local GameMode = Object:extend()
 
@@ -56,6 +57,7 @@ function GameMode:new(secret_inputs)
 	self.hard_drop_locked = false
 	self.lock_on_soft_drop = false
 	self.lock_on_hard_drop = false
+	self.used_randomizer = nil
 	self.hold_queue = nil
 	self.held = false
 	self.section_start_time = 0
@@ -74,11 +76,7 @@ function GameMode:getDasLimit() return 15 end
 function GameMode:getNextPiece(ruleset)
 	return {
 		skin = self:getSkin(),
-		shape = (
-			ruleset.pieces == self.randomizer.possible_pieces and
-			self.randomizer:nextPiece() or
-			ruleset.fallback_randomizer:nextPiece()
-		),
+		shape = self.used_randomizer:nextPiece(),
 		orientation = ruleset:getDefaultOrientation(),
 	}
 end
@@ -90,6 +88,15 @@ end
 function GameMode:initialize(ruleset, secret_inputs)
 	-- generate next queue
 	self:new(secret_inputs)
+	self.used_randomizer = (
+		ruleset.pieces == self.randomizer.possible_pieces and
+		self.randomizer or
+		(
+			ruleset.pieces == 7 and
+			Randomizer() or
+			BagRandomizer(ruleset.pieces)
+		)
+	)
 	for i = 1, self.next_queue_length do
 		table.insert(self.next_queue, self:getNextPiece(ruleset))
 	end

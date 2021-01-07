@@ -1,6 +1,5 @@
 local Object = require 'libs.classic'
 local Piece = require 'tetris.components.piece'
-local Bag7Randomizer = require "tetris.randomizers.bag7"
 
 local Ruleset = Object:extend()
 
@@ -23,7 +22,6 @@ Ruleset.harddrop_lock = false
 
 Ruleset.enable_IRS_wallkicks = false
 Ruleset.are_cancel = false
-Ruleset.fallback_randomizer = Bag7Randomizer()
 
 Ruleset.next_sounds = {
 		I = "I",
