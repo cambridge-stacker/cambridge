@@ -225,8 +225,22 @@ function PAIRS:attemptWallkicks(piece, new_piece, rot_dir, grid)
 	end
 end
 
+function PAIRS:checkNewLow(piece)
+    for _, block in pairs(piece:getBlockOffsets()) do
+        local y = piece.position.y + block.y
+        if y > piece.lowest_y then
+            piece.lock_delay = 0
+            piece.lowest_y = y
+        end
+    end
+end
+
+function PAIRS:onPieceCreate(piece, grid)
+	piece.lowest_y = -math.huge
+end
+
 function PAIRS:onPieceDrop(piece, grid)
-    piece.lock_delay = 0
+    self:checkNewLow(piece)
 end
 
 function PAIRS:get180RotationValue() 
