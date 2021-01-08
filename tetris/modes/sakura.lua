@@ -274,7 +274,7 @@ function SakuraGame:new(secret_inputs)
         ) and History6RollsRandomizer() or SakuraRandomizer()
     )
     
-    self.current_map = 16
+    self.current_map = 1
     self.time_limit = 10800
     self.cleared_frames = STAGE_TRANSITION_TIME
     self.stage_frames = 0
@@ -502,7 +502,8 @@ function SakuraGame:drawScoringInfo()
         (self.time_limit % 4 < 2 and
         self.time_limit <= frameTime(0,10) and
         self.grid:hasGemBlocks() and
-        self.time_limit ~= 0) and
+        self.time_limit ~= 0 and
+        self.ready_frames == 0) and
         { 1, 0.3, 0.3, 1 } or
         { 1, 1, 1, 1 }
     )
