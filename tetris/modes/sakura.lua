@@ -274,7 +274,7 @@ function SakuraGame:new(secret_inputs)
         ) and History6RollsRandomizer() or SakuraRandomizer()
     )
     
-    self.current_map = 1
+    self.current_map = 16
     self.time_limit = 10800
     self.cleared_frames = STAGE_TRANSITION_TIME
     self.stage_frames = 0
@@ -408,18 +408,24 @@ function SakuraGame:advanceOneFrame(inputs, ruleset)
         
         self.frames = self.frames + 1
         self.stage_frames = self.stage_frames + 1
-        self.time_limit = self.time_limit - 1
-        if self.time_limit <= 0 then self.game_over = true end
+        self.time_limit = math.max(self.time_limit - 1, 0)
+        if self.time_limit <= 0 and self.piece == nil then
+            self.game_over = true
+        end
 
-        if self.piece ~= nil and self.frames % 30 == 0 and
-           effects[self.current_map] == "roll"
+        if self.piece ~= nil and
+           effects[self.current_map] == "roll" and
+           self.stage_pieces % 4 == 0
            then
-            ruleset:attemptRotate(
-                {[config.gamesettings.world_reverse == 3 or
-                (ruleset.world and config.gamesettings.world_reverse == 2)
-                and "rotate_left" or "rotate_right"] = true},
-                self.piece, self.grid, false
-            )
+            self.piece.colour = "F"
+            if self.stage_frames % 30 == 0 then
+                ruleset:attemptRotate(
+                    {[config.gamesettings.world_reverse == 3 or
+                    (ruleset.world and config.gamesettings.world_reverse == 2)
+                    and "rotate_left" or "rotate_right"] = true},
+                    self.piece, self.grid, false
+                )
+            end
         end
     else
         self.cleared_frames = STAGE_TRANSITION_TIME
