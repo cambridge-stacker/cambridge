@@ -87,7 +87,7 @@ function ModeSelectScene:onInputPress(e)
 		playSE("cursor_lr")
 	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
 		scene = TitleScene()
-	else
+	elseif e.input then
 		self.secret_inputs[e.input] = true
 	end
 end
