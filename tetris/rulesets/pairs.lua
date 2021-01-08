@@ -7,7 +7,7 @@ PAIRS.hash = "PAIRS"
 PAIRS.world = true
 
 PAIRS.spawn_positions = {
-    [1] = { x=4, y=5 },
+    [1] = { x=4, y=4 },
     [2] = { x=4, y=6 },
     [3] = { x=4, y=6 },
     [4] = { x=4, y=6 },
@@ -19,7 +19,7 @@ PAIRS.spawn_positions = {
     [10] = { x=5, y=5 },
     [11] = { x=4, y=5 },
     [12] = { x=4, y=5 },
-    [13] = { x=4, y=6 },
+    [13] = { x=4, y=5 },
     [14] = { x=4, y=6 },
     [15] = { x=4, y=6 },
     [16] = { x=4, y=6 },
