@@ -72,6 +72,7 @@ function TitleScene:render()
 	)
 	love.graphics.print("Happy Holidays!", 320, -100 + self.y_offset)
 
+	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.print(self.restart_message and "Restart Cambridge..." or "", 0, 0)
 
 	love.graphics.setColor(1, 1, 1, 0.5)
