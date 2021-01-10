@@ -440,6 +440,10 @@ function GameMode:initializeNextPiece(inputs, ruleset, piece_data, generate_next
 		self.irs, self.buffer_hard_drop, self.buffer_soft_drop,
 		self.lock_on_hard_drop, self.lock_on_soft_drop
 	)
+	if self.piece:isDropBlocked(self.grid) and
+	   self.grid:canPlacePiece(self.piece) then
+		playSE("bottom")
+	end
 	if self.buffer_hard_drop then
 		self.buffer_hard_drop = false
 		self:onHardDrop(self.piece.position.y - (
