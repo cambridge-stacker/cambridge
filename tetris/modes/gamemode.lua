@@ -208,7 +208,9 @@ function GameMode:update(inputs, ruleset)
 			if cleared_row_count > 0 then
 				playSE("erase")
 				self.lcd = self:getLineClearDelay()
-				self.are = self:getLineARE()
+				self.are = (
+					ruleset.are and self:getLineARE() or 0
+				)
 				if self.lcd == 0 then
 					self.grid:clearClearedRows()
 					if self.are == 0 then
@@ -217,7 +219,7 @@ function GameMode:update(inputs, ruleset)
 				end
 				self:onLineClear(cleared_row_count)
 			else
-				if self:getARE() == 0 then
+				if self:getARE() == 0 or not ruleset.are then
 					self:initializeOrHold(inputs, ruleset)
 				else
 					self.are = self:getARE()

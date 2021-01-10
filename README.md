@@ -1,10 +1,5 @@
 ![Cambridge Banner](https://cdn.discordapp.com/attachments/764432435802013709/767724895076614154/cambridge_logo_lt.png)
 
-Important notice
-================
-
-![Tetra Online Notice](https://pbs.twimg.com/media/Eo3CkIHW8AEoK_U?format=png&name=small)
-
 Cambridge
 =========
 

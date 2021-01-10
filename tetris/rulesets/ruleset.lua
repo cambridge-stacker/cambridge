@@ -22,6 +22,7 @@ Ruleset.harddrop_lock = false
 
 Ruleset.enable_IRS_wallkicks = false
 Ruleset.are_cancel = false
+Ruleset.are = true
 
 Ruleset.next_sounds = {
 		I = "I",
