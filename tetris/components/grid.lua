@@ -363,6 +363,10 @@ end
 function Grid:drawOutline()
 	for y = 5, 24 do
 		for x = 1, 10 do
+			if self.grid[y][x].colour == "X" then
+				love.graphics.setColor(0.5, 0.5, 0.5, 1 - self.grid_age[y][x] / 15)
+				love.graphics.draw(blocks[self.grid[y][x].skin][self.grid[y][x].colour], 48+x*16, y*16)
+			end
 			if self.grid[y][x] ~= empty and self.grid[y][x].colour ~= "X" then
 				love.graphics.setColor(0.8, 0.8, 0.8, 1)
 				love.graphics.setLineWidth(1)
