@@ -501,8 +501,8 @@ function GameMode:drawNextQueue(ruleset)
 	local colourscheme = ({ruleset.colourscheme, ColourSchemes.Arika, ColourSchemes.TTC})[config.gamesettings.piece_colour]
 	function drawPiece(piece, skin, offsets, pos_x, pos_y)
 		for index, offset in pairs(offsets) do
-			local x = offset.x + ruleset.spawn_positions[piece].x
-			local y = offset.y + 4.7
+			local x = offset.x + ruleset.draw_offsets[piece].x + ruleset.spawn_positions[piece].x
+			local y = offset.y + ruleset.draw_offsets[piece].y + 4.7
 			love.graphics.draw(blocks[skin][colourscheme[piece]], pos_x+x*16, pos_y+y*16)
 		end
 	end

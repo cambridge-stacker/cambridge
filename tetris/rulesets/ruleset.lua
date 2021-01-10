@@ -34,6 +34,16 @@ Ruleset.next_sounds = {
 		T = "T"
 }
 
+Ruleset.draw_offsets = {
+	I = { x=0, y=0 },
+	J = { x=0, y=0 },
+	L = { x=0, y=0 },
+	O = { x=0, y=0 },
+	S = { x=0, y=0 },
+	T = { x=0, y=0 },
+	Z = { x=0, y=0 },
+}
+
 Ruleset.pieces = 7
 
 -- Component functions.
