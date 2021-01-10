@@ -493,7 +493,7 @@ function SakuraGame:drawScoringInfo()
     if effects[self.current_map] then
         love.graphics.printf("EFFECT: " .. effects[self.current_map], 240, 300, 160, "left")
     end
-    if self.randomizer.history then
+    if self.used_randomizer.history then
         love.graphics.printf("RANDOM PIECES ACTIVE!", 240, 150, 200, "left")
     end
 
