@@ -172,6 +172,11 @@ function Ruleset:dropPiece(
 	inputs, piece, grid, gravity, drop_speed, drop_locked, hard_drop_locked,
 	hard_drop_enabled, additive_gravity
 )
+	if piece.big then
+		gravity = gravity / 2
+		drop_speed = drop_speed / 2
+	end
+
 	local y = piece.position.y
 	if inputs["down"] == true and drop_locked == false then
 		if additive_gravity then
