@@ -50,9 +50,28 @@ function GameScene:render()
 	)
 
 	-- game frame
-	love.graphics.draw(misc_graphics["frame"], 48, 64)
+	-- love.graphics.draw(misc_graphics["frame"], 48, 64)
 	love.graphics.setColor(0, 0, 0, 200)
-	love.graphics.rectangle("fill", 64, 80, 160, 320)
+	love.graphics.rectangle("fill", 64, 80, 16 * self.game.grid.width, 320)
+	
+	love.graphics.setColor(174/255, 83/255, 76/255, 1)
+	love.graphics.setLineWidth(8)
+	love.graphics.line(
+		60,76,
+		68+16*self.game.grid.width,76,
+		68+16*self.game.grid.width,404,
+		60,404,
+		60,76
+	)
+	love.graphics.setColor(203/255, 137/255, 111/255, 1)
+	love.graphics.setLineWidth(4)
+	love.graphics.line(
+		60,76,
+		68+16*self.game.grid.width,76,
+		68+16*self.game.grid.width,404,
+		60,404,
+		60,76
+	)
 
 	self.game:drawGrid()
 	self.game:drawPiece()
