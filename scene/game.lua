@@ -55,7 +55,10 @@ function GameScene:render()
 	end
 	
 	love.graphics.setColor(0, 0, 0, 200)
-	love.graphics.rectangle("fill", 64, 80, 16 * self.game.grid.width, 320)
+	love.graphics.rectangle(
+		"fill", 64, 80,
+		16 * self.game.grid.width, 16 * (self.game.grid.height - 4)
+	)
 	
 	if self.game.grid.width ~= 10 then
 		love.graphics.setColor(174/255, 83/255, 76/255, 1)
@@ -63,8 +66,8 @@ function GameScene:render()
 		love.graphics.line(
 			60,76,
 			68+16*self.game.grid.width,76,
-			68+16*self.game.grid.width,404,
-			60,404,
+			68+16*self.game.grid.width,84+16*(self.game.grid.height-4),
+			60,84+16*(self.game.grid.height-4),
 			60,76
 		)
 		love.graphics.setColor(203/255, 137/255, 111/255, 1)
@@ -72,8 +75,8 @@ function GameScene:render()
 		love.graphics.line(
 			60,76,
 			68+16*self.game.grid.width,76,
-			68+16*self.game.grid.width,404,
-			60,404,
+			68+16*self.game.grid.width,84+16*(self.game.grid.height-4),
+			60,84+16*(self.game.grid.height-4),
 			60,76
 		)
 	end

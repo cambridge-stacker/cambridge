@@ -6,11 +6,12 @@ local empty = { skin = "", colour = "" }
 local oob = { skin = "", colour = "" }
 local block = { skin = "2tie", colour = "A" }
 
-function Grid:new(width)
+function Grid:new(width, height)
 	self.grid = {}
 	self.grid_age = {}
 	self.width = width
-	for y = 1, 24 do
+	self.height = height
+	for y = 1, self.height do
 		self.grid[y] = {}
 		self.grid_age[y] = {}
 		for x = 1, self.width do
@@ -21,7 +22,7 @@ function Grid:new(width)
 end
 
 function Grid:clear()
-	for y = 1, 24 do
+	for y = 1, self.height do
 		for x = 1, self.width do
 			self.grid[y][x] = empty
 			self.grid_age[y][x] = 0
@@ -30,7 +31,7 @@ function Grid:clear()
 end
 
 function Grid:getCell(x, y)
-	if x < 1 or x > self.width or y > 24 then return oob
+	if x < 1 or x > self.width or y > self.height then return oob
 	elseif y < 1 then return empty
 	else return self.grid[y][x]
 	end
@@ -99,7 +100,7 @@ end
 
 function Grid:getClearedRowCount()
 	local count = 0
-	for row = 1, 24 do
+	for row = 1, self.height do
 		if self:isRowFull(row) then
 			count = count + 1
 		end
@@ -108,7 +109,7 @@ function Grid:getClearedRowCount()
 end
 
 function Grid:markClearedRows()
-	for row = 1, 24 do
+	for row = 1, self.height do
 		if self:isRowFull(row) then
 			for x = 1, self.width do
 				self.grid[row][x] = {
@@ -123,7 +124,7 @@ function Grid:markClearedRows()
 end
 
 function Grid:clearClearedRows()
-	for row = 1, 24 do
+	for row = 1, self.height do
 		if self:isRowFull(row) then
 			for above_row = row, 2, -1 do
 				self.grid[above_row] = self.grid[above_row - 1]
@@ -141,29 +142,29 @@ function Grid:clearClearedRows()
 end
 
 function Grid:copyBottomRow()
-	for row = 1, 23 do
+	for row = 1, self.height - 1 do
 		self.grid[row] = self.grid[row+1]
 		self.grid_age[row] = self.grid_age[row+1]
 	end
-	self.grid[24] = {}
-	self.grid_age[24] = {}
+	self.grid[self.height] = {}
+	self.grid_age[self.height] = {}
 	for i = 1, self.width do
-		self.grid[24][i] = (self.grid[23][i] == empty) and empty or block
-		self.grid_age[24][i] = 0
+		self.grid[self.height][i] = (self.grid[self.height - 1][i] == empty) and empty or block
+		self.grid_age[self.height][i] = 0
 	end
 	return true
 end
 
 function Grid:garbageRise(row_vals)
-	for row = 1, 23 do
+	for row = 1, self.height - 1 do
 		self.grid[row] = self.grid[row+1]
 		self.grid_age[row] = self.grid_age[row+1]
 	end
-	self.grid[24] = {}
-	self.grid_age[24] = {}
+	self.grid[self.height] = {}
+	self.grid_age[self.height] = {}
 	for i = 1, self.width do
-		self.grid[24][i] = (row_vals[i] == "e") and empty or block
-		self.grid_age[24][i] = 0
+		self.grid[self.height][i] = (row_vals[i] == "e") and empty or block
+		self.grid_age[self.height][i] = 0
 	end
 end
 
@@ -182,7 +183,7 @@ function Grid:applyPiece(piece)
 	for index, offset in pairs(offsets) do
 		x = piece.position.x + offset.x
 		y = piece.position.y + offset.y
-		if y + 1 > 0 and y < 24 then
+		if y + 1 > 0 and y < self.height then
 			self.grid[y+1][x+1] = {
 				skin = piece.skin,
 				colour = piece.colour
@@ -210,7 +211,7 @@ function Grid:applyBigPiece(piece)
 end
 
 function Grid:checkForBravo(cleared_row_count)
-	for i = 0, 23 - cleared_row_count do
+	for i = 0, self.height - 1 - cleared_row_count do
 				for j = 0, self.width - 1 do
 						if self:isOccupied(j, i) then return false end
 				end
@@ -219,9 +220,9 @@ function Grid:checkForBravo(cleared_row_count)
 end
 
 function Grid:checkStackHeight()
-	for i = 0, 23 do
+	for i = 0, self.height - 1 do
 		for j = 0, self.width - 1 do
-			if self:isOccupied(j, i) then return 24 - i end
+			if self:isOccupied(j, i) then return self.height - i end
 		end
 	end
 	return 0
@@ -262,7 +263,7 @@ function Grid:checkSecretGrade()
 end
 
 function Grid:hasGemBlocks()
-	for y = 1, 24 do
+	for y = 1, self.height do
 		for x = 1, self.width do
 			if self.grid[y][x].skin == "gem" then
 				return true
@@ -274,16 +275,16 @@ end
 
 function Grid:mirror()
 	local new_grid = {}
-	for y = 1, 24 do
+	for y = 1, self.height do
 		new_grid[y] = {}
 		for x = 1, self.width do
 			new_grid[y][x] = empty
 		end
 	end
 
-	for y = 1, 24 do
+	for y = 1, self.height do
 		for x = 1, self.width do
-			new_grid[y][x] = self.grid[y][11 - x]
+			new_grid[y][x] = self.grid[y][self.width + 1 - x]
 		end
 	end
 	self.grid = new_grid
@@ -299,7 +300,7 @@ function Grid:applyMap(map)
 end
 
 function Grid:update()
-	for y = 1, 24 do
+	for y = 1, self.height do
 		for x = 1, self.width do
 			if self.grid[y][x] ~= empty then
 				self.grid_age[y][x] = self.grid_age[y][x] + 1
@@ -309,7 +310,7 @@ function Grid:update()
 end
 
 function Grid:draw()
-	for y = 5, 24 do
+	for y = 5, self.height do
 		for x = 1, self.width do
 			if self.grid[y][x] ~= empty then
 				if self.grid_age[y][x] < 2 then
@@ -331,8 +332,8 @@ function Grid:draw()
 					if y > 1 and self.grid[y-1][x] == empty or self.grid[y-1][x].colour == "X" then
 						love.graphics.line(48.0+x*16, -0.5+y*16, 64.0+x*16, -0.5+y*16)
 					end
-					if y < 24 and self.grid[y+1][x] == empty or
-					(y + 1 > 24 or self.grid[y+1][x].colour == "X") then
+					if y < self.height and self.grid[y+1][x] == empty or
+					(y + 1 > self.height or self.grid[y+1][x].colour == "X") then
 						love.graphics.line(48.0+x*16, 16.5+y*16, 64.0+x*16, 16.5+y*16)
 					end
 					if x > 1 and self.grid[y][x-1] == empty then
@@ -348,7 +349,7 @@ function Grid:draw()
 end
 
 function Grid:drawOutline()
-	for y = 5, 24 do
+	for y = 5, self.height do
 		for x = 1, self.width do
 			if self.grid[y][x].colour == "X" then
 				love.graphics.setColor(0.5, 0.5, 0.5, 1 - self.grid_age[y][x] / 15)
@@ -360,8 +361,8 @@ function Grid:drawOutline()
 				if y > 1 and self.grid[y-1][x] == empty or self.grid[y-1][x].colour == "X" then
 					love.graphics.line(48.0+x*16, -0.5+y*16, 64.0+x*16, -0.5+y*16)
 				end
-				if y < 24 and self.grid[y+1][x] == empty or
-				(y + 1 > 24 or self.grid[y+1][x].colour == "X") then
+				if y < self.height and self.grid[y+1][x] == empty or
+				(y + 1 > self.height or self.grid[y+1][x].colour == "X") then
 					love.graphics.line(48.0+x*16, 16.5+y*16, 64.0+x*16, 16.5+y*16)
 				end
 				if x > 1 and self.grid[y][x-1] == empty then
@@ -378,7 +379,7 @@ end
 function Grid:drawInvisible(opacity_function, garbage_opacity_function, lock_flash, brightness)
 	lock_flash = lock_flash == nil and true or lock_flash
 	brightness = brightness == nil and 0.5 or brightness
-	for y = 5, 24 do
+	for y = 5, self.height do
 		for x = 1, self.width do
 			if self.grid[y][x] ~= empty then
 				if self.grid[y][x].colour == "X" then
@@ -397,8 +398,8 @@ function Grid:drawInvisible(opacity_function, garbage_opacity_function, lock_fla
 						if y > 1 and self.grid[y-1][x] == empty or self.grid[y-1][x].colour == "X" then
 							love.graphics.line(48.0+x*16, -0.5+y*16, 64.0+x*16, -0.5+y*16)
 						end
-						if y < 24 and self.grid[y+1][x] == empty or
-						(y + 1 > 24 or self.grid[y+1][x].colour == "X") then
+						if y < self.height and self.grid[y+1][x] == empty or
+						(y + 1 > self.height or self.grid[y+1][x].colour == "X") then
 							love.graphics.line(48.0+x*16, 16.5+y*16, 64.0+x*16, 16.5+y*16)
 						end
 						if x > 1 and self.grid[y][x-1] == empty then
@@ -423,7 +424,7 @@ function Grid:drawCustom(colour_function, gamestate)
         
         gamestate: the gamemode instance itself to pass in colour_function
     ]]
-	for y = 5, 24 do
+	for y = 5, self.height do
 		for x = 1, self.width do
             local block = self.grid[y][x]
 			if block ~= empty then
@@ -439,8 +440,8 @@ function Grid:drawCustom(colour_function, gamestate)
                     if y > 1 and self.grid[y-1][x] == empty or self.grid[y-1][x].colour == "X" then
 						love.graphics.line(48.0+x*16, -0.5+y*16, 64.0+x*16, -0.5+y*16)
 					end
-					if y < 24 and self.grid[y+1][x] == empty or
-					(y + 1 > 24 or self.grid[y+1][x].colour == "X") then
+					if y < self.height and self.grid[y+1][x] == empty or
+					(y + 1 > self.height or self.grid[y+1][x].colour == "X") then
 						love.graphics.line(48.0+x*16, 16.5+y*16, 64.0+x*16, 16.5+y*16)
 					end
 					if x > 1 and self.grid[y][x-1] == empty then
