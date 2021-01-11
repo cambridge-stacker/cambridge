@@ -129,8 +129,12 @@ function Grid:clearClearedRows()
 				self.grid[above_row] = self.grid[above_row - 1]
 				self.grid_age[above_row] = self.grid_age[above_row - 1]
 			end
-			self.grid[1] = {empty, empty, empty, empty, empty, empty, empty, empty, empty, empty}
-			self.grid_age[1] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+			self.grid[1] = {}
+			self.grid_age[1] = {}
+			for i = 1, self.width do
+				self.grid[1][i] = empty
+				self.grid_age[1][i] = 0
+			end
 		end
 	end
 	return true
@@ -141,23 +145,25 @@ function Grid:copyBottomRow()
 		self.grid[row] = self.grid[row+1]
 		self.grid_age[row] = self.grid_age[row+1]
 	end
-	self.grid[24] = {empty, empty, empty, empty, empty, empty, empty, empty, empty, empty}
-	self.grid_age[24] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-	for col = 1, self.width do
-		self.grid[24][col] = (self.grid[23][col] == empty) and empty or block
+	self.grid[24] = {}
+	self.grid_age[24] = {}
+	for i = 1, self.width do
+		self.grid[24][i] = (self.grid[23][i] == empty) and empty or block
+		self.grid_age[24][i] = 0
 	end
 	return true
 end
 
 function Grid:garbageRise(row_vals)
-		for row = 1, 23 do
-				self.grid[row] = self.grid[row+1]
-				self.grid_age[row] = self.grid_age[row+1]
-		end
-		self.grid[24] = {empty, empty, empty, empty, empty, empty, empty, empty, empty, empty}
-		self.grid_age[24] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-	for col = 1, self.width do
-		self.grid[24][col] = (row_vals[col] == "e") and empty or block
+	for row = 1, 23 do
+		self.grid[row] = self.grid[row+1]
+		self.grid_age[row] = self.grid_age[row+1]
+	end
+	self.grid[24] = {}
+	self.grid_age[24] = {}
+	for i = 1, self.width do
+		self.grid[24][i] = (row_vals[i] == "e") and empty or block
+		self.grid_age[24][i] = 0
 	end
 end
 
