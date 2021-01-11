@@ -2,6 +2,7 @@ require 'funcs'
 
 local GameMode = require 'tetris.modes.gamemode'
 local Piece = require 'tetris.components.piece'
+local Grid = require 'tetris.components.grid'
 
 local History4RollsRandomizer = require 'tetris.randomizers.history_4rolls'
 
@@ -16,6 +17,8 @@ MarathonA1Game.tagline = "Can you score enough points to reach the title of Gran
 function MarathonA1Game:new()
 	MarathonA1Game.super:new()
 	
+	self.grid = Grid(8)
+
 	self.roll_frames = 0
 	self.combo = 1
 	self.bravos = 0

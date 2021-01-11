@@ -6,13 +6,14 @@ local empty = { skin = "", colour = "" }
 local oob = { skin = "", colour = "" }
 local block = { skin = "2tie", colour = "A" }
 
-function Grid:new()
+function Grid:new(width)
 	self.grid = {}
 	self.grid_age = {}
+	self.width = width
 	for y = 1, 24 do
 		self.grid[y] = {}
 		self.grid_age[y] = {}
-		for x = 1, 10 do
+		for x = 1, self.width do
 			self.grid[y][x] = empty
 			self.grid_age[y][x] = 0
 		end
@@ -21,7 +22,7 @@ end
 
 function Grid:clear()
 	for y = 1, 24 do
-		for x = 1, 10 do
+		for x = 1, self.width do
 			self.grid[y][x] = empty
 			self.grid_age[y][x] = 0
 		end
@@ -29,7 +30,7 @@ function Grid:clear()
 end
 
 function Grid:getCell(x, y)
-	if x < 1 or x > 10 or y > 24 then return oob
+	if x < 1 or x > self.width or y > 24 then return oob
 	elseif y < 1 then return empty
 	else return self.grid[y][x]
 	end
@@ -109,7 +110,7 @@ end
 function Grid:markClearedRows()
 	for row = 1, 24 do
 		if self:isRowFull(row) then
-			for x = 1, 10 do
+			for x = 1, self.width do
 				self.grid[row][x] = {
 					skin = self.grid[row][x].skin,
 					colour = "X"
@@ -142,7 +143,7 @@ function Grid:copyBottomRow()
 	end
 	self.grid[24] = {empty, empty, empty, empty, empty, empty, empty, empty, empty, empty}
 	self.grid_age[24] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-	for col = 1, 10 do
+	for col = 1, self.width do
 		self.grid[24][col] = (self.grid[23][col] == empty) and empty or block
 	end
 	return true
@@ -155,11 +156,12 @@ function Grid:garbageRise(row_vals)
 		end
 		self.grid[24] = {empty, empty, empty, empty, empty, empty, empty, empty, empty, empty}
 		self.grid_age[24] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-	for col = 1, 10 do
+	for col = 1, self.width do
 		self.grid[24][col] = (row_vals[col] == "e") and empty or block
 	end
 end
 
+-- may be outdated soon
 function Grid:applyFourWide()
 		for row = 1, 24 do
 				local x = self.grid[row]
@@ -172,16 +174,17 @@ function Grid:applyFourWide()
 		end
 end
 
+-- may be outdated soon
 function Grid:applyCeiling(lines)
 	for row = 1, lines do
-		for col = 1, 9 do
+		for col = 1, self.width - 1 do
 			self.grid[row][col] = block
 		end
 	end
 end
 
 function Grid:clearSpecificRow(row)
-	for col = 1, 10 do
+	for col = 1, self.width do
 		self.grid[row][col] = empty
 	end
 end
@@ -224,7 +227,7 @@ end
 
 function Grid:checkForBravo(cleared_row_count)
 	for i = 0, 23 - cleared_row_count do
-				for j = 0, 9 do
+				for j = 0, self.width - 1 do
 						if self:isOccupied(j, i) then return false end
 				end
 		end
@@ -233,7 +236,7 @@ end
 
 function Grid:checkStackHeight()
 	for i = 0, 23 do
-		for j = 0, 9 do
+		for j = 0, self.width - 1 do
 			if self:isOccupied(j, i) then return 24 - i end
 		end
 	end
@@ -276,7 +279,7 @@ end
 
 function Grid:hasGemBlocks()
 	for y = 1, 24 do
-		for x = 1, 10 do
+		for x = 1, self.width do
 			if self.grid[y][x].skin == "gem" then
 				return true
 			end
@@ -289,13 +292,13 @@ function Grid:mirror()
 	local new_grid = {}
 	for y = 1, 24 do
 		new_grid[y] = {}
-		for x = 1, 10 do
+		for x = 1, self.width do
 			new_grid[y][x] = empty
 		end
 	end
 
 	for y = 1, 24 do
-		for x = 1, 10 do
+		for x = 1, self.width do
 			new_grid[y][x] = self.grid[y][11 - x]
 		end
 	end
@@ -313,7 +316,7 @@ end
 
 function Grid:update()
 	for y = 1, 24 do
-		for x = 1, 10 do
+		for x = 1, self.width do
 			if self.grid[y][x] ~= empty then
 				self.grid_age[y][x] = self.grid_age[y][x] + 1
 			end
@@ -323,7 +326,7 @@ end
 
 function Grid:draw()
 	for y = 5, 24 do
-		for x = 1, 10 do
+		for x = 1, self.width do
 			if self.grid[y][x] ~= empty then
 				if self.grid_age[y][x] < 2 then
 					love.graphics.setColor(1, 1, 1, 1)
@@ -351,7 +354,7 @@ function Grid:draw()
 					if x > 1 and self.grid[y][x-1] == empty then
 						love.graphics.line(47.5+x*16, -0.0+y*16, 47.5+x*16, 16.0+y*16)
 					end
-					if x < 10 and self.grid[y][x+1] == empty then
+					if x < self.width and self.grid[y][x+1] == empty then
 						love.graphics.line(64.5+x*16, -0.0+y*16, 64.5+x*16, 16.0+y*16)
 					end
 				end
@@ -362,7 +365,7 @@ end
 
 function Grid:drawOutline()
 	for y = 5, 24 do
-		for x = 1, 10 do
+		for x = 1, self.width do
 			if self.grid[y][x].colour == "X" then
 				love.graphics.setColor(0.5, 0.5, 0.5, 1 - self.grid_age[y][x] / 15)
 				love.graphics.draw(blocks[self.grid[y][x].skin][self.grid[y][x].colour], 48+x*16, y*16)
@@ -380,7 +383,7 @@ function Grid:drawOutline()
 				if x > 1 and self.grid[y][x-1] == empty then
 					love.graphics.line(47.5+x*16, -0.0+y*16, 47.5+x*16, 16.0+y*16)
 				end
-				if x < 10 and self.grid[y][x+1] == empty then
+				if x < self.width and self.grid[y][x+1] == empty then
 					love.graphics.line(64.5+x*16, -0.0+y*16, 64.5+x*16, 16.0+y*16)
 				end
 			end
@@ -392,7 +395,7 @@ function Grid:drawInvisible(opacity_function, garbage_opacity_function, lock_fla
 	lock_flash = lock_flash == nil and true or lock_flash
 	brightness = brightness == nil and 0.5 or brightness
 	for y = 5, 24 do
-		for x = 1, 10 do
+		for x = 1, self.width do
 			if self.grid[y][x] ~= empty then
 				if self.grid[y][x].colour == "X" then
 					opacity = 1 - self.grid_age[y][x] / 15
@@ -417,7 +420,7 @@ function Grid:drawInvisible(opacity_function, garbage_opacity_function, lock_fla
 						if x > 1 and self.grid[y][x-1] == empty then
 							love.graphics.line(47.5+x*16, -0.0+y*16, 47.5+x*16, 16.0+y*16)
 						end
-						if x < 10 and self.grid[y][x+1] == empty then
+						if x < self.width and self.grid[y][x+1] == empty then
 							love.graphics.line(64.5+x*16, -0.0+y*16, 64.5+x*16, 16.0+y*16)
 						end
 					end
@@ -437,7 +440,7 @@ function Grid:drawCustom(colour_function, gamestate)
         gamestate: the gamemode instance itself to pass in colour_function
     ]]
 	for y = 5, 24 do
-		for x = 1, 10 do
+		for x = 1, self.width do
             local block = self.grid[y][x]
 			if block ~= empty then
                 local R, G, B, A, outline = colour_function(gamestate, block, x, y, self.grid_age[y][x])
@@ -459,7 +462,7 @@ function Grid:drawCustom(colour_function, gamestate)
 					if x > 1 and self.grid[y][x-1] == empty then
 						love.graphics.line(47.5+x*16, -0.0+y*16, 47.5+x*16, 16.0+y*16)
 					end
-					if x < 10 and self.grid[y][x+1] == empty then
+					if x < self.width and self.grid[y][x+1] == empty then
 						love.graphics.line(64.5+x*16, -0.0+y*16, 64.5+x*16, 16.0+y*16)
 					end
                 end

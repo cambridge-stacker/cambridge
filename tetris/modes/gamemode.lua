@@ -13,7 +13,7 @@ local GameMode = Object:extend()
 GameMode.rollOpacityFunction = function(age) return 0 end
 
 function GameMode:new(secret_inputs)
-	self.grid = Grid()
+	self.grid = Grid(10)
 	self.randomizer = Randomizer()
 	self.piece = nil
 	self.ready_frames = 100
