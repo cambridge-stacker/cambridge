@@ -167,28 +167,6 @@ function Grid:garbageRise(row_vals)
 	end
 end
 
--- may be outdated soon
-function Grid:applyFourWide()
-		for row = 1, 24 do
-				local x = self.grid[row]
-				x[1] = x[1]~=block and block or x[1]
-				x[2] = x[2]~=block and block or x[2]
-				x[3] = x[3]~=block and block or x[3]
-				x[8] = x[8]~=block and block or x[8]
-				x[9] = x[9]~=block and block or x[9]
-				x[10] = x[10]~=block and block or x[10]
-		end
-end
-
--- may be outdated soon
-function Grid:applyCeiling(lines)
-	for row = 1, lines do
-		for col = 1, self.width - 1 do
-			self.grid[row][col] = block
-		end
-	end
-end
-
 function Grid:clearSpecificRow(row)
 	for col = 1, self.width do
 		self.grid[row][col] = empty
