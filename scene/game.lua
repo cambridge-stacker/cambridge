@@ -60,7 +60,7 @@ function GameScene:render()
 		16 * self.game.grid.width, 16 * (self.game.grid.height - 4)
 	)
 	
-	if self.game.grid.width ~= 10 and self.game.grid.height ~= 24 then
+	if self.game.grid.width ~= 10 or self.game.grid.height ~= 24 then
 		love.graphics.setColor(174/255, 83/255, 76/255, 1)
 		love.graphics.setLineWidth(8)
 		love.graphics.line(
