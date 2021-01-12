@@ -160,6 +160,7 @@ end
 
 function Ruleset:movePiece(piece, grid, move, instant)
 	local x = piece.position.x
+	local was_drop_blocked = piece:isDropBlocked(grid)
 	if move == "left" then
 		piece:moveInGrid({x=-1, y=0}, 1, grid, false)
 	elseif move == "right" then
@@ -171,6 +172,9 @@ function Ruleset:movePiece(piece, grid, move, instant)
 	end
 	if piece.position.x ~= x then
 		self:onPieceMove(piece, grid)
+		if not was_drop_blocked and piece:isDropBlocked(grid) then
+			playSE("bottom")
+		end
 	end
 end
 
