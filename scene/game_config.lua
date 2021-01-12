@@ -11,6 +11,7 @@ ConfigScene.options = {
 	{"manlock", "Manual Locking", false, {"Per ruleset", "Per gamemode", "Harddrop", "Softdrop"}},
 	{"piece_colour", "Piece Colours", false, {"Per ruleset", "Arika", "TTC"}},
 	{"world_reverse", "A Button Rotation", false, {"Left", "Auto", "Right"}},
+	{"spawn_positions", "Spawn Positions", false, {"In field", "Out of field"}},
 	{"display_gamemode", "Display Gamemode", false, {"On", "Off"}},
 	{"das_last_key", "DAS Switch", false, {"Default", "Instant"}},
 	{"smooth_movement", "Smooth Piece Drop", false, {"On", "Off"}},
@@ -32,8 +33,8 @@ function ConfigScene:new()
 		state = "Changing game settings",
 	})
 
-	self.sfxSlider = newSlider(165, 375, 225, config.sfx_volume * 100, 0, 100, function(v) config.sfx_volume = v / 100 end, {width=20})
-	self.bgmSlider = newSlider(465, 375, 225, config.bgm_volume * 100, 0, 100, function(v) config.bgm_volume = v / 100 end, {width=20})
+	self.sfxSlider = newSlider(165, 400, 225, config.sfx_volume * 100, 0, 100, function(v) config.sfx_volume = v / 100 end, {width=20, knob="circle", track="roundrect"})
+	self.bgmSlider = newSlider(465, 400, 225, config.bgm_volume * 100, 0, 100, function(v) config.bgm_volume = v / 100 end, {width=20, knob="circle", track="roundrect"})
 end
 
 function ConfigScene:update()
@@ -58,7 +59,7 @@ function ConfigScene:render()
 	if not ConfigScene.options[self.highlight][3] then
 		love.graphics.rectangle("fill", 25, 98 + self.highlight * 20, 170, 22)
 	else
-		love.graphics.rectangle("fill", 65 + (1+self.highlight-#self.options) * 300, 322, 215, 33)
+		love.graphics.rectangle("fill", 65 + (1+self.highlight-#self.options) * 300, 342, 215, 33)
 	end
 	
 	love.graphics.setFont(font_3x5_2)
@@ -75,8 +76,8 @@ function ConfigScene:render()
 
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_3)
-	love.graphics.print("SFX Volume: " .. math.floor(self.sfxSlider:getValue()) .. "%", 75, 325)
-	love.graphics.print("BGM Volume: " .. math.floor(self.bgmSlider:getValue()) .. "%", 375, 325)
+	love.graphics.print("SFX Volume: " .. math.floor(self.sfxSlider:getValue()) .. "%", 75, 345)
+	love.graphics.print("BGM Volume: " .. math.floor(self.bgmSlider:getValue()) .. "%", 375, 345)
 
 	love.graphics.setColor(1, 1, 1, 0.75)
 	self.sfxSlider:draw()

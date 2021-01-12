@@ -222,18 +222,25 @@ function Ruleset:initializePiece(
 	end
 	local colours = ({self.colourscheme, ColourSchemes.Arika, ColourSchemes.TTC})[config.gamesettings.piece_colour]
 	
-	local percent = spawn_positions[data.shape].x / 10
 	local spawn_x
-	for i = 0, grid.width - 1 do
-		if i / grid.width >= percent then
-			spawn_x = i
-			break
+	if (grid.width ~= 10) then
+		local percent = spawn_positions[data.shape].x / 10
+		for i = 0, grid.width - 1 do
+			if i / grid.width >= percent then
+				spawn_x = i
+				break
+			end
 		end
 	end
 
+	local spawn_dy = (
+		config.gamesettings.spawn_positions == 2 and
+		2 or 0
+	)
+
 	local piece = Piece(data.shape, data.orientation - 1, {
-		x = spawn_x,
-		y = spawn_positions[data.shape].y
+		x = spawn_x and spawn_x or spawn_positions[data.shape].x,
+		y = spawn_positions[data.shape].y - spawn_dy
 	}, self.block_offsets, 0, 0, data.skin, colours[data.shape], big)
 
 	self:onPieceCreate(piece)

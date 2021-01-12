@@ -20,8 +20,8 @@ function TuningScene:new()
     })
     self.highlight = 1
 
-    self.dasSlider = newSlider(290, 225, 400, config.das, 0, 20, function(v) config.das = math.floor(v) end, {width=20})
-    self.arrSlider = newSlider(290, 325, 400, config.arr, 0, 6, function(v) config.arr = math.floor(v) end, {width=20})
+    self.dasSlider = newSlider(290, 225, 400, config.das, 0, 20, function(v) config.das = math.floor(v) end, {width=20, knob="circle", track="roundrect"})
+    self.arrSlider = newSlider(290, 325, 400, config.arr, 0, 6, function(v) config.arr = math.floor(v) end, {width=20, knob="circle", track="roundrect"})
 end
 
 function TuningScene:update()
