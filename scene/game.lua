@@ -79,6 +79,7 @@ function GameScene:render()
 			60,84+16*(self.game.grid.height-4),
 			60,76
 		)
+		love.graphics.setLineWidth(1)
 	end
 
 	self.game:drawGrid()
