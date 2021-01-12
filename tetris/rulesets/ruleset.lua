@@ -112,7 +112,13 @@ function Ruleset:rotatePiece(inputs, piece, grid, prev_inputs, initial)
 		end
 	end
 
+	local was_drop_blocked = piece:isDropBlocked(grid)
+
 	self:attemptRotate(new_inputs, piece, grid, initial)
+
+	if not was_drop_blocked and piece:isDropBlocked(grid) then
+		playSE("bottom")
+	end
 
 	-- prev_inputs becomes the previous inputs
 	for input, value in pairs(inputs) do
