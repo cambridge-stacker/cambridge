@@ -22,6 +22,7 @@ function GameMode:new(secret_inputs)
 	self.score = 0
 	self.level = 0
 	self.lines = 0
+	self.squares = 0
 	self.drop_bonus = 0
 	self.are = 0
 	self.lcd = 0
@@ -46,6 +47,7 @@ function GameMode:new(secret_inputs)
 	self.big_mode = false
 	self.irs = true
 	self.ihs = true
+	self.square_mode = false
 	self.rpc_details = "In game"
 	self.SGnames = {
 		"9", "8", "7", "6", "5", "4", "3", "2", "1",
@@ -193,6 +195,11 @@ function GameMode:update(inputs, ruleset)
 
 		if self.piece.locked == true then
 			self.grid:applyPiece(self.piece)
+			
+			if self.square_mode then
+				self.squares = self.squares + self.grid:markSquares()
+			end
+
 			self.grid:markClearedRows()
 
 			local cleared_row_count = self.grid:getClearedRowCount()
