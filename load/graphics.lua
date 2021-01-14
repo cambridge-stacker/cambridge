@@ -61,6 +61,11 @@ blocks = {
 		F = love.graphics.newImage("res/img/gem9.png"),
 		A = love.graphics.newImage("res/img/gem9.png"),
 		X = love.graphics.newImage("res/img/gem9.png"),
+	},
+	["square"] = {
+		F = love.graphics.newImage("res/img/squares.png"),
+		Y = love.graphics.newImage("res/img/squareg.png"),
+		X = love.graphics.newImage("res/img/squares.png"),
 	}
 }
 

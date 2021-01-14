@@ -100,12 +100,14 @@ end
 
 function Grid:getClearedRowCount()
 	local count = 0
+	local cleared_row_table = {}
 	for row = 1, self.height do
 		if self:isRowFull(row) then
 			count = count + 1
+			table.insert(cleared_row_table, row)
 		end
 	end
-	return count
+	return count, cleared_row_table
 end
 
 function Grid:markClearedRows()
@@ -297,6 +299,80 @@ function Grid:applyMap(map)
 			self.grid[y][x] = block
 		end
 	end
+end
+
+-- inefficient algorithm for squares
+function Grid:markSquares()
+	-- goes up by 1 for silver, 2 for gold
+	local square_count = 0
+	for i = 1, 2 do
+		for y = 5, self.height - 3 do
+			for x = 1, self.width - 3 do
+				local age_table = {}
+				local age_count = 0
+				local colour_table = {}
+				local is_square = true
+				for j = 0, 3 do
+					for k = 0, 3 do
+						if self.grid[y+j][x+k].skin == "" or self.grid[y+j][x+k].skin == "square" then
+							is_square = false
+						end
+						if age_table[self.grid_age[y+j][x+k]] == nil then
+							age_table[self.grid_age[y+j][x+k]] = 1
+							age_count = age_count + 1
+						else
+							age_table[self.grid_age[y+j][x+k]] = age_table[self.grid_age[y+j][x+k]] + 1
+						end
+						if age_count > 4 or age_table[self.grid_age[y+j][x+k]] > 4 then
+							is_square = false
+						end
+						if not table.contains(colour_table, self.grid[y+j][x+k].colour) then
+							table.insert(colour_table, self.grid[y+j][x+k].colour)
+						end
+					end
+				end
+				if is_square then
+					if i == 1 and #colour_table == 1 then
+						for j = 0, 3 do
+							for k = 0, 3 do
+								self.grid[y+j][x+k].colour = "Y"
+								self.grid[y+j][x+k].skin = "square"
+							end
+						end
+						square_count = square_count + 2
+					elseif i == 2 then
+						for j = 0, 3 do
+							for k = 0, 3 do
+								self.grid[y+j][x+k].colour = "F"
+								self.grid[y+j][x+k].skin = "square"
+							end
+							
+						end
+						square_count = square_count + 1
+					end
+				end
+			end
+		end
+	end
+	return square_count
+end
+
+-- square scan
+function Grid:scanForSquares()
+	local table = {}
+	for row = 1, self.height do
+		local silver = 0
+		local gold = 0
+		for col = 1, self.width do
+			local colour = self.grid[row][col].colour
+			if self.grid[row][col].skin == "square" then
+				if colour == "Y" then gold = gold + 1
+				else silver = silver + 1 end
+			end
+		end
+		table[row] = gold * 2.5 + silver * 1.25
+	end
+	return table
 end
 
 function Grid:update()

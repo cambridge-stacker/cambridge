@@ -67,3 +67,12 @@ function Mod1(n, m)
 	-- returns a number congruent to n modulo m in the range [1;m] (as opposed to [0;m-1])
 	return ((n-1) % m) + 1
 end
+
+function table.contains(table, element)
+	for _, value in pairs(table) do
+	  if value == element then
+		return true
+	  end
+	end
+	return false
+  end
