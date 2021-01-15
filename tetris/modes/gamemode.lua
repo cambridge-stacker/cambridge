@@ -130,7 +130,7 @@ function GameMode:update(inputs, ruleset)
 	-- advance one frame
 	if self:advanceOneFrame(inputs, ruleset) == false then return end
 
-	self:chargeDAS(inputs, self:getDasLimit(), self.getARR())
+	self:chargeDAS(inputs, self:getDasLimit(), self:getARR())
 
 	-- set attempt flags
 	if inputs["left"] or inputs["right"] then
