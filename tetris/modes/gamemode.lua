@@ -561,7 +561,8 @@ function GameMode:setNextOpacity(i)
 end
 
 function GameMode:setHoldOpacity()
-	love.graphics.setColor(1, 1, 1, self.held and 0.6 or 1)
+	local colour = self.held and 0.6 or 1
+	love.graphics.setColor(colour, colour, colour, 1)
 end
 
 function GameMode:drawScoringInfo()
