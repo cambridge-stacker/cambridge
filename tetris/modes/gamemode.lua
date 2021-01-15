@@ -108,14 +108,10 @@ function GameMode:initialize(ruleset, secret_inputs)
 end
 
 function GameMode:update(inputs, ruleset)
-	if self.game_over then 
-		self.game_over_frames = self.game_over_frames + 1
-		if self.game_over_frames >= 60 then
-			self.completed = true
-		end
+	if self.game_over or self.completed then
+		self:onGameOver()
 		return
 	end
-	if self.completed then return end
 
 	if config.gamesettings.diagonal_input == 2 then
 		if inputs["left"] or inputs["right"] then
