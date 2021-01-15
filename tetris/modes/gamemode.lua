@@ -109,7 +109,8 @@ end
 
 function GameMode:update(inputs, ruleset)
 	if self.game_over or self.completed then
-		self:onGameOver()
+		switchBGM(nil)
+		self.game_over_frames = self.game_over_frames + 1
 		return
 	end
 
@@ -210,18 +211,15 @@ function GameMode:update(inputs, ruleset)
 
 		if self.piece.locked == true then
 			self.grid:applyPiece(self.piece)
-			
 			if self.square_mode then
 				self.squares = self.squares + self.grid:markSquares()
 			end
 
-			self.grid:markClearedRows()
-
 			local cleared_row_count = self.grid:getClearedRowCount()
-
 			self:onPieceLock(self.piece, cleared_row_count)
 			self:updateScore(self.level, self.drop_bonus, cleared_row_count)
 
+			self.grid:markClearedRows()
 			self.piece = nil
 			if self.enable_hold then
 				self.held = false
@@ -284,7 +282,15 @@ function GameMode:onHardDrop(dropped_row_count)
 end
 
 function GameMode:onGameOver()
-	switchBGM(nil)
+	love.graphics.setColor(0, 0, 0, 1 - 2 ^ (-self.game_over_frames / 30))
+	love.graphics.rectangle(
+		"fill", 64, 80,
+		16 * self.grid.width, 16 * (self.grid.height - 4)
+	)
+end
+
+function GameMode:onGameComplete()
+	self:onGameOver()
 end
 
 -- DAS functions
@@ -422,7 +428,6 @@ function GameMode:initializeOrHold(inputs, ruleset)
 	end
 	self:onPieceEnter()
 	if not self.grid:canPlacePiece(self.piece) then
-		self:onGameOver()
 		self.game_over = true
 	end
 end

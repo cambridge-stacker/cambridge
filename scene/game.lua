@@ -104,6 +104,12 @@ function GameScene:render()
 
 	love.graphics.setFont(font_3x5_3)
 	if self.paused then love.graphics.print("PAUSED!", 80, 100) end
+
+	if self.game.completed then
+		self.game:onGameComplete()
+	elseif self.game.game_over then
+		self.game:onGameOver()
+	end
 end
 
 function GameScene:onInputPress(e)
