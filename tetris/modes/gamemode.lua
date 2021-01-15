@@ -48,6 +48,7 @@ function GameMode:new(secret_inputs)
 	self.irs = true
 	self.ihs = true
 	self.square_mode = false
+	self.immobile_spin_bonus = false
 	self.rpc_details = "In game"
 	self.SGnames = {
 		"9", "8", "7", "6", "5", "4", "3", "2", "1",
@@ -132,13 +133,31 @@ function GameMode:update(inputs, ruleset)
 	self:chargeDAS(inputs, self:getDasLimit(), self.getARR())
 
 	-- set attempt flags
-	if inputs["left"] or inputs["right"] then self:onAttemptPieceMove(self.piece) end
+	if inputs["left"] or inputs["right"] then
+		self:onAttemptPieceMove(self.piece)
+		if self.immobile_spin_bonus and self.piece ~= nil then
+			if not self.piece:isMoveBlocked(self.grid, { x=-1, y=0 }) and
+			not self.piece:isMoveBlocked(self.grid, { x=1, y=0 }) then
+				self.piece.spin = false
+			end
+		end
+	end
 	if
 		inputs["rotate_left"] or inputs["rotate_right"] or
 		inputs["rotate_left2"] or inputs["rotate_right2"] or
 		inputs["rotate_180"]
 	then
 		self:onAttemptPieceRotate(self.piece)
+		if self.immobile_spin_bonus and self.piece ~= nil then
+			if self.piece:isDropBlocked(self.grid) and
+			self.piece:isMoveBlocked(self.grid, { x=-1, y=0 }) and 
+			self.piece:isMoveBlocked(self.grid, { x=1, y=0 }) and
+			self.piece:isMoveBlocked(self.grid, { x=0, y=-1 }) then
+				self.piece.spin = true
+			else
+			 	self.piece.spin = false
+			end
+		end
 	end
 	
 	if self.piece == nil then
