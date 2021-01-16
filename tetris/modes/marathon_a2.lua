@@ -131,7 +131,8 @@ function MarathonA2Game:updateScore(level, drop_bonus, cleared_lines)
 	if not self.clear then
 		self:updateGrade(cleared_lines)
 		if cleared_lines >= 4 then
-			self.tetris_requirements[math.floor(level / 100)] = self.tetris_requirements[math.floor(level / 100)] + 1
+			self.section_tetrises[math.floor(level / 100)] = self.section_tetrises[math.floor(level / 100)] + 1
+			print(table.concat(self.section_tetrises, ""))
 		end
 		if self.grid:checkForBravo(cleared_lines) then self.bravo = 4 else self.bravo = 1 end
 		if cleared_lines > 0 then
