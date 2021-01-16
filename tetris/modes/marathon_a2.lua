@@ -26,6 +26,8 @@ function MarathonA2Game:new()
 	self.section_start_time = 0
 	self.section_times = { [0] = 0 }
 	self.section_tetrises = { [0] = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+	self.piece_active_time = 0
+	self.tetris_count = 0
 	
 	self.SGnames = {
 		"9", "8", "7", "6", "5", "4", "3", "2", "1",
@@ -121,7 +123,12 @@ function MarathonA2Game:advanceOneFrame()
 	return true
 end
 
+function MarathonA2Game:whilePieceActive()
+	self.piece_active_time = self.piece_active_time + 1
+end
+
 function MarathonA2Game:onPieceEnter()
+	self.piece_active_time = 0
 	if (self.level % 100 ~= 99 and self.level ~= 998) and not self.clear and self.frames ~= 0 then
 		self.level = self.level + 1
 	end
@@ -131,8 +138,7 @@ function MarathonA2Game:updateScore(level, drop_bonus, cleared_lines)
 	if not self.clear then
 		self:updateGrade(cleared_lines)
 		if cleared_lines >= 4 then
-			self.section_tetrises[math.floor(level / 100)] = self.section_tetrises[math.floor(level / 100)] + 1
-			print(table.concat(self.section_tetrises, ""))
+			self.tetris_count = self.tetris_count + 1
 		end
 		if self.grid:checkForBravo(cleared_lines) then self.bravo = 4 else self.bravo = 1 end
 		if cleared_lines > 0 then
@@ -149,6 +155,7 @@ function MarathonA2Game:updateScore(level, drop_bonus, cleared_lines)
 end
 
 function MarathonA2Game:onLineClear(cleared_row_count)
+	self:updateSectionTimes(self.level, self.level + cleared_row_count)
 	self.level = math.min(self.level + cleared_row_count, 999)
 	if self.level == 999 and not self.clear then
 		self.clear = true
@@ -168,6 +175,9 @@ function MarathonA2Game:updateSectionTimes(old_level, new_level)
 		section_time = self.frames - self.section_start_time
 		self.section_times[math.floor(old_level / 100)] = section_time
 		self.section_start_time = self.frames
+		self.section_tetrises[math.floor(old_level / 100)] = self.tetris_count
+		self.tetris_count = 0
+		print(self.section_tetrises[math.floor(old_level / 100)])
 	end
 end
 
@@ -238,7 +248,7 @@ local grade_conversion = {
 function MarathonA2Game:updateGrade(cleared_lines)
 	if self.clear then return end
 	if cleared_lines == 0 then
-		self.grade_point_decay_counter = self.grade_point_decay_counter + 1
+		self.grade_point_decay_counter = self.grade_point_decay_counter + self.piece_active_time
 		if self.grade_point_decay_counter >= grade_point_decays[self.grade + 1] then
 			self.grade_point_decay_counter = 0
 			self.grade_points = math.max(0, self.grade_points - 1)
