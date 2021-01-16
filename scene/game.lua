@@ -119,6 +119,7 @@ function GameScene:onInputPress(e)
 		submitHighscore(highscore_hash, highscore_entry)
 		scene = e.input == "retry" and GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs) or ModeSelectScene()
 	elseif e.input == "retry" then
+		switchBGM(nil)
 		scene = GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs)
 	elseif e.input == "pause" and not (self.game.game_over or self.game.completed) then
 		self.paused = not self.paused
