@@ -109,7 +109,6 @@ end
 
 function GameMode:update(inputs, ruleset)
 	if self.game_over or self.completed then
-		switchBGM(nil)
 		self.game_over_frames = self.game_over_frames + 1
 		return
 	end
@@ -282,6 +281,7 @@ function GameMode:onHardDrop(dropped_row_count)
 end
 
 function GameMode:onGameOver()
+	switchBGM(nil)
 	love.graphics.setColor(0, 0, 0, 1 - 2 ^ (-self.game_over_frames / 30))
 	love.graphics.rectangle(
 		"fill", 64, 80,
@@ -602,7 +602,7 @@ function GameMode:sectionColourFunction(section)
 	return { 1, 1, 1, 1 }
 end
 
-function GameMode:drawSectionTimesWithSecondary(current_section)
+function GameMode:drawSectionTimesWithSecondary(current_section, section_limit)
 	local section_x = 530
 	local section_secondary_x = 440
 
@@ -627,7 +627,9 @@ function GameMode:drawSectionTimesWithSecondary(current_section)
 		current_x = section_secondary_x
 	end
 
-	love.graphics.printf(formatTime(self.frames - self.section_start_time), current_x, 40 + 20 * current_section, 90, "left")
+	if current_section <= section_limit then
+		love.graphics.printf(formatTime(self.frames - self.section_start_time), current_x, 40 + 20 * current_section, 90, "left")
+	end
 end
 
 function GameMode:drawSectionTimesWithSplits(current_section)
