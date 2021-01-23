@@ -166,9 +166,9 @@ function Ruleset:movePiece(piece, grid, move, instant)
 	elseif move == "right" then
 		piece:moveInGrid({x=1, y=0}, 1, grid, false)
 	elseif move == "speedleft" then
-		piece:moveInGrid({x=-1, y=0}, 10, grid, instant)
+		piece:moveInGrid({x=-1, y=0}, grid.width, grid, instant)
 	elseif move == "speedright" then
-		piece:moveInGrid({x=1, y=0}, 10, grid, instant)
+		piece:moveInGrid({x=1, y=0}, grid.width, grid, instant)
 	end
 	if piece.position.x ~= x then
 		self:onPieceMove(piece, grid)
