@@ -248,7 +248,7 @@ local grade_conversion = {
 }
 
 function MarathonA2Game:updateGrade(cleared_lines)
-	if self.clear or cleared_lines == 0 then return end
+	if self.clear or cleared_lines == 0 then return
 	else
 		self.grade_points = self.grade_points + (
 			math.ceil(

@@ -322,7 +322,7 @@ local grade_conversion = {
 }
 
 function MarathonA3Game:updateGrade(cleared_lines)
-	if cleared_lines == 0 then return end
+	if cleared_lines == 0 then return
 	else
 		if self.clear then
 			if self:qualifiesForMRoll() then
