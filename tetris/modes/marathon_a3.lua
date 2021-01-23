@@ -30,7 +30,6 @@ function MarathonA3Game:new()
 	self.secondary_section_times = { [0] = 0 }
 	self.section_times = { [0] = 0 }
 	self.section_cool = false
-	self.piece_active_time = 0
 	
 	self.randomizer = History6RollsRandomizer()
 
@@ -149,11 +148,14 @@ function MarathonA3Game:advanceOneFrame()
 end
 
 function MarathonA3Game:whilePieceActive()
-	self.piece_active_time = self.piece_active_time + 1
+	self.grade_point_decay_counter = self.grade_point_decay_counter + 1
+	if self.grade_point_decay_counter >= grade_point_decays[self.grade + 1] then
+		self.grade_point_decay_counter = 0
+		self.grade_points = math.max(0, self.grade_points - 1)
+	end
 end
 
 function MarathonA3Game:onPieceEnter()
-	self.piece_active_time = 0
 	if (self.level % 100 ~= 99) and self.level ~= 998 and self.frames ~= 0 then
 		self:updateSectionTimes(self.level, self.level + 1)
 		self.level = self.level + 1
@@ -320,12 +322,7 @@ local grade_conversion = {
 }
 
 function MarathonA3Game:updateGrade(cleared_lines)
-	if cleared_lines == 0 then
-		self.grade_point_decay_counter = self.grade_point_decay_counter + self.piece_active_time
-		if self.grade_point_decay_counter >= grade_point_decays[self.grade + 1] then
-			self.grade_point_decay_counter = 0
-			self.grade_points = math.max(0, self.grade_points - 1)
-		end
+	if cleared_lines == 0 then return end
 	else
 		if self.clear then
 			if self:qualifiesForMRoll() then

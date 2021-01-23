@@ -26,7 +26,6 @@ function MarathonA2Game:new()
 	self.section_start_time = 0
 	self.section_times = { [0] = 0 }
 	self.section_tetrises = { [0] = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
-	self.piece_active_time = 0
 	self.tetris_count = 0
 	
 	self.SGnames = {
@@ -124,11 +123,14 @@ function MarathonA2Game:advanceOneFrame()
 end
 
 function MarathonA2Game:whilePieceActive()
-	self.piece_active_time = self.piece_active_time + 1
+	self.grade_point_decay_counter = self.grade_point_decay_counter + 1
+	if self.grade_point_decay_counter >= grade_point_decays[self.grade + 1] then
+		self.grade_point_decay_counter = 0
+		self.grade_points = math.max(0, self.grade_points - 1)
+	end
 end
 
 function MarathonA2Game:onPieceEnter()
-	self.piece_active_time = 0
 	if (self.level % 100 ~= 99 and self.level ~= 998) and not self.clear and self.frames ~= 0 then
 		self.level = self.level + 1
 	end
@@ -246,13 +248,7 @@ local grade_conversion = {
 }
 
 function MarathonA2Game:updateGrade(cleared_lines)
-	if self.clear then return end
-	if cleared_lines == 0 then
-		self.grade_point_decay_counter = self.grade_point_decay_counter + self.piece_active_time
-		if self.grade_point_decay_counter >= grade_point_decays[self.grade + 1] then
-			self.grade_point_decay_counter = 0
-			self.grade_points = math.max(0, self.grade_points - 1)
-		end
+	if self.clear or cleared_lines == 0 then return end
 	else
 		self.grade_points = self.grade_points + (
 			math.ceil(
