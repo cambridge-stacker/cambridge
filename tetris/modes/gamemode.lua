@@ -75,6 +75,7 @@ function GameMode:getLineARE() return 25 end
 function GameMode:getLockDelay() return 30 end
 function GameMode:getLineClearDelay() return 40 end
 function GameMode:getDasLimit() return 15 end
+function GameMode:getDasCutDelay() return 0 end
 
 function GameMode:getNextPiece(ruleset)
 	return {
@@ -177,7 +178,9 @@ function GameMode:update(inputs, ruleset)
 			self.hard_drop_locked = false
 		end
 
+		-- diff vars to use in checks
 		local piece_y = self.piece.position.y
+		local piece_rot = self.piece.rotation
 
 		ruleset:processPiece(
 			inputs, self.piece, self.grid, self:getGravity(), self.prev_inputs,
@@ -187,6 +190,22 @@ function GameMode:update(inputs, ruleset)
 		)
 
 		local piece_dy = self.piece.position.y - piece_y
+		local piece_drot = self.piece.rotation - piece_rot
+
+		-- das cut
+		if (
+			(piece_dy ~= 0 and (inputs.up or inputs.down)) or
+			(piece_drot ~= 0 and (
+				inputs.rotate_left or inputs.rotate_right or
+				inputs.rotate_left2 or inputs.rotate_right2 or
+				inputs.rotate_180
+			))
+		) then
+			self.das.frames = math.max(
+				self.das.frames - self:getDasCutDelay(),
+				-self:getDasCutDelay()
+			)
+		end
 
 		if inputs["up"] == true and
 			self.piece:isDropBlocked(self.grid) and
@@ -421,7 +440,9 @@ function GameMode:processDelays(inputs, ruleset, drop_speed)
 end
 
 function GameMode:initializeOrHold(inputs, ruleset)
-	if self.ihs and self.enable_hold and inputs["hold"] == true then
+	if (
+		self.frames == 0 or (ruleset.are and self:getARE() ~= 0) and self.ihs or false
+	) and self.enable_hold and inputs["hold"] == true then
 		self:hold(inputs, ruleset, true)
 	else
 		self:initializeNextPiece(inputs, ruleset, self.next_queue[1])
@@ -464,7 +485,10 @@ function GameMode:initializeNextPiece(inputs, ruleset, piece_data, generate_next
 		self.prev_inputs, self.move,
 		self:getLockDelay(), self:getDropSpeed(),
 		self.lock_drop, self.lock_hard_drop, self.big_mode,
-		self.irs, self.buffer_hard_drop, self.buffer_soft_drop,
+		(
+			self.frames == 0 or (ruleset.are and self:getARE() ~= 0)
+		) and self.irs or false,
+		self.buffer_hard_drop, self.buffer_soft_drop,
 		self.lock_on_hard_drop, self.lock_on_soft_drop
 	)
 	if self.piece:isDropBlocked(self.grid) and

@@ -7,6 +7,7 @@ function love.load()
 	require "load.sounds"
 	require "load.bgm"
 	require "load.save"
+	require "load.bigint"
 	loadSave()
 	require "scene"
 	--config["side_next"] = false
@@ -15,8 +16,10 @@ function love.load()
 
 	love.window.setMode(love.graphics.getWidth(), love.graphics.getHeight(), {resizable = true});
 
+	-- init config
 	if not config.das then config.das = 10 end
 	if not config.arr then config.arr = 2 end
+	if not config.dcd then config.dcd = 0 end
 	if not config.sfx_volume then config.sfx_volume = 0.5 end
 	if not config.bgm_volume then config.bgm_volume = 0.5 end
 	

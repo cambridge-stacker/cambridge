@@ -113,7 +113,7 @@ function GameScene:render()
 end
 
 function GameScene:onInputPress(e)
-	if self.game.completed and (e.input == "menu_decide" or e.input == "menu_back" or e.input == "retry") then
+	if (self.game.game_over or self.game.completed) and (e.input == "menu_decide" or e.input == "menu_back" or e.input == "retry") then
 		highscore_entry = self.game:getHighscoreData()
 		highscore_hash = self.game.hash .. "-" .. self.ruleset.hash
 		submitHighscore(highscore_hash, highscore_entry)

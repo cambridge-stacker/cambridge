@@ -9,6 +9,7 @@ TuningScene.options = {
 	-- Serves as a reference for the options available in the menu. Format: {name in config, name as displayed if applicable, slider name}
 	{"das", "DAS", "dasSlider"},
 	{"arr", "ARR", "arrSlider"},
+	{"dcd", "DCD", "dcdSlider"},
 }
 
 local optioncount = #TuningScene.options
@@ -21,12 +22,14 @@ function TuningScene:new()
     self.highlight = 1
 
     self.dasSlider = newSlider(290, 225, 400, config.das, 0, 20, function(v) config.das = math.floor(v) end, {width=20, knob="circle", track="roundrect"})
-    self.arrSlider = newSlider(290, 325, 400, config.arr, 0, 6, function(v) config.arr = math.floor(v) end, {width=20, knob="circle", track="roundrect"})
+	self.arrSlider = newSlider(290, 300, 400, config.arr, 0, 6, function(v) config.arr = math.floor(v) end, {width=20, knob="circle", track="roundrect"})
+	self.dcdSlider = newSlider(290, 375, 400, config.dcd, 0, 6, function(v) config.dcd = math.floor(v) end, {width=20, knob="circle", track="roundrect"})
 end
 
 function TuningScene:update()
     self.dasSlider:update()
-    self.arrSlider:update()
+	self.arrSlider:update()
+	self.dcdSlider:update()
 end
 
 function TuningScene:render()
@@ -38,7 +41,7 @@ function TuningScene:render()
     )
 
     love.graphics.setColor(1, 1, 1, 0.5)
-    love.graphics.rectangle("fill", 75, 73 + self.highlight * 100, 400, 33)
+    love.graphics.rectangle("fill", 75, 98 + self.highlight * 75, 400, 33)
 
     love.graphics.setColor(1, 1, 1, 1)
     
@@ -50,11 +53,13 @@ function TuningScene:render()
     
     love.graphics.setFont(font_3x5_3)
     love.graphics.print("Delayed Auto-Shift (DAS): " .. math.floor(self.dasSlider:getValue()) .. "F", 80, 175)
-    love.graphics.print("Auto-Repeat Rate (ARR): " .. math.floor(self.arrSlider:getValue()) .. "F", 80, 275)
+	love.graphics.print("Auto-Repeat Rate (ARR): " .. math.floor(self.arrSlider:getValue()) .. "F", 80, 250)
+	love.graphics.print("DAS Cut Delay (DCD): " .. math.floor(self.dcdSlider:getValue()) .. "F", 80, 325)
 
     love.graphics.setColor(1, 1, 1, 0.75)
     self.dasSlider:draw()
-    self.arrSlider:draw()
+	self.arrSlider:draw()
+	self.dcdSlider:draw()
 end
 
 function TuningScene:onInputPress(e)

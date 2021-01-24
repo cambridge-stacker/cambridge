@@ -255,12 +255,10 @@ function Ruleset:initializePiece(
 
 	self:onPieceCreate(piece)
 	if irs then
-		if inputs.rotate_left or inputs.rotate_left2 or
-		   inputs.rotate_right or inputs.rotate_right2 or
-		   inputs.rotate_180 then
+		self:rotatePiece(inputs, piece, grid, {}, true)
+		if (data.orientation - 1) ~= piece.rotation then
 			playSE("irs")
 		end
-		self:rotatePiece(inputs, piece, grid, {}, true)
 	end
 	self:dropPiece(inputs, piece, grid, gravity, drop_speed, drop_locked, hard_drop_locked)
 	if (buffer_hard_drop and config.gamesettings.buffer_lock == 1) then
