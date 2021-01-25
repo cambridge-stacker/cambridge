@@ -201,7 +201,7 @@ function Grid:applyBigPiece(piece)
 		y = piece.position.y + offset.y
 		for a = 1, 2 do
 			for b = 1, 2 do
-				if y*2+a > 0 then
+				if y*2+a > 0 and y*2 < self.height then
 					self.grid[y*2+a][x*2+b] = {
 						skin = piece.skin,
 						colour = piece.colour
