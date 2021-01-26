@@ -627,6 +627,7 @@ function GameMode:sectionColourFunction(section)
 end
 
 function GameMode:drawSectionTimesWithSecondary(current_section, section_limit)
+	section_limit = section_limit or math.huge
 	local section_x = 530
 	local section_secondary_x = 440
 

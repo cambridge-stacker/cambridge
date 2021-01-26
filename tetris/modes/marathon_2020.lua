@@ -256,8 +256,10 @@ end
 local function getSectionForLevel(level)
 	if level < 2001 then
 		return math.floor(level / 100) + 1
-	else
+	elseif level < 2020 then
 		return 20
+	else
+		return 21
 	end
 end
 
@@ -442,7 +444,7 @@ function Marathon2020Game:drawScoringInfo()
 	love.graphics.printf("GRADE PTS.", text_x, 200, 90, "left")
 	love.graphics.printf("LEVEL", text_x, 320, 40, "left")
 
-	self:drawSectionTimesWithSecondary(current_section)
+	self:drawSectionTimesWithSecondary(current_section, 20)
 
 	if (self.cool_timer > 0) then
 				love.graphics.printf("COOL!!", 64, 400, 160, "center")
