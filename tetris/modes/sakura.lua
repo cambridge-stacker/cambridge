@@ -467,11 +467,11 @@ function SakuraGame:drawGrid()
 	elseif effects[self.current_map] == "color" then
         self.grid:drawCustom(colourColor, self)
 	else
-        self.grid:draw()
-        -- if self.piece ~= nil and self.level < 100 then
-            self:drawGhostPiece(ruleset)
-        -- end
-	end
+        self.grid:draw()    
+    end
+    if self.piece ~= nil and self.level < 100 then
+        self:drawGhostPiece()
+    end
 end
 
 function SakuraGame:drawScoringInfo()
