@@ -167,6 +167,9 @@ function GameMode:update(inputs, ruleset)
 		if self.enable_hold and inputs["hold"] == true and self.held == false and self.prev_inputs["hold"] == false then
 			self:hold(inputs, ruleset)
 			self.prev_inputs = inputs
+			if not self.grid:canPlacePiece(self.piece) then
+				self.game_over = true
+			end
 			return
 		end
 
