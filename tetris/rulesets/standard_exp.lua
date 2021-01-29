@@ -15,8 +15,8 @@ SRS.colourscheme = {
 	O = "Y",
 	T = "M",
 }
-SRS.softdrop_lock = false
-SRS.harddrop_lock = true
+SRS.softdrop_lock = true
+SRS.harddrop_lock = false
 
 SRS.enable_IRS_wallkicks = true
 
@@ -103,7 +103,7 @@ function SRS:onPieceMove(piece, grid)
 	piece.lock_delay = 0 -- move reset
 	if piece:isDropBlocked(grid) then
 		piece.manipulations = piece.manipulations + 1
-		if piece.manipulations >= 24 then
+		if piece.manipulations >= SRS.MANIPULATIONS_MAX then
 			piece.locked = true
 		end
 	end
