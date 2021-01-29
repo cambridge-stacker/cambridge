@@ -150,20 +150,20 @@ function love.keypressed(key, scancode)
 		scene.restart_message = true
 		if config.secret then playSE("mode_decide")
 		else playSE("erase") end
-	-- function keys are reserved
-	elseif string.match(scancode, "^f[1-9]$") or string.match(scancode, "^f[1-9][0-9]+$") then
-		return	
-	-- escape is reserved for menu_back
-	elseif scancode == "escape" then
-		scene:onInputPress({input="menu_back", type="key", key=key, scancode=scancode})
-    -- printscreen is reserved for printing the screen i know impressive keybind
-    elseif scancode == "printscreen" then
+    -- f12 is reserved for saving screenshots
+    elseif scancode == "f12" then
         local ss_name = os.date("ss/%Y-%m-%d_%H-%M-%S.png")
         if not love.filesystem.getInfo("ss") then
             love.filesystem.createDirectory("ss")
         end
         print("Saving screenshot as "..ss_name)
         GLOBAL_CANVAS:newImageData():encode("png", ss_name)
+	-- function keys are reserved
+	elseif string.match(scancode, "^f[1-9]$") or string.match(scancode, "^f[1-9][0-9]+$") then
+		return	
+	-- escape is reserved for menu_back
+	elseif scancode == "escape" then
+		scene:onInputPress({input="menu_back", type="key", key=key, scancode=scancode})
 	-- pass any other key to the scene, with its configured mapping
 	else
 		local input_pressed = nil
