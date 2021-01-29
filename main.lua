@@ -15,6 +15,9 @@ function love.load()
 	config["fullscreen"] = false
 
 	love.window.setMode(love.graphics.getWidth(), love.graphics.getHeight(), {resizable = true});
+    
+    -- used for screenshots
+    GLOBAL_CANVAS = love.graphics.newCanvas()
 
 	-- init config
 	if not config.das then config.das = 10 end
@@ -108,7 +111,10 @@ function love.update(dt)
 end
 
 function love.draw()
-	love.graphics.push()
+    love.graphics.setCanvas(GLOBAL_CANVAS)
+    love.graphics.clear()
+	
+    love.graphics.push()
 
 	-- get offset matrix
 	love.graphics.setDefaultFilter("linear", "nearest")
@@ -120,9 +126,13 @@ function love.draw()
 		(height - scale_factor * 480) / 2
 	)
 	love.graphics.scale(scale_factor)
-
+    
 	scene:render()
 	love.graphics.pop()
+    
+    love.graphics.setCanvas()
+    love.graphics.setColor(1,1,1,1)
+    love.graphics.draw(GLOBAL_CANVAS)
 end
 
 function love.keypressed(key, scancode)
@@ -146,6 +156,14 @@ function love.keypressed(key, scancode)
 	-- escape is reserved for menu_back
 	elseif scancode == "escape" then
 		scene:onInputPress({input="menu_back", type="key", key=key, scancode=scancode})
+    -- printscreen is reserved for printing the screen i know impressive keybind
+    elseif scancode == "printscreen" then
+        local ss_name = os.date("ss/%Y-%m-%d_%H-%M-%S.png")
+        if not love.filesystem.getInfo("ss") then
+            love.filesystem.createDirectory("ss")
+        end
+        print("Saving screenshot as "..ss_name)
+        GLOBAL_CANVAS:newImageData():encode("png", ss_name)
 	-- pass any other key to the scene, with its configured mapping
 	else
 		local input_pressed = nil
@@ -260,4 +278,9 @@ function love.focus(f)
 	else
 		pauseBGM()
 	end
+end
+
+function love.resize(w, h)
+    GLOBAL_CANVAS:release()
+    GLOBAL_CANVAS = love.graphics.newCanvas(w, h)
 end
