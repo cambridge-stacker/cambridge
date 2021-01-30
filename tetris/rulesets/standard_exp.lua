@@ -112,9 +112,9 @@ end
 function SRS:onPieceRotate(piece, grid)
 	piece.lock_delay = 0 -- rotate reset
 	self:checkNewLow(piece)
-	piece.rotations = piece.rotations + 1
     if piece.rotations >= self.ROTATIONS_MAX then
-        piece:moveInGrid({ x = 0, y = 1 }, 1, grid)
+		piece.rotations = piece.rotations + 1
+		piece:moveInGrid({ x = 0, y = 1 }, 1, grid)
         if piece:isDropBlocked(grid) then
             piece.locked = true
         end
