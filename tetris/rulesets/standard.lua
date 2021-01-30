@@ -10,6 +10,17 @@ SRS.harddrop_lock = true
 
 SRS.MANIPULATIONS_MAX = 15
 
+function SRS:checkNewLow(piece)
+	for _, block in pairs(piece:getBlockOffsets()) do
+		local y = piece.position.y + block.y
+		if y > piece.lowest_y then
+			piece.manipulations = 0
+			piece.rotations = 0
+			piece.lowest_y = y
+		end
+	end
+end
+
 function SRS:onPieceDrop(piece, grid)
 	self:checkNewLow(piece)
 	if piece.manipulations >= self.MANIPULATIONS_MAX and piece:isDropBlocked(grid) then
