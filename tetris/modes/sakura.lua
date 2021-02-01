@@ -437,6 +437,8 @@ function SakuraGame:advanceOneFrame(inputs, ruleset)
     return true
 end
 
+function GameMode:onGameComplete() end
+
 local function colourXRay(game, block, x, y, age)
     local r, g, b, a = .5,.5,.5
     if ((game.stage_frames/2 - x) % 30 < 1)
