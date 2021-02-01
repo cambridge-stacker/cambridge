@@ -76,6 +76,7 @@ function GameMode:getLockDelay() return 30 end
 function GameMode:getLineClearDelay() return 40 end
 function GameMode:getDasLimit() return 15 end
 function GameMode:getDasCutDelay() return 0 end
+function GameMode:getGravity() return 1/64 end
 
 function GameMode:getNextPiece(ruleset)
 	return {
