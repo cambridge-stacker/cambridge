@@ -593,6 +593,14 @@ function GameMode:setHoldOpacity()
 	love.graphics.setColor(colour, colour, colour, 1)
 end
 
+function GameMode:getBackground()
+	return 0
+end
+
+function GameMode:drawGrid()
+	self.grid:draw()
+end
+
 function GameMode:drawScoringInfo()
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_2)
