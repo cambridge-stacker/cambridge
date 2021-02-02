@@ -597,6 +597,10 @@ function GameMode:getBackground()
 	return 0
 end
 
+function GameMode:getHighscoreData()
+	return {}
+end
+
 function GameMode:drawGrid()
 	self.grid:draw()
 end
