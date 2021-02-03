@@ -102,7 +102,7 @@ function GameMode:initialize(ruleset, secret_inputs)
 			BagRandomizer(ruleset.pieces)
 		)
 	)
-	for i = 1, self.next_queue_length do
+	for i = 1, math.max(self.next_queue_length, 1) do
 		table.insert(self.next_queue, self:getNextPiece(ruleset))
 	end
 	self.lock_on_soft_drop = ({ruleset.softdrop_lock, self.instant_soft_drop, false, true })[config.gamesettings.manlock]
