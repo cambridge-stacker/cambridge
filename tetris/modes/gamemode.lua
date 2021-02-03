@@ -207,7 +207,7 @@ function GameMode:update(inputs, ruleset)
 		) then
 			self.das.frames = math.max(
 				self.das.frames - self:getDasCutDelay(),
-				-self:getDasCutDelay()
+				-(self:getDasCutDelay() + 1)
 			)
 		end
 
