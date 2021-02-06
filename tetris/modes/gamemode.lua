@@ -10,6 +10,9 @@ local BagRandomizer = require 'tetris.randomizers.bag'
 
 local GameMode = Object:extend()
 
+GameMode.name = ""
+GameMode.hash = ""
+GameMode.tagline = ""
 GameMode.rollOpacityFunction = function(age) return 0 end
 
 function GameMode:new(secret_inputs)
