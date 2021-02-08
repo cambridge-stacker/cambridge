@@ -82,13 +82,7 @@ It should run automatically!
 
 ## Installing modpacks
 
-Simply drag your mode, ruleset, and randomizer Lua files into their respective [directory](https://love2d.org/wiki/love.filesystem), and they should appear automatically.  
-
-You can also load custom assets through this way, assuming you preserve the directory structure.  
-
-**WARNING:** The .exe / .love files and the bleeding edge releases have different save directories. Read the above link carefully!
-
-For more detailed instructions, install [this](https://github.com/SashLilac/cambridge-modpack) mod pack to get a taste of the mod potential.
+For instructions on how to install modpacks, go to [this](https://github.com/SashLilac/cambridge-modpack) mod pack to get a taste of the mod potential.
 
 License
 -------
