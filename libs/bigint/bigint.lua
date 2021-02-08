@@ -106,6 +106,12 @@ function bigint.abs(big)
     return result
 end
 
+-- Return the number of digits in the big
+function bigint.digits(big)
+    bigint.check(big)
+    return #big.digits
+end
+
 -- Convert a big to a number or string
 function bigint.unserialize(big, output_type, precision)
     bigint.check(big)
