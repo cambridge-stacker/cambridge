@@ -63,6 +63,9 @@ function bigint.new(num)
         end,
         __le = function(lhs, rhs)
             return bigint.compare(lhs, rhs, "<=")
+        end,
+        __tostring = function()
+            return bigint.unserialize(self, "s")
         end
     })
 
