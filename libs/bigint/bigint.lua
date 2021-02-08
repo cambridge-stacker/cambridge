@@ -468,7 +468,7 @@ function bigint.divide_raw(big1, big2)
     if (bigint.compare(big1, big2, "==")) then
         return bigint.new(1), bigint.new(0)
     elseif (bigint.compare(big1, big2, "<")) then
-        return bigint.new(0), bigint.new(0)
+        return bigint.new(0), big1:clone()
     else
         assert(bigint.compare(big2, bigint.new(0), "!="), "error: divide by zero")
         assert(big1.sign == "+", "error: big1 is not positive")
