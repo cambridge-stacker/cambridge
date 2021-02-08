@@ -438,7 +438,6 @@ function bigint.multiply(big1, big2)
     return result
 end
 
-
 -- Raise a big to a positive integer or big power (TODO: negative integer power)
 function bigint.exponentiate(big, power)
     -- Type checking for big done by bigint.multiply
@@ -451,11 +450,17 @@ function bigint.exponentiate(big, power)
     elseif (bigint.compare(exp, bigint.new(1), "==")) then
         return big
     else
-        local result = big:clone()
+        local result = bigint.new(1)
+        local base = big:clone()
 
-        while (bigint.compare(exp, bigint.new(1), ">")) do
-            result = bigint.multiply(result, big)
-            exp = bigint.subtract(exp, bigint.new(1))
+        while (bigint.compare(exp, bigint.new(0), ">")) do
+            if (bigint.compare(
+                bigint.modulus(exp, bigint.new(2)), bigint.new(1), "=="
+            )) then
+                result = bigint.multiply(result, base)
+            end
+            exp = bigint.divide(exp, bigint.new(2))
+            base = bigint.multiply(base, base)
         end
 
         return result
@@ -479,54 +484,35 @@ function bigint.divide_raw(big1, big2)
 
         local result = bigint.new()
 
-        local dividend = bigint.new() -- Dividend of a single operation, not the
-                                      -- dividend of the overall function
-        local divisor = big2:clone()
-        local factor = 1
+        local dividend = bigint.new() -- Dividend of a single operation
 
-        -- Walk left to right among digits in the dividend, like in long
-        -- division
-        for _, digit in pairs(big1.digits) do
-            dividend.digits[#dividend.digits + 1] = digit
+        local neg_zero = bigint.new(0)
+        neg_zero.sign = "-"
 
-            -- The dividend is smaller than the divisor, so a zero is appended
-            -- to the result and the loop ends
-            if (bigint.compare(dividend, divisor, "<")) then
-                if (#result.digits > 0) then -- Don't add leading zeroes
-                    result.digits[#result.digits + 1] = 0
-                end
-            else
-                -- Find the maximum number of divisors that fit into the
-                -- dividend
-                factor = 0
-                while (bigint.compare(divisor, dividend, "<=")) do
-                    divisor = bigint.add(divisor, big2)
-                    factor = factor + 1
-                end
-
-                -- Append the factor to the result
-                if (factor == 10) then
-                    -- Fixes a weird bug that introduces a new bug if fixed by
-                    -- changing the comparison in the while loop to "<="
-                    result.digits[#result.digits] = 1
-                    result.digits[#result.digits + 1] = 0
-                else
-                    result.digits[#result.digits + 1] = factor
-                end
-
-                -- Subtract the divisor from the dividend to obtain the
-                -- remainder, which is the new dividend for the next loop
-                dividend = bigint.subtract(dividend,
-                                           bigint.subtract(divisor, big2))
-
-                -- Reset the divisor
-                divisor = big2:clone()
+        for i = 1, #big1.digits do
+            -- Fixes a negative zero bug
+            if (#dividend.digits ~= 0) and (bigint.compare(dividend, neg_zero, "==")) then
+                dividend = bigint.new()
+            end
+            
+            table.insert(dividend.digits, big1.digits[i])
+            
+            local factor = bigint.new(0)
+            while bigint.compare(dividend, big2, ">=") do
+                dividend = bigint.subtract(dividend, big2)
+                factor = bigint.add(factor, bigint.new(1))
             end
 
+            for i = 0, #factor.digits - 1 do
+                result.digits[#result.digits + 1 - i] = factor.digits[i + 1]
+            end
         end
 
-        -- The remainder of the final loop is returned as the function's
-        -- overall remainder
+        -- Remove leading zeros from result
+        while (result.digits[1] == 0) do
+            table.remove(result.digits, 1)
+        end
+
         return result, dividend
     end
 end
