@@ -17,6 +17,7 @@ SRS.colourscheme = {
 }
 SRS.softdrop_lock = false
 SRS.harddrop_lock = true
+SRS.spawn_above_field = true
 
 SRS.MANIPULATIONS_MAX = 128
 

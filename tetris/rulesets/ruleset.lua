@@ -23,6 +23,7 @@ Ruleset.harddrop_lock = false
 Ruleset.enable_IRS_wallkicks = false
 Ruleset.are_cancel = false
 Ruleset.are = true
+Ruleset.spawn_above_field = false
 
 Ruleset.next_sounds = {
 		I = "I",
@@ -243,10 +244,17 @@ function Ruleset:initializePiece(
 		end
 	end
 
-	local spawn_dy = (
-		config.gamesettings.spawn_positions == 2 and
-		2 or 0
-	)
+	local spawn_dy
+	if (config.gamesettings.spawn_positions == 1) then
+		spawn_dy = (
+			self.spawn_above_field and 2 or 0
+		)
+	else
+		spawn_dy = (
+			config.gamesettings.spawn_positions == 3 and
+			2 or 0
+		)
+	end
 
 	local piece = Piece(data.shape, data.orientation - 1, {
 		x = spawn_x and spawn_x or spawn_positions[data.shape].x,

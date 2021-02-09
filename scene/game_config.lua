@@ -11,7 +11,7 @@ ConfigScene.options = {
 	{"manlock", "Manual Locking", false, {"Per ruleset", "Per gamemode", "Harddrop", "Softdrop"}},
 	{"piece_colour", "Piece Colours", false, {"Per ruleset", "Arika", "TTC"}},
 	{"world_reverse", "A Button Rotation", false, {"Left", "Auto", "Right"}},
-	{"spawn_positions", "Spawn Positions", false, {"In field", "Out of field"}},
+	{"spawn_positions", "Spawn Positions", false, {"Per ruleset", "In field", "Out of field"}},
 	{"display_gamemode", "Display Gamemode", false, {"On", "Off"}},
 	{"das_last_key", "DAS Switch", false, {"Default", "Instant"}},
 	{"smooth_movement", "Smooth Piece Drop", false, {"On", "Off"}},

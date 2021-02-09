@@ -18,6 +18,7 @@ ARS.colourscheme = {
 
 ARS.softdrop_lock = false
 ARS.harddrop_lock = true
+ARS.spawn_above_field = true
 
 function ARS:onPieceCreate(piece, grid)
 	piece.floorkick = 0

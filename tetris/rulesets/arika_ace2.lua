@@ -5,6 +5,7 @@ local ARS = Ruleset:extend()
 
 ARS.name = "ACE-ARS2"
 ARS.hash = "ArikaACE2"
+ARS.spawn_above_field = true
 
 function ARS:onPieceCreate(piece, grid)
 	piece.floorkick = 0
