@@ -5,7 +5,7 @@ Cambridge
 
 Welcome to Cambridge, the next open-source falling-block game engine!
 
-This fork is written and maintained exclusively by [SashLilac](https://github.com/SashLilac), [joezeng](https://github.com/joezeng) and [Oshisaure](https://github.com/oshisaure)!
+The project is written and maintained exclusively by [SashLilac](https://github.com/SashLilac), [joezeng](https://github.com/joezeng) and [Oshisaure](https://github.com/oshisaure)!
 
 Join our Discord server for help and a welcoming community! https://discord.gg/mteMJw4
 
