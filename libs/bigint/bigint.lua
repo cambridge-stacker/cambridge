@@ -138,7 +138,7 @@ function bigint.unserialize(big, output_type, precision)
         -- Unserialization to human-readable form or scientific notation only
         -- requires reading the first few digits
         if (precision == nil) then
-            precision = 3
+            precision = math.min(#big.digits, 3)
         else
             assert(precision > 0, "Precision cannot be less than 1")
             assert(math.floor(precision) == precision,
@@ -157,7 +157,8 @@ function bigint.unserialize(big, output_type, precision)
 
         if ((output_type == "human-readable")
         or (output_type == "human")
-        or (output_type == "h")) then
+        or (output_type == "h"))
+        and (#big.digits >= 3 and #big.digits <= 10002) then
             -- Human-readable output contributed by 123eee555
 
             local name
