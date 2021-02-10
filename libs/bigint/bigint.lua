@@ -147,11 +147,11 @@ function bigint.unserialize(big, output_type, precision)
 
         -- num is the first (precision + 1) digits, the first being separated by
         -- a decimal point from the others
-        num = num .. big.digits[1]
+        num = num .. math.floor(big.digits[1])
         if (precision > 1) then
             num = num .. "."
             for i = 1, (precision - 1) do
-                num = num .. big.digits[i + 1]
+                num = num .. math.floor(big.digits[i + 1])
             end
         end
 
@@ -451,14 +451,18 @@ function bigint.exponentiate(big, power)
         local result = bigint.new(1)
         local base = big:clone()
 
-        while (bigint.compare(exp, bigint.new(0), ">")) do
+        while (true) do
             if (bigint.compare(
                 bigint.modulus(exp, bigint.new(2)), bigint.new(1), "=="
             )) then
                 result = bigint.multiply(result, base)
             end
-            exp = bigint.divide(exp, bigint.new(2))
-            base = bigint.multiply(base, base)
+            if (bigint.compare(exp, bigint.new(1), "==")) then
+                break
+            else
+                exp = bigint.divide(exp, bigint.new(2))
+                base = bigint.multiply(base, base)
+            end
         end
 
         return result
