@@ -40,7 +40,13 @@ Playing the game
 
 You do not need LÖVE on Windows, as it comes bundled with the program.  
 
-To get the stable release, simply download the ZIP in the latest release. All assets needed are bundled with the executable.
+#### Stable release
+
+To get the stable release, simply download either `cambridge-win32.zip` (32-bit) or `cambridge-windows.zip` (64-bit) in the [latest release](https://github.com/sashlilac/cambridge/releases/latest).  
+
+All assets needed are bundled with the executable.
+
+#### Bleeding edge
 
 If you want the bleeding edge version, download [this](https://github.com/SashLilac/cambridge/archive/master.zip).
 
