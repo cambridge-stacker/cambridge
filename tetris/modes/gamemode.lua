@@ -63,6 +63,7 @@ function GameMode:new(secret_inputs)
 	self.hard_drop_locked = false
 	self.lock_on_soft_drop = false
 	self.lock_on_hard_drop = false
+	self.cleared_block_table = {}
 	self.used_randomizer = nil
 	self.hold_queue = nil
 	self.held = false
@@ -244,7 +245,7 @@ function GameMode:update(inputs, ruleset)
 			self:onPieceLock(self.piece, cleared_row_count)
 			self:updateScore(self.level, self.drop_bonus, cleared_row_count)
 
-			self.grid:markClearedRows()
+			self.cleared_block_table = self.grid:markClearedRows()
 			self.piece = nil
 			if self.enable_hold then
 				self.held = false
@@ -534,6 +535,67 @@ function GameMode:getHighScoreData()
 	return {
 		score = self.score
 	}
+end
+
+function GameMode:drawLineClearAnimation()
+	-- animation function
+	-- params: block x, y, skin, colour
+	-- returns: table with RGBA, skin, colour, x, y
+	
+	-- Fadeout (default)
+	-- [[
+	function animation(x, y, skin, colour)
+		return {
+			1, 1, 1,
+			-0.25 + 1.25 * (self.lcd / self:getLineClearDelay()),
+			skin, colour,
+			48 + x * 16, y * 16
+		}
+	end
+	--]]
+
+	-- Flash
+	--[[
+	function animation(x, y, skin, colour)
+		return {
+			1, 1, 1,
+			self.lcd % 6 < 3 and 1 or 0.25,
+			skin, colour,
+			48 + x * 16, y * 16
+		}
+	end
+	--]]
+
+	-- TGM1 pop-out
+	--[[
+	function animation(x, y, skin, colour)
+		local p = 0.48
+		local l = (
+			(self:getLineClearDelay() - self.lcd) / self:getLineClearDelay()
+		)
+		local dx = l * (x - (1 + self.grid.width) / 2)
+		local dy = l * (y - (1 + self.grid.height) / 2)
+		return {
+			1, 1, 1, 1, skin, colour,
+			48 + (x + dx) * 16,
+			(y + dy) * 16 + (464 / (p - 1)) * l * (p - l)
+		}
+	end
+	--]]
+
+	for y, row in pairs(self.cleared_block_table) do
+		for x, block in pairs(row) do
+			local animation_table = animation(x, y, block.skin, block.colour)
+			love.graphics.setColor(
+				animation_table[1], animation_table[2],
+				animation_table[3], animation_table[4]
+			)
+			love.graphics.draw(
+				blocks[animation_table[5]][animation_table[6]],
+				animation_table[7], animation_table[8]
+			)
+		end
+	end
 end
 
 function GameMode:drawPiece()

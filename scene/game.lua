@@ -83,6 +83,7 @@ function GameScene:render()
 	end
 
 	self.game:drawGrid()
+	if self.game.lcd > 0 then self.game:drawLineClearAnimation() end
 	self.game:drawPiece()
 	self.game:drawNextQueue(self.ruleset)
 	self.game:drawScoringInfo()
