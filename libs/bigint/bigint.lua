@@ -82,7 +82,8 @@ function bigint.check(big, force)
         assert(type(big.sign) == "string", "bigint is unsigned")
         for _, digit in pairs(big.digits) do
             assert(type(digit) == "number", digit .. " is not a number")
-            assert(digit < 10, digit .. " is greater than or equal to 10")
+            assert(digit <= 9 and digit >= 0, digit .. " is not between 0 and 9")
+            assert(math.floor(digit) == digit, digit .. " is not an integer")
         end
     end
     return true
