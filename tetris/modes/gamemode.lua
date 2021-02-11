@@ -58,6 +58,14 @@ function GameMode:new(secret_inputs)
 		"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
 		"GM"
 	}
+	self.line_clear_animation = function(x, y, skin, colour)
+		return {
+			1, 1, 1,
+			-0.25 + 1.25 * (self.lcd / self:getLineClearDelay()),
+			skin, colour,
+			48 + x * 16, y * 16
+		}
+	end
 	-- variables related to configurable parameters
 	self.drop_locked = false
 	self.hard_drop_locked = false
@@ -543,7 +551,7 @@ function GameMode:drawLineClearAnimation()
 	-- returns: table with RGBA, skin, colour, x, y
 	
 	-- Fadeout (default)
-	-- [[
+	--[[
 	function animation(x, y, skin, colour)
 		return {
 			1, 1, 1,
@@ -585,7 +593,7 @@ function GameMode:drawLineClearAnimation()
 
 	for y, row in pairs(self.cleared_block_table) do
 		for x, block in pairs(row) do
-			local animation_table = animation(x, y, block.skin, block.colour)
+			local animation_table = self.line_clear_animation(x, y, block.skin, block.colour)
 			love.graphics.setColor(
 				animation_table[1], animation_table[2],
 				animation_table[3], animation_table[4]
