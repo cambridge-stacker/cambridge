@@ -209,8 +209,11 @@ function Ruleset:dropPiece(
 	end
 end
 
-function Ruleset:lockPiece(piece, grid, lock_delay)
-	if piece:isDropBlocked(grid) and piece.gravity >= 1 and piece.lock_delay >= lock_delay then
+function Ruleset:lockPiece(piece, grid, lock_delay, classic_lock)
+	if piece:isDropBlocked(grid) and (
+		(classic_lock and piece.gravity >= 1) or
+		(not classic_lock and piece.lock_delay >= lock_delay)
+	) then
 		piece.locked = true
 	end
 end
@@ -286,7 +289,7 @@ function Ruleset:processPiece(
 	inputs, piece, grid, gravity, prev_inputs,
 	move, lock_delay, drop_speed,
 	drop_locked, hard_drop_locked,
-	hard_drop_enabled, additive_gravity
+	hard_drop_enabled, additive_gravity, classic_lock
 )
 
 	local synchroes_allowed = ({not self.world, true, false})[config.gamesettings.synchroes_allowed]
@@ -302,7 +305,7 @@ function Ruleset:processPiece(
 		inputs, piece, grid, gravity, drop_speed, drop_locked, hard_drop_locked,
 		hard_drop_enabled, additive_gravity
 	)
-	self:lockPiece(piece, grid, lock_delay)
+	self:lockPiece(piece, grid, lock_delay, classic_lock)
 end
 
 function Ruleset:onPieceMove(piece) end

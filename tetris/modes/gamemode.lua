@@ -45,6 +45,7 @@ function GameMode:new(secret_inputs)
 	self.enable_hard_drop = true
 	self.next_queue_length = 1
 	self.additive_gravity = true
+	self.classic_lock = false
 	self.draw_section_times = false
 	self.draw_secondary_section_times = false
 	self.big_mode = false
@@ -194,7 +195,7 @@ function GameMode:update(inputs, ruleset)
 			inputs, self.piece, self.grid, self:getGravity(), self.prev_inputs,
 			self.move, self:getLockDelay(), self:getDropSpeed(),
 			self.drop_locked, self.hard_drop_locked,
-			self.enable_hard_drop, self.additive_gravity
+			self.enable_hard_drop, self.additive_gravity, self.classic_lock
 		)
 
 		local piece_dy = self.piece.position.y - piece_y
@@ -578,7 +579,7 @@ function GameMode:drawLineClearAnimation()
 	-- TGM1 pop-out
 	--[[
 	function animation(x, y, skin, colour)
-		local p = 0.48
+		local p = 0.5
 		local l = (
 			(self:getLineClearDelay() - self.lcd) / self:getLineClearDelay()
 		)
@@ -609,12 +610,15 @@ end
 
 function GameMode:drawPiece()
 	if self.piece ~= nil then
-		self.piece:draw(
-			1,
-			self:getLockDelay() == 0 and 1 or
-			(0.25 + 0.75 * math.max(1 - self.piece.gravity, 1 - (self.piece.lock_delay / self:getLockDelay()))),
-			self.grid
+		local b = (
+			self.classic_lock and
+			(
+				self.piece:isDropBlocked(self.grid) and
+				1 - self.piece.gravity or 1
+			) or
+			1 - (self.piece.lock_delay / self:getLockDelay())
 		)
+		self.piece:draw(1, 0.25 + 0.75 * b, self.grid)
 	end
 end
 
