@@ -447,7 +447,7 @@ function bigint.exponentiate(big, power)
     if (bigint.compare(exp, bigint.new(0), "==")) then
         return bigint.new(1)
     elseif (bigint.compare(exp, bigint.new(1), "==")) then
-        return big
+        return big:clone()
     else
         local result = bigint.new(1)
         local base = big:clone()
