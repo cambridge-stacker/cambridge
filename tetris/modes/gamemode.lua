@@ -179,11 +179,15 @@ function GameMode:update(inputs, ruleset)
 			return
 		end
 
-		if self.lock_drop and inputs["down"] ~= true then
+		if (self.lock_drop or (
+			not ruleset.are or self:getARE() == 0
+		)) and inputs["down"] ~= true then
 			self.drop_locked = false
 		end
 
-		if self.lock_hard_drop and inputs["up"] ~= true then
+		if (self.lock_hard_drop or (
+			not ruleset.are or self:getARE() == 0
+		)) and inputs["up"] ~= true then
 			self.hard_drop_locked = false
 		end
 
