@@ -515,10 +515,14 @@ function GameMode:initializeNextPiece(inputs, ruleset, piece_data, generate_next
 	if self.buffer_soft_drop then
 		self.buffer_soft_drop = false
 	end
-	if self.lock_drop then
+	if self.lock_drop or (
+		not ruleset.are or self:getARE() == 0
+	) then
 		self.drop_locked = true
 	end
-	if self.lock_hard_drop then
+	if self.lock_hard_drop or (
+		not ruleset.are or self:getARE() == 0
+	) then
 		self.hard_drop_locked = true
 	end
 	if generate_next_piece == nil then
