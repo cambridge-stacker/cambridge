@@ -104,9 +104,8 @@ function Piece:dropToBottom(grid)
 	self:dropSquares(math.huge, grid)
 	self.gravity = 0
 	if self.position.y > piece_y then
-		-- if it got dropped any, also reset lock delay
 		if self.ghost == false then playSE("bottom") end
-		self.lock_delay = 0
+		-- self.lock_delay = 0
 	end
 	return self
 end
