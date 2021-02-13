@@ -171,7 +171,6 @@ function MarathonA2Game:updateSectionTimes(old_level, new_level)
 		self.section_start_time = self.frames
 		self.section_tetrises[math.floor(old_level / 100)] = self.tetris_count
 		self.tetris_count = 0
-		print(self.section_tetrises[math.floor(old_level / 100)])
 	end
 end
 
