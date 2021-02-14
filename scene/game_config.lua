@@ -103,7 +103,7 @@ function ConfigScene:onInputPress(e)
 		else
 			playSE("cursor")
 			sld = self[self.options[self.highlight][4]]
-			sld.value = math.max(sld.min, math.min(sld.max, (sld:getValue() - 3) / (sld.max - sld.min)))
+			sld.value = math.max(sld.min, math.min(sld.max, (sld:getValue() - 5) / (sld.max - sld.min)))
 		end
 	elseif e.input == "right" or e.scancode == "right" then
 		if not self.options[self.highlight][3] then
@@ -113,7 +113,7 @@ function ConfigScene:onInputPress(e)
 		else
 			playSE("cursor")
 			sld = self[self.options[self.highlight][4]]
-			sld.value = math.max(sld.min, math.min(sld.max, (sld:getValue() + 3) / (sld.max - sld.min)))--math.max(0, (math.floor(sld:getValue())+2)/(sld.max-sld.min))
+			sld.value = math.max(sld.min, math.min(sld.max, (sld:getValue() + 5) / (sld.max - sld.min)))--math.max(0, (math.floor(sld:getValue())+2)/(sld.max-sld.min))
 		end
 	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
 		loadSave()
