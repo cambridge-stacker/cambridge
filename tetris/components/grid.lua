@@ -394,7 +394,8 @@ end
 function Grid:draw()
 	for y = 5, self.height do
 		for x = 1, self.width do
-			if self.grid[y][x] ~= empty then
+			if blocks[self.grid[y][x].skin] and
+			blocks[self.grid[y][x].skin][self.grid[y][x].colour] then
 				if self.grid_age[y][x] < 2 then
 					love.graphics.setColor(1, 1, 1, 1)
 					love.graphics.draw(blocks[self.grid[y][x].skin]["F"], 48+x*16, y*16)

@@ -264,6 +264,7 @@ function GameMode:update(inputs, ruleset)
 				)
 				if self.lcd == 0 then
 					self.grid:clearClearedRows()
+					self:afterLineClear(cleared_row_count)
 					if self.are == 0 then
 						self:initializeOrHold(inputs, ruleset)
 					end
@@ -300,6 +301,7 @@ function GameMode:onPieceLock(piece, cleared_row_count)
 end
 
 function GameMode:onLineClear(cleared_row_count) end
+function GameMode:afterLineClear(cleared_row_count) end
 
 function GameMode:onPieceEnter() end
 function GameMode:onHold() end
@@ -431,7 +433,9 @@ function GameMode:processDelays(inputs, ruleset, drop_speed)
 		self.lcd = self.lcd - 1
 		self:areCancel(inputs, ruleset)
 		if self.lcd == 0 then
+			local cleared_row_count = self.grid:getClearedRowCount()
 			self.grid:clearClearedRows()
+			self:afterLineClear(cleared_row_count)
 			playSE("fall")
 			if self.are == 0 then
 				self:initializeOrHold(inputs, ruleset)
@@ -759,7 +763,9 @@ function GameMode:drawSectionTimesWithSecondary(current_section, section_limit)
 	end
 end
 
-function GameMode:drawSectionTimesWithSplits(current_section)
+function GameMode:drawSectionTimesWithSplits(current_section, section_limit)
+	section_limit = section_limit or math.huge
+	
 	local section_x = 440
 	local split_x = 530
 
@@ -773,8 +779,11 @@ function GameMode:drawSectionTimesWithSplits(current_section)
 		end
 	end
 	
-	love.graphics.printf(formatTime(self.frames - self.section_start_time), section_x, 40 + 20 * current_section, 90, "left")
-	love.graphics.printf(formatTime(self.frames), split_x, 40 + 20 * current_section, 90, "left")
+	if (current_section <= section_limit) then
+		love.graphics.setColor(self:sectionColourFunction(current_section))
+		love.graphics.printf(formatTime(self.frames - self.section_start_time), section_x, 40 + 20 * current_section, 90, "left")
+		love.graphics.printf(formatTime(self.frames), split_x, 40 + 20 * current_section, 90, "left")
+	end
 end
 
 function GameMode:drawCustom() end
