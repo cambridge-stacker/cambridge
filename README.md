@@ -9,6 +9,8 @@ The project is written and maintained exclusively by [SashLilac](https://github.
 
 Join our Discord server for help and a welcoming community! https://discord.gg/mteMJw4
 
+The game also has a website now with more detail than seen on this README: https://t-sp.in/cambridge
+
 Credits
 -------
 
@@ -17,19 +19,7 @@ Credits
 - [The Tetra Legends Discord](http://discord.com/invite/7hMx5r2) for supporting me and playtesting!
 - [The Absolute Plus](https://discord.gg/6Gf2awJ) for being another source of motivation!
 
-The following people in no particular order also helped with the project:
-- [Hailey](https://github.com/haileylgbt)
-- CylinderKnot
-- MarkGamed7794
-- [Mizu](https://github.com/rexxt)
-- MattMayuga
-- Kitaru
-- switchpalacecorner
-- [sinefuse](https://github.com/sinefuse)
-- [2Tie](https://github.com/2Tie)
-- [nightmareci](https://github.com/nightmareci)
-- [MyPasswordIsWeak](https://github.com/MyPasswordIsWeak)
-- [Dr Ocelot](https://github.com/Dr-Ocelot)
+More special thanks can be found in-game, under the "Credits" menu.
 
 ![Cambridge Logo](https://cdn.discordapp.com/attachments/625496179433668635/763363717730664458/Icon_2.png)
 
