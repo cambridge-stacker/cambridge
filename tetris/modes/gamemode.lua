@@ -137,7 +137,7 @@ function GameMode:update(inputs, ruleset)
 
 	-- set attempt flags
 	if inputs["left"] or inputs["right"] then
-		self:onAttemptPieceMove(self.piece)
+		self:onAttemptPieceMove(self.piece, self.grid)
 		if self.immobile_spin_bonus and self.piece ~= nil then
 			if not self.piece:isMoveBlocked(self.grid, { x=-1, y=0 }) and
 			not self.piece:isMoveBlocked(self.grid, { x=1, y=0 }) then
@@ -150,7 +150,7 @@ function GameMode:update(inputs, ruleset)
 		inputs["rotate_left2"] or inputs["rotate_right2"] or
 		inputs["rotate_180"]
 	then
-		self:onAttemptPieceRotate(self.piece)
+		self:onAttemptPieceRotate(self.piece, self.grid)
 		if self.immobile_spin_bonus and self.piece ~= nil then
 			if self.piece:isDropBlocked(self.grid) and
 			self.piece:isMoveBlocked(self.grid, { x=-1, y=0 }) and 
@@ -193,6 +193,7 @@ function GameMode:update(inputs, ruleset)
 
 		-- diff vars to use in checks
 		local piece_y = self.piece.position.y
+		local piece_x = self.piece.position.x
 		local piece_rot = self.piece.rotation
 
 		ruleset:processPiece(
@@ -203,6 +204,7 @@ function GameMode:update(inputs, ruleset)
 		)
 
 		local piece_dy = self.piece.position.y - piece_y
+		local piece_dx = self.piece.position.x - piece_x
 		local piece_drot = self.piece.rotation - piece_rot
 
 		-- das cut
@@ -214,11 +216,12 @@ function GameMode:update(inputs, ruleset)
 				inputs.rotate_180
 			))
 		) then
-			self.das.frames = math.max(
-				self.das.frames - self:getDasCutDelay(),
-				-(self:getDasCutDelay() + 1)
-			)
+			self:dasCut()
 		end
+
+		if (piece_dx ~= 0) then self:onPieceMove(self.piece, self.grid) end
+		if (piece_drot ~= 0) then self:onPieceRotate(self.piece, self.grid) end
+		if (piece_dy ~= 0) then self:onPieceDrop(self.piece, self.grid) end
 
 		if inputs["up"] == true and
 			self.piece:isDropBlocked(self.grid) and
@@ -294,8 +297,11 @@ end
 
 -- event functions
 function GameMode:whilePieceActive() end
-function GameMode:onAttemptPieceMove(piece) end
-function GameMode:onAttemptPieceRotate(piece) end
+function GameMode:onAttemptPieceMove(piece, grid) end
+function GameMode:onAttemptPieceRotate(piece, grid) end
+function GameMode:onPieceMove(piece, grid) end
+function GameMode:onPieceRotate(piece, grid) end
+function GameMode:onPieceDrop(piece, grid) end
 function GameMode:onPieceLock(piece, cleared_row_count) 
 	playSE("lock")
 end
@@ -388,6 +394,13 @@ function GameMode:chargeDAS(inputs)
 			self:stopDAS()
 		end
 	end
+end
+
+function GameMode:dasCut()
+	self.das.frames = math.max(
+		self.das.frames - self:getDasCutDelay(),
+		-(self:getDasCutDelay() + 1)
+	)
 end
 
 function GameMode:areCancel(inputs, ruleset)
@@ -773,14 +786,15 @@ function GameMode:drawSectionTimesWithSplits(current_section, section_limit)
 
 	for section, time in pairs(self.section_times) do
 		if section > 0 then
+			love.graphics.setColor(self:sectionColourFunction(section))
 			love.graphics.printf(formatTime(time), section_x, 40 + 20 * section, 90, "left")
+			love.graphics.setColor(1, 1, 1, 1)
 			split_time = split_time + time
 			love.graphics.printf(formatTime(split_time), split_x, 40 + 20 * section, 90, "left")
 		end
 	end
 	
 	if (current_section <= section_limit) then
-		love.graphics.setColor(self:sectionColourFunction(current_section))
 		love.graphics.printf(formatTime(self.frames - self.section_start_time), section_x, 40 + 20 * current_section, 90, "left")
 		love.graphics.printf(formatTime(self.frames), split_x, 40 + 20 * current_section, 90, "left")
 	end
