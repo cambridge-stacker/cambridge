@@ -96,6 +96,9 @@ end
 function ARS:onPieceRotate(piece, grid)
 	if piece.floorkick >= 1 then
 		piece.floorkick = piece.floorkick + 1
+		if piece:isDropBlocked(grid) then
+			piece.locked = true
+		end
 	end
 end
 
