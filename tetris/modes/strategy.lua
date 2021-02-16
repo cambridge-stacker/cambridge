@@ -52,9 +52,8 @@ function StrategyGame:getLineClearDelay()
 end
 
 function StrategyGame:getLockDelay()
-		if self.level < 500 then return 8
-	elseif self.level < 700 then return 6
-	else return 4 end
+	if self.level < 700 then return 8
+	else return 6 end
 end
 
 function StrategyGame:getGravity()
