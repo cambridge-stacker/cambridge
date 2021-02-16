@@ -94,12 +94,8 @@ function Survival2020Game:getGravity()
 	return 20
 end
 
-function Survival2020Game:getNextPiece(ruleset)
-	return {
-		skin = self.level >= 1000 and "bone" or "2tie",
-		shape = self.randomizer:nextPiece(),
-		orientation = ruleset:getDefaultOrientation(),
-	}
+function Survival2020Game:getSkin()
+	return self.level >= 1000 and "bone" or "2tie"
 end
 
 function Survival2020Game:hitTorikan(old_level, new_level)

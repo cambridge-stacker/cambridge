@@ -60,14 +60,6 @@ function StrategyGame:getGravity()
 	return 20
 end
 
-function StrategyGame:getNextPiece(ruleset)
-	return {
-		skin = "2tie",
-		shape = self.randomizer:nextPiece(),
-		orientation = ruleset:getDefaultOrientation(),
-	}
-end
-
 function StrategyGame:advanceOneFrame()
 	if self.clear then
 		self.roll_frames = self.roll_frames + 1
