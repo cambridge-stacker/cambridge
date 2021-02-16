@@ -2,7 +2,7 @@
 -- If this variable is true, then strict type checking is performed for all
 -- operations. This may result in slower code, but it will allow you to catch
 -- errors and bugs earlier.
-local strict = true
+local strict = false
 
 --------------------------------------------------------------------------------
 
@@ -33,12 +33,7 @@ function bigint.new(num)
             return bigint.add(lhs, rhs)
         end,
         __unm = function()
-            if (self.sign == "+") then
-                self.sign = "-"
-            else
-                self.sign = "+"
-            end
-            return self
+            return bigint.negate(self)
         end,
         __sub = function(lhs, rhs)
             return bigint.subtract(lhs, rhs)
@@ -95,6 +90,18 @@ function bigint.abs(big)
     bigint.check(big)
     local result = big:clone()
     result.sign = "+"
+    return result
+end
+
+-- Return a new big with the same digits but the opposite sign (negation)
+function bigint.negate(big)
+    bigint.check(big)
+    local result = big:clone()
+    if (result.sign == "+") then
+        result.sign = "-"
+    else
+        result.sign = "+"
+    end
     return result
 end
 
