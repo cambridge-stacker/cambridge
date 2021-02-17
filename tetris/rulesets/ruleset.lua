@@ -163,22 +163,36 @@ end
 
 function Ruleset:movePiece(piece, grid, move, instant)
 	if not self:canPieceMove(piece, grid) then return end
-	local x = piece.position.x
 	local was_drop_blocked = piece:isDropBlocked(grid)
+	local offset = ({x=0, y=0})
+	local moves = 0
 	if move == "left" then
-		piece:moveInGrid({x=-1, y=0}, 1, grid, false)
+		offset.x = -1
+		moves = 1
 	elseif move == "right" then
-		piece:moveInGrid({x=1, y=0}, 1, grid, false)
+		offset.x = 1
+		moves = 1
 	elseif move == "speedleft" then
-		piece:moveInGrid({x=-1, y=0}, grid.width, grid, instant)
+		offset.x = -1
+		moves = grid.width
 	elseif move == "speedright" then
-		piece:moveInGrid({x=1, y=0}, grid.width, grid, instant)
+		offset.x = 1
+		moves = grid.width
 	end
-	if piece.position.x ~= x then
-		self:onPieceMove(piece, grid)
-		if not was_drop_blocked and piece:isDropBlocked(grid) then
-			playSE("bottom")
+	for i = 1, moves do
+		local x = piece.position.x
+		if moves ~= 1 then
+			piece:moveInGrid(offset, 1, grid, instant)
+		else
+			piece:moveInGrid(offset, 1, grid, false)
 		end
+		if piece.position.x ~= x then
+			self:onPieceMove(piece, grid)
+			if piece.locked then break end
+		end
+	end
+	if not was_drop_blocked and piece:isDropBlocked(grid) then
+		playSE("bottom")
 	end
 end
 
