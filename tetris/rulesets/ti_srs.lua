@@ -150,9 +150,9 @@ function SRS:attemptWallkicks(piece, new_piece, rot_dir, grid)
 	for idx, offset in pairs(kicks) do
 		kicked_piece = new_piece:withOffset(offset)
 		if grid:canPlacePiece(kicked_piece) then
-			self:onPieceRotate(piece, grid)
 			piece:setRelativeRotation(rot_dir)
 			piece:setOffset(offset)
+			self:onPieceRotate(piece, grid, offset.y < 0)
 			return
 		end
 	end
@@ -182,14 +182,15 @@ function SRS:onPieceMove(piece, grid)
 	end
 end
 
-function SRS:onPieceRotate(piece, grid)
+function SRS:onPieceRotate(piece, grid, upward)
 	piece.lock_delay = 0 -- rotate reset
-	if piece:isDropBlocked(grid) then
+	if upward or piece:isDropBlocked(grid) then
         piece.rotations = piece.rotations + 1
-		if piece.rotations >= self.ROTATIONS_MAX then
-			piece.locked = true
-		end
 	end
+end
+
+function SRS:canPieceRotate(piece)
+	return piece.rotations < self.ROTATIONS_MAX
 end
 
 function SRS:get180RotationValue() return 3 end

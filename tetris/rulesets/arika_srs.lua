@@ -21,14 +21,15 @@ SRS.spawn_above_field = true
 
 SRS.MANIPULATIONS_MAX = 128
 
-function SRS:onPieceRotate(piece, grid)
+function SRS:onPieceRotate(piece, grid, upward)
 	piece.lock_delay = 0 -- rotate reset
-	if piece:isDropBlocked(grid) then
+	if upward or piece:isDropBlocked(grid) then
         piece.manipulations = piece.manipulations + 1
-		if piece.manipulations >= self.MANIPULATIONS_MAX then
-			piece.locked = true
-		end
 	end
+end
+
+function SRS:canPieceRotate(piece)
+	return piece.manipulations < self.MANIPULATIONS_MAX
 end
 
 return SRS
