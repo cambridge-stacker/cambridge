@@ -115,7 +115,9 @@ function Ruleset:rotatePiece(inputs, piece, grid, prev_inputs, initial)
 
 	local was_drop_blocked = piece:isDropBlocked(grid)
 
-	self:attemptRotate(new_inputs, piece, grid, initial)
+	if self:canPieceRotate(piece, grid) then
+		self:attemptRotate(new_inputs, piece, grid, initial)
+	end
 
 	if not was_drop_blocked and piece:isDropBlocked(grid) then
 		playSE("bottom")
@@ -160,6 +162,7 @@ function Ruleset:attemptWallkicks(piece, new_piece, rot_dir, grid)
 end
 
 function Ruleset:movePiece(piece, grid, move, instant)
+	if not self:canPieceMove(piece, grid) then return end
 	local x = piece.position.x
 	local was_drop_blocked = piece:isDropBlocked(grid)
 	if move == "left" then
@@ -181,7 +184,7 @@ end
 
 function Ruleset:dropPiece(
 	inputs, piece, grid, gravity, drop_speed, drop_locked, hard_drop_locked,
-	hard_drop_enabled, additive_gravity
+	hard_drop_enabled, additive_gravity, classic_lock
 )
 	if piece.big then
 		gravity = gravity / 2
@@ -191,18 +194,18 @@ function Ruleset:dropPiece(
 	local y = piece.position.y
 	if inputs["down"] == true and drop_locked == false then
 		if additive_gravity then
-			piece:addGravity(gravity + drop_speed, grid)
+			piece:addGravity(gravity + drop_speed, grid, classic_lock)
 		else
-			piece:addGravity(math.max(gravity, drop_speed), grid)
+			piece:addGravity(math.max(gravity, drop_speed), grid, classic_lock)
 		end
 	elseif inputs["up"] == true and hard_drop_enabled == true then
 		if hard_drop_locked == true or piece:isDropBlocked(grid) then
-			piece:addGravity(gravity, grid)
+			piece:addGravity(gravity, grid, classic_lock)
 		else
 			piece:dropToBottom(grid)
 		end
 	else
-		piece:addGravity(gravity, grid)
+		piece:addGravity(gravity, grid, classic_lock)
 	end
 	if piece.position.y ~= y then
 		self:onPieceDrop(piece, grid)
@@ -303,11 +306,13 @@ function Ruleset:processPiece(
 	end
 	self:dropPiece(
 		inputs, piece, grid, gravity, drop_speed, drop_locked, hard_drop_locked,
-		hard_drop_enabled, additive_gravity
+		hard_drop_enabled, additive_gravity, classic_lock
 	)
 	self:lockPiece(piece, grid, lock_delay, classic_lock)
 end
 
+function Ruleset:canPieceMove(piece, grid) return true end
+function Ruleset:canPieceRotate(piece, grid) return true end
 function Ruleset:onPieceMove(piece) end
 function Ruleset:onPieceRotate(piece) end
 function Ruleset:onPieceDrop(piece) end

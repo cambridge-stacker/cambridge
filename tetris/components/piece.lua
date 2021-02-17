@@ -117,11 +117,15 @@ function Piece:lockIfBottomed(grid)
 	return self
 end
 
-function Piece:addGravity(gravity, grid)
+function Piece:addGravity(gravity, grid, classic_lock)
 	local new_gravity = self.gravity + gravity
 	if self:isDropBlocked(grid) then
-		self.gravity = math.min(1, new_gravity)
-		self.lock_delay = self.lock_delay + 1
+		if classic_lock then
+			self.gravity = math.min(1, new_gravity)
+		else
+			self.gravity = 0
+			self.lock_delay = self.lock_delay + 1
+		end
 	else
 		local dropped_squares = math.floor(new_gravity)
 		local new_frac_gravity = new_gravity - dropped_squares
