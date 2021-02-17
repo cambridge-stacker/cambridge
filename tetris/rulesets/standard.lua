@@ -100,6 +100,6 @@ function SRS:onPieceRotate(piece, grid)
     end
 end
 
-function SRS:canPieceRotate() end
+function SRS:canPieceRotate() return true end
 
 return SRS
