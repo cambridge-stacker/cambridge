@@ -35,16 +35,6 @@ Ruleset.next_sounds = {
 		T = "T"
 }
 
-Ruleset.draw_offsets = {
-	I = { x=0, y=0 },
-	J = { x=0, y=0 },
-	L = { x=0, y=0 },
-	O = { x=0, y=0 },
-	S = { x=0, y=0 },
-	T = { x=0, y=0 },
-	Z = { x=0, y=0 },
-}
-
 Ruleset.pieces = 7
 
 -- Component functions.
@@ -237,6 +227,14 @@ end
 
 function Ruleset:get180RotationValue() return 2 end
 function Ruleset:getDefaultOrientation() return 1 end
+function Ruleset:getDrawOffset(shape, orientation) return { x=0, y=0 } end
+function Ruleset:getAboveFieldOffset(shape, orientation)
+	if shape == "I" then
+		return 1
+	else
+		return 2
+	end
+end
 
 function Ruleset:initializePiece(
 	inputs, data, grid, gravity, prev_inputs,
@@ -267,12 +265,13 @@ function Ruleset:initializePiece(
 	local spawn_dy
 	if (config.gamesettings.spawn_positions == 1) then
 		spawn_dy = (
-			self.spawn_above_field and 2 or 0
+			self.spawn_above_field and
+			self:getAboveFieldOffset(data.shape, data.orientation) or 0
 		)
 	else
 		spawn_dy = (
 			config.gamesettings.spawn_positions == 3 and
-			2 or 0
+			self:getAboveFieldOffset(data.shape, data.orientation) or 0
 		)
 	end
 

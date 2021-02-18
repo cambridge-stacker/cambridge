@@ -48,27 +48,6 @@ PAIRS.big_spawn_positions = {
     [18] = { x=2, y=3 },
 }
 
-PAIRS.draw_offsets = {
-	[1] = { x=0, y=0 },
-	[2] = { x=0, y=0 },
-	[3] = { x=0, y=0 },
-	[4] = { x=0, y=0 },
-	[5] = { x=0, y=0 },
-	[6] = { x=0, y=0 },
-    [7] = { x=0, y=0 },
-    [8] = { x=0, y=0 },
-	[9] = { x=0, y=0 },
-	[10] = { x=0, y=0 },
-	[11] = { x=0, y=0 },
-	[12] = { x=0, y=0 },
-	[13] = { x=0, y=0 },
-    [14] = { x=0, y=0 },
-    [15] = { x=0, y=0 },
-	[16] = { x=0, y=0 },
-	[17] = { x=0, y=0 },
-	[18] = { x=0, y=0 },
-}
-
 PAIRS.next_sounds = {
     [1] = "I",
     [2] = "O",
@@ -265,11 +244,15 @@ function PAIRS:onPieceDrop(piece, grid)
 end
 
 function PAIRS:get180RotationValue() 
-	if config.gamesettings.world_reverse == 1 then
-		return 1
-	else
-		return 3
-	end
+    return 3
+end
+
+function PAIRS:getAboveFieldOffset(shape, orientation)
+    if shape == 1 then
+        return 1
+    else
+        return 2
+    end
 end
 
 return PAIRS
