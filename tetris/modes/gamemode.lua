@@ -95,9 +95,8 @@ function GameMode:getSkin()
 	return "2tie"
 end
 
-function GameMode:initialize(ruleset, secret_inputs)
+function GameMode:initialize(ruleset)
 	-- generate next queue
-	self:new(secret_inputs)
 	self.used_randomizer = (
 		ruleset.pieces == self.randomizer.possible_pieces and
 		self.randomizer or
@@ -107,6 +106,7 @@ function GameMode:initialize(ruleset, secret_inputs)
 			BagRandomizer(ruleset.pieces)
 		)
 	)
+	self.ruleset = ruleset
 	for i = 1, math.max(self.next_queue_length, 1) do
 		table.insert(self.next_queue, self:getNextPiece(ruleset))
 	end
@@ -332,6 +332,8 @@ end
 function GameMode:onGameComplete()
 	self:onGameOver()
 end
+
+function GameMode:onExit() end
 
 -- DAS functions
 

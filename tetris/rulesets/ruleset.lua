@@ -39,8 +39,8 @@ Ruleset.pieces = 7
 
 -- Component functions.
 
-function Ruleset:new()
-	
+function Ruleset:new(game_mode)
+	self.game = game_mode
 	if config.gamesettings.piece_colour == 1 then
 		blocks["bone"] = (not self.world) and
 		{
