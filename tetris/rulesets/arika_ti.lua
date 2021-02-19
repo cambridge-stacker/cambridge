@@ -74,8 +74,8 @@ function ARS:attemptWallkicks(piece, new_piece, rot_dir, grid)
 		   and grid:canPlacePiece(new_piece:withOffset({x=0, y=-1}))
 		then
 			-- T floorkick
-			piece.floorkick = piece.floorkick + 1
 			self:onPieceRotate(piece, grid)
+			piece.floorkick = piece.floorkick + 1
 			piece:setRelativeRotation(rot_dir):setOffset({x=0, y=-1})
 		end
 	end
