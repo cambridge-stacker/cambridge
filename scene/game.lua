@@ -129,6 +129,7 @@ function GameScene:onInputPress(e)
 		if self.paused then pauseBGM()
 		else resumeBGM() end
 	elseif e.input == "menu_back" then
+		self.game:onExit()
 		scene = ModeSelectScene()
 	elseif e.input and string.sub(e.input, 1, 5) ~= "menu_" then
 		self.inputs[e.input] = true
