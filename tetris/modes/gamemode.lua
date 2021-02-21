@@ -201,9 +201,18 @@ function GameMode:update(inputs, ruleset)
 			self:dasCut()
 		end
 
-		if (piece_dx ~= 0) then self:onPieceMove(self.piece, self.grid) end
-		if (piece_drot ~= 0) then self:onPieceRotate(self.piece, self.grid) end
-		if (piece_dy ~= 0) then self:onPieceDrop(self.piece, self.grid) end
+		if (piece_dx ~= 0) then
+			self.piece.last_rotated = false
+			self:onPieceMove(self.piece, self.grid, piece_dx)
+		end
+		if (piece_drot ~= 0) then
+			self.piece.last_rotated = true
+			self:onPieceRotate(self.piece, self.grid, piece_drot)
+		end
+		if (piece_dy ~= 0) then
+			self.piece.last_rotated = false
+			self:onPieceDrop(self.piece, self.grid, piece_dy)
+		end
 
 		if inputs["up"] == true and
 			self.piece:isDropBlocked(self.grid) and
@@ -293,9 +302,9 @@ end
 function GameMode:whilePieceActive() end
 function GameMode:onAttemptPieceMove(piece, grid) end
 function GameMode:onAttemptPieceRotate(piece, grid) end
-function GameMode:onPieceMove(piece, grid) end
-function GameMode:onPieceRotate(piece, grid) end
-function GameMode:onPieceDrop(piece, grid) end
+function GameMode:onPieceMove(piece, grid, dx) end
+function GameMode:onPieceRotate(piece, grid, drot) end
+function GameMode:onPieceDrop(piece, grid, dy) end
 function GameMode:onPieceLock(piece, cleared_row_count) 
 	playSE("lock")
 end
