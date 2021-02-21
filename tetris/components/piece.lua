@@ -130,8 +130,6 @@ function Piece:addGravity(gravity, grid, classic_lock)
 		self:isMoveBlocked(grid, { x=0, y=-1 }) and gravity < 0
 	) then
 		local dropped_squares = math.floor(math.abs(new_gravity))
-		local new_frac_gravity = new_gravity - dropped_squares
-		self.gravity = new_frac_gravity
 		if gravity >= 0 then
 			local new_frac_gravity = new_gravity - dropped_squares
 			self.gravity = new_frac_gravity
@@ -142,7 +140,10 @@ function Piece:addGravity(gravity, grid, classic_lock)
 		else
 			local new_frac_gravity = new_gravity + dropped_squares
 			self.gravity = new_frac_gravity
-			self:moveInGrid({ x = 0, y = -1 }, dropped_squares, grid)
+			self:moveInGrid({ x=0, y=-1 }, dropped_squares, grid)
+			if self:isMoveBlocked(grid, { x=0, y=-1 }) then
+				playSE("bottom")
+			end
 		end
 	else
 		self.gravity = 0
