@@ -127,12 +127,20 @@ function Piece:addGravity(gravity, grid, classic_lock)
 			self.lock_delay = self.lock_delay + 1
 		end
 	else
-		local dropped_squares = math.floor(new_gravity)
+		local dropped_squares = math.floor(math.abs(new_gravity))
 		local new_frac_gravity = new_gravity - dropped_squares
 		self.gravity = new_frac_gravity
-		self:dropSquares(dropped_squares, grid)
-		if self:isDropBlocked(grid) then
-			playSE("bottom")
+		if gravity >= 0 then
+			local new_frac_gravity = new_gravity - dropped_squares
+			self.gravity = new_frac_gravity
+			self:dropSquares(dropped_squares, grid)
+			if self:isDropBlocked(grid) then
+				playSE("bottom")
+			end
+		else
+			local new_frac_gravity = new_gravity + dropped_squares
+			self.gravity = new_frac_gravity
+			self:moveInGrid({ x = 0, y = -1 }, dropped_squares, grid)
 		end
 	end
 	return self
