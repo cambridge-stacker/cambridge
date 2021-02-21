@@ -136,31 +136,13 @@ function GameMode:update(inputs, ruleset)
 	self:chargeDAS(inputs, self:getDasLimit(), self:getARR())
 
 	-- set attempt flags
-	if inputs["left"] or inputs["right"] then
-		self:onAttemptPieceMove(self.piece, self.grid)
-		if self.immobile_spin_bonus and self.piece ~= nil then
-			if not self.piece:isMoveBlocked(self.grid, { x=-1, y=0 }) and
-			not self.piece:isMoveBlocked(self.grid, { x=1, y=0 }) then
-				self.piece.spin = false
-			end
-		end
-	end
-	if
+	if inputs["left"] or inputs["right"] then self:onAttemptPieceMove(self.piece, self.grid) end
+	if (
 		inputs["rotate_left"] or inputs["rotate_right"] or
 		inputs["rotate_left2"] or inputs["rotate_right2"] or
 		inputs["rotate_180"]
-	then
+	) then
 		self:onAttemptPieceRotate(self.piece, self.grid)
-		if self.immobile_spin_bonus and self.piece ~= nil then
-			if self.piece:isDropBlocked(self.grid) and
-			self.piece:isMoveBlocked(self.grid, { x=-1, y=0 }) and 
-			self.piece:isMoveBlocked(self.grid, { x=1, y=0 }) and
-			self.piece:isMoveBlocked(self.grid, { x=0, y=-1 }) then
-				self.piece.spin = true
-			else
-			 	self.piece.spin = false
-			end
-		end
 	end
 	
 	if self.piece == nil then
@@ -244,7 +226,19 @@ function GameMode:update(inputs, ruleset)
 		end
 
 		if self.piece.locked == true then
+			-- spin detection, immobile only for now
+			if self.immobile_spin_bonus and (
+				self.piece:isDropBlocked(self.grid) and
+				self.piece:isMoveBlocked(self.grid, { x=-1, y=0 }) and 
+				self.piece:isMoveBlocked(self.grid, { x=1, y=0 }) and
+				self.piece:isMoveBlocked(self.grid, { x=0, y=-1 })
+			) then
+				self.piece.spin = true
+			end
+
 			self.grid:applyPiece(self.piece)
+			
+			-- mark squares (can be overridden)
 			if self.square_mode then
 				self.squares = self.squares + self.grid:markSquares()
 			end
