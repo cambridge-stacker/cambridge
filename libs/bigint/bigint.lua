@@ -8,6 +8,33 @@ local strict = false
 
 local bigint = {}
 
+local mt = {
+    __add = function(lhs, rhs)
+        return bigint.add(lhs, rhs)
+    end,
+    __unm = function()
+        return bigint.negate(self)
+    end,
+    __sub = function(lhs, rhs)
+        return bigint.subtract(lhs, rhs)
+    end,
+    __mul = function(lhs, rhs)
+        return bigint.multiply(lhs, rhs)
+    end,
+    __div = function(lhs, rhs)
+        return bigint.divide(lhs, rhs)
+    end,
+    __mod = function(lhs, rhs)
+        return bigint.modulus(lhs, rhs)
+    end,
+    __pow = function(lhs, rhs)
+        return bigint.exponentiate(lhs, rhs)
+    end,
+    __tostring = function()
+        return bigint.unserialize(self, "s")
+    end
+}
+
 local named_powers = require("libs.bigint.named-powers-of-ten")
 
 -- Create a new bigint or convert a number or string into a big
@@ -28,32 +55,7 @@ function bigint.new(num)
         return newint
     end
 
-    setmetatable(self, {
-        __add = function(lhs, rhs)
-            return bigint.add(lhs, rhs)
-        end,
-        __unm = function()
-            return bigint.negate(self)
-        end,
-        __sub = function(lhs, rhs)
-            return bigint.subtract(lhs, rhs)
-        end,
-        __mul = function(lhs, rhs)
-            return bigint.multiply(lhs, rhs)
-        end,
-        __div = function(lhs, rhs)
-            return bigint.divide(lhs, rhs)
-        end,
-        __mod = function(lhs, rhs)
-            return bigint.modulus(lhs, rhs)
-        end,
-        __pow = function(lhs, rhs)
-            return bigint.exponentiate(lhs, rhs)
-        end,
-        __tostring = function()
-            return bigint.unserialize(self, "s")
-        end
-    })
+    setmetatable(self, mt)
 
     if (num) then
         local num_string = tostring(num)
@@ -73,10 +75,11 @@ end
 -- forced by supplying "true" as the second argument.
 function bigint.check(big, force)
     if (strict or force) then
+        assert(getmetatable(big) == mt, "at least one arg is not a bigint")
         assert(#big.digits > 0, "bigint is empty")
-        assert(type(big.sign) == "string", "bigint is unsigned")
+        assert(big.sign == "+" or big.sign == "-", "bigint is unsigned")
         for _, digit in pairs(big.digits) do
-            assert(type(digit) == "number", digit .. " is not a number")
+            assert(type(digit) == "number", "at least one digit is invalid")
             assert(digit <= 9 and digit >= 0, digit .. " is not between 0 and 9")
             assert(math.floor(digit) == digit, digit .. " is not an integer")
         end
