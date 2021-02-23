@@ -378,7 +378,7 @@ function GameMode:stopDAS()
 end
 
 function GameMode:chargeDAS(inputs)
-	if config["das_last_key"] then
+	if config.gamesettings.das_last_key == 2 then
 		if inputs["right"] == true and self.das.direction ~= "right" and not self.prev_inputs["right"] then
 			self:startRightDAS()
 		elseif inputs["left"] == true and self.das.direction ~= "left" and not self.prev_inputs["left"] then

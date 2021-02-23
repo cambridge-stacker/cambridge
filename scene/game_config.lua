@@ -13,7 +13,7 @@ ConfigScene.options = {
 	{"world_reverse", "A Button Rotation", false, {"Left", "Auto", "Right"}},
 	{"spawn_positions", "Spawn Positions", false, {"Per ruleset", "In field", "Out of field"}},
 	{"display_gamemode", "Display Gamemode", false, {"On", "Off"}},
-	{"das_last_key", "DAS Switch", false, {"Default", "Instant"}},
+	{"das_last_key", "DAS Last Key", false, {"Off", "On"}},
 	{"smooth_movement", "Smooth Piece Drop", false, {"On", "Off"}},
 	{"synchroes_allowed", "Synchroes", false, {"Per ruleset", "On", "Off"}},
 	{"diagonal_input", "Diagonal Input", false, {"On", "Off"}},
@@ -38,7 +38,6 @@ function ConfigScene:new()
 end
 
 function ConfigScene:update()
-	config["das_last_key"] = config.gamesettings.das_last_key == 2
 	self.sfxSlider:update()
 	self.bgmSlider:update()
 end

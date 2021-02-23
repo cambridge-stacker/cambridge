@@ -10,8 +10,10 @@ function love.load()
 	require "load.bigint"
 	loadSave()
 	require "scene"
+	
 	--config["side_next"] = false
 	--config["reverse_rotate"] = true
+	--config["das_last_key"] = false
 	config["fullscreen"] = false
 
 	love.window.setMode(love.graphics.getWidth(), love.graphics.getHeight(), {resizable = true});
@@ -29,12 +31,7 @@ function love.load()
 	if config.secret == nil then config.secret = false
 	elseif config.secret == true then playSE("welcome") end
 
-	if not config.gamesettings then
-		config.gamesettings = {}
-		config["das_last_key"] = false
-	else
-		config["das_last_key"] = config.gamesettings.das_last_key == 2
-	end
+	if not config.gamesettings then config.gamesettings = {} end
 	for _, option in ipairs(GameConfigScene.options) do
 		if not config.gamesettings[option[1]] then
 			config.gamesettings[option[1]] = 1
