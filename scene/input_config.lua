@@ -57,7 +57,7 @@ function ConfigScene:render()
 	for i, input in ipairs(configurable_inputs) do
 		love.graphics.printf(input, 40, 50 + i * 20, 200, "left")
 		if self.set_inputs[input] then
-			love.graphics.printf(self.set_inputs[input], 240, 50 + i * 20, 300, "left")
+			love.graphics.printf(self.set_inputs[input], 210, 50 + i * 20, 400, "left")
 		end
 	end
 	if self.input_state > table.getn(configurable_inputs) then
@@ -135,7 +135,7 @@ function ConfigScene:onInputPress(e)
 				self.input_state = self.input_state + 1
 				self.key = 1
 			elseif e.type == "joyaxis" then
-				if (e.axis ~= self.last_axis or self.axis_timer > 30) and math.abs(e.value) >= 1 then
+				if (e.axis ~= self.last_axis or self.axis_timer > 30) and e.value >= 1 then
 					addJoystick(self.new_input, e.name)
 					if not self.new_input.joysticks[e.name].axes then
 						self.new_input.joysticks[e.name].axes = {}
@@ -146,7 +146,7 @@ function ConfigScene:onInputPress(e)
 					self.set_inputs[configurable_inputs[self.input_state]] =
 						self.set_inputs[configurable_inputs[self.input_state]] ..
 						" / jaxis " ..
-						(e.value >= 1 and "+" or "-") .. e.axis ..
+						e.axis ..
 						" " .. string.sub(e.name, 1, 10) .. (string.len(e.name) > 10 and "..." or "")
 					self.new_input.joysticks[e.name].axes[e.axis][e.value >= 1 and "positive" or "negative"] = configurable_inputs[self.input_state]
 					self.input_state = self.input_state + 1
@@ -164,7 +164,7 @@ function ConfigScene:onInputPress(e)
 						self.new_input.joysticks[e.name].hats[e.hat] = {}
 					end
 					self.set_inputs[configurable_inputs[self.input_state]] =
-						self.set_inputs[configurable_inputs[self.input_state]]
+						self.set_inputs[configurable_inputs[self.input_state]] ..
 						" / jhat " ..
 						e.hat .. " " .. e.direction ..
 						" " .. string.sub(e.name, 1, 10) .. (string.len(e.name) > 10 and "..." or "")

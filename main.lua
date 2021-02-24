@@ -225,13 +225,13 @@ function love.joystickaxis(joystick, axis, value)
 		config.input.joysticks[joystick:getName()].axes and
 		config.input.joysticks[joystick:getName()].axes[axis] 
 	then
-		if math.abs(value) >= 0.5 then
+		if math.abs(value) >= 1 then
 			input_pressed = config.input.joysticks[joystick:getName()].axes[axis][value >= 0.5 and "positive" or "negative"]
 		end
 		positive_released = config.input.joysticks[joystick:getName()].axes[axis].positive
 		negative_released = config.input.joysticks[joystick:getName()].axes[axis].negative
 	end
-	if math.abs(value) >= 0.5 then
+	if math.abs(value) >= 1 then
 		scene:onInputPress({input=input_pressed, type="joyaxis", name=joystick:getName(), axis=axis, value=value})
 	else
 		scene:onInputRelease({input=positive_released, type="joyaxis", name=joystick:getName(), axis=axis, value=value})
