@@ -2,178 +2,62 @@ local ConfigScene = Scene:extend()
 
 ConfigScene.title = "Input Config"
 
-require 'load.save'
-
-local configurable_inputs = {
-	"menu_decide",
-	"menu_back",
-	"left",
-	"right",
-	"up",
-	"down",
-	"rotate_left",
-	"rotate_left2",
-	"rotate_right",
-	"rotate_right2",
-	"rotate_180",
-	"hold",
-	"retry",
-	"pause",
+local menu_screens = {
+    KeyConfigScene,
+    StickConfigScene
 }
 
-local function newSetInputs()
-	local set_inputs = {}
-	for i, input in ipairs(configurable_inputs) do
-		set_inputs[input] = false
-	end
-	return set_inputs
-end
-
 function ConfigScene:new()
-	self.input_state = 1
-	self.key = 1
-	self.set_inputs = newSetInputs()
-	self.new_input = {}
-	self.axis_timer = 0
-
-	DiscordRPC:update({
-		details = "In menus",
-		state = "Changing input config",
-	})
+    self.menu_state = 1
+    DiscordRPC:update({
+        details = "In menus",
+        state = "Changing input config",
+    })
 end
 
-function ConfigScene:update()
-end
+function ConfigScene:update() end
 
 function ConfigScene:render()
-	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.draw(
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.draw(
 		backgrounds["input_config"],
 		0, 0, 0,
 		0.5, 0.5
-	)
+    )
 
-	love.graphics.setFont(font_3x5_2)
-	for i, input in ipairs(configurable_inputs) do
-		love.graphics.printf(input, 40, 50 + i * 20, 200, "left")
-		if self.set_inputs[input] then
-			love.graphics.printf(self.set_inputs[input], 210, 50 + i * 20, 400, "left")
-		end
-	end
-	if self.input_state > table.getn(configurable_inputs) then
-		love.graphics.print("press enter to confirm, delete/backspace to retry" .. (config.input and ", escape to cancel" or ""))
-	else
-		love.graphics.print("press " .. (self.key == 2 and "joystick" or "key") .. " input for " .. configurable_inputs[self.input_state] .. ", tab to skip" .. (config.input and ", escape to cancel" or ""), 0, 0)
-		love.graphics.print("function keys (F1, F2, etc.), escape, and tab can't be changed", 0, 20)
-	end
+    love.graphics.setFont(font_3x5_4)
+    love.graphics.print("INPUT CONFIG", 80, 40)
 
-	self.axis_timer = self.axis_timer + 1
+    love.graphics.setFont(font_3x5_2)
+    love.graphics.print("Which controls do you want to change?", 80, 90)
+
+    love.graphics.setColor(1, 1, 1, 0.5)
+	love.graphics.rectangle("fill", 75, 118 + 50 * self.menu_state, 200, 33)
+
+    love.graphics.setFont(font_3x5_3)
+	love.graphics.setColor(1, 1, 1, 1)
+	for i, screen in pairs(menu_screens) do
+		love.graphics.printf(screen.title, 80, 120 + 50 * i, 200, "left")
+    end
 end
 
-local function addJoystick(input, name)
-	if not input.joysticks then
-		input.joysticks = {}
-	end
-	if not input.joysticks[name] then
-		input.joysticks[name] = {}
-	end
+function ConfigScene:changeOption(rel)
+	local len = table.getn(menu_screens)
+	self.menu_state = (self.menu_state + len + rel - 1) % len + 1
 end
 
 function ConfigScene:onInputPress(e)
-	if e.type == "key" then
-		-- function keys, escape, and tab are reserved and can't be remapped
-		if e.scancode == "escape" and config.input then
-			-- cancel only if there was an input config already
-			scene = SettingsScene()
-		elseif self.input_state > table.getn(configurable_inputs) then
-			if e.scancode == "return" then
-				-- save new input, then load next scene
-				config.input = self.new_input
-				saveConfig()
-				scene = TitleScene()
-			elseif e.scancode == "delete" or e.scancode == "backspace" then
-				-- retry
-				self.input_state = 1
-				self.set_inputs = newSetInputs()
-				self.new_input = {}
-			end
-		elseif e.scancode == "tab" then
-			self.set_inputs[configurable_inputs[self.input_state]] = 
-				(
-					self.set_inputs[configurable_inputs[self.input_state]] == false
-					and "" or self.set_inputs[configurable_inputs[self.input_state]]
-				) ..
-				(self.key == 2 and " / " or "") .. "skipped"
-			if self.key == 2 then
-				self.input_state = self.input_state + 1
-				self.key = 1
-			else
-				self.key = 2
-			end
-		elseif e.scancode ~= "escape" and self.key == 1 then
-			-- all other keys can be configured
-			if not self.new_input.keys then
-				self.new_input.keys = {}
-			end
-			self.set_inputs[configurable_inputs[self.input_state]] = "key " .. love.keyboard.getKeyFromScancode(e.scancode) .. " (" .. e.scancode .. ")"
-			self.new_input.keys[e.scancode] = configurable_inputs[self.input_state]
-			self.key = 2
-		end
-	elseif string.sub(e.type, 1, 3) == "joy" and self.key == 2 then
-		if self.input_state <= table.getn(configurable_inputs) then
-			if e.type == "joybutton" then
-				addJoystick(self.new_input, e.name)
-				if not self.new_input.joysticks[e.name].buttons then
-					self.new_input.joysticks[e.name].buttons = {}
-				end
-				self.set_inputs[configurable_inputs[self.input_state]] =
-					self.set_inputs[configurable_inputs[self.input_state]] ..
-					" / jbtn " ..
-					e.button ..
-					" " .. string.sub(e.name, 1, 10) .. (string.len(e.name) > 10 and "..." or "")
-				self.new_input.joysticks[e.name].buttons[e.button] = configurable_inputs[self.input_state]
-				self.input_state = self.input_state + 1
-				self.key = 1
-			elseif e.type == "joyaxis" then
-				if (e.axis ~= self.last_axis or self.axis_timer > 30) and e.value >= 1 then
-					addJoystick(self.new_input, e.name)
-					if not self.new_input.joysticks[e.name].axes then
-						self.new_input.joysticks[e.name].axes = {}
-					end
-					if not self.new_input.joysticks[e.name].axes[e.axis] then
-						self.new_input.joysticks[e.name].axes[e.axis] = {}
-					end
-					self.set_inputs[configurable_inputs[self.input_state]] =
-						self.set_inputs[configurable_inputs[self.input_state]] ..
-						" / jaxis " ..
-						e.axis ..
-						" " .. string.sub(e.name, 1, 10) .. (string.len(e.name) > 10 and "..." or "")
-					self.new_input.joysticks[e.name].axes[e.axis][e.value >= 1 and "positive" or "negative"] = configurable_inputs[self.input_state]
-					self.input_state = self.input_state + 1
-					self.key = 1
-					self.last_axis = e.axis
-					self.axis_timer = 0
-				end
-			elseif e.type == "joyhat" then
-				if e.direction ~= "c" then
-					addJoystick(self.new_input, e.name)
-					if not self.new_input.joysticks[e.name].hats then
-						self.new_input.joysticks[e.name].hats = {}
-					end
-					if not self.new_input.joysticks[e.name].hats[e.hat] then
-						self.new_input.joysticks[e.name].hats[e.hat] = {}
-					end
-					self.set_inputs[configurable_inputs[self.input_state]] =
-						self.set_inputs[configurable_inputs[self.input_state]] ..
-						" / jhat " ..
-						e.hat .. " " .. e.direction ..
-						" " .. string.sub(e.name, 1, 10) .. (string.len(e.name) > 10 and "..." or "")
-					self.new_input.joysticks[e.name].hats[e.hat][e.direction] = configurable_inputs[self.input_state]
-					self.input_state = self.input_state + 1
-					self.key = 1
-				end
-			end
-		end
+	if e.input == "menu_decide" or e.scancode == "return" then
+		playSE("main_decide")
+		scene = menu_screens[self.menu_state]()
+	elseif e.input == "up" or e.scancode == "up" then
+		self:changeOption(-1)
+		playSE("cursor")
+	elseif e.input == "down" or e.scancode == "down" then
+		self:changeOption(1)
+		playSE("cursor")
+	elseif e.input == "menu_back" or e.scancode == "backspace" or e.scancode == "delete" then
+		scene = SettingsScene()
 	end
 end
 

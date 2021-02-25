@@ -11,6 +11,8 @@ function Scene:onInputRelease() end
 ExitScene = require "scene.exit"
 GameScene = require "scene.game"
 ModeSelectScene = require "scene.mode_select"
+KeyConfigScene = require "scene.key_config"
+StickConfigScene = require "scene.stick_config"
 InputConfigScene = require "scene.input_config"
 GameConfigScene = require "scene.game_config"
 TuningScene = require "scene.tuning"

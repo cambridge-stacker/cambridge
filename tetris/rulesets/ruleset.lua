@@ -254,8 +254,8 @@ function Ruleset:initializePiece(
 	local spawn_x
 	if (grid.width ~= 10) then
 		local percent = spawn_positions[data.shape].x / 10
-		for i = 0, grid.width - 1 do
-			if i / grid.width >= percent then
+		for i = grid.width - 1, 0, -1 do
+			if i / grid.width <= percent then
 				spawn_x = i
 				break
 			end
