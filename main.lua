@@ -150,9 +150,11 @@ function love.keypressed(key, scancode)
     -- f12 is reserved for saving screenshots
     elseif scancode == "f12" then
         local ss_name = os.date("ss/%Y-%m-%d_%H-%M-%S.png")
-        if not love.filesystem.getInfo("ss") then
-            love.filesystem.createDirectory("ss")
-        end
+		local info = love.filesystem.getInfo("ss")
+		if not info or info.type ~= "directory" then
+			love.filesystem.remove("ss")
+			love.filesystem.createDirectory("ss")
+		end
         print("Saving screenshot as "..ss_name)
         GLOBAL_CANVAS:newImageData():encode("png", ss_name)
 	-- function keys are reserved
