@@ -83,6 +83,7 @@ function TitleScene:render()
 		love.graphics.printf(screen.title, 40, 280 + 20 * i, 120, "left")
 	end
 
+	love.graphics.printf(version, 0, 460, love.graphics.getWidth() - 5, "right")
 end
 
 function TitleScene:changeOption(rel)

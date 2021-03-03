@@ -8,6 +8,7 @@ function love.load()
 	require "load.bgm"
 	require "load.save"
 	require "load.bigint"
+	require "load.version"
 	loadSave()
 	require "scene"
 	
