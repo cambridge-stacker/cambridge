@@ -28,11 +28,8 @@ end
 function History6Rolls35PoolRandomizer:generatePiece()
 	local index, x
 	if self.first then
-		local prevent = {"S", "Z", "O"}
-		repeat
-			index = math.random(#self.pool)
-			x = self.pool[index]
-		until not inHistory(x, prevent)
+		index = math.random(20)
+		x = self.pool[index]
 		self.first = false
 	else
 		for i = 1, 6 do
