@@ -65,6 +65,7 @@ function GameMode:new(secret_inputs)
 	self.lock_on_soft_drop = false
 	self.lock_on_hard_drop = false
 	self.cleared_block_table = {}
+	self.last_lcd = 0
 	self.used_randomizer = nil
 	self.hold_queue = nil
 	self.held = false
@@ -265,6 +266,7 @@ function GameMode:update(inputs, ruleset)
 			if cleared_row_count > 0 then
 				playSE("erase")
 				self.lcd = self:getLineClearDelay()
+				self.last_lcd = self.lcd
 				self.are = (
 					ruleset.are and self:getLineARE() or 0
 				)
@@ -571,7 +573,7 @@ end
 function GameMode:animation(x, y, skin, colour)
 	return {
 		1, 1, 1,
-		-0.25 + 1.25 * (self.lcd / self:getLineClearDelay()),
+		-0.25 + 1.25 * (self.lcd / self.last_lcd),
 		skin, colour,
 		48 + x * 16, y * 16
 	}
@@ -587,7 +589,7 @@ function GameMode:drawLineClearAnimation()
 	function animation(x, y, skin, colour)
 		return {
 			1, 1, 1,
-			-0.25 + 1.25 * (self.lcd / self:getLineClearDelay()),
+			-0.25 + 1.25 * (self.lcd / self.last_lcd),
 			skin, colour,
 			48 + x * 16, y * 16
 		}
@@ -611,7 +613,7 @@ function GameMode:drawLineClearAnimation()
 	function animation(x, y, skin, colour)
 		local p = 0.5
 		local l = (
-			(self:getLineClearDelay() - self.lcd) / self:getLineClearDelay()
+			(self.last_lcd - self.lcd) / self.last_lcd
 		)
 		local dx = l * (x - (1 + self.grid.width) / 2)
 		local dy = l * (y - (1 + self.grid.height) / 2)
