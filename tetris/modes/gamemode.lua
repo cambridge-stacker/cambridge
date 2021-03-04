@@ -69,6 +69,7 @@ function GameMode:new(secret_inputs)
 	self.used_randomizer = nil
 	self.hold_queue = nil
 	self.held = false
+	self.bgm_progression = 0
 	self.section_start_time = 0
 	self.section_times = { [0] = 0 }
 	self.secondary_section_times = { [0] = 0 }
@@ -287,6 +288,10 @@ function GameMode:update(inputs, ruleset)
 			end
 		end
 	end
+
+	-- end-of-frame actions, including music swap
+	self:swapMusic(self.level)
+
 	self.prev_inputs = inputs
 end
 
@@ -316,6 +321,8 @@ function GameMode:afterLineClear(cleared_row_count) end
 
 function GameMode:onPieceEnter() end
 function GameMode:onHold() end
+
+function GameMode:swapMusic(level) end
 
 function GameMode:onSoftDrop(dropped_row_count)
 	self.drop_bonus = self.drop_bonus + 1 * dropped_row_count
@@ -478,7 +485,7 @@ end
 
 function GameMode:initializeOrHold(inputs, ruleset)
 	if (
-		self.frames == 0 or (ruleset.are and self:getARE() ~= 0) and self.ihs or false
+		(self.frames == 0 or (ruleset.are and self:getARE() ~= 0)) and self.ihs or false
 	) and self.enable_hold and inputs["hold"] == true then
 		self:hold(inputs, ruleset, true)
 	else
@@ -571,11 +578,16 @@ function GameMode:getHighScoreData()
 end
 
 function GameMode:animation(x, y, skin, colour)
+	local p = 0.5
+	local l = (
+		(self.last_lcd - self.lcd) / self.last_lcd
+	)
+	local dx = l * (x - (1 + self.grid.width) / 2)
+	local dy = l * (y - (1 + self.grid.height) / 2)
 	return {
-		1, 1, 1,
-		-0.25 + 1.25 * (self.lcd / self.last_lcd),
-		skin, colour,
-		48 + x * 16, y * 16
+		1, 1, 1, 1, skin, colour,
+		48 + (x + dx) * 16,
+		(y + dy) * 16 + (464 / (p - 1)) * l * (p - l)
 	}
 end
 
