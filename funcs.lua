@@ -87,6 +87,6 @@ function table.contains(table, element)
 	return false
 end
 
-function clamp(a, b, c)
-	return math.min(a, math.max(b, c))
+function clamp(x, min, max)
+	return (x < min and min or (x > max and max or x))
 end
