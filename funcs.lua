@@ -89,7 +89,7 @@ end
 
 function clamp(x, min, max)
 	if max < min then
-			min, max = max, min
+		min, max = max, min
 	end
 	return x < min and min or (x > max and max or x)
 end
