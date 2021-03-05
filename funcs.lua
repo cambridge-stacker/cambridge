@@ -88,5 +88,8 @@ function table.contains(table, element)
 end
 
 function clamp(x, min, max)
-	return (x < min and min or (x > max and max or x))
+	if max < min then
+			min, max = max, min
+	end
+	return x < min and min or (x > max and max or x)
 end
