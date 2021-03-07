@@ -534,11 +534,18 @@ function GameMode:initializeNextPiece(inputs, ruleset, piece_data, generate_next
 	end
 	if self.buffer_hard_drop then
 		self.buffer_hard_drop = false
+		local above_field = (
+			(config.gamesettings.spawn_positions == 1 and
+			ruleset.spawn_above_field) or
+			config.gamesettings.spawn_positions == 3
+		)
 		self:onHardDrop(self.piece.position.y - (
 			self.piece.big and
 			ruleset.big_spawn_positions[self.piece.shape].y or
 			ruleset.spawn_positions[self.piece.shape].y) +
-			ruleset:getAboveFieldOffset(piece_data.shape, piece_data.orientation)
+			(above_field and ruleset:getAboveFieldOffset(
+				piece_data.shape, piece_data.orientation
+			) or 0)
 		)
 	end
 	if self.buffer_soft_drop then
