@@ -535,9 +535,10 @@ function GameMode:initializeNextPiece(inputs, ruleset, piece_data, generate_next
 	if self.buffer_hard_drop then
 		self.buffer_hard_drop = false
 		self:onHardDrop(self.piece.position.y - (
-			self.big_mode and
+			self.piece.big and
 			ruleset.big_spawn_positions[self.piece.shape].y or
-			ruleset.spawn_positions[self.piece.shape].y)
+			ruleset.spawn_positions[self.piece.shape].y) +
+			ruleset:getAboveFieldOffset(piece_data.shape, piece_data.orientation)
 		)
 	end
 	if self.buffer_soft_drop then
