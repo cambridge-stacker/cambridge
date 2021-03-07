@@ -367,7 +367,8 @@ function SakuraGame:advanceOneFrame(inputs, ruleset)
         end
 
         if not self.grid:hasGemBlocks() or
-        (self.stage_frames >= 3600 and self.current_map <= 20) then
+        (self.stage_frames >= 3600 and self.piece == nil
+        and self.current_map <= 20) then
             self.lcd = 0
             self.are = 0
             if self.stage_frames >= 3600 then self.time_extend = 0 end
