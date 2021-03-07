@@ -69,6 +69,7 @@ function GameMode:new(secret_inputs)
 	self.used_randomizer = nil
 	self.hold_queue = nil
 	self.held = false
+	self.bgm_progression = 0
 	self.section_start_time = 0
 	self.section_times = { [0] = 0 }
 	self.secondary_section_times = { [0] = 0 }
@@ -218,7 +219,7 @@ function GameMode:update(inputs, ruleset)
 		if inputs["up"] == true and
 			self.piece:isDropBlocked(self.grid) and
 			not self.hard_drop_locked then
-			self:onHardDrop(piece_dy)
+			self:onHardDrop(math.max(0, piece_dy))
 			if self.lock_on_hard_drop then
 				self.piece_hard_dropped = true
 				self.piece.locked = true
@@ -226,7 +227,7 @@ function GameMode:update(inputs, ruleset)
 		end
 
 		if inputs["down"] == true then
-			self:onSoftDrop(piece_dy)
+			self:onSoftDrop(math.max(0, piece_dy))
 			if self.piece:isDropBlocked(self.grid) and
 				not self.drop_locked and
 				self.lock_on_soft_drop
@@ -287,6 +288,10 @@ function GameMode:update(inputs, ruleset)
 			end
 		end
 	end
+
+	-- end-of-frame actions, including music swap
+	self:swapMusic(self.level)
+
 	self.prev_inputs = inputs
 end
 
@@ -316,6 +321,8 @@ function GameMode:afterLineClear(cleared_row_count) end
 
 function GameMode:onPieceEnter() end
 function GameMode:onHold() end
+
+function GameMode:swapMusic(level) end
 
 function GameMode:onSoftDrop(dropped_row_count)
 	self.drop_bonus = self.drop_bonus + 1 * dropped_row_count
