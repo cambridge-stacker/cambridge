@@ -229,7 +229,7 @@ function love.joystickaxis(joystick, axis, value)
 		config.input.joysticks[joystick:getName()].axes[axis] 
 	then
 		if math.abs(value) >= 1 then
-			input_pressed = config.input.joysticks[joystick:getName()].axes[axis][value >= 0.5 and "positive" or "negative"]
+			input_pressed = config.input.joysticks[joystick:getName()].axes[axis][value >= 1 and "positive" or "negative"]
 		end
 		positive_released = config.input.joysticks[joystick:getName()].axes[axis].positive
 		negative_released = config.input.joysticks[joystick:getName()].axes[axis].negative
