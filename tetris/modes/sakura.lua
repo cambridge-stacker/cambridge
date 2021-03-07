@@ -275,7 +275,7 @@ function SakuraGame:new(secret_inputs)
     )
     
     self.current_map = 1
-    self.time_limit = 10800
+    self.time_limit = 3660
     self.cleared_frames = STAGE_TRANSITION_TIME
     self.stage_frames = 0
     self.time_extend = 0
@@ -504,7 +504,7 @@ function SakuraGame:drawScoringInfo()
     love.graphics.setColor(
         (self.time_limit % 4 < 2 and
         self.time_limit <= frameTime(0,10) and
-        self.grid:hasGemBlocks() and
+        self.cleared_frames == STAGE_TRANSITION_TIME and
         self.time_limit ~= 0 and
         self.ready_frames == 0) and
         { 1, 0.3, 0.3, 1 } or
@@ -538,7 +538,8 @@ function SakuraGame:drawCustom()
 
     if self.cleared_frames > 0 and
     (not self.grid:hasGemBlocks() or
-    (self.stage_frames >= 3600 and self.current_map <= 20)) then
+    (self.stage_frames >= 3600 and self.piece == nil
+    and self.current_map <= 20)) then
         love.graphics.setFont(font_3x5_2)
         love.graphics.printf("TIME LIMIT", 64, 180, 160, "center")
         love.graphics.printf("TIME EXTEND", 64, 240, 160, "center")
