@@ -15,7 +15,6 @@ SurvivalAXGame.tagline = "Can you clear the time hurdles when the game goes this
 function SurvivalAXGame:new()
 	SurvivalAXGame.super:new()
 
-	self.roll_frames = 0
 	self.randomizer = Bag7NoSZOStartRandomizer()
 
 	self.section_time_limit = 3600
@@ -75,14 +74,7 @@ function SurvivalAXGame:getSection()
 end
 
 function SurvivalAXGame:advanceOneFrame()
-	if self.clear then
-		self.roll_frames = self.roll_frames + 1
-		if self.roll_frames < 0 then		
-			return false
-		elseif self.roll_frames > 2968 then
-			self.completed = true
-		end
-	elseif self.ready_frames == 0 then
+	if self.ready_frames == 0 then
 		if not self.section_clear then
 			self.frames = self.frames + 1
 		end
@@ -101,7 +93,7 @@ function SurvivalAXGame:onLineClear(cleared_row_count)
 		if self.lines == 150 then
 			self.grid:clear()
 			self.clear = true
-			self.roll_frames = -150
+			self.completed = true
 		end
 	end
 end
