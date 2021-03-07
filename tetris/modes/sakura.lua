@@ -275,7 +275,7 @@ function SakuraGame:new(secret_inputs)
     )
     
     self.current_map = 1
-    self.time_limit = 3660
+    self.time_limit = 10800
     self.cleared_frames = STAGE_TRANSITION_TIME
     self.stage_frames = 0
     self.time_extend = 0
