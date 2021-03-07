@@ -242,6 +242,8 @@ function love.joystickaxis(joystick, axis, value)
 	end
 end
 
+local last_hat_direction = ""
+
 function love.joystickhat(joystick, hat, direction)
 	local input_pressed = nil
 	local has_hat = false
@@ -258,13 +260,31 @@ function love.joystickhat(joystick, hat, direction)
 		has_hat = true
 	end
 	if input_pressed then
-		scene:onInputPress({input=input_pressed, type="joyhat", name=joystick:getName(), hat=hat, direction=direction})
+		for i = 1, #direction do
+			local char = direction:sub(i, i)
+			local _, count = last_hat_direction:gsub(char, char)
+			if count == 0 then
+				scene:onInputPress({input=input_pressed, type="joyhat", name=joystick:getName(), hat=hat, direction=char})
+			else
+				scene:onInputRelease({input=input_pressed, type="joyhat", name=joystick:getName(), hat=hat, direction=char})
+			end
+		end
+		last_hat_direction = direction
 	elseif has_hat then
 		for i, direction in ipairs{"d", "l", "ld", "lu", "r", "rd", "ru", "u"} do
 			scene:onInputRelease({input=config.input.joysticks[joystick:getName()].hats[hat][direction], type="joyhat", name=joystick:getName(), hat=hat, direction=direction})
 		end
 	elseif direction ~= "c" then
-		scene:onInputPress({input=nil, type="joyhat", name=joystick:getName(), hat=hat, direction=direction})
+		for i = 1, #direction do
+			local char = direction:sub(i, i)
+			local _, count = last_hat_direction:gsub(char, char)
+			if count == 0 then
+				scene:onInputPress({input=nil, type="joyhat", name=joystick:getName(), hat=hat, direction=char})
+			else
+				scene:onInputRelease({input=nil, type="joyhat", name=joystick:getName(), hat=hat, direction=char})
+			end
+		end
+		last_hat_direction = direction
 	else
 		for i, direction in ipairs{"d", "l", "ld", "lu", "r", "rd", "ru", "u"} do
 			scene:onInputRelease({input=nil, type="joyhat", name=joystick:getName(), hat=hat, direction=direction})
