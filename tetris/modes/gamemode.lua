@@ -218,7 +218,7 @@ function GameMode:update(inputs, ruleset)
 		if inputs["up"] == true and
 			self.piece:isDropBlocked(self.grid) and
 			not self.hard_drop_locked then
-			self:onHardDrop(piece_dy)
+			self:onHardDrop(math.max(piece_dy, 0))
 			if self.lock_on_hard_drop then
 				self.piece_hard_dropped = true
 				self.piece.locked = true
@@ -226,7 +226,7 @@ function GameMode:update(inputs, ruleset)
 		end
 
 		if inputs["down"] == true then
-			self:onSoftDrop(piece_dy)
+			self:onSoftDrop(math.max(piece_dy, 0))
 			if self.piece:isDropBlocked(self.grid) and
 				not self.drop_locked and
 				self.lock_on_soft_drop
