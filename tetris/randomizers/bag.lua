@@ -4,6 +4,7 @@ local BagRandomizer = Randomizer:extend()
 
 function BagRandomizer:new(pieces)
     self.bag = {}
+    self.possible_pieces = pieces
     self.pieces = pieces
     for i = 1, self.pieces do
         table.insert(self.bag, i)
