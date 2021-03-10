@@ -686,7 +686,6 @@ function GameMode:drawNextQueue(ruleset)
 		for index, offset in pairs(offsets) do
 			local x = offset.x + ruleset:getDrawOffset(piece, rotation).x + ruleset.spawn_positions[piece].x
 			local y = offset.y + ruleset:getDrawOffset(piece, rotation).y + 4.7
-			print(piece, colourscheme[piece])
 			love.graphics.draw(blocks[skin][colourscheme[piece]], pos_x+x*16, pos_y+y*16)
 		end
 	end
