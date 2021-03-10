@@ -249,7 +249,13 @@ function Ruleset:initializePiece(
 	else
 		spawn_positions = self.spawn_positions
 	end
-	local colours = ({self.colourscheme, ColourSchemes.Arika, ColourSchemes.TTC})[config.gamesettings.piece_colour]
+
+	local colours
+	if self.pieces == 7 then
+		colours = ({self.colourscheme, ColourSchemes.Arika, ColourSchemes.TTC})[config.gamesettings.piece_colour]
+	else
+		colours = self.colourscheme
+	end
 	
 	local spawn_x
 	if (grid.width ~= 10) then
@@ -276,7 +282,7 @@ function Ruleset:initializePiece(
 	end
 
 	local piece = Piece(data.shape, data.orientation - 1, {
-		x = spawn_x and spawn_x or spawn_positions[data.shape].x,
+		x = spawn_x or spawn_positions[data.shape].x,
 		y = spawn_positions[data.shape].y - spawn_dy
 	}, self.block_offsets, 0, 0, data.skin, colours[data.shape], big)
 

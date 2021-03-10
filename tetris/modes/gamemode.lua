@@ -676,11 +676,17 @@ function GameMode:drawGhostPiece(ruleset)
 end
 
 function GameMode:drawNextQueue(ruleset)
-	local colourscheme = ({ruleset.colourscheme, ColourSchemes.Arika, ColourSchemes.TTC})[config.gamesettings.piece_colour]
+	local colourscheme
+	if ruleset.pieces == 7 then
+		colourscheme = ({ruleset.colourscheme, ColourSchemes.Arika, ColourSchemes.TTC})[config.gamesettings.piece_colour]
+	else
+		colourscheme = ruleset.colourscheme
+	end
 	function drawPiece(piece, skin, offsets, pos_x, pos_y)
 		for index, offset in pairs(offsets) do
 			local x = offset.x + ruleset:getDrawOffset(piece, rotation).x + ruleset.spawn_positions[piece].x
 			local y = offset.y + ruleset:getDrawOffset(piece, rotation).y + 4.7
+			print(piece, colourscheme[piece])
 			love.graphics.draw(blocks[skin][colourscheme[piece]], pos_x+x*16, pos_y+y*16)
 		end
 	end
