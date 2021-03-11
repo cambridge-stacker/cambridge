@@ -23,35 +23,16 @@ function love.load()
     GLOBAL_CANVAS = love.graphics.newCanvas()
 
 	-- init config
-	if config.fullscreen == nil then config.fullscreen = false
-	elseif config.fullscreen == true then
-		love.window.setFullscreen(config["fullscreen"])
-	end
+	initConfig()
 
-	if not config.das then config.das = 10 end
-	if not config.arr then config.arr = 2 end
-	if not config.dcd then config.dcd = 0 end
-	if not config.sfx_volume then config.sfx_volume = 0.5 end
-	if not config.bgm_volume then config.bgm_volume = 0.5 end
-	
-	if config.secret == nil then config.secret = false
-	elseif config.secret == true then playSE("welcome") end
+	love.window.setFullscreen(config["fullscreen"])
+	if config.secret then playSE("welcome") end
 
-	if not config.gamesettings then config.gamesettings = {} end
-	for _, option in ipairs(GameConfigScene.options) do
-		if not config.gamesettings[option[1]] then
-			config.gamesettings[option[1]] = 1
-		end
-	end
-	
-	if not config.input then
-		scene = KeyConfigScene()
-	else
-		if config.current_mode then current_mode = config.current_mode end
-		if config.current_ruleset then current_ruleset = config.current_ruleset end
-		scene = TitleScene()
-	end
+	-- import custom modules
+	initModules()
+end
 
+function initModules()
 	game_modes = {}
 	mode_list = love.filesystem.getDirectoryItems("tetris/modes")
 	for i=1,#mode_list do
@@ -72,7 +53,6 @@ function love.load()
 	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
 	table.sort(rulesets, function(a,b)
 	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
-	
 end
 
 local TARGET_FPS = 60
