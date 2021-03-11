@@ -15,7 +15,7 @@ function love.load()
 	--config["side_next"] = false
 	--config["reverse_rotate"] = true
 	--config["das_last_key"] = false
-	config["fullscreen"] = false
+	--config["fullscreen"] = false
 
 	love.window.setMode(love.graphics.getWidth(), love.graphics.getHeight(), {resizable = true});
     
@@ -23,6 +23,11 @@ function love.load()
     GLOBAL_CANVAS = love.graphics.newCanvas()
 
 	-- init config
+	if config.fullscreen == nil then config.fullscreen = false
+	elseif config.fullscreen == true then
+		love.window.setFullscreen(config["fullscreen"])
+	end
+
 	if not config.das then config.das = 10 end
 	if not config.arr then config.arr = 2 end
 	if not config.dcd then config.dcd = 0 end
@@ -137,6 +142,7 @@ function love.keypressed(key, scancode)
 	-- global hotkeys
 	if scancode == "f4" then
 		config["fullscreen"] = not config["fullscreen"]
+		saveConfig()
 		love.window.setFullscreen(config["fullscreen"])
 	elseif scancode == "f2" and scene.title ~= "Input Config" and scene.title ~= "Game" then
 		scene = InputConfigScene()
