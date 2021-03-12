@@ -38,35 +38,35 @@ function ARS:attemptWallkicks(piece, new_piece, rot_dir, grid)
 		(piece:isMoveBlocked(grid, {x=-1, y=0}) or piece:isMoveBlocked(grid, {x=1, y=0})) then
 			-- kick right, right2, left
 			if grid:canPlacePiece(new_piece:withOffset({x=1, y=0})) then
-				self:onPieceRotate(piece, grid)
 				piece:setRelativeRotation(rot_dir):setOffset({x=1, y=0})
+				self:onPieceRotate(piece, grid)
 			elseif grid:canPlacePiece(new_piece:withOffset({x=2, y=0})) then
-				self:onPieceRotate(piece, grid)
 				piece:setRelativeRotation(rot_dir):setOffset({x=2, y=0})
-			elseif grid:canPlacePiece(new_piece:withOffset({x=-1, y=0})) then
 				self:onPieceRotate(piece, grid)
+			elseif grid:canPlacePiece(new_piece:withOffset({x=-1, y=0})) then
 				piece:setRelativeRotation(rot_dir):setOffset({x=-1, y=0})
+				self:onPieceRotate(piece, grid)
 			end
 		elseif piece:isDropBlocked(grid) and (new_piece.rotation == 1 or new_piece.rotation == 3) and piece.floorkick == 0 then
 			-- kick up, up2
 			if grid:canPlacePiece(new_piece:withOffset({x=0, y=-1})) then
-				self:onPieceRotate(piece, grid)
 				piece:setRelativeRotation(rot_dir):setOffset({x=0, y=-1})
 				piece.floorkick = 1
-			elseif grid:canPlacePiece(new_piece:withOffset({x=0, y=-2})) then
 				self:onPieceRotate(piece, grid)
+			elseif grid:canPlacePiece(new_piece:withOffset({x=0, y=-2})) then
 				piece:setRelativeRotation(rot_dir):setOffset({x=0, y=-2})
 				piece.floorkick = 1
+				self:onPieceRotate(piece, grid)
 			end
 		end
 	else
 		-- kick right, kick left
 		if grid:canPlacePiece(new_piece:withOffset({x=1, y=0})) then
-			self:onPieceRotate(piece, grid)
 			piece:setRelativeRotation(rot_dir):setOffset({x=1, y=0})
-		elseif grid:canPlacePiece(new_piece:withOffset({x=-1, y=0})) then
 			self:onPieceRotate(piece, grid)
+		elseif grid:canPlacePiece(new_piece:withOffset({x=-1, y=0})) then
 			piece:setRelativeRotation(rot_dir):setOffset({x=-1, y=0})
+			self:onPieceRotate(piece, grid)
 		elseif piece.shape == "T"
 		   and new_piece.rotation == 0
 		   and piece.floorkick == 0
@@ -74,9 +74,9 @@ function ARS:attemptWallkicks(piece, new_piece, rot_dir, grid)
 		   and grid:canPlacePiece(new_piece:withOffset({x=0, y=-1}))
 		then
 			-- T floorkick
-			self:onPieceRotate(piece, grid)
 			piece.floorkick = piece.floorkick + 1
 			piece:setRelativeRotation(rot_dir):setOffset({x=0, y=-1})
+			self:onPieceRotate(piece, grid)
 		end
 	end
 
