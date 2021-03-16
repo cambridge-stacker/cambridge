@@ -94,11 +94,10 @@ function ARS:onPieceDrop(piece, grid)
 end
 
 function ARS:onPieceRotate(piece, grid)
-	if piece.floorkick >= 1 then
+	if piece.floorkick >= 2 and piece:isDropBlocked(grid) then
+		piece.locked = true
+	elseif piece.floorkick >= 1 then
 		piece.floorkick = piece.floorkick + 1
-		if piece:isDropBlocked(grid) then
-			piece.locked = true
-		end
 	end
 end
 
