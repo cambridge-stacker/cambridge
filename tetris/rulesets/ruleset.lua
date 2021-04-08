@@ -123,6 +123,7 @@ function Ruleset:movePiece(piece, grid, move, instant)
 	local was_drop_blocked = piece:isDropBlocked(grid)
 	local offset = ({x=0, y=0})
 	local moves = 0
+	local y = piece.position.y
 	if move == "left" then
 		offset.x = -1
 		moves = 1
@@ -150,6 +151,9 @@ function Ruleset:movePiece(piece, grid, move, instant)
 	end
 	if not was_drop_blocked and piece:isDropBlocked(grid) then
 		playSE("bottom")
+	end
+	if piece.position.y ~= y then
+		self:onPieceDrop(piece, grid)
 	end
 end
 
