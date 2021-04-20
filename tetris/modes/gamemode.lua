@@ -529,16 +529,13 @@ function GameMode:initializeNextPiece(inputs, ruleset, piece_data, generate_next
 		self.lock_drop, self.lock_hard_drop, self.big_mode,
 		(
 			self.frames == 0 or (ruleset.are and self:getARE() ~= 0)
-		) and self.irs or false,
-		self.buffer_hard_drop, self.buffer_soft_drop,
-		self.lock_on_hard_drop, self.lock_on_soft_drop
+		) and self.irs or false
 	)
-	if self.piece:isDropBlocked(self.grid) and
-	   self.grid:canPlacePiece(self.piece) then
-		playSE("bottom")
-	end
 	if self.buffer_hard_drop then
-		self.buffer_hard_drop = false
+		if config.gamesettings.buffer_lock == 1 then
+			self.piece:dropToBottom(self.grid)
+			if self.lock_on_hard_drop then self.piece.locked = true end
+		end
 		local above_field = (
 			(config.gamesettings.spawn_positions == 1 and
 			ruleset.spawn_above_field) or
@@ -552,9 +549,21 @@ function GameMode:initializeNextPiece(inputs, ruleset, piece_data, generate_next
 				piece_data.shape, piece_data.orientation
 			) or 0)
 		)
+		self.buffer_hard_drop = false
 	end
 	if self.buffer_soft_drop then
+		if (
+			self.lock_on_soft_drop and
+			self.piece:isDropBlocked(self.grid) and
+			config.gamesettings.buffer_lock == 1
+		) then
+			self.piece.locked = true
+		end
 		self.buffer_soft_drop = false
+	end
+	if self.piece:isDropBlocked(self.grid) and
+	   self.grid:canPlacePiece(self.piece) then
+		playSE("bottom")
 	end
 	if self.lock_drop or (
 		not ruleset.are or self:getARE() == 0
