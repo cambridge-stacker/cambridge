@@ -32,6 +32,15 @@ local mt = {
     end,
     __tostring = function()
         return bigint.unserialize(self, "s")
+    end,
+    __eq = function(lhs, rhs)
+        return bigint.compare(lhs, rhs, "==")
+    end,
+    __lt = function(lhs, rhs)
+        return bigint.compare(lhs, rhs, "<")
+    end,
+    __le = function(lhs, rhs)
+        return bigint.compare(lhs, rhs, "<=")
     end
 }
 
