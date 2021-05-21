@@ -31,7 +31,7 @@ function initConfig()
 	end
 	
 	if not config.input then
-		scene = KeyConfigScene()
+		scene = InputConfigScene()
 	else
 		if config.current_mode then current_mode = config.current_mode end
 		if config.current_ruleset then current_ruleset = config.current_ruleset end

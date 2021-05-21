@@ -29,7 +29,7 @@ function ConfigScene:render()
     love.graphics.print("INPUT CONFIG", 80, 40)
 
     love.graphics.setFont(font_3x5_2)
-    love.graphics.print("Which controls do you want to change?", 80, 90)
+    love.graphics.print("Which controls do you want to configure?", 80, 90)
 
     love.graphics.setColor(1, 1, 1, 0.5)
 	love.graphics.rectangle("fill", 75, 118 + 50 * self.menu_state, 200, 33)
@@ -56,7 +56,9 @@ function ConfigScene:onInputPress(e)
 	elseif e.input == "down" or e.scancode == "down" then
 		self:changeOption(1)
 		playSE("cursor")
-	elseif e.input == "menu_back" or e.scancode == "backspace" or e.scancode == "delete" then
+	elseif config.input and (
+		e.input == "menu_back" or e.scancode == "backspace" or e.scancode == "delete"
+	) then
 		scene = SettingsScene()
 	end
 end

@@ -69,8 +69,7 @@ end
 function KeyConfigScene:onInputPress(e)
 	if e.type == "key" then
 		-- function keys, escape, and tab are reserved and can't be remapped
-		if e.scancode == "escape" and config.input then
-			-- cancel only if there was an input config already
+		if e.scancode == "escape" then
 			scene = InputConfigScene()
 		elseif self.input_state > table.getn(configurable_inputs) then
 			if e.scancode == "return" then

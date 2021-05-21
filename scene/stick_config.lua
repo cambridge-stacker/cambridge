@@ -82,9 +82,11 @@ function StickConfigScene:onInputPress(e)
 		elseif self.input_state > table.getn(configurable_inputs) then
 			if e.scancode == "return" then
 				-- save new input, then load next scene
-				config.input.joysticks = self.new_input
+				local had_config = config.input ~= nil
+                if not config.input then config.input = {} end
+                config.input.joysticks = self.new_input
 				saveConfig()
-				scene = InputConfigScene()
+				scene = had_config and InputConfigScene() or TitleScene()
 			elseif e.scancode == "delete" or e.scancode == "backspace" then
 				-- retry
 				self.input_state = 1
