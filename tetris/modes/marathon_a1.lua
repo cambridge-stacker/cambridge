@@ -33,6 +33,7 @@ function MarathonA1Game:new()
 	
 	self.randomizer = History4RollsRandomizer()
 
+	self.additive_gravity = false
 	self.lock_drop = false
 	self.enable_hard_drop = false
 	self.enable_hold = false

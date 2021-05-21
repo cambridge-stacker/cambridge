@@ -39,6 +39,7 @@ self.SGnames = {
 		"GM"
 	}
 	
+	self.additive_gravity = false
 	self.lock_drop = true
 	self.lock_hard_drop = true
 	self.enable_hold = true
