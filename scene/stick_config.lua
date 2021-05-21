@@ -62,7 +62,7 @@ function StickConfigScene:render()
 	if self.input_state > table.getn(configurable_inputs) then
 		love.graphics.print("press enter to confirm, delete/backspace to retry" .. (config.input and ", escape to cancel" or ""))
 	else
-		love.graphics.print("press joystick input for " .. configurable_inputs[self.input_state] .. ", tab to skip" .. (config.input and ", escape to cancel" or ""), 0, 0)
+		love.graphics.print("press joystick input for " .. configurable_inputs[self.input_state] .. ", tab to skip, escape to cancel", 0, 0)
 	end
 
 	self.axis_timer = self.axis_timer + 1

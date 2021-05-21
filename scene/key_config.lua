@@ -61,7 +61,7 @@ function KeyConfigScene:render()
 	if self.input_state > table.getn(configurable_inputs) then
 		love.graphics.print("press enter to confirm, delete/backspace to retry" .. (config.input and ", escape to cancel" or ""))
 	else
-		love.graphics.print("press key input for " .. configurable_inputs[self.input_state] .. ", tab to skip" .. (config.input and ", escape to cancel" or ""), 0, 0)
+		love.graphics.print("press key input for " .. configurable_inputs[self.input_state] .. ", tab to skip, escape to cancel", 0, 0)
 		love.graphics.print("function keys (F1, F2, etc.), escape, and tab can't be changed", 0, 20)
 	end
 end
