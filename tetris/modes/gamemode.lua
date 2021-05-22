@@ -206,13 +206,13 @@ function GameMode:update(inputs, ruleset)
 			self.piece.last_rotated = false
 			self:onPieceMove(self.piece, self.grid, piece_dx)
 		end
-		if (piece_drot ~= 0) then
-			self.piece.last_rotated = true
-			self:onPieceRotate(self.piece, self.grid, piece_drot)
-		end
 		if (piece_dy ~= 0) then
 			self.piece.last_rotated = false
 			self:onPieceDrop(self.piece, self.grid, piece_dy)
+		end
+		if (piece_drot ~= 0) then
+			self.piece.last_rotated = true
+			self:onPieceRotate(self.piece, self.grid, piece_drot)
 		end
 
 		if inputs["up"] == true and
@@ -242,7 +242,8 @@ function GameMode:update(inputs, ruleset)
 
 		if self.piece.locked == true then
 			-- spin detection, immobile only for now
-			if self.immobile_spin_bonus and (
+			if self.immobile_spin_bonus and
+			   self.piece.last_rotated and (
 				self.piece:isDropBlocked(self.grid) and
 				self.piece:isMoveBlocked(self.grid, { x=-1, y=0 }) and 
 				self.piece:isMoveBlocked(self.grid, { x=1, y=0 }) and
