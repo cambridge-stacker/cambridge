@@ -1,6 +1,11 @@
 local binser = require 'libs.binser'
 
 function loadSave()
+	local info = love.filesystem.getInfo(love.filesystem.getSaveDirectory())
+	if not info or info.type ~= "directory" then
+		love.filesystem.remove(love.filesystem.getSaveDirectory())
+		love.filesystem.createDirectory(love.filesystem.getSaveDirectory())
+	end
 	config = loadFromFile(
 		love.filesystem.getSaveDirectory() .. '/config.sav'
 	)
