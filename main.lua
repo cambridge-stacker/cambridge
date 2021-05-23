@@ -19,8 +19,8 @@ function love.load()
 
 	love.window.setMode(love.graphics.getWidth(), love.graphics.getHeight(), {resizable = true});
 		
-		-- used for screenshots
-		GLOBAL_CANVAS = love.graphics.newCanvas()
+	-- used for screenshots
+	GLOBAL_CANVAS = love.graphics.newCanvas()
 
 	-- init config
 	initConfig()
@@ -56,10 +56,10 @@ function initModules()
 end
 
 function love.draw()
-		love.graphics.setCanvas(GLOBAL_CANVAS)
-		love.graphics.clear()
-	
-		love.graphics.push()
+	love.graphics.setCanvas(GLOBAL_CANVAS)
+	love.graphics.clear()
+
+	love.graphics.push()
 
 	-- get offset matrix
 	love.graphics.setDefaultFilter("linear", "nearest")
@@ -75,9 +75,9 @@ function love.draw()
 	scene:render()
 	love.graphics.pop()
 		
-		love.graphics.setCanvas()
-		love.graphics.setColor(1,1,1,1)
-		love.graphics.draw(GLOBAL_CANVAS)
+	love.graphics.setCanvas()
+	love.graphics.setColor(1,1,1,1)
+	love.graphics.draw(GLOBAL_CANVAS)
 end
 
 function love.keypressed(key, scancode)
@@ -104,8 +104,8 @@ function love.keypressed(key, scancode)
 			love.filesystem.remove("ss")
 			love.filesystem.createDirectory("ss")
 		end
-				print("Saving screenshot as "..ss_name)
-				GLOBAL_CANVAS:newImageData():encode("png", ss_name)
+		print("Saving screenshot as "..ss_name)
+		GLOBAL_CANVAS:newImageData():encode("png", ss_name)
 	-- function keys are reserved
 	elseif string.match(scancode, "^f[1-9]$") or string.match(scancode, "^f[1-9][0-9]+$") then
 		return	
@@ -296,30 +296,30 @@ function love.run()
 		end
 
 		if love.timer then
-      processBGMFadeout(love.timer.step())
-    end
-    
+			processBGMFadeout(love.timer.step())
+		end
+		
 		if scene and scene.update and love.timer then
-      scene:update()
-      
-      local frame_duration = 1.0 / TARGET_FPS
-      if time_accumulator < frame_duration then
-        if love.graphics and love.graphics.isActive() and love.draw then
-          love.graphics.origin()
-          love.graphics.clear(love.graphics.getBackgroundColor())
-          love.draw()
-          love.graphics.present()
-        end
-        local end_time = last_time + frame_duration
-        local time = love.timer.getTime()
-        while time < end_time do
-          love.timer.sleep(0.001)
-          time = love.timer.getTime()
-        end
-        time_accumulator = time_accumulator + time - last_time
-      end
-      time_accumulator = time_accumulator - frame_duration
-    end
-    last_time = love.timer.getTime()
+			scene:update()
+			
+			local frame_duration = 1.0 / TARGET_FPS
+			if time_accumulator < frame_duration then
+				if love.graphics and love.graphics.isActive() and love.draw then
+					love.graphics.origin()
+					love.graphics.clear(love.graphics.getBackgroundColor())
+					love.draw()
+					love.graphics.present()
+				end
+				local end_time = last_time + frame_duration
+				local time = love.timer.getTime()
+				while time < end_time do
+					love.timer.sleep(0.001)
+					time = love.timer.getTime()
+				end
+				time_accumulator = time_accumulator + time - last_time
+			end
+			time_accumulator = time_accumulator - frame_duration
+		end
+		last_time = love.timer.getTime()
 	end
 end
