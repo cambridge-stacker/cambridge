@@ -1,8 +1,12 @@
 local binser = require 'libs.binser'
 
 function loadSave()
-	config = loadFromFile('config.sav')
-	highscores = loadFromFile('highscores.sav')
+	config = loadFromFile(
+		love.filesystem.getSaveDirectory() .. '/config.sav'
+	)
+	highscores = loadFromFile(
+		love.filesystem.getSaveDirectory() .. '/highscores.sav'
+	)
 end
 
 function loadFromFile(filename)
@@ -40,9 +44,13 @@ function initConfig()
 end
 
 function saveConfig()
-	binser.writeFile('config.sav', config)
+	binser.writeFile(
+		love.filesystem.getSaveDirectory() .. '/config.sav', config
+	)
 end
 
 function saveHighscores()
-	binser.writeFile('highscores.sav', highscores)
+	binser.writeFile(
+		love.filesystem.getSaveDirectory() .. '/highscores.sav', highscores
+	)
 end
