@@ -37,7 +37,7 @@ function CreditsScene:render()
     love.graphics.print("Project Heads", 320, 640 - self.frames / 2)
     love.graphics.print("Other Game Developers", 320, 730 - self.frames / 2)
     love.graphics.print("Special Thanks", 320, 950 - self.frames / 2)
-    love.graphics.print("- SashLilac / TS3 / Milla", 320, math.max(1850 - self.frames / 2, 320))
+    love.graphics.print("- Milla", 320, math.max(1850 - self.frames / 2, 320))
 
     love.graphics.setFont(font_3x5_2)
     love.graphics.print("Oshisaure\nJoe Zeng", 320, 590 - self.frames / 2)
