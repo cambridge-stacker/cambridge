@@ -5,7 +5,7 @@ Cambridge
 
 Welcome to Cambridge, the next open-source falling-block game engine!
 
-The project is written and maintained exclusively by [SashLilac](https://github.com/SashLilac), [joezeng](https://github.com/joezeng) and [Oshisaure](https://github.com/oshisaure)!  
+The project is written and maintained exclusively by [Milla](https://github.com/MillaBasset), [joezeng](https://github.com/joezeng) and [Oshisaure](https://github.com/oshisaure)!  
 
 The Discord server has been reopened! https://discord.gg/AADZUmgsph
 
@@ -32,13 +32,13 @@ You do not need LÖVE on Windows, as it comes bundled with the program.
 
 #### Stable release
 
-To get the stable release, simply download either `cambridge-win32.zip` (32-bit) or `cambridge-windows.zip` (64-bit) in the [latest release](https://github.com/sashlilac/cambridge/releases/latest).  
+To get the stable release, simply download either `cambridge-win32.zip` (32-bit) or `cambridge-windows.zip` (64-bit) in the [latest release](https://github.com/MillaBasset/cambridge/releases/latest).  
 
 All assets needed are bundled with the executable.
 
 #### Bleeding edge
 
-If you want the bleeding edge version, download [this](https://github.com/SashLilac/cambridge/archive/master.zip).
+If you want the bleeding edge version, download [this](https://github.com/MillaBasset/cambridge/archive/master.zip).
 
 Extract the ZIP, open a Command Prompt at the folder you extracted Cambridge to, then run this command:
 
@@ -66,7 +66,7 @@ You can download the .love file in the latest release, and run it with:
 
 Clone the repository in git:
 
-	git clone https://github.com/SashLilac/cambridge
+	git clone https://github.com/MillaBasset/cambridge
 
 Alternatively, download the source code ZIP in the latest release.
 
@@ -78,7 +78,7 @@ It should run automatically!
 
 ## Installing modpacks
 
-For instructions on how to install modpacks, go to [this](https://github.com/SashLilac/cambridge-modpack) mod pack to get a taste of the mod potential.
+For instructions on how to install modpacks, go to [this](https://github.com/MillaBasset/cambridge-modpack) mod pack to get a taste of the mod potential.
 
 License
 -------
