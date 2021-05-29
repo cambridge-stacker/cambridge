@@ -12,8 +12,8 @@ local mt = {
     __add = function(lhs, rhs)
         return bigint.add(lhs, rhs)
     end,
-    __unm = function()
-        return bigint.negate(self)
+    __unm = function(arg)
+        return bigint.negate(arg)
     end,
     __sub = function(lhs, rhs)
         return bigint.subtract(lhs, rhs)
@@ -30,8 +30,8 @@ local mt = {
     __pow = function(lhs, rhs)
         return bigint.exponentiate(lhs, rhs)
     end,
-    __tostring = function()
-        return bigint.unserialize(self, "s")
+    __tostring = function(arg)
+        return bigint.unserialize(arg, "s")
     end,
     __eq = function(lhs, rhs)
         return bigint.compare(lhs, rhs, "==")
