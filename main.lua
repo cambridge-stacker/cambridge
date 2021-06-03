@@ -99,8 +99,8 @@ function love.keypressed(key, scancode)
 		-- f12 is reserved for saving screenshots
 		elseif scancode == "f12" then
 				local ss_name = os.date("ss/%Y-%m-%d_%H-%M-%S.png")
-		local info = love.filesystem.getInfo("ss")
-		if not info or info.type ~= "directory" then
+		local info = love.filesystem.getInfo("ss", "directory")
+		if not info then
 			love.filesystem.remove("ss")
 			love.filesystem.createDirectory("ss")
 		end
