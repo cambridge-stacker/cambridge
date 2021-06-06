@@ -237,6 +237,7 @@ function GameMode:update(inputs, ruleset)
 				self.lock_on_soft_drop
 			then
 				self.piece.locked = true
+				self.piece_soft_locked = true
 			end
 		end
 
@@ -417,9 +418,10 @@ function GameMode:dasCut()
 end
 
 function GameMode:areCancel(inputs, ruleset)
-	if ruleset.are_cancel and self.piece_hard_dropped and
+	if ruleset.are_cancel and strTrueValues(inputs) ~= "" and
 	not self.prev_inputs.up and
-	strTrueValues(inputs) ~= "" then
+	(self.piece_hard_dropped or
+	(self.piece_soft_locked and not self.prev_inputs.down)) then
 		self.lcd = 0
 		self.are = 0
 	end
@@ -522,6 +524,7 @@ end
 
 function GameMode:initializeNextPiece(inputs, ruleset, piece_data, generate_next_piece)
 	self.piece_hard_dropped = false
+	self.piece_soft_locked = false
 	local gravity = self:getGravity()
 	self.piece = ruleset:initializePiece(
 		inputs, piece_data, self.grid, gravity,
