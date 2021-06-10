@@ -9,29 +9,36 @@ local current_bgm = nil
 local bgm_locked = false
 
 function switchBGM(sound, subsound)
-	if bgm_locked then return end
 	if current_bgm ~= nil then
 		current_bgm:stop()
 	end
-	if subsound ~= nil then
-		current_bgm = bgm[sound][subsound]
-		resetBGMFadeout()
+	if bgm_locked or config.bgm_volume <= 0 then
+		current_bgm = nil
 	elseif sound ~= nil then
-		current_bgm = bgm[sound]
-		resetBGMFadeout()
+		if subsound ~= nil then
+			current_bgm = bgm[sound][subsound]
+		else
+			current_bgm = bgm[sound]
+		end
 	else
 		current_bgm = nil
+	end
+	if current_bgm ~= nil then
+		resetBGMFadeout()
 	end
 end
 
 function switchBGMLoop(sound, subsound)
-	if bgm_locked then return end
 	switchBGM(sound, subsound)
-	current_bgm:setLooping(true)
+	if current_bgm then current_bgm:setLooping(true) end
 end
 
 function lockBGM()
 	bgm_locked = true
+end
+
+function unlockBGM()
+	bgm_locked = false
 end
 
 local fading_bgm = false
@@ -53,7 +60,7 @@ function resetBGMFadeout(time)
 end
 
 function processBGMFadeout(dt)
-	if fading_bgm then
+	if current_bgm and fading_bgm then
 		fadeout_time = fadeout_time - dt
 		if fadeout_time < 0 then
 			fadeout_time = 0

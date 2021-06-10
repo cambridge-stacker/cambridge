@@ -325,11 +325,13 @@ function GameMode:onPieceEnter() end
 function GameMode:onHold() end
 
 function GameMode:onSoftDrop(dropped_row_count)
-	self.drop_bonus = self.drop_bonus + 1 * dropped_row_count
+	self.drop_bonus = self.drop_bonus + (
+		(self.piece.big and 2 or 1) * dropped_row_count
+	)
 end
 
 function GameMode:onHardDrop(dropped_row_count)
-	self.drop_bonus = self.drop_bonus + 2 * dropped_row_count
+	self:onSoftDrop(dropped_row_count * 2)
 end
 
 function GameMode:onGameOver()
@@ -835,6 +837,61 @@ function GameMode:drawSectionTimesWithSplits(current_section, section_limit)
 	if (current_section <= section_limit) then
 		love.graphics.printf(formatTime(self.frames - self.section_start_time), section_x, 40 + 20 * current_section, 90, "left")
 		love.graphics.printf(formatTime(self.frames), split_x, 40 + 20 * current_section, 90, "left")
+	end
+end
+
+function GameMode:drawBackground()
+	love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.draw(
+		backgrounds[self:getBackground()],
+		0, 0, 0,
+		0.5, 0.5
+	)
+end
+
+function GameMode:drawFrame()
+	-- game frame
+	if self.grid.width == 10 and self.grid.height == 24 then
+		love.graphics.draw(misc_graphics["frame"], 48, 64)
+	end
+	
+	love.graphics.setColor(0, 0, 0, 200)
+	love.graphics.rectangle(
+		"fill", 64, 80,
+		16 * self.grid.width, 16 * (self.grid.height - 4)
+	)
+	
+	if self.grid.width ~= 10 or self.grid.height ~= 24 then
+		love.graphics.setColor(174/255, 83/255, 76/255, 1)
+		love.graphics.setLineWidth(8)
+		love.graphics.line(
+			60,76,
+			68+16*self.grid.width,76,
+			68+16*self.grid.width,84+16*(self.grid.height-4),
+			60,84+16*(self.grid.height-4),
+			60,76
+		)
+		love.graphics.setColor(203/255, 137/255, 111/255, 1)
+		love.graphics.setLineWidth(4)
+		love.graphics.line(
+			60,76,
+			68+16*self.grid.width,76,
+			68+16*self.grid.width,84+16*(self.grid.height-4),
+			60,84+16*(self.grid.height-4),
+			60,76
+		)
+		love.graphics.setLineWidth(1)
+	end
+end
+
+function GameMode:drawReadyGo()
+	-- ready/go graphics
+	love.graphics.setColor(1, 1, 1, 1)
+
+	if self.ready_frames <= 100 and self.ready_frames > 52 then
+		love.graphics.draw(misc_graphics["ready"], 144 - 50, 240 - 14)
+	elseif self.ready_frames <= 50 and self.ready_frames > 2 then
+		love.graphics.draw(misc_graphics["go"], 144 - 27, 240 - 14)
 	end
 end
 

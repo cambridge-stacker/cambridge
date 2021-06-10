@@ -42,62 +42,17 @@ function GameScene:update()
 end
 
 function GameScene:render()
-	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.draw(
-		backgrounds[self.game:getBackground()],
-		0, 0, 0,
-		0.5, 0.5
-	)
-
-	-- game frame
-	if self.game.grid.width == 10 and self.game.grid.height == 24 then
-		love.graphics.draw(misc_graphics["frame"], 48, 64)
-	end
-	
-	love.graphics.setColor(0, 0, 0, 200)
-	love.graphics.rectangle(
-		"fill", 64, 80,
-		16 * self.game.grid.width, 16 * (self.game.grid.height - 4)
-	)
-	
-	if self.game.grid.width ~= 10 or self.game.grid.height ~= 24 then
-		love.graphics.setColor(174/255, 83/255, 76/255, 1)
-		love.graphics.setLineWidth(8)
-		love.graphics.line(
-			60,76,
-			68+16*self.game.grid.width,76,
-			68+16*self.game.grid.width,84+16*(self.game.grid.height-4),
-			60,84+16*(self.game.grid.height-4),
-			60,76
-		)
-		love.graphics.setColor(203/255, 137/255, 111/255, 1)
-		love.graphics.setLineWidth(4)
-		love.graphics.line(
-			60,76,
-			68+16*self.game.grid.width,76,
-			68+16*self.game.grid.width,84+16*(self.game.grid.height-4),
-			60,84+16*(self.game.grid.height-4),
-			60,76
-		)
-		love.graphics.setLineWidth(1)
-	end
-
+	self.game:drawBackground()
+	self.game:drawFrame()
 	self.game:drawGrid()
 	if self.game.lcd > 0 then self.game:drawLineClearAnimation() end
 	self.game:drawPiece()
 	self.game:drawNextQueue(self.ruleset)
 	self.game:drawScoringInfo()
-
-	-- ready/go graphics
-
-	if self.game.ready_frames <= 100 and self.game.ready_frames > 52 then
-		love.graphics.draw(misc_graphics["ready"], 144 - 50, 240 - 14)
-	elseif self.game.ready_frames <= 50 and self.game.ready_frames > 2 then
-		love.graphics.draw(misc_graphics["go"], 144 - 27, 240 - 14)
-	end
-
+	self.game:drawReadyGo()
 	self.game:drawCustom()
 
+	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_2)
 	if config.gamesettings.display_gamemode == 1 then
 		love.graphics.printf(self.game.name .. " - " .. self.ruleset.name, 0, 460, 640, "left")

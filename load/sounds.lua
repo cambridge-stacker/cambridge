@@ -27,33 +27,37 @@ sounds = {
 }
 
 function playSE(sound, subsound)
-	if subsound == nil then
-		sounds[sound]:setVolume(config.sfx_volume)
-		if sounds[sound]:isPlaying() then
-			sounds[sound]:stop()
+	if sound ~= nil then
+		if subsound ~= nil then
+			sounds[sound][subsound]:setVolume(config.sfx_volume)
+			if sounds[sound][subsound]:isPlaying() then
+				sounds[sound][subsound]:stop()
+			end
+			sounds[sound][subsound]:play()
+		else
+			sounds[sound]:setVolume(config.sfx_volume)
+			if sounds[sound]:isPlaying() then
+				sounds[sound]:stop()
+			end
+			sounds[sound]:play()
 		end
-		sounds[sound]:play()
-	else
-		sounds[sound][subsound]:setVolume(config.sfx_volume)
-		if sounds[sound][subsound]:isPlaying() then
-			sounds[sound][subsound]:stop()
-		end
-		sounds[sound][subsound]:play()
 	end
 end
 
 function playSEOnce(sound, subsound)
-	if subsound == nil then
-		sounds[sound]:setVolume(config.sfx_volume)
-		if sounds[sound]:isPlaying() then
-			return
+	if sound ~= nil then
+		if subsound ~= nil then
+			sounds[sound][subsound]:setVolume(config.sfx_volume)
+			if sounds[sound][subsound]:isPlaying() then
+				return
+			end
+			sounds[sound][subsound]:play()
+		else
+			sounds[sound]:setVolume(config.sfx_volume)
+			if sounds[sound]:isPlaying() then
+				return
+			end
+			sounds[sound]:play()
 		end
-		sounds[sound]:play()
-	else
-		sounds[sound][subsound]:setVolume(config.sfx_volume)
-		if sounds[sound][subsound]:isPlaying() then
-			return
-		end
-		sounds[sound][subsound]:play()
 	end
 end
