@@ -97,6 +97,7 @@ Notable Games
 - [Tetra Legends](https://tetralegends.app) by Dr Ocelot
 - [Shiromino](https://github.com/shiromino/shiromino) by Felicity/nightmareci/kdex
 - [Cursed Blocks](https://github.com/Manabender/Cursed-Blocks) by Manabender
+- Picoris 1/2 by MarkGamed
 - Tetra Online by Mine
 - [TETR.IO](https://tetr.io) by osk
 - [Master of Blocks](https://discord.gg/72FZ49mjWh) by Phoenix Flare

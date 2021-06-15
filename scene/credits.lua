@@ -41,7 +41,7 @@ function CreditsScene:render()
 
     love.graphics.setFont(font_3x5_2)
     love.graphics.print("Oshisaure\nJoe Zeng", 320, 590 - self.frames / 2)
-    love.graphics.print("Mizu\nMarkGamed7794", 320, 680 - self.frames / 2)
+    love.graphics.print("Mizu\nMarkGamed", 320, 680 - self.frames / 2)
     love.graphics.print(
         "2Tie - TGMsim\nAxel Fox - Multimino\nDr Ocelot - Tetra Legends\n" ..
         "Felicity/nightmareci/kdex - Shiromino\nMine - Tetra Online\n" ..
