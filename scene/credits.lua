@@ -30,35 +30,40 @@ function CreditsScene:render()
 
     love.graphics.setFont(font_3x5_4)
     love.graphics.print("Cambridge Credits", 320, 500 - self.frames / 2)
-    love.graphics.print("THANK YOU\nFOR PLAYING!", 320, math.max(1770 - self.frames / 2, 240))
+    love.graphics.print("THANK YOU\nFOR PLAYING!", 320, math.max(1890 - self.frames / 2, 240))
 
     love.graphics.setFont(font_3x5_3)
     love.graphics.print("Game Developers", 320, 550 - self.frames / 2)
     love.graphics.print("Project Heads", 320, 640 - self.frames / 2)
-    love.graphics.print("Other Game Developers", 320, 730 - self.frames / 2)
-    love.graphics.print("Special Thanks", 320, 950 - self.frames / 2)
-    love.graphics.print("- Milla", 320, math.max(1850 - self.frames / 2, 320))
+    love.graphics.print("Notable Game Developers", 320, 730 - self.frames / 2)
+    love.graphics.print("Special Thanks", 320, 930 - self.frames / 2)
+    love.graphics.print("- Milla", 320, math.max(1970 - self.frames / 2, 320))
 
     love.graphics.setFont(font_3x5_2)
     love.graphics.print("Oshisaure\nJoe Zeng", 320, 590 - self.frames / 2)
-    love.graphics.print("Mizu\nHailey", 320, 680 - self.frames / 2)
+    love.graphics.print("Mizu\nMarkGamed7794", 320, 680 - self.frames / 2)
     love.graphics.print(
-        "Axel Fox - Multimino\nMine - Tetra Online\nDr Ocelot - Tetra Legends\n" ..
-        "Felicity / nightmareci - Shiromino\n2Tie - TGMsim\nPhoenix Flare - Master of Blocks\n" ..
-        "RayRay26 - Spirit Drop\nosk - TETR.IO\nMarkGamed7794 - Picoris 2",
+        "2Tie - TGMsim\nAxel Fox - Multimino\nDr Ocelot - Tetra Legends\n" ..
+        "Felicity/nightmareci/kdex - Shiromino\nMine - Tetra Online\n" ..
+        "osk - TETR.IO\nPhoenix Flare - Master of Blocks\nRayRay26 - Spirit Drop",
         320, 770 - self.frames / 2
     )
     love.graphics.print(
-        "RocketLanterns\nCylinderKnot\nHammrTime\nKirby703\nMattMayuga\nMyPasswordIsWeak\n" ..
-        "Nikki Karissa\noffwo\nsinefuse\nTetro48\nTimmSkiller\nuser74003\nAgentBasey\n" ..
-        "CheeZed_Fish\neightsixfivezero\nEricICX\ngizmo4487\nM1ssing0\n" ..
-        "pokemonfan1937\nSimon\nstratus\nZaptorZap\nArchina\nOliver\ncolour_thief\n" ..
-        "Caithness\nkdex\nzid\nsaphie\nSuper302\nAurora\nswitchpalacecorner\nKitaru\n" ..
-        "JBroms\nMany more I definitely missed!\n" ..
+        "321MrHaatz\nAgentBasey\nAdventium\nArchina\nAurora\n" ..
+        "Caithness\nCheez\ncolour_thief\nCommando\nCublex\n" ..
+        "CylinderKnot\nEricICX\neightsixfivezero\nGesomaru\n" ..
+        "gizmo4487\nJBroms\nKirby703\nKitaru\n" ..
+        "M1ssing0\nMattMayuga\nMyPasswordIsWeak\n" ..
+        "Nikki Karissa\noffwo\nOliver\nPyra Neoxi\n" ..
+        "pokemonfan1937\nRDST64\nRocketLanterns\nRustyFoxxo\n" ..
+        "saphie\nSimon\nstratus\nSuper302\n" ..
+        "switchpalacecorner\nterpyderp\nTetrian22\nTetro48\n" ..
+        "TimmSkiller\nTrixciel\nuser74003\nZaptorZap\nZircean\n" ..
+        "All other contributors and friends!\n" ..
         "The Absolute PLUS Discord\nTetra Legends Discord\nTetra Online Discord\n" ..
         "Multimino Discord\nHard Drop Discord\nCambridge Discord\n" ..
         "And to you, the player!",
-        320, 990 - self.frames / 2
+        320, 970 - self.frames / 2
     )
 end
 
