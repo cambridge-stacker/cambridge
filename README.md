@@ -96,6 +96,7 @@ Notable Games
 - [Multimino](https://gamejolt.com/games/multimino/556683) by Axel Fox
 - [Tetra Legends](https://tetralegends.app) by Dr Ocelot
 - [Shiromino](https://github.com/shiromino/shiromino) by Felicity/nightmareci/kdex
+- [Cursed Blocks](https://github.com/Manabender/Cursed-Blocks) by Manabender
 - Tetra Online by Mine
 - [TETR.IO](https://tetr.io) by osk
 - [Master of Blocks](https://discord.gg/72FZ49mjWh) by Phoenix Flare
