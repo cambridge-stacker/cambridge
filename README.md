@@ -11,18 +11,6 @@ The Discord server has been reopened! https://discord.gg/AADZUmgsph
 
 The game also has a website now with more detail than seen on this README: https://t-sp.in/cambridge
 
-Credits
--------
-
-- [Lilla Oshisaure](https://www.youtube.com/user/LeSpyroshisaure) for being my co-dev!
-- [joezeng](https://github.com/joezeng) for the original project, and for offering to help with the expansion!
-- [The Tetra Legends Discord](http://discord.com/invite/7hMx5r2) for supporting me and playtesting!
-- [The Absolute Plus](https://discord.gg/6Gf2awJ) for being another source of motivation!
-
-More special thanks can be found in-game, under the "Credits" menu.
-
-![Cambridge Logo](https://cdn.discordapp.com/attachments/625496179433668635/763363717730664458/Icon_2.png)
-
 Playing the game
 ----------------
 
@@ -90,3 +78,27 @@ community, as well as borrowed from other places, either with licensing
 or as placeholders until suitable material can be found that is properly
 licensed. Their original sources, and copyright notices if applicable, are
 listed in the file SOURCES.
+
+Credits
+-------
+
+- [Lilla Oshisaure](https://www.youtube.com/user/LeSpyroshisaure) for being my co-dev!
+- [joezeng](https://github.com/joezeng) for the original project, and for offering to help with the expansion!
+- [The Tetra Legends Discord](http://discord.com/invite/7hMx5r2) for supporting me and playtesting!
+- [The Absolute Plus](https://discord.gg/6Gf2awJ) for being another source of motivation!
+
+More special thanks can be found in-game, under the "Credits" menu.
+
+Notable Games
+-------------
+
+- [TGMsim](https://github.com/2Tie/TGMsim) by 2Tie
+- [Multimino](https://gamejolt.com/games/multimino/556683) by Axel Fox
+- [Tetra Legends](https://tetralegends.app) by Dr Ocelot
+- [Shiromino](https://github.com/shiromino/shiromino) by Felicity/nightmareci/kdex
+- Tetra Online by Mine
+- [TETR.IO](https://tetr.io) by osk
+- [Master of Blocks](https://discord.gg/72FZ49mjWh) by Phoenix Flare
+- [Spirit Drop](https://rayblastgames.com/spiritdrop.php) by RayRay26
+
+![Cambridge Logo](https://cdn.discordapp.com/attachments/625496179433668635/763363717730664458/Icon_2.png)
