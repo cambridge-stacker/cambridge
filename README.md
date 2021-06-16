@@ -102,5 +102,6 @@ Notable Games
 - [TETR.IO](https://tetr.io) by osk
 - [Master of Blocks](https://discord.gg/72FZ49mjWh) by Phoenix Flare
 - [Spirit Drop](https://rayblastgames.com/spiritdrop.php) by RayRay26
+- [stackfuse](https://github.com/sinefuse/stackfuse) by sinefuse
 
 ![Cambridge Logo](https://cdn.discordapp.com/attachments/625496179433668635/763363717730664458/Icon_2.png)

@@ -30,14 +30,14 @@ function CreditsScene:render()
 
     love.graphics.setFont(font_3x5_4)
     love.graphics.print("Cambridge Credits", 320, 500 - self.frames / 2)
-    love.graphics.print("THANK YOU\nFOR PLAYING!", 320, math.max(1890 - self.frames / 2, 240))
+    love.graphics.print("THANK YOU\nFOR PLAYING!", 320, math.max(1910 - self.frames / 2, 240))
 
     love.graphics.setFont(font_3x5_3)
     love.graphics.print("Game Developers", 320, 550 - self.frames / 2)
     love.graphics.print("Project Heads", 320, 640 - self.frames / 2)
     love.graphics.print("Notable Game Developers", 320, 730 - self.frames / 2)
-    love.graphics.print("Special Thanks", 320, 930 - self.frames / 2)
-    love.graphics.print("- Milla", 320, math.max(1970 - self.frames / 2, 320))
+    love.graphics.print("Special Thanks", 320, 950 - self.frames / 2)
+    love.graphics.print("- Milla", 320, math.max(1990 - self.frames / 2, 320))
 
     love.graphics.setFont(font_3x5_2)
     love.graphics.print("Oshisaure\nJoe Zeng", 320, 590 - self.frames / 2)
@@ -45,7 +45,8 @@ function CreditsScene:render()
     love.graphics.print(
         "2Tie - TGMsim\nAxel Fox - Multimino\nDr Ocelot - Tetra Legends\n" ..
         "Felicity/nightmareci/kdex - Shiromino\nMine - Tetra Online\n" ..
-        "osk - TETR.IO\nPhoenix Flare - Master of Blocks\nRayRay26 - Spirit Drop",
+        "osk - TETR.IO\nPhoenix Flare - Master of Blocks\nRayRay26 - Spirit Drop\n" ..
+        "sinefuse - stackfuse",
         320, 770 - self.frames / 2
     )
     love.graphics.print(
@@ -63,7 +64,7 @@ function CreditsScene:render()
         "The Absolute PLUS Discord\nTetra Legends Discord\nTetra Online Discord\n" ..
         "Multimino Discord\nHard Drop Discord\nCambridge Discord\n" ..
         "And to you, the player!",
-        320, 970 - self.frames / 2
+        320, 990 - self.frames / 2
     )
 end
 
