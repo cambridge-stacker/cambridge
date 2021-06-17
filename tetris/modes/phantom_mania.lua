@@ -19,13 +19,16 @@ function PhantomManiaGame:new()
 	self.next_queue_length = 1
 	
 	self.SGnames = {
-		"9",  "8",  "7",  "6",  "5",  "4",  "3",  "2",  "1",
 		"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
+		"M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9",
 		"GM"
 	}
 
 	self.roll_frames = 0
 	self.combo = 1
+	self.tetrises = 0
+	self.section_tetrises = {[0] = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	self.section_req = true
 	self.randomizer = History6RollsRandomizer()
 end
 
@@ -105,12 +108,23 @@ end
 
 function PhantomManiaGame:onLineClear(cleared_row_count)
 	if not self.clear then
+		if cleared_row_count >= 4 then
+			self.tetrises = self.tetrises + 1
+			self.section_tetrises[math.floor(self.level / 100)] = (
+				self.section_tetrises[math.floor(self.level / 100)] + 1
+			)
+		end
 		local new_level = self.level + cleared_row_count
 		if new_level >= 999 or self:hitTorikan(self.level, new_level) then
 			if new_level >= 999 then
 				self.level = 999
 			end
 			self.clear = true
+			for i = 0, 9 do
+				if self.section_tetrises[i] < (i == 9 and 1 or 2) then
+					self.section_req = false
+				end
+			end
 		else
 			self.level = new_level
 		end
@@ -138,7 +152,7 @@ PhantomManiaGame.rollOpacityFunction = function(age)
 end
 
 function PhantomManiaGame:drawGrid()
-	if not (self.game_over or self.clear) then
+	if not (self.game_over or self.completed or (self.clear and self.level < 999)) then
 		self.grid:drawInvisible(self.rollOpacityFunction, nil, false)
 	else
 		self.grid:draw()
@@ -150,16 +164,14 @@ local function getLetterGrade(level, clear)
 		return ""
 	elseif level < 500 or level == 500 and clear then
 		return "M"
-	elseif level < 700 then
+	elseif level < 600 then
 		return "MK"
-	elseif level < 800 or level == 800 and clear then
+	elseif level < 700 then
 		return "MV"
-	elseif level < 900 then
+	elseif level < 800 or level == 800 and clear then
 		return "MO"
-	elseif level < 999 then
+	elseif level <= 999 then
 		return "MM"
-	elseif level == 999 then
-		return "GM"
 	end
 end
 
@@ -169,7 +181,9 @@ function PhantomManiaGame:drawScoringInfo()
 	local text_x = config["side_next"] and 320 or 240
 
 	love.graphics.setFont(font_3x5_2)
-	if getLetterGrade(self.level, self.clear) ~= "" then love.graphics.printf("GRADE", text_x, 120, 40, "left") end
+	if getLetterGrade(self.level, self.clear) ~= "" then
+		love.graphics.printf("GRADE", text_x, 120, 40, "left")
+	end
 	love.graphics.printf("SCORE", text_x, 200, 40, "left")
 	love.graphics.printf("LEVEL", text_x, 320, 40, "left")
 	local sg = self.grid:checkSecretGrade()
@@ -178,7 +192,16 @@ function PhantomManiaGame:drawScoringInfo()
 	end
 
 	love.graphics.setFont(font_3x5_3)
-	if getLetterGrade(self.level, self.clear) ~= "" then love.graphics.printf(getLetterGrade(self.level, self.clear), text_x, 140, 90, "left") end
+	if getLetterGrade(self.level, self.clear) ~= "" then
+		if self.roll_frames > 1982 then love.graphics.setColor(1, 0.5, 0, 1)
+		elseif self.level == 999 and self.clear then love.graphics.setColor(0, 1, 0, 1) end
+		if self.level == 999 and self.section_req and self.tetrises >= 31 then
+			love.graphics.printf("GM", text_x, 140, 90, "left")
+		else
+			love.graphics.printf(getLetterGrade(self.level, self.clear), text_x, 140, 90, "left")
+		end
+		love.graphics.setColor(1, 1, 1, 1)
+	end
 	love.graphics.printf(self.score, text_x, 220, 90, "left")
 	love.graphics.printf(self.level, text_x, 340, 40, "right")
 	if self.clear then

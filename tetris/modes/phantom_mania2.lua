@@ -3,7 +3,7 @@ require 'funcs'
 local GameMode = require 'tetris.modes.gamemode'
 local Piece = require 'tetris.components.piece'
 
-local History6RollsRandomizer = require 'tetris.randomizers.history_6rolls'
+local History6RollsRandomizer = require 'tetris.randomizers.history_6rolls_35bag'
 
 local PhantomMania2Game = GameMode:extend()
 
@@ -28,7 +28,7 @@ function PhantomMania2Game:new()
 	
 	self.SGnames = {
 		"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
-		"m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8", "m9",
+		"M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9",
 		"GM"
 	}
 
@@ -251,7 +251,7 @@ PhantomMania2Game.garbageOpacityFunction = function(age)
 end
 
 function PhantomMania2Game:drawGrid()
-	if not (self.game_over) then
+	if not (self.game_over or self.completed or (self.clear and self.level < 1300)) then
 		self.grid:drawInvisible(self.rollOpacityFunction, self.garbageOpacityFunction)
 	else
 		self.grid:draw()
