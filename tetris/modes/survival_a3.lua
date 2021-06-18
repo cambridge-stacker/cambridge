@@ -38,11 +38,9 @@ function SurvivalA3Game:new()
 end
 
 function SurvivalA3Game:initialize(ruleset)
-
 	self.torikan_time = frameTime(2,28)
 	if ruleset.world then self.torikan_time = frameTime(3,03) end
-	self.super.initialize(self, ruleset)
-	--		^ notice the . here instead of the :
+	GameMode.initialize(self, ruleset)
 end
 
 function SurvivalA3Game:getARE()
