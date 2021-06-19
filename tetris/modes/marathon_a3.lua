@@ -351,7 +351,12 @@ function MarathonA3Game:qualifiesForMRoll()
 end
 
 function MarathonA3Game:getAggregateGrade()
-	return self.section_cool_grade + math.floor(self.roll_points / 100) + grade_conversion[self.grade]
+	return math.min(
+		self.section_cool_grade +
+		math.floor(self.roll_points / 100) +
+		grade_conversion[self.grade],
+		self.roll_frames > 3238 and 32 or 31
+	)
 end
 
 local master_grades = { "M", "MK", "MV", "MO", "MM" }
@@ -366,8 +371,6 @@ function MarathonA3Game:getLetterGrade()
 		return "M" .. tostring(grade - 17)
 	elseif grade < 32 then
 		return master_grades[grade - 26]
-	elseif grade >= 32 and self.roll_frames < 3238 then
-		return "MM"
 	else
 		return "GM"
 	end
