@@ -122,7 +122,7 @@ function Piece:addGravity(gravity, grid, classic_lock)
 	local new_gravity = self.gravity + gravity
 	if self:isDropBlocked(grid) then
 		if classic_lock then
-			self.gravity = math.min(1, new_gravity)
+			self.gravity = new_gravity
 		else
 			self.gravity = 0
 			self.lock_delay = self.lock_delay + 1
