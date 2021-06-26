@@ -156,9 +156,6 @@ function GameMode:update(inputs, ruleset)
 		if self.enable_hold and inputs["hold"] == true and self.held == false and self.prev_inputs["hold"] == false then
 			self:hold(inputs, ruleset)
 			self.prev_inputs = inputs
-			if not self.grid:canPlacePiece(self.piece) then
-				self.game_over = true
-			end
 			return
 		end
 
@@ -498,6 +495,10 @@ function GameMode:initializeOrHold(inputs, ruleset)
 	if not self.grid:canPlacePiece(self.piece) then
 		self.game_over = true
 	end
+	ruleset:dropPiece(
+		inputs, self.piece, self.grid, self:getGravity(),
+		self:getDropSpeed(), self.drop_locked, self.hard_drop_locked
+	)
 end
 
 function GameMode:hold(inputs, ruleset, ihs)
@@ -522,17 +523,19 @@ function GameMode:hold(inputs, ruleset, ihs)
 	if ihs then playSE("ihs")
 	else playSE("hold") end
 	self:onHold()
+	if not self.grid:canPlacePiece(self.piece) then
+		self.game_over = true
+	end
 end
 
 function GameMode:initializeNextPiece(inputs, ruleset, piece_data, generate_next_piece)
 	self.piece_hard_dropped = false
 	self.piece_soft_locked = false
-	local gravity = self:getGravity()
 	self.piece = ruleset:initializePiece(
-		inputs, piece_data, self.grid, gravity,
+		inputs, piece_data, self.grid, self:getGravity(),
 		self.prev_inputs, self.move,
 		self:getLockDelay(), self:getDropSpeed(),
-		self.lock_drop, self.lock_hard_drop, self.big_mode,
+		self.drop_locked, self.hard_drop_locked, self.big_mode,
 		(
 			self.frames == 0 or (ruleset.are and self:getARE() ~= 0)
 		) and self.irs or false
@@ -605,6 +608,10 @@ function GameMode:animation(x, y, skin, colour)
 		skin, colour,
 		48 + x * 16, y * 16
 	}
+end
+
+function GameMode:canDrawLCA()
+	return self.lcd > 0
 end
 
 function GameMode:drawLineClearAnimation()

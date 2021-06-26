@@ -45,7 +45,9 @@ function GameScene:render()
 	self.game:drawBackground()
 	self.game:drawFrame()
 	self.game:drawGrid()
-	if self.game.lcd > 0 then self.game:drawLineClearAnimation() end
+	if self.game:canDrawLCA() then
+		self.game:drawLineClearAnimation()
+	end
 	self.game:drawPiece()
 	self.game:drawNextQueue(self.ruleset)
 	self.game:drawScoringInfo()

@@ -221,16 +221,7 @@ function Ruleset:initializePiece(
 		colours = self.colourscheme
 	end
 	
-	local spawn_x
-	if (grid.width ~= 10) then
-		local percent = spawn_positions[data.shape].x / 10
-		for i = grid.width - 1, 0, -1 do
-			if i / grid.width <= percent then
-				spawn_x = i
-				break
-			end
-		end
-	end
+	local spawn_x = math.floor(spawn_positions[data.shape].x / 10 * grid.width)
 
 	local spawn_dy
 	if (config.gamesettings.spawn_positions == 1) then
@@ -257,7 +248,6 @@ function Ruleset:initializePiece(
 			playSE("irs")
 		end
 	end
-	self:dropPiece(inputs, piece, grid, gravity, drop_speed, drop_locked, hard_drop_locked)
 	return piece
 end
 
@@ -276,9 +266,9 @@ function Ruleset:processPiece(
 
 	if synchroes_allowed then
 		self:rotatePiece(inputs, piece, grid, prev_inputs, false)
-		self:movePiece(piece, grid, move, gravity >= 20)
+		self:movePiece(piece, grid, move, gravity >= grid.height - 4)
 	else
-		self:movePiece(piece, grid, move, gravity >= 20)
+		self:movePiece(piece, grid, move, gravity >= grid.height - 4)
 		self:rotatePiece(inputs, piece, grid, prev_inputs, false)
 	end
 	self:dropPiece(
