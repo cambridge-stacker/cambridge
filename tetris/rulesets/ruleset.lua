@@ -257,6 +257,7 @@ function Ruleset:initializePiece(
 			playSE("irs")
 		end
 	end
+	self:dropPiece(inputs, piece, grid, gravity, drop_speed, drop_locked, hard_drop_locked)
 	return piece
 end
 
