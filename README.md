@@ -89,8 +89,8 @@ Credits
 
 More special thanks can be found in-game, under the "Credits" menu.
 
-Notable Games
--------------
+Other Notable Games
+-------------------
 
 - [TGMsim](https://github.com/2Tie/TGMsim) by 2Tie
 - [Multimino](https://gamejolt.com/games/multimino/556683) by Axel Fox
