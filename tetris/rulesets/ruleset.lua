@@ -76,7 +76,7 @@ function Ruleset:rotatePiece(inputs, piece, grid, prev_inputs, initial)
 		self:attemptRotate(new_inputs, piece, grid, initial)
 	end
 
-	if not was_drop_blocked and piece:isDropBlocked(grid) then
+	if not initial and not was_drop_blocked and piece:isDropBlocked(grid) then
 		playSE("bottom")
 	end
 
@@ -260,8 +260,6 @@ function Ruleset:processPiece(
 	drop_locked, hard_drop_locked,
 	hard_drop_enabled, additive_gravity, classic_lock
 )
-	if piece.locked then return end
-
 	local synchroes_allowed = ({not self.world, true, false})[config.gamesettings.synchroes_allowed]
 
 	if synchroes_allowed then

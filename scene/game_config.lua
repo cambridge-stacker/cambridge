@@ -17,7 +17,7 @@ ConfigScene.options = {
 	{"smooth_movement", "Smooth Piece Drop", false, {"On", "Off"}},
 	{"synchroes_allowed", "Synchroes", false, {"Per ruleset", "On", "Off"}},
 	{"diagonal_input", "Diagonal Input", false, {"On", "Off"}},
-	{"buffer_lock", "Buffer Lock Inputs", false, {"On", "Off"}},
+	{"buffer_lock", "Buffer Lock Type", false, {"Off", "Hold", "Tap"}},
 	{"sfx_volume", "SFX", true, "sfxSlider"},
 	{"bgm_volume", "BGM", true, "bgmSlider"},
 }

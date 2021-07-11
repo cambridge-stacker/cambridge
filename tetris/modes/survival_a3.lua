@@ -237,7 +237,7 @@ function SurvivalA3Game:drawScoringInfo()
 
 	love.graphics.setFont(font_3x5_3)
 	if self.roll_frames > 3238 then love.graphics.setColor(1, 0.5, 0, 1)
-		elseif self.level >= 1300 and self.clear then love.graphics.setColor(0, 1, 0, 1) end
+		elseif self.level >= 1300 then love.graphics.setColor(0, 1, 0, 1) end
 	love.graphics.printf(getLetterGrade(math.floor(self.grade)), text_x, 140, 90, "left")
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.printf(self.score, text_x, 220, 90, "left")

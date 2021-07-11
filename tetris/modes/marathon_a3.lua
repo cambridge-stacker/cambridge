@@ -20,6 +20,7 @@ function MarathonA3Game:new()
 	self.speed_level = 0
 	self.roll_frames = 0
 	self.combo = 1
+	self.grade_combo = 1
 	self.grade = 0
 	self.grade_points = 0
 	self.roll_points = 0
@@ -236,12 +237,16 @@ function MarathonA3Game:updateScore(level, drop_bonus, cleared_lines)
 	if not self.clear then	
 		if cleared_lines > 0 then
 			self.combo = self.combo + (cleared_lines - 1) * 2
+			if cleared_lines > 1 then
+				self.grade_combo = self.grade_combo + 1
+			end
 			self.score = self.score + (
 				(math.ceil((level + cleared_lines) / 4) + drop_bonus) *
 				cleared_lines * self.combo
 			)
 		else
 			self.combo = 1
+			self.grade_combo = 1
 		end
 		self.drop_bonus = 0
 	end
@@ -335,7 +340,7 @@ function MarathonA3Game:updateGrade(cleared_lines)
 			self.grade_points = self.grade_points + (
 				math.ceil(
 					grade_point_bonuses[self.grade + 1][cleared_lines] *
-					combo_multipliers[math.min(self.combo, 10)][cleared_lines]
+					combo_multipliers[math.min(self.grade_combo, 10)][cleared_lines]
 				) * (1 + math.floor(self.level / 250))
 			)
 			if self.grade_points >= 100 and self.grade < 31 then
@@ -468,7 +473,7 @@ function MarathonA3Game:drawScoringInfo()
 	love.graphics.setFont(font_3x5_3)
 	love.graphics.printf(self.score, 240, 220, 90, "left")
 	if self.roll_frames > 3238 then love.graphics.setColor(1, 0.5, 0, 1)
-	elseif self.level >= 999 and self.clear then love.graphics.setColor(0, 1, 0, 1) end
+	elseif self.level >= 999 then love.graphics.setColor(0, 1, 0, 1) end
 	love.graphics.printf(self:getLetterGrade(), 240, 140, 90, "left")
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.printf(self.level, 240, 340, 40, "right")

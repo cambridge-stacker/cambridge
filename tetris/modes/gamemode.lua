@@ -85,10 +85,11 @@ function GameMode:getDasCutDelay() return 0 end
 function GameMode:getGravity() return 1/64 end
 
 function GameMode:getNextPiece(ruleset)
+	local shape = self.used_randomizer:nextPiece()
 	return {
 		skin = self:getSkin(),
-		shape = self.used_randomizer:nextPiece(),
-		orientation = ruleset:getDefaultOrientation(),
+		shape = shape,
+		orientation = ruleset:getDefaultOrientation(shape),
 	}
 end
 
@@ -178,7 +179,10 @@ function GameMode:update(inputs, ruleset)
 
 		ruleset:processPiece(
 			inputs, self.piece, self.grid, self:getGravity(), self.prev_inputs,
-			self.move, self:getLockDelay(), self:getDropSpeed(),
+			(
+				inputs.up and self.lock_on_hard_drop and not self.hard_drop_locked
+			) and "none" or self.move,
+			self:getLockDelay(), self:getDropSpeed(),
 			self.drop_locked, self.hard_drop_locked,
 			self.enable_hard_drop, self.additive_gravity, self.classic_lock
 		)
@@ -426,18 +430,37 @@ function GameMode:areCancel(inputs, ruleset)
 	end
 end
 
+function GameMode:checkBufferedInputs(inputs)
+	if (
+		config.gamesettings.buffer_lock ~= 1 and
+		not self.prev_inputs["up"] and inputs["up"] and
+		self.enable_hard_drop
+	) then
+		self.buffer_hard_drop = true
+	elseif (
+		config.gamesettings.buffer_lock == 2 and not inputs["up"]
+	) then
+		self.buffer_hard_drop = false
+	end
+	if (
+		config.gamesettings.buffer_lock ~= 1 and
+		not self.prev_inputs["down"] and inputs["down"]
+	) then
+		self.buffer_soft_drop = true
+	elseif (
+		config.gamesettings.buffer_lock == 2 and not inputs["down"]
+ 	) then
+		self.buffer_soft_drop = false
+	end
+end
+
 function GameMode:processDelays(inputs, ruleset, drop_speed)
 	if self.ready_frames == 100 then
 		playedReadySE = false
 		playedGoSE = false
 	end
 	if self.ready_frames > 0 then
-		if not self.prev_inputs["up"] and inputs["up"] and self.enable_hard_drop then
-			self.buffer_hard_drop = true
-		end
-		if not self.prev_inputs["down"] and inputs["down"] then
-			self.buffer_soft_drop = true
-		end
+		self:checkBufferedInputs(inputs)
 		if not playedReadySE then
 			playedReadySE = true
 			playSEOnce("ready")
@@ -451,12 +474,7 @@ function GameMode:processDelays(inputs, ruleset, drop_speed)
 			self:initializeOrHold(inputs, ruleset)
 		end
 	elseif self.lcd > 0 then
-		if not self.prev_inputs["up"] and inputs["up"] and self.enable_hard_drop then
-			self.buffer_hard_drop = true
-		end
-		if not self.prev_inputs["down"] and inputs["down"] then
-			self.buffer_soft_drop = true
-		end
+		self:checkBufferedInputs(inputs)
 		self.lcd = self.lcd - 1
 		self:areCancel(inputs, ruleset)
 		if self.lcd == 0 then
@@ -469,12 +487,7 @@ function GameMode:processDelays(inputs, ruleset, drop_speed)
 			end
 		end
 	elseif self.are > 0 then
-		if not self.prev_inputs["up"] and inputs["up"] and self.enable_hard_drop then
-			self.buffer_hard_drop = true
-		end
-		if not self.prev_inputs["down"] and inputs["down"] then
-			self.buffer_soft_drop = true
-		end
+		self:checkBufferedInputs(inputs)
 		self.are = self.are - 1
 		self:areCancel(inputs, ruleset)
 		if self.are == 0 then
@@ -541,10 +554,8 @@ function GameMode:initializeNextPiece(inputs, ruleset, piece_data, generate_next
 		) and self.irs or false
 	)
 	if self.buffer_hard_drop then
-		if config.gamesettings.buffer_lock == 1 then
-			self.piece:dropToBottom(self.grid)
-			if self.lock_on_hard_drop then self.piece.locked = true end
-		end
+		self.piece:dropToBottom(self.grid)
+		self.piece.locked = self.lock_on_hard_drop
 		local above_field = (
 			(config.gamesettings.spawn_positions == 1 and
 			ruleset.spawn_above_field) or
@@ -563,8 +574,7 @@ function GameMode:initializeNextPiece(inputs, ruleset, piece_data, generate_next
 	if self.buffer_soft_drop then
 		if (
 			self.lock_on_soft_drop and
-			self.piece:isDropBlocked(self.grid) and
-			config.gamesettings.buffer_lock == 1
+			self.piece:isDropBlocked(self.grid)
 		) then
 			self.piece.locked = true
 		end
@@ -903,5 +913,39 @@ function GameMode:drawReadyGo()
 end
 
 function GameMode:drawCustom() end
+
+function GameMode:draw(paused)
+	self:drawBackground()
+	self:drawFrame()
+	self:drawGrid()
+	self:drawPiece()
+	self:drawNextQueue(self.ruleset)
+	self:drawScoringInfo()
+	self:drawReadyGo()
+	self:drawCustom()
+	if self:canDrawLCA() then
+		self:drawLineClearAnimation()
+	end
+
+	love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.setFont(font_3x5_2)
+	if config.gamesettings.display_gamemode == 1 then
+		love.graphics.printf(
+			self.name .. " - " .. self.ruleset.name,
+			0, 460, 640, "left"
+		)
+	end
+
+	love.graphics.setFont(font_3x5_3)
+	if paused then
+		love.graphics.printf("GAME PAUSED!", 64, 160, 160, "center")
+	end
+
+	if self.completed then
+		self:onGameComplete()
+	elseif self.game_over then
+		self:onGameOver()
+	end
+end
 
 return GameMode

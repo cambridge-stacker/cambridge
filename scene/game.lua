@@ -42,36 +42,17 @@ function GameScene:update()
 end
 
 function GameScene:render()
-	self.game:drawBackground()
-	self.game:drawFrame()
-	self.game:drawGrid()
-	if self.game:canDrawLCA() then
-		self.game:drawLineClearAnimation()
-	end
-	self.game:drawPiece()
-	self.game:drawNextQueue(self.ruleset)
-	self.game:drawScoringInfo()
-	self.game:drawReadyGo()
-	self.game:drawCustom()
-
-	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.setFont(font_3x5_2)
-	if config.gamesettings.display_gamemode == 1 then
-		love.graphics.printf(self.game.name .. " - " .. self.ruleset.name, 0, 460, 640, "left")
-	end
-
-	love.graphics.setFont(font_3x5_3)
-	if self.paused then love.graphics.print("PAUSED!", 80, 100) end
-
-	if self.game.completed then
-		self.game:onGameComplete()
-	elseif self.game.game_over then
-		self.game:onGameOver()
-	end
+	self.game:draw(self.paused)
 end
 
 function GameScene:onInputPress(e)
-	if (self.game.game_over or self.game.completed) and (e.input == "menu_decide" or e.input == "menu_back" or e.input == "retry") then
+	if (
+		self.game.game_over or self.game.completed
+	) and (
+		e.input == "menu_decide" or
+		e.input == "menu_back" or
+		e.input == "retry"
+	) then
 		highscore_entry = self.game:getHighscoreData()
 		highscore_hash = self.game.hash .. "-" .. self.ruleset.hash
 		submitHighscore(highscore_hash, highscore_entry)

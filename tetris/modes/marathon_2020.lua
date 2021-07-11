@@ -84,6 +84,7 @@ function Marathon2020Game:getLineClearDelay()
 end
 
 function Marathon2020Game:getLockDelay()
+	--[[
 		if self.delay_level < 6 then return 30
 	elseif self.delay_level < 7 then return 26
 	elseif self.delay_level < 8 then return 22
@@ -95,6 +96,7 @@ function Marathon2020Game:getLockDelay()
 	elseif self.delay_level < 19 then return 10
 	elseif self.delay_level < 20 then return 9
 	else return 8 end
+	]] return 1
 end
 
 function Marathon2020Game:getGravity()
@@ -144,7 +146,7 @@ function Marathon2020Game:advanceOneFrame()
 		if self.roll_frames < 0 then
 			return false
 		elseif self.roll_frames > 4000 then
-			if self.grade >= 30 and self.section_cool_count >= 20 then self.grade = 31 end
+			if self:qualifiesForMRoll() then self.grade = 31 end
 			self.completed = true
 		end
 	elseif self.ready_frames == 0 then
@@ -227,13 +229,14 @@ local mid_cleared_line_points = {2, 6, 12, 24}
 local high_cleared_line_points = {1, 4, 9, 20}
 
 local function getGradeForGradePoints(points)
-	return math.floor(math.sqrt((points / 50) * 8 + 1) / 2 - 0.5)
+	return math.min(30, math.floor(math.sqrt((points / 50) * 8 + 1) / 2 - 0.5))
 	-- Don't be afraid of the above function. All it does is make it so that
 	-- you need 50 points to get to grade 1, 100 points to grade 2, etc.
 end
 
 function Marathon2020Game:updateGrade(cleared_lines)
 	-- update grade points and max grade points
+	if self.clear then return end
 	local point_level = math.floor(self.level / 100) + self.delay_level
 	local plus_points = math.max(
 		low_cleared_line_points[cleared_lines],
@@ -249,7 +252,6 @@ function Marathon2020Game:updateGrade(cleared_lines)
 end
 
 function Marathon2020Game:getTotalGrade()
-	if self.grade + self.section_cool_count > 50 then return "GM" end
 	return self.grade + self.section_cool_count
 end
 
@@ -331,14 +333,16 @@ end
 function Marathon2020Game:updateSectionTimes(old_level, new_level)
 	function sectionCool(section)
 		self.section_cool_count = self.section_cool_count + 1
-		self.delay_level = math.min(20, self.delay_level + 1)
-		if section < 10 then table.insert(self.section_status, "cool") end
+		if section < 10 then
+			self.delay_level = math.min(20, self.delay_level + 1)
+		end
+		table.insert(self.section_status, "cool")
 		self.cool_timer = 300
 	end
 
 	local section = getSectionForLevel(old_level)
 
-	if section <= 19 and old_level % 100 < 70 and new_level >= math.floor(old_level / 100) * 100 + 70 then
+	if old_level % 100 < 70 and new_level >= math.floor(old_level / 100) * 100 + 70 then
 		-- record section 70 time
 		section_70_time = self.frames - self.section_start_time
 		table.insert(self.secondary_section_times, section_70_time)
@@ -355,14 +359,14 @@ function Marathon2020Game:updateSectionTimes(old_level, new_level)
 		self:checkClear(new_level)
 
 		if (
-			section <= 19 and self.section_status[section - 1] == "cool" and
+			self.section_status[section - 1] == "cool" and
 			self.secondary_section_times[section] < self.secondary_section_times[section - 1] + 120 and
 			self.secondary_section_times[section] < cool_cutoffs[section]
 		) then
 			sectionCool(section)
 		elseif self.section_status[section - 1] == "cool" then
 			table.insert(self.section_status, "none")
-		elseif section <= 19 and self.secondary_section_times[section] < cool_cutoffs[section] then
+		elseif self.secondary_section_times[section] < cool_cutoffs[section] then
 			sectionCool(section)
 		else
 			table.insert(self.section_status, "none")
@@ -452,7 +456,13 @@ function Marathon2020Game:drawScoringInfo()
 		end	
 
 	love.graphics.setFont(font_3x5_3)
-	love.graphics.printf(self:getTotalGrade(), text_x, 120, 90, "left")
+	
+	local grade = self:getTotalGrade()
+	love.graphics.printf(
+		grade > 50 and "GM" or grade,
+		text_x, 120, 90, "left"
+	)
+
 	love.graphics.printf(self.grade_points, text_x, 220, 90, "left")
 	love.graphics.printf(self.level, text_x, 340, 50, "right")
 
@@ -466,7 +476,7 @@ end
 
 function Marathon2020Game:getHighscoreData()
 	return {
-		grade = self.grade,
+		grade = self:getTotalGrade(),
 		level = self.level,
 		frames = self.frames,
 	}
