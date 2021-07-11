@@ -156,11 +156,11 @@ function Marathon2020Game:advanceOneFrame()
 end
 
 local cool_cutoffs = {
-	frameTime(0,45,00), frameTime(0,41,50), frameTime(0,38,50), frameTime(0,35,00), frameTime(0,32,50),
-	frameTime(0,29,20), frameTime(0,27,20), frameTime(0,24,80), frameTime(0,22,80), frameTime(0,20,60),
-	frameTime(0,19,60), frameTime(0,19,40), frameTime(0,19,40), frameTime(0,18,40), frameTime(0,18,20),
-	frameTime(0,16,20), frameTime(0,16,20), frameTime(0,16,20), frameTime(0,16,20), frameTime(0,16,20),
-	frameTime(0,15,20)
+	[0] = frameTime(0,45,00),
+	frameTime(0,41,50), frameTime(0,38,50), frameTime(0,35,00), frameTime(0,32,50), frameTime(0,29,20),
+	frameTime(0,27,20), frameTime(0,24,80), frameTime(0,22,80), frameTime(0,20,60), frameTime(0,19,60),
+	frameTime(0,19,40), frameTime(0,19,40), frameTime(0,18,40), frameTime(0,18,20), frameTime(0,16,20),
+	frameTime(0,16,20), frameTime(0,16,20), frameTime(0,16,20), frameTime(0,16,20), frameTime(0,15,20)
 }
 
 local levels_for_cleared_rows = { 1, 2, 4, 6 }
@@ -354,23 +354,25 @@ function Marathon2020Game:updateSectionTimes(old_level, new_level)
 		table.insert(self.section_times, section_time)
 		self.section_start_time = self.frames
 
-		if section > 5 then self.delay_level = math.min(20, self.delay_level + 1) end
-		self:checkTorikan(section)
-		self:checkClear(new_level)
-
 		if (
 			self.section_status[section - 1] == "cool" and
 			self.secondary_section_times[section] < self.secondary_section_times[section - 1] + 120 and
-			self.secondary_section_times[section] < cool_cutoffs[section]
+			self.secondary_section_times[section] < cool_cutoffs[self.delay_level]
 		) then
 			sectionCool(section)
 		elseif self.section_status[section - 1] == "cool" then
 			table.insert(self.section_status, "none")
-		elseif self.secondary_section_times[section] < cool_cutoffs[section] then
+		elseif self.secondary_section_times[section] < cool_cutoffs[self.delay_level] then
 			sectionCool(section)
 		else
 			table.insert(self.section_status, "none")
 		end
+
+		if section > 5 then
+			self.delay_level = math.min(20, self.delay_level + 1)
+		end
+		self:checkTorikan(section)
+		self:checkClear(new_level)
 	end
 end
 
