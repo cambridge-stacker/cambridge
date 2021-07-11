@@ -88,7 +88,7 @@ function KeyConfigScene:onInputPress(e)
 		elseif e.scancode == "tab" then
 			self.set_inputs[configurable_inputs[self.input_state]] = "skipped"
 			self.input_state = self.input_state + 1
-		elseif e.scancode ~= "escape" then
+		elseif e.scancode ~= "escape" and not self.new_input[e.scancode] then
 			-- all other keys can be configured
 			self.set_inputs[configurable_inputs[self.input_state]] = "key " .. love.keyboard.getKeyFromScancode(e.scancode) .. " (" .. e.scancode .. ")"
 			self.new_input[e.scancode] = configurable_inputs[self.input_state]

@@ -104,6 +104,7 @@ function StickConfigScene:onInputPress(e)
 				if not self.new_input[e.name].buttons then
 					self.new_input[e.name].buttons = {}
 				end
+				if self.new_input[e.name].buttons[e.button] then return end
 				self.set_inputs[configurable_inputs[self.input_state]] =
 					"jbtn " ..
 					e.button ..
@@ -119,6 +120,9 @@ function StickConfigScene:onInputPress(e)
 					if not self.new_input[e.name].axes[e.axis] then
 						self.new_input[e.name].axes[e.axis] = {}
 					end
+					if (
+						self.new_input[e.name].axes[e.axis][e.value >= 1 and "positive" or "negative"]
+					) then return end
 					self.set_inputs[configurable_inputs[self.input_state]] =
 						"jaxis " ..
 						(e.value >= 1 and "+" or "-") .. e.axis ..
@@ -136,6 +140,9 @@ function StickConfigScene:onInputPress(e)
 					end
 					if not self.new_input[e.name].hats[e.hat] then
 						self.new_input[e.name].hats[e.hat] = {}
+					end
+					if self.new_input[e.name].hats[e.hat][e.direction] then
+						return
 					end
 					self.set_inputs[configurable_inputs[self.input_state]] =
 						"jhat " ..
