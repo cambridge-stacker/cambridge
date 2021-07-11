@@ -437,20 +437,12 @@ function GameMode:checkBufferedInputs(inputs)
 		self.enable_hard_drop
 	) then
 		self.buffer_hard_drop = true
-	elseif (
-		config.gamesettings.buffer_lock == 2 and not inputs["up"]
-	) then
-		self.buffer_hard_drop = false
 	end
 	if (
 		config.gamesettings.buffer_lock ~= 1 and
 		not self.prev_inputs["down"] and inputs["down"]
 	) then
 		self.buffer_soft_drop = true
-	elseif (
-		config.gamesettings.buffer_lock == 2 and not inputs["down"]
- 	) then
-		self.buffer_soft_drop = false
 	end
 end
 
@@ -542,8 +534,16 @@ function GameMode:hold(inputs, ruleset, ihs)
 end
 
 function GameMode:initializeNextPiece(inputs, ruleset, piece_data, generate_next_piece)
-	self.piece_hard_dropped = false
-	self.piece_soft_locked = false
+	if not self.buffer_soft_drop and self.lock_drop or (
+		not ruleset.are or self:getARE() == 0
+	) then
+		self.drop_locked = true
+	end
+	if not self.buffer_hard_drop and self.lock_hard_drop or (
+		not ruleset.are or self:getARE() == 0
+	) then
+		self.hard_drop_locked = true
+	end
 	self.piece = ruleset:initializePiece(
 		inputs, piece_data, self.grid, self:getGravity(),
 		self.prev_inputs, self.move,
@@ -553,46 +553,29 @@ function GameMode:initializeNextPiece(inputs, ruleset, piece_data, generate_next
 			self.frames == 0 or (ruleset.are and self:getARE() ~= 0)
 		) and self.irs or false
 	)
-	if self.buffer_hard_drop then
-		self.piece:dropToBottom(self.grid)
-		self.piece.locked = self.lock_on_hard_drop
-		local above_field = (
-			(config.gamesettings.spawn_positions == 1 and
-			ruleset.spawn_above_field) or
-			config.gamesettings.spawn_positions == 3
-		)
-		self:onHardDrop(self.piece.position.y - (
-			self.piece.big and
-			ruleset.big_spawn_positions[self.piece.shape].y or
-			ruleset.spawn_positions[self.piece.shape].y) +
-			(above_field and ruleset:getAboveFieldOffset(
-				piece_data.shape, piece_data.orientation
-			) or 0)
-		)
-		self.buffer_hard_drop = false
-	end
-	if self.buffer_soft_drop then
-		if (
-			self.lock_on_soft_drop and
-			self.piece:isDropBlocked(self.grid)
-		) then
-			self.piece.locked = true
+	if config.gamesettings.buffer_lock == 3 then
+		if self.buffer_hard_drop then
+			local prev_y = self.piece.position.y
+			self.piece:dropToBottom(self.grid)
+			self.piece.locked = self.lock_on_hard_drop
+			self:onHardDrop(self.piece.position.y - prev_y)
 		end
-		self.buffer_soft_drop = false
+		if self.buffer_soft_drop then
+			if (
+				self.lock_on_soft_drop and
+				self.piece:isDropBlocked(self.grid)
+			) then
+				self.piece.locked = true
+			end
+		end
 	end
+	self.piece_hard_dropped = false
+	self.piece_soft_locked = false
+	self.buffer_hard_drop = false
+	self.buffer_soft_drop = false
 	if self.piece:isDropBlocked(self.grid) and
 	   self.grid:canPlacePiece(self.piece) then
 		playSE("bottom")
-	end
-	if self.lock_drop or (
-		not ruleset.are or self:getARE() == 0
-	) then
-		self.drop_locked = true
-	end
-	if self.lock_hard_drop or (
-		not ruleset.are or self:getARE() == 0
-	) then
-		self.hard_drop_locked = true
 	end
 	if generate_next_piece == nil then
 		table.remove(self.next_queue, 1)
