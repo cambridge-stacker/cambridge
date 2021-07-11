@@ -84,7 +84,6 @@ function Marathon2020Game:getLineClearDelay()
 end
 
 function Marathon2020Game:getLockDelay()
-	--[[
 		if self.delay_level < 6 then return 30
 	elseif self.delay_level < 7 then return 26
 	elseif self.delay_level < 8 then return 22
@@ -96,7 +95,6 @@ function Marathon2020Game:getLockDelay()
 	elseif self.delay_level < 19 then return 10
 	elseif self.delay_level < 20 then return 9
 	else return 8 end
-	]] return 1
 end
 
 function Marathon2020Game:getGravity()
