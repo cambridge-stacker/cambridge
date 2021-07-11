@@ -254,7 +254,7 @@ function Marathon2020Game:getTotalGrade()
 end
 
 local function getSectionForLevel(level)
-	if level < 2001 then
+	if level < 2000 then
 		return math.floor(level / 100) + 1
 	elseif level < 2020 then
 		return 20
@@ -331,7 +331,7 @@ end
 function Marathon2020Game:updateSectionTimes(old_level, new_level)
 	function sectionCool(section)
 		self.section_cool_count = self.section_cool_count + 1
-		if section < 10 then
+		if section <= 10 then
 			self.delay_level = math.min(20, self.delay_level + 1)
 		end
 		table.insert(self.section_status, "cool")
