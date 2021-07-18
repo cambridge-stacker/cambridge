@@ -407,11 +407,12 @@ GM-roll requirements
 You qualify for the GM roll if you:
 - Reach level 2020
 - with a grade of 50
+- and at least 25,000 grade points
 - in less than 13:30.00 total.
 
 ]]--
 	
-	return self.level >= 2020 and self:getTotalGrade() == 50 and self.frames <= frameTime(13,30)
+	return self.level >= 2020 and self:getTotalGrade() == 50 and self.grade_points >= 25000 and self.frames <= frameTime(13,30)
 end
 
 function Marathon2020Game:drawGrid()
