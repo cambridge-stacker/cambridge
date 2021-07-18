@@ -97,14 +97,13 @@ end
 function SurvivalA2Game:onLineClear(cleared_row_count)
 	if not self.clear then
 		local new_level = math.min(self.level + cleared_row_count, 999)
-		if self.level == 999 or self:hitTorikan(self.level, new_level) then
+		if new_level == 999 or self:hitTorikan(self.level, new_level) then
 			self.clear = true
-			if self.level < 999 then
+			if new_level < 999 then
 				self.game_over = true
 			end
-		else
-			self.level = new_level
 		end
+		self.level = new_level
 	end
 end
 
@@ -158,7 +157,7 @@ function SurvivalA2Game:drawScoringInfo()
 
 	love.graphics.setFont(font_3x5_3)
 	love.graphics.printf(self.score, text_x, 220, 90, "left")
-	if self.roll_frames > 2968 then love.graphics.setColor(1, 0.5, 0, 1)
+	if self.roll_frames > 1800 then love.graphics.setColor(1, 0.5, 0, 1)
 	elseif self.level >= 999 and self.clear then love.graphics.setColor(0, 1, 0, 1) end
 	if self:getLetterGrade() ~= "" then love.graphics.printf(self:getLetterGrade(), text_x, 140, 90, "left") end
 	love.graphics.setColor(1, 1, 1, 1)
