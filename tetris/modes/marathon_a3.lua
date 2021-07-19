@@ -219,7 +219,7 @@ function MarathonA3Game:updateSectionTimes(old_level, new_level)
 		table.insert(self.secondary_section_times, section_70_time)
 
 		if section <= 9 and self.section_status[section - 1] == "cool" and
-				self.secondary_section_times[section] < self.secondary_section_times[section - 1] + 120 then
+				self.secondary_section_times[section] <= self.secondary_section_times[section - 1] + 120 then
 			self.section_cool = true
 			self.coolregret_message = "COOL!!"
 						self.coolregret_timer = 300

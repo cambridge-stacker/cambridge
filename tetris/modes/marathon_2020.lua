@@ -354,7 +354,7 @@ function Marathon2020Game:updateSectionTimes(old_level, new_level)
 
 		if (
 			self.section_status[section - 1] == "cool" and
-			self.secondary_section_times[section] < self.secondary_section_times[section - 1] + 120 and
+			self.secondary_section_times[section] <= self.secondary_section_times[section - 1] + 120 and
 			self.secondary_section_times[section] < cool_cutoffs[self.delay_level]
 		) then
 			sectionCool(section)
