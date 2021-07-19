@@ -290,10 +290,10 @@ function Marathon2020Game:sectionPassed(old_level, new_level)
 end
 
 function Marathon2020Game:checkTorikan(section)
-	if section == 5 and self.frames < frameTime(6,00,00) then self.torikan_passed[500] = true end
-	if section == 9 and self.frames < frameTime(8,30,00) then self.torikan_passed[900] = true end
-	if section == 10 and self.frames < frameTime(8,45,00) then self.torikan_passed[1000] = true end
-	if section == 15 and self.frames < frameTime(11,30,00) then self.torikan_passed[1500] = true end
+	if section == 5 and self.frames < frameTime(8,00,00) then self.torikan_passed[500] = true end
+	if section == 9 and self.frames < frameTime(10,30,00) then self.torikan_passed[900] = true end
+	if section == 10 and self.frames < frameTime(10,45,00) then self.torikan_passed[1000] = true end
+	if section == 15 and self.frames < frameTime(12,30,00) then self.torikan_passed[1500] = true end
 	if section == 19 and self.frames < frameTime(13,15,00) then self.torikan_passed[1900] = true end
 end
 
