@@ -41,7 +41,7 @@ function PhantomManiaGame:getARE()
 end
 
 function PhantomManiaGame:getLineARE()
-		if self.level < 100 then return 18
+		if self.level < 100 then return 14
 	elseif self.level < 400 then return 8
 	elseif self.level < 500 then return 7
 	else return 6 end
