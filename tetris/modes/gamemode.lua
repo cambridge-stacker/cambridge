@@ -490,7 +490,8 @@ end
 
 function GameMode:initializeOrHold(inputs, ruleset)
 	if (
-		(self.frames == 0 or (ruleset.are and self:getARE() ~= 0)) and self.ihs or false
+		(self.frames == 0 or (ruleset.are and self:getARE() ~= 0))
+		and self.ihs or false
 	) and self.enable_hold and inputs["hold"] == true then
 		self:hold(inputs, ruleset, true)
 	else
@@ -499,6 +500,7 @@ function GameMode:initializeOrHold(inputs, ruleset)
 	self:onPieceEnter()
 	if not self.grid:canPlacePiece(self.piece) then
 		self.game_over = true
+		return
 	end
 	ruleset:dropPiece(
 		inputs, self.piece, self.grid, self:getGravity(),
@@ -533,13 +535,15 @@ function GameMode:hold(inputs, ruleset, ihs)
 	end
 end
 
-function GameMode:initializeNextPiece(inputs, ruleset, piece_data, generate_next_piece)
-	if not self.buffer_soft_drop and self.lock_drop or (
+function GameMode:initializeNextPiece(
+	inputs, ruleset, piece_data, generate_next_piece
+)
+	if not inputs.hold and not self.buffer_soft_drop and self.lock_drop or (
 		not ruleset.are or self:getARE() == 0
 	) then
 		self.drop_locked = true
 	end
-	if not self.buffer_hard_drop and self.lock_hard_drop or (
+	if not inputs.hold and not self.buffer_hard_drop and self.lock_hard_drop or (
 		not ruleset.are or self:getARE() == 0
 	) then
 		self.hard_drop_locked = true
@@ -683,7 +687,9 @@ function GameMode:drawPiece()
 end
 
 function GameMode:drawGhostPiece(ruleset)
-	if self.piece == nil then return end
+	if self.piece == nil or not self.grid:canPlacePiece(self.piece) then
+		return
+	end
 	local ghost_piece = self.piece:withOffset({x=0, y=0})
 	ghost_piece.ghost = true
 	ghost_piece:dropToBottom(self.grid)
@@ -853,15 +859,7 @@ function GameMode:drawFrame()
 	-- game frame
 	if self.grid.width == 10 and self.grid.height == 24 then
 		love.graphics.draw(misc_graphics["frame"], 48, 64)
-	end
-	
-	love.graphics.setColor(0, 0, 0, 200)
-	love.graphics.rectangle(
-		"fill", 64, 80,
-		16 * self.grid.width, 16 * (self.grid.height - 4)
-	)
-	
-	if self.grid.width ~= 10 or self.grid.height ~= 24 then
+	else
 		love.graphics.setColor(174/255, 83/255, 76/255, 1)
 		love.graphics.setLineWidth(8)
 		love.graphics.line(
@@ -881,6 +879,11 @@ function GameMode:drawFrame()
 			60,76
 		)
 		love.graphics.setLineWidth(1)
+		love.graphics.setColor(0, 0, 0, 200)
+		love.graphics.rectangle(
+			"fill", 64, 80,
+			16 * self.grid.width, 16 * (self.grid.height - 4)
+		)
 	end
 end
 
@@ -897,7 +900,14 @@ end
 
 function GameMode:drawCustom() end
 
+-- transforms specified in here will transform the whole screen
+-- if you want a transform for a particular component, specify
+-- it in that component's draw function and then make sure to
+-- reset it to origin at the end of that component's draw call!
+function GameMode:transformScreen() end
+
 function GameMode:draw(paused)
+	self:transformScreen()
 	self:drawBackground()
 	self:drawFrame()
 	self:drawGrid()
