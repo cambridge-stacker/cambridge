@@ -47,18 +47,11 @@ function Ruleset:new(game_mode)
 	else
 		bones = config.gamesettings.piece_colour == 3 and "w" or ""
 	end
-	blocks.bone = {
-		R = love.graphics.newImage("res/img/bone" .. bones .. ".png"),
-		O = love.graphics.newImage("res/img/bone" .. bones .. ".png"),
-		Y = love.graphics.newImage("res/img/bone" .. bones .. ".png"),
-		G = love.graphics.newImage("res/img/bone" .. bones .. ".png"),
-		C = love.graphics.newImage("res/img/bone" .. bones .. ".png"),
-		B = love.graphics.newImage("res/img/bone" .. bones .. ".png"),
-		M = love.graphics.newImage("res/img/bone" .. bones .. ".png"),
-		F = love.graphics.newImage("res/img/bone" .. bones .. ".png"),
-		A = love.graphics.newImage("res/img/bone" .. bones .. ".png"),
-		X = love.graphics.newImage("res/img/bone" .. bones .. ".png"),
-	}
+	for colour in pairs(blocks["2tie"]) do
+		blocks.bone[colour] = love.graphics.newImage(
+			"res/img/bone" .. bones .. ".png"
+		)
+	end
 end
 
 function Ruleset:rotatePiece(inputs, piece, grid, prev_inputs, initial)
@@ -221,7 +214,7 @@ function Ruleset:initializePiece(
 		colours = self.colourscheme
 	end
 	
-	local spawn_x = math.floor(spawn_positions[data.shape].x / 10 * grid.width)
+	local spawn_x = math.floor(spawn_positions[data.shape].x * grid.width / 10)
 
 	local spawn_dy
 	if (config.gamesettings.spawn_positions == 1) then
@@ -237,7 +230,7 @@ function Ruleset:initializePiece(
 	end
 
 	local piece = Piece(data.shape, data.orientation - 1, {
-		x = spawn_x or spawn_positions[data.shape].x,
+		x = spawn_x,
 		y = spawn_positions[data.shape].y - spawn_dy
 	}, self.block_offsets, 0, 0, data.skin, colours[data.shape], big)
 
