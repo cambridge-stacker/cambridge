@@ -518,7 +518,7 @@ function GameMode:hold(inputs, ruleset, ihs)
 		self.hold_queue = {
 			skin = self.piece.skin,
 			shape = self.piece.shape,
-			orientation = ruleset:getDefaultOrientation(),
+			orientation = ruleset:getDefaultOrientation(self.piece.shape),
 		}
 	end
 	if data == nil then
@@ -901,9 +901,10 @@ end
 function GameMode:drawCustom() end
 
 -- transforms specified in here will transform the whole screen
--- if you want a transform for a particular component, specify
--- it in that component's draw function and then make sure to
--- reset it to origin at the end of that component's draw call!
+-- if you want a transform for a particular component, push the
+-- default transform by using love.graphics.push(), do your
+-- transform, and then love.graphics.pop() at the end of that
+-- component's draw call!
 function GameMode:transformScreen() end
 
 function GameMode:draw(paused)
