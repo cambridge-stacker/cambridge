@@ -10,6 +10,7 @@ function love.load()
 	require "load.bigint"
 	require "load.version"
 	loadSave()
+	require "funcs"
 	require "scene"
 	
 	--config["side_next"] = false
@@ -36,14 +37,14 @@ function initModules()
 	game_modes = {}
 	mode_list = love.filesystem.getDirectoryItems("tetris/modes")
 	for i=1,#mode_list do
-		if(mode_list[i] ~= "gamemode.lua" and mode_list[i] ~= "unrefactored_modes") then
+		if(mode_list[i] ~= "gamemode.lua" and string.sub(mode_list[i], -4) == ".lua") then
 			game_modes[#game_modes+1] = require ("tetris.modes."..string.sub(mode_list[i],1,-5))
 		end
 	end
 	rulesets = {}
 	rule_list = love.filesystem.getDirectoryItems("tetris/rulesets")
 	for i=1,#rule_list do
-		if(rule_list[i] ~= "ruleset.lua" and rule_list[i] ~= "unrefactored_rulesets") then
+		if(rule_list[i] ~= "ruleset.lua" and string.sub(rule_list[i], -4) == ".lua") then
 			rulesets[#rulesets+1] = require ("tetris.rulesets."..string.sub(rule_list[i],1,-5))
 		end
 	end
