@@ -1,4 +1,4 @@
-Copyright (c) 2018-2019 Joe Zeng
+Copyright (c) 2018-2021 Joe Zeng, Ishaan Bhardwaj
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
