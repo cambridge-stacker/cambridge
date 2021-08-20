@@ -214,7 +214,7 @@ function Ruleset:initializePiece(
 		colours = self.colourscheme
 	end
 	
-	local spawn_x = math.floor(spawn_positions[data.shape].x * grid.width / 10)
+	local spawn_x = math.ceil(spawn_positions[data.shape].x * grid.width / 10)
 
 	local spawn_dy
 	if (config.gamesettings.spawn_positions == 1) then
