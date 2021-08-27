@@ -1,10 +1,20 @@
 function copy(t)
-	-- returns deep copy of t (as opposed to the shallow copy you get from var = t)
+	-- returns top-layer shallow copy of t
 	if type(t) ~= "table" then return t end
-	local meta = getmetatable(t)
 	local target = {}
-	for k, v in pairs(t) do target[k] = v end
-	setmetatable(target, meta)
+	for k, v in next, t do target[k] = v end
+	setmetatable(target, getmetatable(t))
+	return target
+end
+
+function deepcopy(t)
+    -- returns infinite-layer deep copy of t
+	if type(t) ~= "table" then return t end
+	local target = {}
+	for k, v in next, t do
+		target[deepcopy(k)] = deepcopy(v)
+	end
+	setmetatable(target, deepcopy(getmetatable(t)))
 	return target
 end
 
