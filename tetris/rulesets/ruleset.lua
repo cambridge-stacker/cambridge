@@ -155,17 +155,17 @@ function Ruleset:dropPiece(
 	hard_drop_enabled, additive_gravity, classic_lock
 )
 	local y = piece.position.y
-	if inputs["down"] == true and drop_locked == false then
-		if additive_gravity then
-			piece:addGravity(gravity + drop_speed, grid, classic_lock)
-		else
-			piece:addGravity(math.max(gravity, drop_speed), grid, classic_lock)
-		end
-	elseif inputs["up"] == true and hard_drop_enabled == true then
+	if inputs["up"] == true and hard_drop_enabled == true then
 		if hard_drop_locked == true or piece:isDropBlocked(grid) then
 			piece:addGravity(gravity, grid, classic_lock)
 		else
 			piece:dropToBottom(grid)
+		end
+	elseif inputs["down"] == true and drop_locked == false then
+		if additive_gravity then
+			piece:addGravity(gravity + drop_speed, grid, classic_lock)
+		else
+			piece:addGravity(math.max(gravity, drop_speed), grid, classic_lock)
 		end
 	else
 		piece:addGravity(gravity, grid, classic_lock)
