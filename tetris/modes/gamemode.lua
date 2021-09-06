@@ -495,14 +495,7 @@ function GameMode:initializeOrHold(inputs, ruleset)
 		self:initializeNextPiece(inputs, ruleset, self.next_queue[1])
 	end
 	self:onPieceEnter()
-	if not self.grid:canPlacePiece(self.piece) then
-		self.game_over = true
-		return
-	end
-	ruleset:dropPiece(
-		inputs, self.piece, self.grid, self:getGravity(),
-		self:getDropSpeed(), self.drop_locked, self.hard_drop_locked
-	)
+	self:onEnterOrHold(inputs, ruleset)
 end
 
 function GameMode:hold(inputs, ruleset, ihs)
@@ -527,9 +520,18 @@ function GameMode:hold(inputs, ruleset, ihs)
 	if ihs then playSE("ihs")
 	else playSE("hold") end
 	self:onHold()
+	self:onEnterOrHold(inputs, ruleset)
+end
+
+function GameMode:onEnterOrHold(inputs, ruleset)
 	if not self.grid:canPlacePiece(self.piece) then
 		self.game_over = true
+		return
 	end
+	ruleset:dropPiece(
+		inputs, self.piece, self.grid, self:getGravity(),
+		self:getDropSpeed(), self.drop_locked, self.hard_drop_locked
+	)
 end
 
 function GameMode:initializeNextPiece(
