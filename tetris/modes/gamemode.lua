@@ -126,9 +126,6 @@ function GameMode:update(inputs, ruleset)
 		if inputs["left"] or inputs["right"] then
 			inputs["up"] = false
 			inputs["down"] = false
-		elseif inputs["up"] or inputs["down"] then
-			inputs["left"] = false
-			inputs["right"] = false
 		end
 	end
 
