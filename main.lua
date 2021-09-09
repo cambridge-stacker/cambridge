@@ -83,7 +83,7 @@ end
 
 function love.keypressed(key, scancode)
 	-- global hotkeys
-	if scancode == "f4" then
+	if scancode == "f11" then
 		config["fullscreen"] = not config["fullscreen"]
 		saveConfig()
 		love.window.setFullscreen(config["fullscreen"])
