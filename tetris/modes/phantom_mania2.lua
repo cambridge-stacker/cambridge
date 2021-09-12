@@ -287,7 +287,7 @@ function PhantomMania2Game:setHoldOpacity()
 	if self.level > 1000 and self.level < 1300 then
 		love.graphics.setColor(1, 1, 1, 1 - math.min(1, self.hold_age / 15))
 	else
-		self.super:setHoldOpacity(1, self.held and 0.6 or 1)
+		self.super:setHoldOpacity()
 	end
 end
 
