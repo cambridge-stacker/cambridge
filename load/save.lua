@@ -6,12 +6,10 @@ function loadSave()
 end
 
 function loadFromFile(filename)
-	print("Load from file")
 	local file_data = love.filesystem.read(filename)
 	if file_data == nil then
 		return {} -- new object
 	end
-	print(file_data)
 	local save_data = binser.deserialize(file_data)
 	if save_data == nil then
 		return {} -- new object
@@ -46,25 +44,13 @@ function initConfig()
 end
 
 function saveConfig()
-	print("Save config")
-	local file_data = binser.serialize(config)
-	print(file_data)
-	local success, message = love.filesystem.write(
-		'config.sav', file_data
+	love.filesystem.write(
+		'config.sav', binser.serialize(config)
 	)
-	if not success then
-		print(message)
-	end
 end
 
 function saveHighscores()
-	print("Save highscores")
-	local file_data = binser.serialize(highscores)
-	print(file_data)
-	local success, message = love.filesystem.write(
-		'highscores.sav', file_data
+	love.filesystem.write(
+		'highscores.sav', binser.serialize(highscores)
 	)
-	if not success then
-		print(message)
-	end
 end
