@@ -179,7 +179,7 @@ function PhantomMania2Game:onPieceLock(piece, cleared_row_count)
 end
 
 function PhantomMania2Game:onHold()
-	self.super.onHold()
+	self.super:onHold()
 	self.hold_age = 0
 end
 
