@@ -1,23 +1,18 @@
 local binser = require 'libs.binser'
 
 function loadSave()
-	local info = love.filesystem.getInfo(
-		love.filesystem.getSaveDirectory(), "directory"
-	)
-	if not info then
-		love.filesystem.remove(love.filesystem.getSaveDirectory())
-		love.filesystem.createDirectory(love.filesystem.getSaveDirectory())
-	end
-	config = loadFromFile(
-		love.filesystem.getSaveDirectory() .. '/config.sav'
-	)
-	highscores = loadFromFile(
-		love.filesystem.getSaveDirectory() .. '/highscores.sav'
-	)
+	config = loadFromFile('config.sav')
+	highscores = loadFromFile('highscores.sav')
 end
 
 function loadFromFile(filename)
-	local save_data, len = binser.readFile(filename)
+	print("Load from file")
+	local file_data = love.filesystem.read(filename)
+	if file_data == nil then
+		return {} -- new object
+	end
+	print(file_data)
+	local save_data = binser.deserialize(file_data)
 	if save_data == nil then
 		return {} -- new object
 	end
@@ -51,13 +46,25 @@ function initConfig()
 end
 
 function saveConfig()
-	binser.writeFile(
-		love.filesystem.getSaveDirectory() .. '/config.sav', config
+	print("Save config")
+	local file_data = binser.serialize(config)
+	print(file_data)
+	local success, message = love.filesystem.write(
+		'config.sav', file_data
 	)
+	if not success then
+		print(message)
+	end
 end
 
 function saveHighscores()
-	binser.writeFile(
-		love.filesystem.getSaveDirectory() .. '/highscores.sav', highscores
+	print("Save highscores")
+	local file_data = binser.serialize(highscores)
+	print(file_data)
+	local success, message = love.filesystem.write(
+		'highscores.sav', file_data
 	)
+	if not success then
+		print(message)
+	end
 end

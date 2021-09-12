@@ -1,5 +1,6 @@
 *.sav
 *.love
+*.zip
 dist/*.zip
 dist/**/cambridge.exe
 dist/**/libs
