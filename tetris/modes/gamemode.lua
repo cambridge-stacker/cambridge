@@ -269,7 +269,8 @@ function GameMode:update(inputs, ruleset)
 			end
 
 			if cleared_row_count > 0 then
-				playSE("erase")
+				local row_count_names = {"single","double","triple","quad"}
+				playSE("erase",row_count_names[cleared_row_count] or "quad")
 				self.lcd = self:getLineClearDelay()
 				self.last_lcd = self.lcd
 				self.are = (
