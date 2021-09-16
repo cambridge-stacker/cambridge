@@ -24,6 +24,59 @@ if osname == "Linux" then
 elseif osname == "OS X" then
     discordRPClib = ffi.load(source.."/libs/discord-rpc.dylib")
 elseif osname == "Windows" then
+    -- I would strongly advise never touching this. It was not trivial to get correct. -nightmareci
+
+    ffi.cdef[[
+    typedef uint32_t DWORD;
+    typedef char CHAR;
+    typedef CHAR *LPSTR;
+    typedef const CHAR *LPCSTR;
+    typedef wchar_t WCHAR;
+    typedef WCHAR *LPWSTR;
+    typedef LPWSTR PWSTR;
+    typedef const WCHAR *LPCWSTR;
+
+    static const DWORD CP_UTF8 = 65001;
+    int32_t MultiByteToWideChar(
+        DWORD CodePage,
+        DWORD dwFlags,
+        LPCSTR lpMultiByteStr,
+        int32_t cbMultiByte,
+        LPWSTR lpWideCharStr,
+        int32_t cchWideChar
+    );
+
+    int32_t WideCharToMultiByte(
+        DWORD CodePage,
+        DWORD dwFlags,
+        LPCWSTR lpWideCharStr,
+        int32_t cchWideChar,
+        LPSTR lpMultiByteStr,
+        int32_t cbMultiByte,
+        void* lpDefaultChar,
+        void* lpUsedDefaultChar
+    );
+
+    DWORD GetShortPathNameW(
+        LPCWSTR lpszLongPath,
+        LPWSTR lpszShortPath,
+        DWORD cchBuffer
+    );
+    ]]
+
+    local originalWideSize = ffi.C.MultiByteToWideChar(ffi.C.CP_UTF8, 0, source, -1, nil, 0)
+    local originalWide = ffi.new('WCHAR[?]', originalWideSize)
+    ffi.C.MultiByteToWideChar(ffi.C.CP_UTF8, 0, source, -1, originalWide, originalWideSize)
+
+    local sourceSize = ffi.C.GetShortPathNameW(originalWide, nil, 0)
+    local sourceWide = ffi.new('WCHAR[?]', sourceSize)
+    ffi.C.GetShortPathNameW(originalWide, sourceWide, sourceSize)
+
+    local sourceChar = ffi.new('char[?]', sourceSize)
+    ffi.C.WideCharToMultiByte(ffi.C.CP_UTF8, 0, sourceWide, sourceSize, sourceChar, sourceSize, nil, nil)
+
+    source = ffi.string(sourceChar)
+
     discordRPClib = ffi.load(source.."/libs/discord-rpc.dll")
 else
     -- Else it crashes later on
