@@ -51,9 +51,9 @@ function ModeSelectScene:update()
 		self.das = 0
 	end
 
-	if self.das >= 24 then
+	if self.das >= 15 then
 		self:changeOption(self.das_up and -1 or 1)
-		self.das = self.das * 0.75
+		self.das = self.das - 4
 	end
 end
 
