@@ -7,6 +7,7 @@ bgm = {
 
 local current_bgm = nil
 local bgm_locked = false
+local unfocused = false
 
 function switchBGM(sound, subsound)
 	if current_bgm ~= nil then
@@ -56,7 +57,7 @@ end
 function resetBGMFadeout(time)
 	current_bgm:setVolume(config.bgm_volume)
 	fading_bgm = false
-	current_bgm:play()
+	resumeBGM()
 end
 
 function processBGMFadeout(dt)
@@ -70,13 +71,20 @@ function processBGMFadeout(dt)
 	end
 end
 
-function pauseBGM()
+function pauseBGM(f)
+	if f then
+		unfocused = true
+	end
 	if current_bgm ~= nil then
 		current_bgm:pause()
 	end
 end
 
-function resumeBGM()
+function resumeBGM(f)
+	if f and scene.paused and unfocused then
+		unfocused = false
+		return
+	end
 	if current_bgm ~= nil then
 		current_bgm:play()
 	end

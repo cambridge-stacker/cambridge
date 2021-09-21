@@ -259,11 +259,15 @@ function love.joystickhat(joystick, hat, direction)
 	end
 end
 
+function love.wheelmoved(x, y)
+	scene:onInputPress({input=nil, type="wheel", x=x, y=y})
+end
+
 function love.focus(f)
-	if f and (scene.title ~= "Game" or not scene.paused) then
-		resumeBGM()
+	if f then
+		resumeBGM(true)
 	else
-		pauseBGM()
+		pauseBGM(true)
 	end
 end
 
