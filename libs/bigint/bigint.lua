@@ -368,6 +368,7 @@ function bigint.add(big1, big2)
 
     return result
 end
+
 function bigint.subtract(big1, big2)
     -- Type checking is done by bigint.compare in bigint.add
     -- Subtracting is like adding a negative
