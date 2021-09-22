@@ -349,7 +349,7 @@ function Grid:markSquares()
 					elseif i == 2 then
 						for j = 0, 3 do
 							for k = 0, 3 do
-								self.grid[y+j][x+k].colour = "F"
+								self.grid[y+j][x+k].colour = "W"
 								self.grid[y+j][x+k].skin = "square"
 							end
 							
