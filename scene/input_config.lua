@@ -10,7 +10,7 @@ local menu_screens = {
 function ConfigScene:new()
     self.menu_state = 1
     DiscordRPC:update({
-        details = "In menus",
+        details = "In settings",
         state = "Changing input config",
     })
 end
