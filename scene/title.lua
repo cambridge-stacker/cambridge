@@ -23,6 +23,10 @@ local mainmenuidle = {
 	"Having a nap",
 	"In menus",
 	"Bottom text",
+	"Trying to see all the funny rpc messages (maybe)",
+	"Not not not playing",
+	"AFK",
+	"Preparing for their next game"
 }
 
 function TitleScene:new()
@@ -35,6 +39,7 @@ function TitleScene:new()
 	DiscordRPC:update({
 		details = "In menus",
 		state = mainmenuidle[math.random(#mainmenuidle)],
+		largeImageKey = "icon2",
 	})
 end
 
