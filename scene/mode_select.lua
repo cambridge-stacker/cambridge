@@ -39,7 +39,7 @@ function ModeSelectScene:new()
 	DiscordRPC:update({
 		details = "In menus",
 		state = "Choosing a mode",
-		largeImageKey = "icon2"
+		largeImageKey = "ingame-000"
 	})
 end
 

@@ -36,7 +36,7 @@ function StickConfigScene:new()
 	self.axis_timer = 0
 
 	DiscordRPC:update({
-		details = "In menus",
+		details = "In settings",
 		state = "Changing joystick config",
 	})
 end

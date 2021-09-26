@@ -16,7 +16,7 @@ local optioncount = #TuningScene.options
 
 function TuningScene:new()
     DiscordRPC:update({
-        details = "In menus",
+        details = "In settings",
         state = "Changing tuning settings",
     })
     self.highlight = 1
