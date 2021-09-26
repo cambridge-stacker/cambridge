@@ -34,25 +34,25 @@ function CreditsScene:render()
 
     love.graphics.setFont(font_3x5_4)
     love.graphics.print("Cambridge Credits", 320, 500 - offset)
-    love.graphics.print("THANK YOU\nFOR PLAYING!", 320, math.max(2030 - offset, 240))
+    love.graphics.print("THANK YOU\nFOR PLAYING!", 320, math.max(2050 - offset, 240))
 
     love.graphics.setFont(font_3x5_3)
     love.graphics.print("Game Developers", 320, 550 - offset)
     love.graphics.print("Project Heads", 320, 640 - offset)
-    love.graphics.print("Notable Game Developers", 320, 730 - offset)
-    love.graphics.print("Special Thanks", 320, 1000 - offset)
-    love.graphics.print("- Milla", 320, math.max(2110 - offset, 320))
+    love.graphics.print("Notable Game Developers", 320, 750 - offset)
+    love.graphics.print("Special Thanks", 320, 1020 - offset)
+    love.graphics.print("- Milla", 320, math.max(2130 - offset, 320))
 
     love.graphics.setFont(font_3x5_2)
     love.graphics.print("Oshisaure\nJoe Zeng", 320, 590 - offset)
-    love.graphics.print("Mizu\nMarkGamed", 320, 680 - offset)
+    love.graphics.print("Mizu\nMarkGamed\nhaileylgbt", 320, 680 - offset)
     love.graphics.print(
         "2Tie - TGMsim\nAxel Fox - Multimino\nDr Ocelot - Tetra Legends\n" ..
         "Electra - ZTrix\nFelicity/nightmareci/kdex - Shiromino\n" ..
         "Mine - Tetra Online\nMrZ - Techmino\nosk - TETR.IO\n" ..
         "Phoenix Flare - Master of Blocks\nRayRay26 - Spirit Drop\n" ..
         "Rin - Puzzle Trial\nsinefuse - stackfuse",
-        320, 770 - offset
+        320, 790 - offset
     )
     love.graphics.print(
         "321MrHaatz\nAdventium\nAgentBasey\nArchina\nAurora\n" ..
@@ -69,7 +69,7 @@ function CreditsScene:render()
         "Tetra Legends Discord\nTetra Online Discord\nMultimino Discord\n" ..
         "Hard Drop Discord\nRusty's Systemspace\nCambridge Discord\n" ..
         "And to you, the player!",
-        320, 1040 - offset
+        320, 1060 - offset
     )
 end
 
