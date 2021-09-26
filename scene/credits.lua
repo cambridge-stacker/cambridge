@@ -7,6 +7,11 @@ function CreditsScene:new()
     -- higher = slower
     self.scroll_speed = 1.85
     switchBGM("credit_roll", "gm3")
+
+    DiscordRPC:update({
+        details = "Watching the credits",
+        state = "Thanks for playing the game!"
+    })
 end
 
 function CreditsScene:update()
