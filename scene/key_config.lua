@@ -35,7 +35,7 @@ function KeyConfigScene:new()
 	self.new_input = {}
 
 	DiscordRPC:update({
-		details = "In menus",
+		details = "In settings",
 		state = "Changing key config",
 	})
 end

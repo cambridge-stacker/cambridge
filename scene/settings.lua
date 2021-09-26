@@ -8,11 +8,20 @@ local menu_screens = {
     TuningScene
 }
 
+local settingsidle = {
+  "Tweaking some knobs",
+  "Tuning up",
+  "Adjusting options",
+  "Setting up",
+  "Setting the settings"
+}
+
 function SettingsScene:new()
     self.menu_state = 1
     DiscordRPC:update({
-        details = "In menus",
-        state = "Changing settings",
+        details = "In settings",
+        state = settingsidle[math.random(#settingsidle)],
+        largeImageKey = "settings",
     })
 end
 
