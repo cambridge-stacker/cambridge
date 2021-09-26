@@ -103,14 +103,6 @@ function TitleScene:onInputPress(e)
 	elseif e.input == "up" or e.scancode == "up" then
 		self:changeOption(-1)
 		playSE("cursor")
-	elseif e.scancode == "kp5" then
-		DiscordRPC:update({
-			details = "Pressed the cool button",
-			state = "You found the cool easter egg!",
-			largeImageKey = "transbridge",
-		})
-		playSE("mystery")
-		--now you've just spoiled the fun for yourself.
 	elseif e.input == "down" or e.scancode == "down" then
 		self:changeOption(1)
 		playSE("cursor")
