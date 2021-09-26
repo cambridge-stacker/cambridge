@@ -53,7 +53,7 @@ function CreditsScene:render()
     love.graphics.print("Oshisaure\nJoe Zeng", 320, 590 - offset)
     love.graphics.print("Mizu\nMarkGamed\nHailey", 320, 680 - offset)
     love.graphics.print(
-        "Alexey Pajitnov - Tetris\n2Tie - TGMsim\nAxel Fox - Multimino\nDr Ocelot - Tetra Legends\n" ..
+        "2Tie - TGMsim\nAxel Fox - Multimino\nDr Ocelot - Tetra Legends\n" ..
         "Electra - ZTrix\nFelicity/nightmareci/kdex - Shiromino\n" ..
         "Mine - Tetra Online\nMrZ - Techmino\nosk - TETR.IO\n" ..
         "Phoenix Flare - Master of Blocks\nRayRay26 - Spirit Drop\n" ..
