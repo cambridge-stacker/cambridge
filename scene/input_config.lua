@@ -12,6 +12,7 @@ function ConfigScene:new()
     DiscordRPC:update({
         details = "In settings",
         state = "Changing input config",
+        largeImageKey = "settings-input"
     })
 end
 

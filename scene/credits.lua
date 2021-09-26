@@ -10,7 +10,8 @@ function CreditsScene:new()
 
     DiscordRPC:update({
         details = "Watching the credits",
-        state = "Thanks for playing the game!"
+        state = "Thanks for playing the game!",
+        largeImageKey = "ingame-1900",
     })
 end
 
@@ -29,7 +30,7 @@ end
 
 function CreditsScene:render()
     local offset = self.frames / self.scroll_speed
-    
+
     love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.draw(
 		backgrounds[19],
@@ -50,9 +51,9 @@ function CreditsScene:render()
 
     love.graphics.setFont(font_3x5_2)
     love.graphics.print("Oshisaure\nJoe Zeng", 320, 590 - offset)
-    love.graphics.print("Mizu\nMarkGamed\nhaileylgbt", 320, 680 - offset)
+    love.graphics.print("Mizu\nMarkGamed\nHailey", 320, 680 - offset)
     love.graphics.print(
-        "2Tie - TGMsim\nAxel Fox - Multimino\nDr Ocelot - Tetra Legends\n" ..
+        "Alexey Pajitnov - Tetris\n2Tie - TGMsim\nAxel Fox - Multimino\nDr Ocelot - Tetra Legends\n" ..
         "Electra - ZTrix\nFelicity/nightmareci/kdex - Shiromino\n" ..
         "Mine - Tetra Online\nMrZ - Techmino\nosk - TETR.IO\n" ..
         "Phoenix Flare - Master of Blocks\nRayRay26 - Spirit Drop\n" ..

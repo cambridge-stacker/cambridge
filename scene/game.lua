@@ -27,9 +27,7 @@ function GameScene:new(game_mode, ruleset, inputs)
 	DiscordRPC:update({
 		details = self.game.rpc_details,
 		state = self.game.name,
-		--largeImageText = "Level "..self.game.level????
-		largeImageKey = "ingame-0"
-		--largeImageKey = ingame-<section>
+		largeImageKey = "ingame-"..self.game:getBackground().."00"
 	})
 end
 
@@ -41,6 +39,11 @@ function GameScene:update()
 		end
 		self.game:update(inputs, self.ruleset)
 		self.game.grid:update()
+
+		print("ingame-"..self.game:getBackground().."00")
+		DiscordRPC:update({
+			largeImageKey = "ingame-"..self.game:getBackground().."00"
+		})
 	end
 end
 
