@@ -118,6 +118,9 @@ function TitleScene:onInputPress(e)
 		self.text = self.text .. (e.scancode ~= nil and e.scancode or "")
 		if self.text == "ffffff" then
 			self.text_flag = true
+			DiscordRPC:update({
+				largeImageKey = "snow"
+			})
 		end
 	end
 end
