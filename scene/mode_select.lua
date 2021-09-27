@@ -56,6 +56,12 @@ function ModeSelectScene:update()
 		self:changeOption(self.das_up and -1 or 1)
 		self.das = self.das - 4
 	end
+
+	DiscordRPC:update({
+		details = "In menus",
+		state = "Choosing a " .. self.menu_state.select,
+		largeImageKey = "ingame-000"
+	})
 end
 
 function ModeSelectScene:render()
