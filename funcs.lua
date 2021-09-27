@@ -97,6 +97,22 @@ function table.contains(table, element)
 	return false
 end
 
+function table.keys(table)
+	local target = {}
+	for key in pairs(table) do
+		target[#target+1] = key
+	end
+	return target
+end
+
+function table.numkeys(table)
+	local count = 0
+	for k in pairs(table) do
+		count = count + 1
+	end
+	return count
+end
+
 function clamp(x, min, max)
 	if max < min then
 		min, max = max, min
