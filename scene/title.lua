@@ -45,6 +45,8 @@ function TitleScene:new()
 		details = "In menus",
 		state = mainmenuidle[math.random(#mainmenuidle)],
 		largeImageKey = "icon2",
+		smallImageKey = "smol",
+		smallImageText = version
 	})
 end
 
