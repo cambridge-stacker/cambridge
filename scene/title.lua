@@ -26,7 +26,12 @@ local mainmenuidle = {
 	"Trying to see all the funny rpc messages (maybe)",
 	"Not not not playing",
 	"AFK",
-	"Preparing for their next game"
+	"Preparing for their next game",
+	"Who are those people on that boat?",
+	"Welcome to Cambridge!",
+	"who even reads these",
+	"Made with love in LOVE!",
+	"This is probably the longest RPC string out of every possible RPC string that can be displayed."
 }
 
 function TitleScene:new()
