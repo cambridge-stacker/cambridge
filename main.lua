@@ -76,7 +76,7 @@ function love.draw()
 	scene:render()
 
 	love.graphics.setFont(font_3x5_2)
-	love.graphics.printf(version, 0, 460, love.graphics.getWidth() - 5, "right")
+	love.graphics.printf(version, 0, 460, 635, "right")
 	
 	love.graphics.pop()
 		
