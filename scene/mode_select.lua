@@ -27,14 +27,7 @@ function ModeSelectScene:new()
 		ruleset = current_ruleset,
 		select = "mode",
 	}
-	self.secret_inputs = {
-		rotate_left = false,
-		rotate_left2 = false,
-		rotate_right = false,
-		rotate_right2 = false,
-		rotate_180 = false,
-		hold = false,
-	}
+	self.secret_inputs = {}
 	self.das = 0
 	DiscordRPC:update({
 		details = "In menus",
@@ -157,12 +150,12 @@ function ModeSelectScene:onInputPress(e)
 end
 
 function ModeSelectScene:onInputRelease(e)
-	if e.input == "hold" or (e.input and string.sub(e.input, 1, 7) == "rotate_") then
-		self.secret_inputs[e.input] = false
-	elseif e.input == "up" or e.scancode == "up" then
+	if e.input == "up" or e.scancode == "up" then
 		self.das_up = nil
 	elseif e.input == "down" or e.scancode == "down" then
 		self.das_down = nil
+	elseif e.input then
+		self.secret_inputs[e.input] = false
 	end
 end
 
