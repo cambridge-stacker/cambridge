@@ -920,13 +920,13 @@ function GameMode:draw(paused)
 	self:drawFrame()
 	self:drawGrid()
 	self:drawPiece()
+	if self:canDrawLCA() then
+		self:drawLineClearAnimation()
+	end
 	self:drawNextQueue(self.ruleset)
 	self:drawScoringInfo()
 	self:drawReadyGo()
 	self:drawCustom()
-	if self:canDrawLCA() then
-		self:drawLineClearAnimation()
-	end
 
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_2)
