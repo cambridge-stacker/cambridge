@@ -12,7 +12,7 @@ ConfigScene.options = {
 	{"piece_colour", "Piece Colours", false, {"Per ruleset", "Arika", "TTC"}},
 	{"world_reverse", "A Button Rotation", false, {"Left", "Auto", "Right"}},
 	{"spawn_positions", "Spawn Positions", false, {"Per ruleset", "In field", "Out of field"}},
-	{"display_gamemode", "Display Gamemode", false, {"On", "Off"}},
+	{"display_gamemode", "Debug Info", false, {"On", "Off"}},
 	{"das_last_key", "DAS Last Key", false, {"Off", "On"}},
 	{"smooth_movement", "Smooth Piece Drop", false, {"On", "Off"}},
 	{"synchroes_allowed", "Synchroes", false, {"Per ruleset", "On", "Off"}},

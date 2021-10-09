@@ -75,9 +75,11 @@ function love.draw()
 		
 	scene:render()
 
-	love.graphics.setFont(font_3x5_2)
-	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.printf(version, 0, 460, 635, "right")
+	if config.gamesettings.display_gamemode == 1 or scene.title == "Title" then
+		love.graphics.setFont(font_3x5_2)
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.printf(version, 0, 460, 635, "right")
+	end
 	
 	love.graphics.pop()
 		
