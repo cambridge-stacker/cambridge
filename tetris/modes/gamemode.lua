@@ -151,7 +151,6 @@ function GameMode:update(inputs, ruleset)
 	else
 		-- perform active frame actions such as fading out the next queue
 		self:whilePieceActive()
-		local gravity = self:getGravity()
 
 		if self.enable_hold and inputs["hold"] == true and self.held == false and self.prev_inputs["hold"] == false then
 			self:hold(inputs, ruleset)
@@ -542,12 +541,12 @@ end
 function GameMode:initializeNextPiece(
 	inputs, ruleset, piece_data, generate_next_piece
 )
-	if not inputs.hold and not self.buffer_soft_drop and self.lock_drop or (
+	if not self.buffer_soft_drop and self.lock_drop or (
 		not ruleset.are or self:getARE() == 0
 	) then
 		self.drop_locked = true
 	end
-	if not inputs.hold and not self.buffer_hard_drop and self.lock_hard_drop or (
+	if not self.buffer_hard_drop and self.lock_hard_drop or (
 		not ruleset.are or self:getARE() == 0
 	) then
 		self.hard_drop_locked = true
@@ -568,13 +567,12 @@ function GameMode:initializeNextPiece(
 			self.piece.locked = self.lock_on_hard_drop
 			self:onHardDrop(self.piece.position.y - prev_y)
 		end
-		if self.buffer_soft_drop then
-			if (
-				self.lock_on_soft_drop and
-				self.piece:isDropBlocked(self.grid)
-			) then
-				self.piece.locked = true
-			end
+		if (
+			self.buffer_soft_drop and
+			self.lock_on_soft_drop and
+			self:getGravity() >= self.grid.height - 4
+		) then
+			self.piece.locked = true
 		end
 	end
 	self.piece_hard_dropped = false
