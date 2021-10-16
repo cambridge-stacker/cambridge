@@ -1,6 +1,7 @@
 function love.load()
 	math.randomseed(os.time())
 	highscores = {}
+	love.graphics.setDefaultFilter("linear", "nearest")
 	require "load.rpc"
 	require "load.graphics"
 	require "load.fonts"
@@ -63,7 +64,6 @@ function love.draw()
 	love.graphics.push()
 
 	-- get offset matrix
-	love.graphics.setDefaultFilter("linear", "nearest")
 	local width = love.graphics.getWidth()
 	local height = love.graphics.getHeight()
 	local scale_factor = math.min(width / 640, height / 480)
