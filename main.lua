@@ -106,8 +106,8 @@ function love.keypressed(key, scancode)
 		if config.secret then playSE("mode_decide")
 		else playSE("erase") end
 		-- f12 is reserved for saving screenshots
-		elseif scancode == "f12" then
-				local ss_name = os.date("ss/%Y-%m-%d_%H-%M-%S.png")
+	elseif scancode == "f12" then
+		local ss_name = os.date("ss/%Y-%m-%d_%H-%M-%S.png")
 		local info = love.filesystem.getInfo("ss", "directory")
 		if not info then
 			love.filesystem.remove("ss")
