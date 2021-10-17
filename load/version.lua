@@ -1,1 +1,1 @@
-version = "beta8-WIP"
+version = "v0.3"

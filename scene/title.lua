@@ -60,15 +60,28 @@ function TitleScene:update()
 end
 
 function TitleScene:render()
-	love.graphics.setFont(font_3x5_2)
-
+	love.graphics.setFont(font_3x5_4)
 	love.graphics.setColor(1, 1, 1, 1 - self.snow_bg_opacity)
+	--[[
 	love.graphics.draw(
 		backgrounds["title"],
 		0, 0, 0,
 		0.5, 0.5
 	)
+	]]
+	love.graphics.draw(
+		backgrounds["title_night"],
+		0, 0, 0,
+		0.5, 0.5
+	)
+	love.graphics.draw(
+		misc_graphics["icon"],
+		460, 170, 0,
+		2, 2
+	)
+	love.graphics.printf("Thanks for 1 year!", 430, 280, 160, "center")
 
+	love.graphics.setFont(font_3x5_2)
 	love.graphics.setColor(1, 1, 1, self.snow_bg_opacity)
 	love.graphics.draw(
 		backgrounds["snow"],
@@ -112,14 +125,17 @@ function TitleScene:onInputPress(e)
 		playSE("cursor")
 	elseif e.input == "menu_back" or e.scancode == "backspace" or e.scancode == "delete" then
 		love.event.quit()
+	-- no winter easter egg for now
+	--[[
 	else
-		self.text = self.text .. (e.scancode ~= nil and e.scancode or "")
+		self.text = self.text .. (e.scancode or "")
 		if self.text == "ffffff" then
 			self.text_flag = true
 			DiscordRPC:update({
 				largeImageKey = "snow"
 			})
 		end
+	]]
 	end
 end
 
