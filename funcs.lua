@@ -113,6 +113,31 @@ function table.numkeys(table)
 	return count
 end
 
+function equals(x, y)
+	if type(x) ~= "table" or type(y) ~= "table" then
+		return x == y
+	else
+		for k in pairs(x) do
+			if not equals(x[k], y[k]) then return false end
+		end
+		for k in pairs(y) do
+			if not equals(x[k], y[k]) then return false end
+		end
+		return true
+	end
+end
+
+function table.equalvalues(t1, t2)
+	if table.numkeys(t1) ~= table.numkeys(t2) then
+		return false
+	else
+		for _, v in pairs(t2) do
+			if not table.contains(t1, v) then return false end
+		end
+		return true
+	end
+end
+
 function clamp(x, min, max)
 	if max < min then
 		min, max = max, min

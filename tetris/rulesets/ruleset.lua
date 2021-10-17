@@ -35,8 +35,6 @@ Ruleset.next_sounds = {
 		T = "T"
 }
 
-Ruleset.pieces = 7
-
 -- Component functions.
 
 function Ruleset:new(game_mode)
@@ -208,7 +206,9 @@ function Ruleset:initializePiece(
 	end
 
 	local colours
-	if self.pieces == 7 then
+	if table.equalvalues(
+        self.colourscheme, {"I", "J", "L", "O", "S", "T", "Z"}
+    ) then
 		colours = ({self.colourscheme, ColourSchemes.Arika, ColourSchemes.TTC})[config.gamesettings.piece_colour]
 	else
 		colours = self.colourscheme

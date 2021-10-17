@@ -2,19 +2,15 @@ local Randomizer = require 'tetris.randomizers.randomizer'
 
 local BagRandomizer = Randomizer:extend()
 
-function BagRandomizer:new(pieces)
+function BagRandomizer:new(piece_table)
     self.bag = {}
-    self.possible_pieces = pieces
-    self.pieces = pieces
-    for i = 1, self.pieces do
-        table.insert(self.bag, i)
-    end
+    self.possible_pieces = piece_table
 end
 
 function BagRandomizer:generatePiece()
 	if next(self.bag) == nil then
-		for i = 1, self.pieces do
-            table.insert(self.bag, i)
+		for _, v in pairs(self.possible_pieces) do
+            table.insert(self.bag, v)
         end
 	end
 	local x = math.random(table.getn(self.bag))

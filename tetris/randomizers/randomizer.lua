@@ -3,7 +3,7 @@ local Object = require 'libs.classic'
 local Randomizer = Object:extend()
 
 function Randomizer:new()
-	self.possible_pieces = 7
+	self.possible_pieces = {"I", "J", "L", "O", "S", "T", "Z"}
 	self:initialize()
 end
 
@@ -15,10 +15,8 @@ function Randomizer:initialize()
 	-- do nothing
 end
 
-local shapes = {"I", "J", "L", "O", "S", "T", "Z"}
-
 function Randomizer:generatePiece()
-	return shapes[math.random(7)]
+	return self.possible_pieces[math.random(7)]
 end
 
 return Randomizer

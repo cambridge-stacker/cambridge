@@ -5,7 +5,7 @@ local playedReadySE = false
 local playedGoSE = false
 
 local Grid = require 'tetris.components.grid'
-local Randomizer = require 'tetris.randomizers.bag7'
+local Randomizer = require 'tetris.randomizers.randomizer'
 local BagRandomizer = require 'tetris.randomizers.bag'
 
 local GameMode = Object:extend()
@@ -100,13 +100,11 @@ end
 function GameMode:initialize(ruleset)
 	-- generate next queue
 	self.used_randomizer = (
-		ruleset.pieces == self.randomizer.possible_pieces and
-		self.randomizer or
-		(
-			ruleset.pieces == 7 and
-			Randomizer() or
-			BagRandomizer(ruleset.pieces)
-		)
+		table.equalvalues(
+			table.keys(ruleset.colourscheme),
+			self.randomizer.possible_pieces
+		) and
+		self.randomizer or BagRandomizer(table.keys(ruleset.colourscheme))
 	)
 	self.ruleset = ruleset
 	for i = 1, math.max(self.next_queue_length, 1) do
@@ -700,7 +698,10 @@ end
 
 function GameMode:drawNextQueue(ruleset)
 	local colourscheme
-	if ruleset.pieces == 7 then
+	if table.equalvalues(
+		self.used_randomizer.possible_pieces,
+		{"I", "J", "L", "O", "S", "T", "Z"}
+	) then
 		colourscheme = ({ruleset.colourscheme, ColourSchemes.Arika, ColourSchemes.TTC})[config.gamesettings.piece_colour]
 	else
 		colourscheme = ruleset.colourscheme
