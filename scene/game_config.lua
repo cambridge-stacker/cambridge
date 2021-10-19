@@ -84,17 +84,17 @@ function ConfigScene:render()
 end
 
 function ConfigScene:onInputPress(e)
-	if e.input == "menu_decide" or e.scancode == "return" then
+	if e.input == "menu_decide" then
 		playSE("mode_decide")
 		saveConfig()
 		scene = SettingsScene()
-	elseif e.input == "up" or e.scancode == "up" then
+	elseif e.input == "menu_up" then
 		playSE("cursor")
 		self.highlight = Mod1(self.highlight-1, optioncount)
-	elseif e.input == "down" or e.scancode == "down" then
+	elseif e.input == "menu_down" then
 		playSE("cursor")
 		self.highlight = Mod1(self.highlight+1, optioncount)
-	elseif e.input == "left" or e.scancode == "left" then
+	elseif e.input == "menu_left" then
 		if not self.options[self.highlight][3] then
 			playSE("cursor_lr")
 			local option = ConfigScene.options[self.highlight]
@@ -105,7 +105,7 @@ function ConfigScene:onInputPress(e)
 			sld:update()
 			playSE("cursor")
 		end
-	elseif e.input == "right" or e.scancode == "right" then
+	elseif e.input == "menu_right" then
 		if not self.options[self.highlight][3] then
 			playSE("cursor_lr")
 			local option = ConfigScene.options[self.highlight]
@@ -116,7 +116,7 @@ function ConfigScene:onInputPress(e)
 			sld:update()
 			playSE("cursor")
 		end
-	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
+	elseif e.input == "menu_back" then
 		loadSave()
 		scene = SettingsScene()
 	end

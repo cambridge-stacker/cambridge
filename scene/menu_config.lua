@@ -1,22 +1,16 @@
-local KeyConfigScene = Scene:extend()
+local MenuConfigScene = Scene:extend()
 
-KeyConfigScene.title = "Key Config"
+MenuConfigScene.title = "Menu Controls"
 
 require 'load.save'
 
 local configurable_inputs = {
-	"left",
-	"right",
-	"up",
-	"down",
-	"rotate_left",
-	"rotate_left2",
-	"rotate_right",
-	"rotate_right2",
-	"rotate_180",
-	"hold",
-	"retry",
-	"pause",
+	"menu_left",
+	"menu_right",
+	"menu_up",
+	"menu_down",
+    "menu_decide",
+    "menu_back",
 }
 
 local function newSetInputs()
@@ -27,7 +21,7 @@ local function newSetInputs()
 	return set_inputs
 end
 
-function KeyConfigScene:new()
+function MenuConfigScene:new()
 	self.input_state = 1
 	self.set_inputs = newSetInputs()
 	self.new_input = {}
@@ -38,10 +32,10 @@ function KeyConfigScene:new()
 	})
 end
 
-function KeyConfigScene:update()
+function MenuConfigScene:update()
 end
 
-function KeyConfigScene:render()
+function MenuConfigScene:render()
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.draw(
 		backgrounds["input_config"],
@@ -64,24 +58,20 @@ function KeyConfigScene:render()
 	end
 end
 
-function KeyConfigScene:onInputPress(e)
+function MenuConfigScene:onInputPress(e)
 	if e.type == "key" then
 		-- function keys, escape, and tab are reserved and can't be remapped
 		if e.scancode == "escape" then
-			scene = InputConfigScene()
+			scene = SettingsScene()
 		elseif self.input_state > table.getn(configurable_inputs) then
 			if e.scancode == "return" then
 				-- save new input, then load next scene
-				local had_config = config.input ~= nil
-                if not had_config then
-					config.input = {}
-					config.input.keys = {}
-				end
+				local had_config = config.input.menu_left ~= nil
 				for k, v in pairs(self.new_input) do
 					config.input.keys[k] = v
 				end
 				saveConfig()
-				scene = had_config and InputConfigScene() or MenuConfigScene()
+				scene = had_config and SettingsScene() or TitleScene()
 			elseif e.scancode == "delete" or e.scancode == "backspace" then
 				-- retry
 				self.input_state = 1
@@ -100,4 +90,4 @@ function KeyConfigScene:onInputPress(e)
 	end
 end
 
-return KeyConfigScene
+return MenuConfigScene

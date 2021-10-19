@@ -120,7 +120,7 @@ function ModeSelectScene:onInputPress(e)
 		if e.y ~= 0 then
 			self:changeOption(-e.y)
 		end
-	elseif e.input == "menu_decide" or e.scancode == "return" then
+	elseif e.input == "menu_decide" then
 		current_mode = self.menu_state.mode
 		current_ruleset = self.menu_state.ruleset
 		config.current_mode = current_mode
@@ -132,17 +132,17 @@ function ModeSelectScene:onInputPress(e)
 			rulesets[self.menu_state.ruleset],
 			self.secret_inputs
 		)
-	elseif e.input == "up" or e.scancode == "up" then
+	elseif e.input == "menu_up" then
 		self:changeOption(-1)
 		self.das_up = true
 		self.das_down = nil
-	elseif e.input == "down" or e.scancode == "down" then
+	elseif e.input == "menu_down" then
 		self:changeOption(1)
 		self.das_down = true
 		self.das_up = nil
-	elseif e.input == "left" or e.input == "right" or e.scancode == "left" or e.scancode == "right" then
+	elseif e.input == "menu_left" or e.input == "menu_right" then
 		self:switchSelect()
-	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
+	elseif e.input == "menu_back" then
 		scene = TitleScene()
 	elseif e.input then
 		self.secret_inputs[e.input] = true
@@ -150,9 +150,9 @@ function ModeSelectScene:onInputPress(e)
 end
 
 function ModeSelectScene:onInputRelease(e)
-	if e.input == "up" or e.scancode == "up" then
+	if e.input == "menu_up" then
 		self.das_up = nil
-	elseif e.input == "down" or e.scancode == "down" then
+	elseif e.input == "menu_down" then
 		self.das_down = nil
 	elseif e.input then
 		self.secret_inputs[e.input] = false
