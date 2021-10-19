@@ -78,7 +78,10 @@ function love.draw()
 	if config.gamesettings.display_gamemode == 1 or scene.title == "Title" then
 		love.graphics.setFont(font_3x5_2)
 		love.graphics.setColor(1, 1, 1, 1)
-		love.graphics.printf(version, 0, 460, 635, "right")
+		love.graphics.printf(
+			string.format("%.2f", 1 / love.timer.getAverageDelta()) ..
+			"fps - " .. version, 0, 460, 635, "right"
+		)
 	end
 	
 	love.graphics.pop()
