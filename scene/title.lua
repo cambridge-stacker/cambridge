@@ -114,16 +114,16 @@ function TitleScene:changeOption(rel)
 end
 
 function TitleScene:onInputPress(e)
-	if e.input == "menu_decide" then
+	if e.input == "menu_decide" or e.scancode == "return" then
 		playSE("main_decide")
 		scene = main_menu_screens[self.main_menu_state]()
-	elseif e.input == "menu_up" then
+	elseif e.input == "up" or e.scancode == "up" then
 		self:changeOption(-1)
 		playSE("cursor")
-	elseif e.input == "menu_down" then
+	elseif e.input == "down" or e.scancode == "down" then
 		self:changeOption(1)
 		playSE("cursor")
-	elseif e.input == "menu_back" then
+	elseif e.input == "menu_back" or e.scancode == "backspace" or e.scancode == "delete" then
 		love.event.quit()
 	-- no winter easter egg for now
 	--[[

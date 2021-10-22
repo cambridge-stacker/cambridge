@@ -4,7 +4,6 @@ SettingsScene.title = "Settings"
 
 local menu_screens = {
     InputConfigScene,
-    MenuConfigScene,
     GameConfigScene,
     TuningScene
 }
@@ -58,16 +57,16 @@ function SettingsScene:changeOption(rel)
 end
 
 function SettingsScene:onInputPress(e)
-	if e.input == "menu_decide" then
+	if e.input == "menu_decide" or e.scancode == "return" then
 		playSE("main_decide")
 		scene = menu_screens[self.menu_state]()
-	elseif e.input == "menu_up" then
+	elseif e.input == "up" or e.scancode == "up" then
 		self:changeOption(-1)
 		playSE("cursor")
-	elseif e.input == "menu_down" then
+	elseif e.input == "down" or e.scancode == "down" then
 		self:changeOption(1)
 		playSE("cursor")
-	elseif e.input == "menu_back" then
+	elseif e.input == "menu_back" or e.scancode == "backspace" or e.scancode == "delete" then
 		scene = TitleScene()
 	end
 end

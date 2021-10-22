@@ -1,6 +1,6 @@
 local ConfigScene = Scene:extend()
 
-ConfigScene.title = "Game Controls"
+ConfigScene.title = "Input Config"
 
 local menu_screens = {
     KeyConfigScene,
@@ -27,7 +27,7 @@ function ConfigScene:render()
     )
 
     love.graphics.setFont(font_3x5_4)
-    love.graphics.print("IN-GAME CONTROLS", 80, 40)
+    love.graphics.print("INPUT CONFIG", 80, 40)
 
     love.graphics.setFont(font_3x5_2)
     love.graphics.print("Which controls do you want to configure?", 80, 90)
@@ -48,17 +48,18 @@ function ConfigScene:changeOption(rel)
 end
 
 function ConfigScene:onInputPress(e)
-	local had_config = config.input ~= nil
-	if e.input == "menu_decide" or (not had_config and e.scancode == "return") then
+	if e.input == "menu_decide" or e.scancode == "return" then
 		playSE("main_decide")
 		scene = menu_screens[self.menu_state]()
-	elseif e.input == "menu_up" or (not had_config and e.scancode == "up") then
+	elseif e.input == "up" or e.scancode == "up" then
 		self:changeOption(-1)
 		playSE("cursor")
-	elseif e.input == "menu_down" or (not had_config and e.scancode == "down") then
+	elseif e.input == "down" or e.scancode == "down" then
 		self:changeOption(1)
 		playSE("cursor")
-	elseif had_config and e.input == "menu_back" then
+	elseif config.input and (
+		e.input == "menu_back" or e.scancode == "backspace" or e.scancode == "delete"
+	) then
 		scene = SettingsScene()
 	end
 end

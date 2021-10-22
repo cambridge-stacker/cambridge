@@ -5,6 +5,8 @@ KeyConfigScene.title = "Key Config"
 require 'load.save'
 
 local configurable_inputs = {
+	"menu_decide",
+	"menu_back",
 	"left",
 	"right",
 	"up",
@@ -73,15 +75,10 @@ function KeyConfigScene:onInputPress(e)
 			if e.scancode == "return" then
 				-- save new input, then load next scene
 				local had_config = config.input ~= nil
-                if not had_config then
-					config.input = {}
-					config.input.keys = {}
-				end
-				for k, v in pairs(self.new_input) do
-					config.input.keys[k] = v
-				end
+                if not config.input then config.input = {} end
+                config.input.keys = self.new_input
 				saveConfig()
-				scene = had_config and InputConfigScene() or MenuConfigScene()
+				scene = had_config and InputConfigScene() or TitleScene()
 			elseif e.scancode == "delete" or e.scancode == "backspace" then
 				-- retry
 				self.input_state = 1
