@@ -112,7 +112,7 @@ function MarathonA2Game:advanceOneFrame()
 	if self.clear then
 		self.roll_frames = self.roll_frames + 1
 		if self.roll_frames < 0 then return false end
-		if self.roll_frames > 3694 then
+		if self.roll_frames > 3701 then
 			self.completed = true
 			if self.grade == 32 then
 				self.grade = 33
