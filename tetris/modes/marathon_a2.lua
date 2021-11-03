@@ -365,10 +365,10 @@ function MarathonA2Game:drawScoringInfo()
 	love.graphics.setFont(font_3x5_3)
 	if self.clear then
 		if self:qualifiesForMRoll() then
-			if self.lines >= 32 and self.roll_frames > 3694 then love.graphics.setColor(1, 0.5, 0, 1)
+			if self.lines >= 32 and self.roll_frames > 3701 then love.graphics.setColor(1, 0.5, 0, 1)
 			else love.graphics.setColor(0, 1, 0, 1) end
 		else
-			if self.roll_frames > 3694 then love.graphics.setColor(1, 0.5, 0, 1)
+			if self.roll_frames > 3701 then love.graphics.setColor(1, 0.5, 0, 1)
 			else love.graphics.setColor(0, 1, 0, 1) end
 		end
 	end	
