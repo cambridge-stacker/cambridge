@@ -530,6 +530,8 @@ function GameMode:onEnterOrHold(inputs, ruleset)
 	if not self.grid:canPlacePiece(self.piece) then
 		self.game_over = true
 		return
+	elseif self.piece:isDropBlocked(self.grid) then
+		playSE("bottom")
 	end
 	ruleset:dropPiece(
 		inputs, self.piece, self.grid, self:getGravity(),
@@ -578,10 +580,6 @@ function GameMode:initializeNextPiece(
 	self.piece_soft_locked = false
 	self.buffer_hard_drop = false
 	self.buffer_soft_drop = false
-	if self.piece:isDropBlocked(self.grid) and
-	   self.grid:canPlacePiece(self.piece) then
-		playSE("bottom")
-	end
 	if generate_next_piece == nil then
 		table.remove(self.next_queue, 1)
 		table.insert(self.next_queue, self:getNextPiece(ruleset))
