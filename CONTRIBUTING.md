@@ -57,13 +57,13 @@ Coding conventions
 Use tabs to indent, spaces to align.
 
 * Specifically, spaces should not appear at the beginning of a line, and tabs should not appear _except_ at the beginning of a line.
-* The sole exception is in a multiline `if` statement; the initial `if` should have four spaces before it to align it with an `elseif` on the next line. For example:
+* If you're aligning multiline if-statements, the initial "if", "elseif" or "else" should be flush left with the indentation level, with spaces padding the gap to the next word as necessary. For example:
 
 ```lua
-	---- 4 spaces
-	    if self.level <  900 then return 12
-	elseif self.level < 1200 then return 8
-	else return 6 end
+	if     self.level <  900 then return 12
+	elseif self.level < 1200 then return  8
+	else                          return  6
+	end
 ```
 
 Comments at the end of lines of code must be one line long. Multi-line comments must appear in their own block.
