@@ -102,7 +102,6 @@ Other Notable Games
 - [Tetra Online](https://github.com/Juan-Cartes/Tetra-Offline) by Mine
 - [Techmino](https://discord.gg/6Yuww44tq8) by MrZ
 - [Example Block Game](https://github.com/oshisaure/example-block-game) by Oshisaure
-- [TETR.IO](https://tetr.io) by osk
 - [Master of Blocks](https://discord.gg/72FZ49mjWh) by Phoenix Flare
 - [Spirit Drop](https://rayblastgames.com/spiritdrop.php) by RayRay26
 - [Puzzle Trial](https://kagamine-rin.itch.io/puzzle-trial) by Rin
