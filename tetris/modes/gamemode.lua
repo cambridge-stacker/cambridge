@@ -334,10 +334,14 @@ end
 
 function GameMode:onGameOver()
 	switchBGM(nil)
-	local alpha = 1
-	local animation_length = 90
+	local alpha = 0
+	local animation_length = 120
 	if self.game_over_frames < animation_length then
+		-- Show field for a bit, then fade out.
 		alpha = math.pow(2048, self.game_over_frames/animation_length - 1)
+	elseif self.game_over_frames < 2 * animation_length then
+		-- Keep field hidden for a short time, then pop it back in (for screenshots).
+		alpha = 1
 	end
 	love.graphics.setColor(0, 0, 0, alpha)
 	love.graphics.rectangle(
