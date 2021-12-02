@@ -612,18 +612,8 @@ function GameMode:animation(x, y, skin, colour)
 	if self.last_lcd ~= 0 then
 		progress = (self.last_lcd - self.lcd) / self.last_lcd
 	end
-	-- Change this number to change "bounciness"
-	local bounce = 13
-	-- Convert progress through the animation into an alpha value
-	local alpha = 0
-	-- Cutoff is arbitrary: corresponds to level 500 in Marathon A2
-	if self.last_lcd > 25 then
-		-- Goes up and down: looks better when animation is long
-		alpha = 1 - (bounce * progress^3 - 1.5 * bounce * progress^2 + (0.5 * bounce + 1) * progress)
-	else
-		-- Always decreasing: looks better when animation is short
-		alpha = 1 - progress * progress
-	end
+	-- Convert progress through the animation into an alpha value, with easing
+	local alpha = 1 - progress ^ 2
 	return {
 			1, 1, 1,
 			alpha,
@@ -641,7 +631,26 @@ function GameMode:drawLineClearAnimation()
 	-- params: block x, y, skin, colour
 	-- returns: table with RGBA, skin, colour, x, y
 
-	-- Flashy Fadeout (default)
+	-- Quadratic Fadeout (default)
+	--[[
+	function animation(x, y, skin, colour)
+		-- Animation progress where 0 = start and 1 = end
+		local progress = 1
+		if self.last_lcd ~= 0 then
+			progress = (self.last_lcd - self.lcd) / self.last_lcd
+		end
+		-- Convert progress through the animation into an alpha value, with easing
+		local alpha = 1 - progress ^ 2
+		return {
+				1, 1, 1,
+				alpha,
+				skin, colour,
+				48 + x * 16, y * 16
+		}
+	end
+	--]]
+
+	-- Flashy Fadeout
 	--[[
 	function animation(x, y, skin, colour)
 		-- Animation progress where 0 = start and 1 = end
