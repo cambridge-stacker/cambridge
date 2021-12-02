@@ -334,7 +334,12 @@ end
 
 function GameMode:onGameOver()
 	switchBGM(nil)
-	love.graphics.setColor(0, 0, 0, 1 - 2 ^ (-self.game_over_frames / 30))
+	local alpha = 1
+	local animation_length = 90
+	if self.game_over_frames < animation_length then
+		alpha = math.pow(2048, self.game_over_frames/animation_length - 1)
+	end
+	love.graphics.setColor(0, 0, 0, alpha)
 	love.graphics.rectangle(
 		"fill", 64, 80,
 		16 * self.grid.width, 16 * (self.grid.height - 4)
