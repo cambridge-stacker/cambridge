@@ -7,6 +7,7 @@ local playedGoSE = false
 local Grid = require 'tetris.components.grid'
 local Randomizer = require 'tetris.randomizers.randomizer'
 local BagRandomizer = require 'tetris.randomizers.bag'
+local binser = require 'libs.binser'
 
 local GameMode = Object:extend()
 
@@ -72,6 +73,8 @@ function GameMode:new(secret_inputs)
 	self.section_start_time = 0
 	self.section_times = { [0] = 0 }
 	self.secondary_section_times = { [0] = 0 }
+	self.replay_inputs = {}
+	self.replay_pieces = {}
 end
 
 function GameMode:getARR() return 1 end
@@ -86,6 +89,7 @@ function GameMode:getGravity() return 1/64 end
 
 function GameMode:getNextPiece(ruleset)
 	local shape = self.used_randomizer:nextPiece()
+	table.insert(self.replay_pieces,shape)
 	return {
 		skin = self:getSkin(),
 		shape = shape,
@@ -98,6 +102,10 @@ function GameMode:getSkin()
 end
 
 function GameMode:initialize(ruleset)
+	local dummy_entry = {}
+	dummy_entry["inputs"] = {}
+	dummy_entry["frames"] = 0
+	table.insert(self.replay_inputs, dummy_entry)
 	-- generate next queue
 	self.used_randomizer = (
 		table.equalvalues(
@@ -127,6 +135,19 @@ function GameMode:update(inputs, ruleset)
 		elseif inputs["down"] then
 			inputs["up"] = false
 		end
+	end
+
+	-- check if inputs have changed since last frame
+	local last_input_index = table.maxn(self.replay_inputs)
+	if self.replay_inputs[last_input_index]["inputs"] ~= inputs then
+		-- insert new inputs into replay inputs table
+		local new_inputs = {}
+		new_inputs["inputs"] = inputs
+		new_inputs["frames"] = 0
+		table.insert(self.replay_inputs,new_inputs)
+	else
+		-- add 1 to input frame counter
+		self.replay_inputs[last_input_index]["frames"] = self.replay_inputs[last_input_index]["frames"] + 1
 	end
 
 	-- advance one frame
@@ -342,6 +363,18 @@ function GameMode:onGameOver()
 	elseif self.game_over_frames < 2 * animation_length then
 		-- Keep field hidden for a short time, then pop it back in (for screenshots).
 		alpha = 1
+	elseif self.game_over_frames == 2 * animation_length then
+		-- Save replay.
+		local replay = {}
+		replay["inputs"] = self.replay_inputs
+		replay["pieces"] = self.replay_pieces
+		replay["mode"] = self.name
+		replay["ruleset"] = self.ruleset.name
+		if love.filesystem.getInfo("replays") == nil then
+			love.filesystem.createDirectory("replays")
+		end
+		local replay_number = table.getn(love.filesystem.getDirectoryItems("replays")) + 1
+		love.filesystem.write("replays/"..replay_number..".lua", binser.serialize(replay))
 	end
 	love.graphics.setColor(0, 0, 0, alpha)
 	love.graphics.rectangle(
