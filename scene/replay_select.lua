@@ -13,7 +13,9 @@ function ReplaySelectScene:new()
 	replays = {}
 	replay_file_list = love.filesystem.getDirectoryItems("replays")
 	for i=1,#replay_file_list do
-		replays[i] = binser.deserialize(love.filesystem.read("replays/"..replay_file_list[i]))
+		local data = love.filesystem.read("replays/"..replay_file_list[i])
+		local object = binser.deserialize(data)
+		replays[i] = object[1]
 	end
 	-- TODO sort replays list
 	if table.getn(replays) == 0 then
@@ -85,13 +87,14 @@ function ReplaySelectScene:render()
 	end
 
 	love.graphics.setColor(1, 1, 1, 0.5)
-	love.graphics.rectangle("fill", 20, 258, 240, 22)
+	love.graphics.rectangle("fill", 20, 258, 500, 22)
 
 	love.graphics.setFont(font_3x5_2)
 	for idx, replay in pairs(replays) do
 		if(idx >= self.menu_state.replay-9 and idx <= self.menu_state.replay+9) then
+			-- TODO format timer into minutes:seconds:centiseconds
 			local display_string = replay["mode"].." "..replay["ruleset"].." "..replay["timer"].." "..replay["level"].." "..os.date("%c", replay["timestamp"])
-			love.graphics.printf(display_string, 40, (260 - 20*(self.menu_state.replay)) + 20 * idx, 200, "left")
+			love.graphics.printf(display_string, 40, (260 - 20*(self.menu_state.replay)) + 20 * idx, 500, "left")
 		end
 	end
 end
