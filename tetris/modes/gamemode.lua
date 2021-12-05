@@ -89,7 +89,7 @@ function GameMode:getGravity() return 1/64 end
 
 function GameMode:getNextPiece(ruleset)
 	local shape = self.used_randomizer:nextPiece()
-	table.insert(self.replay_pieces,shape)
+	self.replay_pieces[#self.replay_pieces + 1] = shape
 	return {
 		skin = self:getSkin(),
 		shape = shape,
@@ -105,7 +105,7 @@ function GameMode:initialize(ruleset)
 	local dummy_entry = {}
 	dummy_entry["inputs"] = {}
 	dummy_entry["frames"] = 0
-	table.insert(self.replay_inputs, dummy_entry)
+	self.replay_inputs[#self.replay_inputs + 1] = dummy_entry
 	-- generate next queue
 	self.used_randomizer = (
 		table.equalvalues(
@@ -138,16 +138,19 @@ function GameMode:update(inputs, ruleset)
 	end
 
 	-- check if inputs have changed since last frame
-	local last_input_index = table.maxn(self.replay_inputs)
-	if self.replay_inputs[last_input_index]["inputs"] ~= inputs then
+	if self.prev_inputs["left"] ~= inputs["left"] or self.prev_inputs["right"] ~= inputs["right"]
+	   or self.prev_inputs["down"] ~= inputs["down"] or self.prev_inputs["up"] ~= inputs["up"]
+	   or self.prev_inputs["rotate_left"] ~= inputs["rotate_left"] or self.prev_inputs["rotate_right"] ~= inputs["rotate_right"]
+	   or self.prev_inputs["hold"] ~= inputs["hold"] or self.prev_inputs["rotate_180"] ~= inputs["rotate_180"]
+	   or self.prev_inputs["rotate_left2"] ~= inputs["rotate_left2"] or self.prev_inputs["rotate_right2"] ~= inputs["rotate_right2"] then
 		-- insert new inputs into replay inputs table
 		local new_inputs = {}
 		new_inputs["inputs"] = inputs
 		new_inputs["frames"] = 0
-		table.insert(self.replay_inputs,new_inputs)
+		self.replay_inputs[#self.replay_inputs + 1] = new_inputs
 	else
 		-- add 1 to input frame counter
-		self.replay_inputs[last_input_index]["frames"] = self.replay_inputs[last_input_index]["frames"] + 1
+		self.replay_inputs[#self.replay_inputs]["frames"] = self.replay_inputs[#self.replay_inputs]["frames"] + 1
 	end
 
 	-- advance one frame
@@ -357,10 +360,7 @@ function GameMode:onGameOver()
 	switchBGM(nil)
 	local alpha = 0
 	local animation_length = 120
-	if self.game_over_frames < animation_length then
-		-- Show field for a bit, then fade out.
-		alpha = math.pow(2048, self.game_over_frames/animation_length - 1)
-	elseif self.game_over_frames == animation_length then
+	if self.game_over_frames == 1 then
 		alpha = 1
 		-- Save replay.
 		local replay = {}
@@ -392,6 +392,9 @@ function GameMode:onGameOver()
 			end
 		end
 		love.filesystem.write("replays/"..replay_number..".rply", binser.serialize(replay))
+	elseif self.game_over_frames < animation_length then
+		-- Show field for a bit, then fade out.
+		alpha = math.pow(2048, self.game_over_frames/animation_length - 1)
 	elseif self.game_over_frames < 2 * animation_length then
 		-- Keep field hidden for a short time, then pop it back in (for screenshots).
 		alpha = 1
