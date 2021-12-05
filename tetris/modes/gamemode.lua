@@ -360,21 +360,41 @@ function GameMode:onGameOver()
 	if self.game_over_frames < animation_length then
 		-- Show field for a bit, then fade out.
 		alpha = math.pow(2048, self.game_over_frames/animation_length - 1)
-	elseif self.game_over_frames < 2 * animation_length then
-		-- Keep field hidden for a short time, then pop it back in (for screenshots).
+	elseif self.game_over_frames == animation_length then
 		alpha = 1
-	elseif self.game_over_frames == 2 * animation_length then
 		-- Save replay.
 		local replay = {}
 		replay["inputs"] = self.replay_inputs
 		replay["pieces"] = self.replay_pieces
 		replay["mode"] = self.name
 		replay["ruleset"] = self.ruleset.name
+		replay["timer"] = self.frames
+		replay["score"] = self.score
+		replay["level"] = self.level
+		replay["lines"] = self.lines
+		replay["gamesettings"] = config.gamesettings
+		replay["timestamp"] = os.time()
 		if love.filesystem.getInfo("replays") == nil then
 			love.filesystem.createDirectory("replays")
 		end
-		local replay_number = table.getn(love.filesystem.getDirectoryItems("replays")) + 1
-		love.filesystem.write("replays/"..replay_number..".lua", binser.serialize(replay))
+		local replay_files = love.filesystem.getDirectoryItems("replays")
+		-- Select replay filename that doesn't collide with an existing one
+		local replay_number = 0
+		local collision = true
+		while collision do
+			collision = false
+			replay_number = replay_number + 1
+			for key, file in pairs(replay_files) do
+				if file == replay_number..".rply" then
+					collision = true
+					break
+				end
+			end
+		end
+		love.filesystem.write("replays/"..replay_number..".rply", binser.serialize(replay))
+	elseif self.game_over_frames < 2 * animation_length then
+		-- Keep field hidden for a short time, then pop it back in (for screenshots).
+		alpha = 1
 	end
 	love.graphics.setColor(0, 0, 0, alpha)
 	love.graphics.rectangle(
