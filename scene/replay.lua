@@ -1,3 +1,5 @@
+local Sequence = require 'tetris.randomizers.fixed_sequence'
+
 local ReplayScene = Scene:extend()
 
 ReplayScene.title = "Replay"
@@ -6,7 +8,10 @@ function ReplayScene:new(replay, game_mode, ruleset, inputs)
 	self.secret_inputs = inputs
 	self.game = game_mode(self.secret_inputs)
 	self.ruleset = ruleset(self.game)
-	self.game:initialize(self.ruleset)
+	-- Replace piece randomizer with replay piece sequence
+	local randomizer = Sequence(table.keys(ruleset.colourscheme))
+	randomizer.sequence = replay["pieces"]
+	self.game:initializeReplay(self.ruleset, randomizer)
 	self.inputs = {
 		left=false,
 		right=false,
