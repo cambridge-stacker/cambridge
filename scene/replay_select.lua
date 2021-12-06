@@ -20,9 +20,6 @@ function ReplaySelectScene:new()
 		if i ~= 1 then
 			while start_index <= end_index do
 				mid_index = math.floor((start_index + end_index) / 2)
-				print(start_index, mid_index, end_index)
-				print(replays[mid_index])
-				print(new_replay)
 				if os.difftime(replays[mid_index]["timestamp"], new_replay["timestamp"]) <= 0 then
 					-- search first half
 					end_index = mid_index - 1
@@ -34,6 +31,7 @@ function ReplaySelectScene:new()
 		end
 		table.insert(replays, mid_index, new_replay)
 	end
+	self.display_error = false
 	if table.getn(replays) == 0 then
 		self.display_warning = true
 		current_replay = 1
@@ -59,14 +57,24 @@ end
 function ReplaySelectScene:update()
 	switchBGM(nil) -- experimental
 
-	if self.das_up or self.das_down then
+	if self.das_up or self.das_down or self.das_left or self.das_right then
 		self.das = self.das + 1
 	else
 		self.das = 0
 	end
 
 	if self.das >= 15 then
-		self:changeOption(self.das_up and -1 or 1)
+		local change = 0
+		if self.das_up then
+			change = -1
+		elseif self.das_down then
+			change = 1
+		elseif self.das_left then
+			change = -9
+		elseif self.das_right then
+			change = 9
+		end
+		self:changeOption(change)
 		self.das = self.das - 4
 	end
 
@@ -100,6 +108,19 @@ function ReplaySelectScene:render()
 			80, 250, 480, "center"
 		)
 		return
+	elseif self.display_error then
+		love.graphics.setFont(font_3x5_3)
+		love.graphics.printf(
+			"You are missing this mode or ruleset.",
+			80, 200, 480, "center"
+		)
+		love.graphics.setFont(font_3x5_2)
+		love.graphics.printf(
+			"Come back after getting the proper mode or ruleset. " ..
+			"Press any button to return to the main menu.",
+			80, 250, 480, "center"
+		)
+		return
 	end
 
 	love.graphics.setColor(1, 1, 1, 0.5)
@@ -115,7 +136,7 @@ function ReplaySelectScene:render()
 end
 
 function ReplaySelectScene:onInputPress(e)
-	if self.display_warning and e.input then
+	if (self.display_warning or self.display_error) and e.input then
 		scene = TitleScene()
 	elseif e.type == "wheel" then
 		if e.x % 2 == 1 then
@@ -128,18 +149,56 @@ function ReplaySelectScene:onInputPress(e)
 		current_replay = self.menu_state.replay
 		-- Same as mode decide
 		playSE("mode_decide")
+		-- Get game mode and ruleset
+		local mode
+		local rules
+		for key, value in pairs(game_modes) do
+			if value.name == replays[self.menu_state.replay]["mode"] then
+				mode = value
+				break
+			end
+		end
+		for key, value in pairs(rulesets) do
+			if value.name == replays[self.menu_state.replay]["ruleset"] then
+				rules = value
+				break
+			end
+		end
+		if mode == nil or rules == nil then
+			self.display_error = true
+			return
+		end
+		-- TODO compare replay versions to current versions for Cambridge, ruleset, and mode
 		scene = ReplayScene(
 			replays[self.menu_state.replay],
+			mode,
+			rules,
 			self.secret_inputs
 		)
 	elseif e.input == "up" or e.scancode == "up" then
 		self:changeOption(-1)
 		self.das_up = true
 		self.das_down = nil
+		self.das_left = nil
+		self.das_right = nil
 	elseif e.input == "down" or e.scancode == "down" then
 		self:changeOption(1)
 		self.das_down = true
 		self.das_up = nil
+		self.das_left = nil
+		self.das_right = nil
+	elseif e.input == "left" or e.scancode == "left" then
+		self:changeOption(-9)
+		self.das_left = true
+		self.das_right = nil
+		self.das_up = nil
+		self.das_down = nil
+	elseif e.input == "right" or e.scancode == "right" then
+		self:changeOption(9)
+		self.das_right = true
+		self.das_left = nil
+		self.das_up = nil
+		self.das_down = nil
 	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
 		scene = TitleScene()
 	elseif e.input then
@@ -152,6 +211,10 @@ function ReplaySelectScene:onInputRelease(e)
 		self.das_up = nil
 	elseif e.input == "down" or e.scancode == "down" then
 		self.das_down = nil
+	elseif e.input == "right" or e.scancode == "right" then
+		self.das_right = nil
+	elseif e.input == "left" or e.scancode == "left" then
+		self.das_left = nil
 	elseif e.input then
 		self.secret_inputs[e.input] = false
 	end

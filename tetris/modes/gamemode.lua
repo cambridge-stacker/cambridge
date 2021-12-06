@@ -102,10 +102,6 @@ function GameMode:getSkin()
 end
 
 function GameMode:initialize(ruleset)
-	local dummy_entry = {}
-	dummy_entry["inputs"] = {}
-	dummy_entry["frames"] = 0
-	self.replay_inputs[#self.replay_inputs + 1] = dummy_entry
 	-- generate next queue
 	self.used_randomizer = (
 		table.equalvalues(
@@ -145,8 +141,11 @@ function GameMode:update(inputs, ruleset)
 	   or self.prev_inputs["rotate_left2"] ~= inputs["rotate_left2"] or self.prev_inputs["rotate_right2"] ~= inputs["rotate_right2"] then
 		-- insert new inputs into replay inputs table
 		local new_inputs = {}
-		new_inputs["inputs"] = inputs
-		new_inputs["frames"] = 0
+		new_inputs["inputs"] = {}
+		new_inputs["frames"] = 1
+		for key, value in pairs(inputs) do
+			new_inputs["inputs"][key] = value
+		end
 		self.replay_inputs[#self.replay_inputs + 1] = new_inputs
 	else
 		-- add 1 to input frame counter
