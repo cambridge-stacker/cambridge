@@ -129,7 +129,13 @@ function ReplaySelectScene:render()
 	love.graphics.setFont(font_3x5_2)
 	for idx, replay in ipairs(replays) do
 		if(idx >= self.menu_state.replay-9 and idx <= self.menu_state.replay+9) then
-			local display_string = os.date("%c", replay["timestamp"]).."  "..replay["mode"].."  "..replay["ruleset"].."  Level: "..replay["level"].."  Time: "..formatTime(replay["timer"])
+			local display_string = os.date("%c", replay["timestamp"]).."  "..replay["mode"].."  "..replay["ruleset"]
+			if replay["level"] ~= nil then
+				display_string = display_string.."  Level: "..replay["level"]
+			end
+			if replay["timer"] ~= nil then
+				display_string = display_string.."  Time: "..formatTime(replay["timer"])
+			end
 			love.graphics.printf(display_string, 6, (260 - 20*(self.menu_state.replay)) + 20 * idx, 640, "left")
 		end
 	end
