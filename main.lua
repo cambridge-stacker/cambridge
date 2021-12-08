@@ -35,6 +35,8 @@ function love.load()
 end
 
 function initModules()
+	-- replays are not loaded here, but they are cleared
+	replays = {}
 	game_modes = {}
 	mode_list = love.filesystem.getDirectoryItems("tetris/modes")
 	for i=1,#mode_list do
