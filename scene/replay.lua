@@ -6,13 +6,15 @@ ReplayScene.title = "Replay"
 
 function ReplayScene:new(replay, game_mode, ruleset, inputs)
 	config.gamesettings = replay["gamesettings"]
+	love.math.setRandomSeed(replay["random_low"], replay["random_high"])
+	love.math.setRandomState(replay["random_state"])
+	self.retry_replay = replay
+	self.retry_mode = game_mode
+	self.retry_ruleset = ruleset
 	self.secret_inputs = inputs
 	self.game = game_mode(self.secret_inputs)
 	self.ruleset = ruleset(self.game)
-	-- Replace piece randomizer with replay piece sequence
-	local randomizer = Sequence()
-	randomizer.sequence = replay["pieces"]
-	self.game:initializeReplay(self.ruleset, randomizer)
+	self.game:initialize(self.ruleset, true)
 	self.inputs = {
 		left=false,
 		right=false,
@@ -26,7 +28,7 @@ function ReplayScene:new(replay, game_mode, ruleset, inputs)
 		hold=false,
 	}
 	self.paused = false
-	self.replay = replay
+	self.replay = deepcopy(replay)
 	self.replay_index = 1
 	DiscordRPC:update({
 		details = "Viewing a replay",
@@ -56,15 +58,27 @@ end
 
 function ReplayScene:render()
 	self.game:draw(self.paused)
+	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_3)
 	love.graphics.printf("REPLAY", 0, 0, 635, "right")
 end
 
 function ReplayScene:onInputPress(e)
-	if (e.input == "menu_back") then
+	if (
+		e.input == "menu_back" or
+		e.input == "menu_decide" or
+		e.input == "retry"
+ 	) then
 		self.game:onExit()
 		loadSave()
-		scene = ReplaySelectScene()
+		love.math.setRandomSeed(os.time())
+		scene = (
+			(e.input == "retry") and
+			ReplayScene(
+				self.retry_replay, self.retry_mode,
+				self.retry_ruleset, self.secret_inputs
+			) or ReplaySelectScene()
+	 	)
 	elseif e.input == "pause" and not (self.game.game_over or self.game.completed) then
 		self.paused = not self.paused
 		if self.paused then pauseBGM()

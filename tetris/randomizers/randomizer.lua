@@ -16,7 +16,7 @@ function Randomizer:initialize()
 end
 
 function Randomizer:generatePiece()
-	return self.possible_pieces[math.random(7)]
+	return self.possible_pieces[love.math.random(7)]
 end
 
 return Randomizer

@@ -44,7 +44,7 @@ function TitleScene:new()
 	self.text_flag = false
 	DiscordRPC:update({
 		details = "In menus",
-		state = mainmenuidle[math.random(#mainmenuidle)],
+		state = mainmenuidle[love.math.random(#mainmenuidle)],
 		largeImageKey = "1year",
 		largeImageText = version.." | Thanks for 1 year!"
 	})

@@ -28,12 +28,12 @@ end
 function History6Rolls35PoolRandomizer:generatePiece()
 	local index, x
 	if self.first then
-		index = math.random(20)
+		index = love.math.random(20)
 		x = self.pool[index]
 		self.first = false
 	else
 		for i = 1, 6 do
-			index = math.random(#self.pool)
+			index = love.math.random(#self.pool)
 			x = self.pool[index]
 			if not inHistory(x, self.history) or i == 6 then
 				break

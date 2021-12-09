@@ -17,6 +17,12 @@ GameMode.tagline = ""
 GameMode.rollOpacityFunction = function(age) return 0 end
 
 function GameMode:new(secret_inputs)
+	self.replay_inputs = {}
+	self.random_low, self.random_high = love.math.getRandomSeed()
+	self.random_state = love.math.getRandomState()
+	self.secret_inputs = secret_inputs
+	self.save_replay = true
+	
 	self.grid = Grid(10, 24)
 	self.randomizer = Randomizer()
 	self.piece = nil
@@ -73,10 +79,6 @@ function GameMode:new(secret_inputs)
 	self.section_start_time = 0
 	self.section_times = { [0] = 0 }
 	self.secondary_section_times = { [0] = 0 }
-	self.replay_inputs = {}
-	self.secret_inputs = secret_inputs
-	self.replay_pieces = {}
-	self.save_replay = true
 end
 
 function GameMode:getARR() return 1 end
@@ -91,9 +93,6 @@ function GameMode:getGravity() return 1/64 end
 
 function GameMode:getNextPiece(ruleset)
 	local shape = self.used_randomizer:nextPiece()
-	if self.save_replay then
-		self.replay_pieces[#self.replay_pieces + 1] = shape
-	end
 	return {
 		skin = self:getSkin(),
 		shape = shape,
@@ -105,16 +104,7 @@ function GameMode:getSkin()
 	return "2tie"
 end
 
-function GameMode:sharedInitialize(ruleset)
-	self.ruleset = ruleset
-	for i = 1, math.max(self.next_queue_length, 1) do
-		table.insert(self.next_queue, self:getNextPiece(ruleset))
-	end
-	self.lock_on_soft_drop = ({ruleset.softdrop_lock, self.instant_soft_drop, false, true})[config.gamesettings.manlock]
-	self.lock_on_hard_drop = ({ruleset.harddrop_lock, self.instant_hard_drop, true,  false})[config.gamesettings.manlock]
-end
-
-function GameMode:initialize(ruleset)
+function GameMode:initialize(ruleset, replay)
 	-- generate next queue
 	self.used_randomizer = (
 		table.equalvalues(
@@ -123,20 +113,22 @@ function GameMode:initialize(ruleset)
 		) and
 		self.randomizer or BagRandomizer(table.keys(ruleset.colourscheme))
 	)
-	self:sharedInitialize(ruleset)
-end
-
-function GameMode:initializeReplay(ruleset, randomizer)
-	self.used_randomizer = randomizer
-	self.save_replay = false
-	self:sharedInitialize(ruleset)
+	self.ruleset = ruleset
+	self.save_replay = not replay
+	for i = 1, math.max(self.next_queue_length, 1) do
+		table.insert(self.next_queue, self:getNextPiece(ruleset))
+	end
+	self.lock_on_soft_drop = ({ruleset.softdrop_lock, self.instant_soft_drop, false, true})[config.gamesettings.manlock]
+	self.lock_on_hard_drop = ({ruleset.harddrop_lock, self.instant_hard_drop, true,  false})[config.gamesettings.manlock]
 end
 
 function GameMode:saveReplay()
 	-- Save replay.
 	local replay = {}
 	replay["inputs"] = self.replay_inputs
-	replay["pieces"] = self.replay_pieces
+	replay["random_low"] = self.random_low
+	replay["random_high"] = self.random_high
+	replay["random_state"] = self.random_state
 	replay["mode"] = self.name
 	replay["ruleset"] = self.ruleset.name
 	replay["timer"] = self.frames

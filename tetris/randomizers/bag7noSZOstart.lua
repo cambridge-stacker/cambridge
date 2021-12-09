@@ -6,7 +6,7 @@ function Bag7NoSZOStartRandomizer:shuffleBag()
 	local b = self.bag
 	local ln = #b
 	for i = 1, ln do
-		local j = math.random(i, ln)
+		local j = love.math.random(i, ln)
 		b[i], b[j] = b[j], b[i]
 	end
 end
