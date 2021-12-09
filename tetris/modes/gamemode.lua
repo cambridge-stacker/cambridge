@@ -74,7 +74,8 @@ function GameMode:new(secret_inputs)
 	self.section_times = { [0] = 0 }
 	self.secondary_section_times = { [0] = 0 }
 	self.replay_inputs = {}
-	self.replay_pieces = ""
+	self.secret_inputs = secret_inputs
+	self.replay_pieces = {}
 	self.save_replay = true
 end
 
@@ -90,7 +91,9 @@ function GameMode:getGravity() return 1/64 end
 
 function GameMode:getNextPiece(ruleset)
 	local shape = self.used_randomizer:nextPiece()
-	self.replay_pieces = self.replay_pieces..shape
+	if self.save_replay then
+		self.replay_pieces[#self.replay_pieces + 1] = shape
+	end
 	return {
 		skin = self:getSkin(),
 		shape = shape,
@@ -102,6 +105,15 @@ function GameMode:getSkin()
 	return "2tie"
 end
 
+function GameMode:sharedInitialize(ruleset)
+	self.ruleset = ruleset
+	for i = 1, math.max(self.next_queue_length, 1) do
+		table.insert(self.next_queue, self:getNextPiece(ruleset))
+	end
+	self.lock_on_soft_drop = ({ruleset.softdrop_lock, self.instant_soft_drop, false, true})[config.gamesettings.manlock]
+	self.lock_on_hard_drop = ({ruleset.harddrop_lock, self.instant_hard_drop, true,  false})[config.gamesettings.manlock]
+end
+
 function GameMode:initialize(ruleset)
 	-- generate next queue
 	self.used_randomizer = (
@@ -111,27 +123,71 @@ function GameMode:initialize(ruleset)
 		) and
 		self.randomizer or BagRandomizer(table.keys(ruleset.colourscheme))
 	)
-	self.ruleset = ruleset
-	for i = 1, math.max(self.next_queue_length, 1) do
-		table.insert(self.next_queue, self:getNextPiece(ruleset))
-	end
-	self.lock_on_soft_drop = ({ruleset.softdrop_lock, self.instant_soft_drop, false, true})[config.gamesettings.manlock]
-	self.lock_on_hard_drop = ({ruleset.harddrop_lock, self.instant_hard_drop, true,  false})[config.gamesettings.manlock]
+	self:sharedInitialize(ruleset)
 end
 
 function GameMode:initializeReplay(ruleset, randomizer)
 	self.used_randomizer = randomizer
 	self.save_replay = false
-	self.ruleset = ruleset
-	for i = 1, math.max(self.next_queue_length, 1) do
-		table.insert(self.next_queue, self:getNextPiece(ruleset))
+	self:sharedInitialize(ruleset)
+end
+
+function GameMode:saveReplay()
+	-- Save replay.
+	local replay = {}
+	replay["inputs"] = self.replay_inputs
+	replay["pieces"] = self.replay_pieces
+	replay["mode"] = self.name
+	replay["ruleset"] = self.ruleset.name
+	replay["timer"] = self.frames
+	replay["score"] = self.score
+	replay["level"] = self.level
+	replay["lines"] = self.lines
+	replay["gamesettings"] = config.gamesettings
+	replay["secret_inputs"] = self.secret_inputs
+	replay["timestamp"] = os.time()
+	if love.filesystem.getInfo("replays") == nil then
+		love.filesystem.createDirectory("replays")
 	end
-	self.lock_on_soft_drop = ({ruleset.softdrop_lock, self.instant_soft_drop, false, true})[config.gamesettings.manlock]
-	self.lock_on_hard_drop = ({ruleset.harddrop_lock, self.instant_hard_drop, true,  false})[config.gamesettings.manlock]
+	local replay_files = love.filesystem.getDirectoryItems("replays")
+	-- Select replay filename that doesn't collide with an existing one
+	local replay_number = 0
+	local collision = true
+	while collision do
+		collision = false
+		replay_number = replay_number + 1
+		for key, file in pairs(replay_files) do
+			if file == replay_number..".crp" then
+				collision = true
+				break
+			end
+		end
+	end
+	love.filesystem.write("replays/"..replay_number..".crp", binser.serialize(replay))
+end
+
+function GameMode:addReplayInput(inputs)
+	-- check if inputs have changed since last frame
+	if not equals(self.prev_inputs, inputs) then
+		-- insert new inputs into replay inputs table
+		local new_inputs = {}
+		new_inputs["inputs"] = {}
+		new_inputs["frames"] = 1
+		for key, value in pairs(inputs) do
+			new_inputs["inputs"][key] = value
+		end
+		self.replay_inputs[#self.replay_inputs + 1] = new_inputs
+	else
+		-- add 1 to input frame counter
+		self.replay_inputs[#self.replay_inputs]["frames"] = self.replay_inputs[#self.replay_inputs]["frames"] + 1
+	end
 end
 
 function GameMode:update(inputs, ruleset)
 	if self.game_over or self.completed then
+		if self.save_replay and self.game_over_frames == 0 then
+			self:saveReplay()
+		end
 		self.game_over_frames = self.game_over_frames + 1
 		return
 	end
@@ -145,24 +201,7 @@ function GameMode:update(inputs, ruleset)
 		end
 	end
 
-	-- check if inputs have changed since last frame
-	if self.prev_inputs["left"] ~= inputs["left"] or self.prev_inputs["right"] ~= inputs["right"]
-	   or self.prev_inputs["down"] ~= inputs["down"] or self.prev_inputs["up"] ~= inputs["up"]
-	   or self.prev_inputs["rotate_left"] ~= inputs["rotate_left"] or self.prev_inputs["rotate_right"] ~= inputs["rotate_right"]
-	   or self.prev_inputs["hold"] ~= inputs["hold"] or self.prev_inputs["rotate_180"] ~= inputs["rotate_180"]
-	   or self.prev_inputs["rotate_left2"] ~= inputs["rotate_left2"] or self.prev_inputs["rotate_right2"] ~= inputs["rotate_right2"] then
-		-- insert new inputs into replay inputs table
-		local new_inputs = {}
-		new_inputs["inputs"] = {}
-		new_inputs["frames"] = 1
-		for key, value in pairs(inputs) do
-			new_inputs["inputs"][key] = value
-		end
-		self.replay_inputs[#self.replay_inputs + 1] = new_inputs
-	else
-		-- add 1 to input frame counter
-		self.replay_inputs[#self.replay_inputs]["frames"] = self.replay_inputs[#self.replay_inputs]["frames"] + 1
-	end
+	if self.save_replay then self:addReplayInput(inputs) end
 
 	-- advance one frame
 	if self:advanceOneFrame(inputs, ruleset) == false then return end
@@ -371,41 +410,7 @@ function GameMode:onGameOver()
 	switchBGM(nil)
 	local alpha = 0
 	local animation_length = 120
-	if self.game_over_frames == 1 then
-		alpha = 1
-		if self.save_replay then
-			-- Save replay.
-			local replay = {}
-			replay["inputs"] = self.replay_inputs
-			replay["pieces"] = self.replay_pieces
-			replay["mode"] = self.name
-			replay["ruleset"] = self.ruleset.name
-			replay["timer"] = self.frames
-			replay["score"] = self.score
-			replay["level"] = self.level
-			replay["lines"] = self.lines
-			replay["gamesettings"] = config.gamesettings
-			replay["timestamp"] = os.time()
-			if love.filesystem.getInfo("replays") == nil then
-				love.filesystem.createDirectory("replays")
-			end
-			local replay_files = love.filesystem.getDirectoryItems("replays")
-			-- Select replay filename that doesn't collide with an existing one
-			local replay_number = 0
-			local collision = true
-			while collision do
-				collision = false
-				replay_number = replay_number + 1
-				for key, file in pairs(replay_files) do
-					if file == replay_number..".rply" then
-						collision = true
-						break
-					end
-				end
-			end
-			love.filesystem.write("replays/"..replay_number..".rply", binser.serialize(replay))
-		end
-	elseif self.game_over_frames < animation_length then
+	if self.game_over_frames < animation_length then
 		-- Show field for a bit, then fade out.
 		alpha = math.pow(2048, self.game_over_frames/animation_length - 1)
 	elseif self.game_over_frames < 2 * animation_length then

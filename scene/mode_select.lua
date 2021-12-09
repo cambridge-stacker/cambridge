@@ -39,14 +39,24 @@ end
 function ModeSelectScene:update()
 	switchBGM(nil) -- experimental
 
-	if self.das_up or self.das_down then
+	if self.das_up or self.das_down or self.das_left or self.das_right then
 		self.das = self.das + 1
 	else
 		self.das = 0
 	end
 
 	if self.das >= 15 then
-		self:changeOption(self.das_up and -1 or 1)
+		local change = 0
+		if self.das_up then
+			change = -1
+		elseif self.das_down then
+			change = 1
+		elseif self.das_left then
+			change = -9
+		elseif self.das_right then
+			change = 9
+		end
+		self:changeOption(change)
 		self.das = self.das - 4
 	end
 
@@ -136,10 +146,26 @@ function ModeSelectScene:onInputPress(e)
 		self:changeOption(-1)
 		self.das_up = true
 		self.das_down = nil
+		self.das_left = nil
+		self.das_right = nil
 	elseif e.input == "down" or e.scancode == "down" then
 		self:changeOption(1)
 		self.das_down = true
 		self.das_up = nil
+		self.das_left = nil
+		self.das_right = nil
+	elseif e.input == "left" or e.scancode == "left" then
+		self:changeOption(-9)
+		self.das_left = true
+		self.das_right = nil
+		self.das_up = nil
+		self.das_down = nil
+	elseif e.input == "right" or e.scancode == "right" then
+		self:changeOption(9)
+		self.das_right = true
+		self.das_left = nil
+		self.das_up = nil
+		self.das_down = nil
 	elseif e.input == "left" or e.input == "right" or e.scancode == "left" or e.scancode == "right" then
 		self:switchSelect()
 	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
@@ -154,6 +180,10 @@ function ModeSelectScene:onInputRelease(e)
 		self.das_up = nil
 	elseif e.input == "down" or e.scancode == "down" then
 		self.das_down = nil
+	elseif e.input == "right" or e.scancode == "right" then
+		self.das_right = nil
+	elseif e.input == "left" or e.scancode == "left" then
+		self.das_left = nil
 	elseif e.input then
 		self.secret_inputs[e.input] = false
 	end

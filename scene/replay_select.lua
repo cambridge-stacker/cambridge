@@ -45,7 +45,6 @@ function ReplaySelectScene:new()
 	self.menu_state = {
 		replay = current_replay,
 	}
-	self.secret_inputs = {}
 	self.das = 0
 	DiscordRPC:update({
 		details = "In menus",
@@ -55,8 +54,6 @@ function ReplaySelectScene:new()
 end
 
 function ReplaySelectScene:update()
-	switchBGM(nil) -- experimental
-
 	if self.das_up or self.das_down or self.das_left or self.das_right then
 		self.das = self.das + 1
 	else
@@ -126,6 +123,7 @@ function ReplaySelectScene:render()
 	love.graphics.setColor(1, 1, 1, 0.5)
 	love.graphics.rectangle("fill", 3, 258, 634, 22)
 
+	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_2)
 	for idx, replay in ipairs(replays) do
 		if(idx >= self.menu_state.replay-9 and idx <= self.menu_state.replay+9) then
@@ -145,9 +143,6 @@ function ReplaySelectScene:onInputPress(e)
 	if (self.display_warning or self.display_error) and e.input then
 		scene = TitleScene()
 	elseif e.type == "wheel" then
-		if e.x % 2 == 1 then
-			self:switchSelect()
-		end
 		if e.y ~= 0 then
 			self:changeOption(-e.y)
 		end
@@ -179,7 +174,7 @@ function ReplaySelectScene:onInputPress(e)
 			replays[self.menu_state.replay],
 			mode,
 			rules,
-			self.secret_inputs
+			replays[self.menu_state.replay]["secret_inputs"]
 		)
 	elseif e.input == "up" or e.scancode == "up" then
 		self:changeOption(-1)
@@ -207,8 +202,6 @@ function ReplaySelectScene:onInputPress(e)
 		self.das_down = nil
 	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
 		scene = TitleScene()
-	elseif e.input then
-		self.secret_inputs[e.input] = true
 	end
 end
 
@@ -221,8 +214,6 @@ function ReplaySelectScene:onInputRelease(e)
 		self.das_right = nil
 	elseif e.input == "left" or e.scancode == "left" then
 		self.das_left = nil
-	elseif e.input then
-		self.secret_inputs[e.input] = false
 	end
 end
 

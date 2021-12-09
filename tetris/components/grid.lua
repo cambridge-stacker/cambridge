@@ -182,6 +182,19 @@ function Grid:clearSpecificRow(row)
 	end
 end
 
+function Grid:clearBlock(x, y)
+	self.grid[x+1][y+1] = empty
+end
+
+function Grid:clearBottomRows(num)
+	local old_isRowFull = self.isRowFull
+    self.isRowFull = function(self, row)
+		return row >= self.height + 1 - num
+	end
+    self:clearClearedRows()
+    self.isRowFull = old_isRowFull
+end
+
 function Grid:applyPiece(piece)
 	if piece.big then
 		self:applyBigPiece(piece)

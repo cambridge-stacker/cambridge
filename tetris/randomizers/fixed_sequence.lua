@@ -8,8 +8,13 @@ function Sequence:initialize()
 end
 
 function Sequence:generatePiece()
-    local piece = string.sub(self.sequence, self.counter + 1, self.counter + 1)
-    self.counter = (self.counter + 1) % string.len(self.sequence)
+    local piece
+    if type(self.sequence) == "string" then
+        piece = string.sub(self.sequence, self.counter + 1, self.counter + 1)
+    else
+        piece = self.sequence[self.counter + 1]
+    end
+    self.counter = (self.counter + 1) % (#self.sequence)
     return piece
 end
 

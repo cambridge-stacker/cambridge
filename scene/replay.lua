@@ -5,11 +5,12 @@ local ReplayScene = Scene:extend()
 ReplayScene.title = "Replay"
 
 function ReplayScene:new(replay, game_mode, ruleset, inputs)
+	config.gamesettings = replay["gamesettings"]
 	self.secret_inputs = inputs
 	self.game = game_mode(self.secret_inputs)
 	self.ruleset = ruleset(self.game)
 	-- Replace piece randomizer with replay piece sequence
-	local randomizer = Sequence(table.keys(ruleset.colourscheme))
+	local randomizer = Sequence()
 	randomizer.sequence = replay["pieces"]
 	self.game:initializeReplay(self.ruleset, randomizer)
 	self.inputs = {
@@ -28,7 +29,7 @@ function ReplayScene:new(replay, game_mode, ruleset, inputs)
 	self.replay = replay
 	self.replay_index = 1
 	DiscordRPC:update({
-		details = self.game.rpc_details,
+		details = "Viewing a replay",
 		state = self.game.name,
 		largeImageKey = "ingame-"..self.game:getBackground().."00"
 	})
@@ -55,11 +56,14 @@ end
 
 function ReplayScene:render()
 	self.game:draw(self.paused)
+	love.graphics.setFont(font_3x5_3)
+	love.graphics.printf("REPLAY", 0, 0, 635, "right")
 end
 
 function ReplayScene:onInputPress(e)
 	if (e.input == "menu_back") then
 		self.game:onExit()
+		loadSave()
 		scene = ReplaySelectScene()
 	elseif e.input == "pause" and not (self.game.game_over or self.game.completed) then
 		self.paused = not self.paused
