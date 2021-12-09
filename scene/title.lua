@@ -75,7 +75,7 @@ function TitleScene:render()
 		2, 2
 	)
 	]]
-	love.graphics.printf("Thanks for 1 year!", 430, 280, 160, "center")
+	--love.graphics.printf("Thanks for 1 year!", 430, 280, 160, "center")
 
 	love.graphics.setFont(font_3x5_2)
 	love.graphics.setColor(1, 1, 1, self.snow_bg_opacity)
