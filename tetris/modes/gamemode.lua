@@ -1034,7 +1034,7 @@ function GameMode:drawCustom() end
 
 function GameMode:drawIfPaused()
 	love.graphics.setFont(font_3x5_3)
-	love.graphics.printf("GAME PAUSED!", 64, 160, 160, "center")
+	love.graphics.printf("PAUSED!", 64, 160, 160, "center")
 end
 
 -- transforms specified in here will transform the whole screen

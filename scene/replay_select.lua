@@ -15,22 +15,11 @@ function ReplaySelectScene:new()
 	for i=1,#replay_file_list do
 		local data = love.filesystem.read("replays/"..replay_file_list[i])
 		local new_replay = binser.deserialize(data)[1]
-		-- Insert, sorting by date played, newest first
-		local start_index, mid_index, end_index = 1, 1, i
-		if i ~= 1 then
-			while start_index <= end_index do
-				mid_index = math.floor((start_index + end_index) / 2)
-				if os.difftime(replays[mid_index]["timestamp"], new_replay["timestamp"]) <= 0 then
-					-- search first half
-					end_index = mid_index - 1
-				else
-					-- search second half
-					start_index = mid_index + 1
-				end
-			end
-		end
-		table.insert(replays, mid_index, new_replay)
+		replays[#replays + 1] = new_replay
 	end
+	table.sort(replays, function(a, b)
+		return a["timestamp"] > b["timestamp"]
+	end)
 	self.display_error = false
 	if table.getn(replays) == 0 then
 		self.display_warning = true
