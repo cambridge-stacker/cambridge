@@ -21,7 +21,7 @@ function GameMode:new(secret_inputs)
 	self.random_low, self.random_high = love.math.getRandomSeed()
 	self.random_state = love.math.getRandomState()
 	self.secret_inputs = secret_inputs
-	self.save_replay = true
+	self.save_replay = config.gamesettings.save_replay == 1
 	
 	self.grid = Grid(10, 24)
 	self.randomizer = Randomizer()
