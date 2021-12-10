@@ -51,6 +51,8 @@ function ReplayScene:update()
 		self.game:update(input_copy, self.ruleset)
 		self.game.grid:update()
 		DiscordRPC:update({
+			details = "Viewing a replay",
+			state = self.game.name,
 			largeImageKey = "ingame-"..self.game:getBackground().."00"
 		})
 	end

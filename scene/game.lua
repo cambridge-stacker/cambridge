@@ -40,6 +40,8 @@ function GameScene:update()
 		self.game:update(inputs, self.ruleset)
 		self.game.grid:update()
 		DiscordRPC:update({
+			details = self.game.rpc_details,
+			state = self.game.name,
 			largeImageKey = "ingame-"..self.game:getBackground().."00"
 		})
 	end
