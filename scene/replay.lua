@@ -4,14 +4,14 @@ local ReplayScene = Scene:extend()
 
 ReplayScene.title = "Replay"
 
-function ReplayScene:new(replay, game_mode, ruleset, inputs)
+function ReplayScene:new(replay, game_mode, ruleset)
 	config.gamesettings = replay["gamesettings"]
 	love.math.setRandomSeed(replay["random_low"], replay["random_high"])
 	love.math.setRandomState(replay["random_state"])
 	self.retry_replay = replay
 	self.retry_mode = game_mode
 	self.retry_ruleset = ruleset
-	self.secret_inputs = inputs
+	self.secret_inputs = replay["secret_inputs"]
 	self.game = game_mode(self.secret_inputs)
 	self.game.save_replay = false
 	self.ruleset = ruleset(self.game)

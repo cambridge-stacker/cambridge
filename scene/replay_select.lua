@@ -170,8 +170,7 @@ function ReplaySelectScene:onInputPress(e)
 		scene = ReplayScene(
 			replays[self.menu_state.replay],
 			mode,
-			rules,
-			replays[self.menu_state.replay]["secret_inputs"]
+			rules
 		)
 	elseif e.input == "up" or e.scancode == "up" then
 		self:changeOption(-1)

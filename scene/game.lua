@@ -9,6 +9,7 @@ function GameScene:new(game_mode, ruleset, inputs)
 	self.retry_ruleset = ruleset
 	self.secret_inputs = inputs
 	self.game = game_mode(self.secret_inputs)
+	self.game.secret_inputs = inputs
 	self.ruleset = ruleset(self.game)
 	self.game:initialize(self.ruleset)
 	self.inputs = {

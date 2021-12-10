@@ -16,11 +16,10 @@ GameMode.hash = ""
 GameMode.tagline = ""
 GameMode.rollOpacityFunction = function(age) return 0 end
 
-function GameMode:new(secret_inputs)
+function GameMode:new()
 	self.replay_inputs = {}
 	self.random_low, self.random_high = love.math.getRandomSeed()
 	self.random_state = love.math.getRandomState()
-	self.secret_inputs = secret_inputs
 	self.save_replay = config.gamesettings.save_replay == 1
 	
 	self.grid = Grid(10, 24)
