@@ -13,8 +13,9 @@ function ReplayScene:new(replay, game_mode, ruleset, inputs)
 	self.retry_ruleset = ruleset
 	self.secret_inputs = inputs
 	self.game = game_mode(self.secret_inputs)
+	self.game.save_replay = false
 	self.ruleset = ruleset(self.game)
-	self.game:initialize(self.ruleset, true)
+	self.game:initialize(self.ruleset)
 	self.inputs = {
 		left=false,
 		right=false,
