@@ -21,7 +21,6 @@ function GameMode:new(secret_inputs)
 	self.random_low, self.random_high = love.math.getRandomSeed()
 	self.random_state = love.math.getRandomState()
 	self.secret_inputs = secret_inputs
-	self.save_replay = config.gamesettings.save_replay == 1
 	
 	self.grid = Grid(10, 24)
 	self.randomizer = Randomizer()
@@ -114,7 +113,7 @@ function GameMode:initialize(ruleset, replay)
 		self.randomizer or BagRandomizer(table.keys(ruleset.colourscheme))
 	)
 	self.ruleset = ruleset
-	self.save_replay = not replay
+	self.save_replay = not replay and (config.gamesettings.save_replay == 1)
 	for i = 1, math.max(self.next_queue_length, 1) do
 		table.insert(self.next_queue, self:getNextPiece(ruleset))
 	end
