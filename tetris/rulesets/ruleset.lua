@@ -209,7 +209,7 @@ function Ruleset:initializePiece(
 
 	local colours
 	if table.equalvalues(
-        self.colourscheme, {"I", "J", "L", "O", "S", "T", "Z"}
+        table.keys(self.colourscheme), {"I", "J", "L", "O", "S", "T", "Z"}
     ) then
 		colours = ({self.colourscheme, ColourSchemes.Arika, ColourSchemes.TTC})[config.gamesettings.piece_colour]
 	else
