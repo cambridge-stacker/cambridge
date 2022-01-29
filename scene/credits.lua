@@ -5,7 +5,7 @@ CreditsScene.title = "Credits"
 function CreditsScene:new()
     self.frames = 0
     -- higher = slower
-    self.scroll_speed = 1.85
+    self.scroll_speed = 1.8
     switchBGM("credit_roll", "gm3")
 
     DiscordRPC:update({
@@ -40,14 +40,14 @@ function CreditsScene:render()
 
     love.graphics.setFont(font_3x5_4)
     love.graphics.print("Cambridge Credits", 320, 500 - offset)
-    love.graphics.print("THANK YOU\nFOR PLAYING!", 320, math.max(2030 - offset, 240))
+    love.graphics.print("THANK YOU\nFOR PLAYING!", 320, math.max(2050 - offset, 240))
 
     love.graphics.setFont(font_3x5_3)
     love.graphics.print("Game Developers", 320, 550 - offset)
     love.graphics.print("Project Heads", 320, 640 - offset)
     love.graphics.print("Notable Game Developers", 320, 750 - offset)
     love.graphics.print("Special Thanks", 320, 1000 - offset)
-    love.graphics.print("- Milla", 320, math.max(2110 - offset, 320))
+    love.graphics.print("- Milla", 320, math.max(2130 - offset, 320))
 
     love.graphics.setFont(font_3x5_2)
     love.graphics.print("Oshisaure\nJoe Zeng", 320, 590 - offset)
@@ -66,7 +66,7 @@ function CreditsScene:render()
         "CylinderKnot\neightsixfivezero\nEricICX\nGesomaru\n" ..
         "gizmo4487\nJBroms\nKirby703\nKitaru\n" ..
         "M1ssing0\nMattMayuga\nMyPasswordIsWeak\n" ..
-        "Nikki Karissa\noffwo\nOliver\nPineapple\npokemonfan1937\n" ..
+        "Nikki Karissa\nnim\noffwo\nOliver\nPineapple\npokemonfan1937\n" ..
         "Pyra Neoxi\nRDST64\nRocketLanterns\nRustyFoxxo\n" ..
         "saphie\nShelleloch\nSimon\nstratus\nSuper302\n" ..
         "switchpalacecorner\nterpyderp\nTetrian22\nTetro48\nThatCookie\n" ..
