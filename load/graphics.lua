@@ -20,6 +20,7 @@ backgrounds = {
 	love.graphics.newImage("res/backgrounds/1800.png"),
 	love.graphics.newImage("res/backgrounds/1900.png"),
 	title = love.graphics.newImage("res/backgrounds/title.png"),
+	title_no_icon = love.graphics.newImage("res/backgrounds/title-no-icon.jpg"),
 	title_night = love.graphics.newImage("res/backgrounds/title-night.jpg"),
 	snow = love.graphics.newImage("res/backgrounds/snow.png"),
 	input_config = love.graphics.newImage("res/backgrounds/options-input.png"),

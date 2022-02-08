@@ -60,18 +60,38 @@ function TitleScene:update()
 	else self.y_offset = 310 - self.frames end
 end
 
+local block_offsets = {
+	{color = "M", x = 0, y = 0},
+	{color = "G", x = 32, y = 0},
+	{color = "Y", x = 64, y = 0},
+	{color = "B", x = 0, y = 32},
+	{color = "O", x = 0, y = 64},
+	{color = "C", x = 32, y = 64},
+	{color = "R", x = 64, y = 64}
+}
+
 function TitleScene:render()
 	love.graphics.setFont(font_3x5_4)
 	love.graphics.setColor(1, 1, 1, 1 - self.snow_bg_opacity)
 	love.graphics.draw(
-		backgrounds["title"], -- title_night
+		backgrounds["title_no_icon"], -- title, title_night
 		0, 0, 0,
 		0.5, 0.5
 	)
+
+	-- 490, 192
+	for _, b in ipairs(block_offsets) do
+		love.graphics.draw(
+			blocks["2tie"][b.color],
+			490 + b.x, 192 + b.y, 0,
+			2, 2
+		)
+	end
+
 	--[[
 	love.graphics.draw(
 		misc_graphics["icon"],
-		460, 170, 0,
+		490, 192, 0,
 		2, 2
 	)
 	]]
