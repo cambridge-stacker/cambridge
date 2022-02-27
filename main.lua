@@ -64,7 +64,6 @@ right_clicked_before = false
 function getScaledPos(cursor_x, cursor_y)
 	local screen_x, screen_y = love.graphics.getDimensions()
 	local scale_factor = math.min(screen_x / 640, screen_y / 480)
-	love.graphics.print((cursor_x - (screen_x - scale_factor * 640) / 2)/scale_factor..(cursor_y - (screen_y - scale_factor * 480) / 2)/scale_factor)
 	return (cursor_x - (screen_x - scale_factor * 640) / 2)/scale_factor, (cursor_y - (screen_y - scale_factor * 480) / 2)/scale_factor
 end
 
