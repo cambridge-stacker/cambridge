@@ -35,6 +35,8 @@ function ReplaySelectScene:new()
 		replay = current_replay,
 	}
 	self.das = 0
+	self.height_offset = 0
+	self.auto_menu_offset = 0
 	DiscordRPC:update({
 		details = "In menus",
 		state = "Choosing a replay",
@@ -51,6 +53,18 @@ function ReplaySelectScene:update()
 		self.das = 0
 	end
 
+	local mouse_x, mouse_y = getScaledPos(love.mouse.getPosition())
+	if love.mouse.isDown(1) and not left_clicked_before then
+		self.auto_menu_offset = math.floor((mouse_y - 260)/20)
+		if self.auto_menu_offset == 0 then
+			self:startReplay()
+		end
+	end
+	if self.auto_menu_offset ~= 0 then
+		self:changeOption(self.auto_menu_offset < 0 and -1 or 1)
+		if self.auto_menu_offset > 0 then self.auto_menu_offset = self.auto_menu_offset - 1 end
+		if self.auto_menu_offset < 0 then self.auto_menu_offset = self.auto_menu_offset + 1 end
+	end
 	if self.das >= 15 then
 		local change = 0
 		if self.das_up then
@@ -79,6 +93,8 @@ function ReplaySelectScene:render()
 		0, 0, 0,
 		0.5, 0.5
 	)
+	
+	self.height_offset = interpolateListHeight(self.height_offset / 20, self.menu_state.replay) * 20
 
 	-- Same graphic as mode select
 	--love.graphics.draw(misc_graphics["select_mode"], 20, 40)
@@ -115,12 +131,12 @@ function ReplaySelectScene:render()
 	end
 
 	love.graphics.setColor(1, 1, 1, 0.5)
-	love.graphics.rectangle("fill", 3, 258, 634, 22)
+	love.graphics.rectangle("fill", 3, 258 + (self.menu_state.replay * 20) - self.height_offset, 634, 22)
 
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_2)
 	for idx, replay in ipairs(replays) do
-		if(idx >= self.menu_state.replay-9 and idx <= self.menu_state.replay+9) then
+		if(idx >= self.height_offset/20-9.5 and idx <= self.height_offset/20+9.5) then
 			local display_string = os.date("%c", replay["timestamp"]).." - "..replay["mode"].." - "..replay["ruleset"]
 			if replay["level"] ~= nil then
 				display_string = display_string.." - Level: "..replay["level"]
@@ -131,9 +147,40 @@ function ReplaySelectScene:render()
 			if #display_string > 75 then
 				display_string = display_string:sub(1, 75) .. "..."
 			end
-			love.graphics.printf(display_string, 6, (260 - 20*(self.menu_state.replay)) + 20 * idx, 640, "left")
+			love.graphics.printf(display_string, 6, (260 - self.height_offset) + 20 * idx, 640, "left")
 		end
 	end
+end
+
+function ReplaySelectScene:startReplay()
+	current_replay = self.menu_state.replay
+	-- Same as mode decide
+	playSE("mode_decide")
+	-- Get game mode and ruleset
+	local mode
+	local rules
+	for key, value in pairs(game_modes) do
+		if value.name == replays[self.menu_state.replay]["mode"] then
+			mode = value
+			break
+		end
+	end
+	for key, value in pairs(rulesets) do
+		if value.name == replays[self.menu_state.replay]["ruleset"] then
+			rules = value
+			break
+		end
+	end
+	if mode == nil or rules == nil then
+		self.display_error = true
+		return
+	end
+	-- TODO compare replay versions to current versions for Cambridge, ruleset, and mode
+	scene = ReplayScene(
+		replays[self.menu_state.replay],
+		mode,
+		rules
+	)
 end
 
 function ReplaySelectScene:onInputPress(e)
@@ -144,34 +191,7 @@ function ReplaySelectScene:onInputPress(e)
 			self:changeOption(-e.y)
 		end
 	elseif e.input == "menu_decide" or e.scancode == "return" then
-		current_replay = self.menu_state.replay
-		-- Same as mode decide
-		playSE("mode_decide")
-		-- Get game mode and ruleset
-		local mode
-		local rules
-		for key, value in pairs(game_modes) do
-			if value.name == replays[self.menu_state.replay]["mode"] then
-				mode = value
-				break
-			end
-		end
-		for key, value in pairs(rulesets) do
-			if value.name == replays[self.menu_state.replay]["ruleset"] then
-				rules = value
-				break
-			end
-		end
-		if mode == nil or rules == nil then
-			self.display_error = true
-			return
-		end
-		-- TODO compare replay versions to current versions for Cambridge, ruleset, and mode
-		scene = ReplayScene(
-			replays[self.menu_state.replay],
-			mode,
-			rules
-		)
+		self:startReplay()
 	elseif e.input == "up" or e.scancode == "up" then
 		self:changeOption(-1)
 		self.das_up = true

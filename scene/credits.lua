@@ -19,8 +19,8 @@ function CreditsScene:update()
     if love.window.hasFocus() then
         self.frames = self.frames + 1
     end
-    if self.frames >= 2100 * self.scroll_speed then
-        playSE("mode_decide")
+    if self.frames >= 2100 * self.scroll_speed or (love.mouse.isDown(1) and not left_clicked_before) then
+        if(not (love.mouse.isDown(1) and not left_clicked_before)) then playSE("mode_decide") end
         scene = TitleScene()
         switchBGM(nil)
     elseif self.frames == math.floor(1950 * self.scroll_speed) then

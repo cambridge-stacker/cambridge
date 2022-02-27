@@ -27,9 +27,10 @@ function TuningScene:new()
 end
 
 function TuningScene:update()
-    self.dasSlider:update()
-	self.arrSlider:update()
-	self.dcdSlider:update()
+	local x, y = getScaledPos(love.mouse.getPosition())
+    self.dasSlider:update(x,y)
+	self.arrSlider:update(x,y)
+	self.dcdSlider:update(x,y)
 end
 
 function TuningScene:render()

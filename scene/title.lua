@@ -58,6 +58,15 @@ function TitleScene:update()
 	if self.frames < 125 then self.y_offset = self.frames
 	elseif self.frames < 185 then self.y_offset = 125
 	else self.y_offset = 310 - self.frames end
+	local mouse_x, mouse_y = getScaledPos(love.mouse.getPosition())
+	if not love.mouse.isDown(1) or left_clicked_before then return end
+	if mouse_x > 40 and mouse_x < 160 then
+		if mouse_y > 300 and mouse_y < 400 then
+			self.main_menu_state = math.floor((mouse_y - 280) / 20)
+			playSE("main_decide")
+			scene = main_menu_screens[self.main_menu_state]()
+		end
+	end
 end
 
 local block_offsets = {

@@ -29,6 +29,12 @@ function ModeSelectScene:new()
 	}
 	self.secret_inputs = {}
 	self.das = 0
+	-- It's not exactly self-descriptive.
+	self.menu_mode_height = 20
+	-- It's not exactly self-descriptive.
+	self.menu_ruleset_height = 20
+	self.auto_menu_offset = 0
+	self.auto_menu_state = "mode"
 	DiscordRPC:update({
 		details = "In menus",
 		state = "Choosing a mode",
@@ -39,12 +45,31 @@ end
 function ModeSelectScene:update()
 	switchBGM(nil) -- experimental
 
+	local mouse_x, mouse_y = getScaledPos(love.mouse.getPosition())
+	if love.mouse.isDown(1) and not left_clicked_before then
+		if mouse_x < 320 then
+			self.auto_menu_state = "mode"
+		else
+			self.auto_menu_state = "ruleset"
+		end
+		if self.auto_menu_state ~= self.menu_state.select then
+			self:switchSelect()
+		end
+		self.auto_menu_offset = math.floor((mouse_y - 260)/20)
+		if self.auto_menu_offset == 0 and self.auto_menu_state == "mode" then
+			self:startMode()
+		end
+	end
 	if self.das_up or self.das_down then
 		self.das = self.das + 1
 	else
 		self.das = 0
 	end
-
+	if self.auto_menu_offset ~= 0 then
+		self:changeOption(self.auto_menu_offset < 0 and -1 or 1)
+		if self.auto_menu_offset > 0 then self.auto_menu_offset = self.auto_menu_offset - 1 end
+		if self.auto_menu_offset < 0 then self.auto_menu_offset = self.auto_menu_offset + 1 end
+	end
 	if self.das >= 15 then
 		self:changeOption(self.das_up and -1 or 1)
 		self.das = self.das - 4
@@ -97,17 +122,44 @@ function ModeSelectScene:render()
 
 	love.graphics.setColor(1, 1, 1, 1)
 
+	self.menu_mode_height = interpolateListHeight(self.menu_mode_height / 20, self.menu_state.mode) * 20
+	self.menu_ruleset_height = interpolateListHeight(self.menu_ruleset_height / 20, self.menu_state.ruleset) * 20
 	love.graphics.setFont(font_3x5_2)
 	for idx, mode in pairs(game_modes) do
-		if(idx >= self.menu_state.mode-9 and idx <= self.menu_state.mode+9) then
-			love.graphics.printf(mode.name, 40, (260 - 20*(self.menu_state.mode)) + 20 * idx, 200, "left")
+		if(idx >= self.menu_mode_height / 20-10 and idx <= self.menu_mode_height / 20+10) then
+			love.graphics.setColor(1,1,1,FadeoutAtEdges((-self.menu_mode_height) + 20 * idx, 180, 20))
+			love.graphics.printf(mode.name, 40, (260 - self.menu_mode_height) + 20 * idx, 200, "left")
 		end
 	end
 	for idx, ruleset in pairs(rulesets) do
-		if(idx >= self.menu_state.ruleset-9 and idx <= self.menu_state.ruleset+9) then
-			love.graphics.printf(ruleset.name, 360, (260 - 20*(self.menu_state.ruleset)) + 20 * idx, 160, "left")
+		if(idx >= self.menu_ruleset_height / 20-10 and idx <= self.menu_ruleset_height / 20+10) then
+			love.graphics.setColor(1,1,1,FadeoutAtEdges(-self.menu_ruleset_height + 20 * idx, 180, 20))
+			love.graphics.printf(ruleset.name, 360, (260 - self.menu_ruleset_height) + 20 * idx, 160, "left")
 		end
 	end
+	love.graphics.setColor(1,1,1,1)
+end
+function FadeoutAtEdges(input, edge_distance, edge_width)
+	if input < 0 then
+		input = input * -1
+	end
+	if input > edge_distance then
+		return 1 - (input - edge_distance) / edge_width
+	end
+	return 1
+end
+function ModeSelectScene:startMode()
+	current_mode = self.menu_state.mode
+	current_ruleset = self.menu_state.ruleset
+	config.current_mode = current_mode
+	config.current_ruleset = current_ruleset
+	playSE("mode_decide")
+	saveConfig()
+	scene = GameScene(
+		game_modes[self.menu_state.mode],
+		rulesets[self.menu_state.ruleset],
+		self.secret_inputs
+	)
 end
 
 function ModeSelectScene:onInputPress(e)
@@ -121,17 +173,7 @@ function ModeSelectScene:onInputPress(e)
 			self:changeOption(-e.y)
 		end
 	elseif e.input == "menu_decide" or e.scancode == "return" then
-		current_mode = self.menu_state.mode
-		current_ruleset = self.menu_state.ruleset
-		config.current_mode = current_mode
-		config.current_ruleset = current_ruleset
-		playSE("mode_decide")
-		saveConfig()
-		scene = GameScene(
-			game_modes[self.menu_state.mode],
-			rulesets[self.menu_state.ruleset],
-			self.secret_inputs
-		)
+		self:startMode()
 	elseif e.input == "up" or e.scancode == "up" then
 		self:changeOption(-1)
 		self.das_up = true

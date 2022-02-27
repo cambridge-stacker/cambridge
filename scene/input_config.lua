@@ -16,7 +16,17 @@ function ConfigScene:new()
     })
 end
 
-function ConfigScene:update() end
+function ConfigScene:update()
+	if not love.mouse.isDown(1) or left_clicked_before then return end
+	local mouse_x, mouse_y = getScaledPos(love.mouse.getPosition())
+    if mouse_x > 75 and mouse_x < 275 then
+        if mouse_y > 170 and mouse_y < 270 then
+            self.menu_state = math.floor((mouse_y - 120) / 50)
+            playSE("main_decide")
+            scene = menu_screens[self.menu_state]()
+        end
+    end
+end
 
 function ConfigScene:render()
     love.graphics.setColor(1, 1, 1, 1)

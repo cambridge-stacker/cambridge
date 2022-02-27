@@ -58,7 +58,34 @@ function initModules()
 	table.sort(rulesets, function(a,b)
 	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
 end
+left_clicked_before = false
+right_clicked_before = false
+-- For when mouse controls are part of menu controls
+function getScaledPos(cursor_x, cursor_y)
+	local screen_x, screen_y = love.graphics.getDimensions()
+	local scale_factor = math.min(screen_x / 640, screen_y / 480)
+	love.graphics.print((cursor_x - (screen_x - scale_factor * 640) / 2)/scale_factor..(cursor_y - (screen_y - scale_factor * 480) / 2)/scale_factor)
+	return (cursor_x - (screen_x - scale_factor * 640) / 2)/scale_factor, (cursor_y - (screen_y - scale_factor * 480) / 2)/scale_factor
+end
 
+--Interpolates in a smooth fashion.
+function interpolateListHeight(input, from)
+	if config.gamesettings["smooth_scroll"] == 2 then
+		return from
+	end
+	if from > input then
+		input = input + (from - input) / 4
+		if input > from - 0.02 then
+			input = from
+		end
+	elseif from < input then
+		input = input + (from - input) / 4
+		if input < from + 0.02 then
+			input = from
+		end
+	end
+	return input
+end
 function love.draw()
 	love.graphics.setCanvas(GLOBAL_CANVAS)
 	love.graphics.clear()
@@ -85,6 +112,7 @@ function love.draw()
 			"fps - " .. version, 0, 460, 635, "right"
 		)
 	end
+	getScaledPos(love.mouse.getPosition())
 	
 	love.graphics.pop()
 		
@@ -338,6 +366,7 @@ function love.run()
 			end
 			time_accumulator = time_accumulator - frame_duration
 		end
+		if love.mouse then left_clicked_before = love.mouse.isDown(1) right_clicked_before = love.mouse.isDown(2) end
 		last_time = love.timer.getTime()
 	end
 end
