@@ -55,6 +55,10 @@ function ReplaySelectScene:update()
 
 	local mouse_x, mouse_y = getScaledPos(love.mouse.getPosition())
 	if love.mouse.isDown(1) and not left_clicked_before then
+		if self.display_error then
+			scene = TitleScene()
+			return
+		end
 		self.auto_menu_offset = math.floor((mouse_y - 260)/20)
 		if self.auto_menu_offset == 0 then
 			self:startReplay()
@@ -136,7 +140,7 @@ function ReplaySelectScene:render()
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_2)
 	for idx, replay in ipairs(replays) do
-		if(idx >= self.height_offset/20-9.5 and idx <= self.height_offset/20+9.5) then
+		if(idx >= self.height_offset/20-10 and idx <= self.height_offset/20+10) then
 			local display_string = os.date("%c", replay["timestamp"]).." - "..replay["mode"].." - "..replay["ruleset"]
 			if replay["level"] ~= nil then
 				display_string = display_string.." - Level: "..replay["level"]
@@ -147,6 +151,7 @@ function ReplaySelectScene:render()
 			if #display_string > 75 then
 				display_string = display_string:sub(1, 75) .. "..."
 			end
+			love.graphics.setColor(1,1,CursorHighlight(0, (260 - self.height_offset) + 20 * idx, 640, 20),FadeoutAtEdges((-self.height_offset) + 20 * idx, 180, 20))
 			love.graphics.printf(display_string, 6, (260 - self.height_offset) + 20 * idx, 640, "left")
 		end
 	end

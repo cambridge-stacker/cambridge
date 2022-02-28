@@ -48,6 +48,8 @@ function ConfigScene:render()
     love.graphics.setFont(font_3x5_3)
 	love.graphics.setColor(1, 1, 1, 1)
 	for i, screen in pairs(menu_screens) do
+		local b = CursorHighlight(80,120 + 50 * i,200,50)
+		love.graphics.setColor(1,1,b,1)
 		love.graphics.printf(screen.title, 80, 120 + 50 * i, 200, "left")
     end
 end

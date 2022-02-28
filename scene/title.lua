@@ -129,6 +129,8 @@ function TitleScene:render()
 
 	love.graphics.setColor(1, 1, 1, 1)
 	for i, screen in pairs(main_menu_screens) do
+		local b = CursorHighlight(40,280 + 20 * i,120,20)
+		love.graphics.setColor(1,1,b,1)
 		love.graphics.printf(screen.title, 40, 280 + 20 * i, 120, "left")
 	end
 end

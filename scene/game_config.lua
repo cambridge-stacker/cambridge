@@ -93,7 +93,8 @@ function ConfigScene:render()
 			love.graphics.setColor(1, 1, 1, 1)
 			love.graphics.printf(option[2], 40, 100 + i * 20, 150, "left")
 			for j, setting in ipairs(option[4]) do
-				love.graphics.setColor(1, 1, 1, config.gamesettings[option[1]] == j and 1 or 0.5)
+				local b = CursorHighlight(100 + 110 * j, 100 + i * 20,100,20)
+				love.graphics.setColor(1, 1, b, config.gamesettings[option[1]] == j and 1 or 0.5)
 				love.graphics.printf(setting, 100 + 110 * j, 100 + i * 20, 100, "center")
 			end
 		end

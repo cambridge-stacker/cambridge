@@ -111,33 +111,43 @@ function ModeSelectScene:render()
 	elseif self.menu_state.select == "ruleset" then
 		love.graphics.setColor(1, 1, 1, 0.25)
 	end
-	love.graphics.rectangle("fill", 20, 258, 240, 22)
+	self.menu_mode_height = interpolateListHeight(self.menu_mode_height / 20, self.menu_state.mode) * 20
+	self.menu_ruleset_height = interpolateListHeight(self.menu_ruleset_height / 20, self.menu_state.ruleset) * 20
+	love.graphics.rectangle("fill", 20, 258 + (self.menu_state.mode * 20) - self.menu_mode_height, 240, 22)
 
 	if self.menu_state.select == "mode" then
 		love.graphics.setColor(1, 1, 1, 0.25)
 	elseif self.menu_state.select == "ruleset" then
 		love.graphics.setColor(1, 1, 1, 0.5)
 	end
-	love.graphics.rectangle("fill", 340, 258, 200, 22)
+	love.graphics.rectangle("fill", 340, 258 + (self.menu_state.ruleset * 20) - self.menu_ruleset_height, 200, 22)
 
 	love.graphics.setColor(1, 1, 1, 1)
 
-	self.menu_mode_height = interpolateListHeight(self.menu_mode_height / 20, self.menu_state.mode) * 20
-	self.menu_ruleset_height = interpolateListHeight(self.menu_ruleset_height / 20, self.menu_state.ruleset) * 20
 	love.graphics.setFont(font_3x5_2)
 	for idx, mode in pairs(game_modes) do
 		if(idx >= self.menu_mode_height / 20-10 and idx <= self.menu_mode_height / 20+10) then
-			love.graphics.setColor(1,1,1,FadeoutAtEdges((-self.menu_mode_height) + 20 * idx, 180, 20))
+			local b = CursorHighlight(0,(260 - self.menu_mode_height) + 20 * idx,320,20)
+			love.graphics.setColor(1,1,b,FadeoutAtEdges((-self.menu_mode_height) + 20 * idx, 180, 20))
 			love.graphics.printf(mode.name, 40, (260 - self.menu_mode_height) + 20 * idx, 200, "left")
 		end
 	end
 	for idx, ruleset in pairs(rulesets) do
 		if(idx >= self.menu_ruleset_height / 20-10 and idx <= self.menu_ruleset_height / 20+10) then
-			love.graphics.setColor(1,1,1,FadeoutAtEdges(-self.menu_ruleset_height + 20 * idx, 180, 20))
+			local b = CursorHighlight(320,(260 - self.menu_ruleset_height) + 20 * idx,320,20)
+			love.graphics.setColor(1,1,b,FadeoutAtEdges(-self.menu_ruleset_height + 20 * idx, 180, 20))
 			love.graphics.printf(ruleset.name, 360, (260 - self.menu_ruleset_height) + 20 * idx, 160, "left")
 		end
 	end
 	love.graphics.setColor(1,1,1,1)
+end
+function CursorHighlight(x,y,w,h)
+	local mouse_x, mouse_y = getScaledPos(love.mouse.getPosition())
+	if mouse_x > x and mouse_x < x+w and mouse_y > y and mouse_y < y+h then
+		return 0
+	else
+		return 1
+	end
 end
 function FadeoutAtEdges(input, edge_distance, edge_width)
 	if input < 0 then
