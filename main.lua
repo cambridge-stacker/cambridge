@@ -118,7 +118,7 @@ function love.keypressed(key, scancode)
 			love.filesystem.remove("ss")
 			love.filesystem.createDirectory("ss")
 		end
-		print("Saving screenshot as "..ss_name)
+		print("Saving screenshot as "..love.filesystem.getSaveDirectory().."/"..ss_name)
 		GLOBAL_CANVAS:newImageData():encode("png", ss_name)
 	-- function keys are reserved
 	elseif string.match(scancode, "^f[1-9]$") or string.match(scancode, "^f[1-9][0-9]+$") then
