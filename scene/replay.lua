@@ -6,6 +6,9 @@ ReplayScene.title = "Replay"
 
 function ReplayScene:new(replay, game_mode, ruleset)
 	config.gamesettings = replay["gamesettings"]
+	config.das = replay["delayed_auto_shift"]
+	config.arr = replay["auto_repeat_rate"]
+	config.dcd = replay["das_cut_delay"]
 	love.math.setRandomSeed(replay["random_low"], replay["random_high"])
 	love.math.setRandomState(replay["random_state"])
 	self.retry_replay = replay

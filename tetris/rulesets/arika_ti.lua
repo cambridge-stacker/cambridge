@@ -6,6 +6,7 @@ local ARS = Ruleset:extend()
 ARS.name = "Ti-ARS"
 ARS.hash = "ArikaTI"
 
+ARS.synchroes = true
 -- Component functions.
 
 function ARS:attemptWallkicks(piece, new_piece, rot_dir, grid)
