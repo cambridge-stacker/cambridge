@@ -135,6 +135,9 @@ function GameMode:saveReplay()
 	replay["lines"] = self.lines
 	replay["gamesettings"] = config.gamesettings
 	replay["secret_inputs"] = self.secret_inputs
+	replay["delayed_auto_shift"] = config.das
+	replay["auto_repeat_rate"] = config.arr
+	replay["das_cut_delay"] = config.dcd
 	replay["timestamp"] = os.time()
 	if love.filesystem.getInfo("replays") == nil then
 		love.filesystem.createDirectory("replays")
