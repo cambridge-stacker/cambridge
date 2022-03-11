@@ -1,0 +1,1 @@
+dist\windows\love.exe .
