@@ -5,6 +5,7 @@ SettingsScene.title = "Settings"
 local menu_screens = {
     InputConfigScene,
     GameConfigScene,
+    VisualConfigScene,
     TuningScene
 }
 
@@ -29,8 +30,8 @@ function SettingsScene:update()
 	if not love.mouse.isDown(1) or left_clicked_before then return end
 	local mouse_x, mouse_y = getScaledPos(love.mouse.getPosition())
     if mouse_x > 75 and mouse_x < 275 then
-        if mouse_y > 170 and mouse_y < 320 then
-            self.menu_state = math.floor((mouse_y - 120) / 50)
+        if mouse_y > 160 and mouse_y < 160 + #menu_screens * 50 then
+            self.menu_state = math.floor((mouse_y - 110) / 50)
             playSE("main_decide")
             scene = menu_screens[self.menu_state]()
         end
@@ -57,7 +58,7 @@ function SettingsScene:render()
     love.graphics.setFont(font_3x5_3)
 	love.graphics.setColor(1, 1, 1, 1)
 	for i, screen in pairs(menu_screens) do
-		local b = CursorHighlight(80,120 + 50 * i,200,50)
+		local b = CursorHighlight(80,110 + 50 * i,200,50)
 		love.graphics.setColor(1,1,b,1)
 		love.graphics.printf(screen.title, 80, 120 + 50 * i, 200, "left")
     end

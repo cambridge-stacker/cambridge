@@ -1061,7 +1061,7 @@ function GameMode:draw(paused)
 
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_2)
-	if config.gamesettings.display_gamemode == 1 then
+	if config.visualsettings.display_gamemode == 1 then
 		love.graphics.printf(
 			self.name .. " - " .. self.ruleset.name,
 			0, 460, 640, "left"

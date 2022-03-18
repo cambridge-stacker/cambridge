@@ -160,7 +160,7 @@ function Piece:draw(opacity, brightness, grid, partial_das)
 	love.graphics.setColor(brightness, brightness, brightness, opacity)
 	local offsets = self:getBlockOffsets()
 	local gravity_offset = 0
-	if config.gamesettings.smooth_movement == 1 and 
+	if config.visualsettings.smooth_movement == 1 and 
 	   grid ~= nil and not self:isDropBlocked(grid) then
 		gravity_offset = self.gravity * 16
 	end

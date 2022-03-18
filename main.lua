@@ -69,9 +69,20 @@ function getScaledPos(cursor_x, cursor_y)
 	return (cursor_x - (screen_x - scale_factor * 640) / 2)/scale_factor, (cursor_y - (screen_y - scale_factor * 480) / 2)/scale_factor
 end
 
+function CursorHighlight(x,y,w,h)
+	local mouse_x, mouse_y = getScaledPos(love.mouse.getPosition())
+	if mouse_idle > 2 or config.visualsettings.cursor_highlight ~= 1 then
+		return 1
+	end
+	if mouse_x > x and mouse_x < x+w and mouse_y > y and mouse_y < y+h then
+		return 0
+	else
+		return 1
+	end
+end
 --Interpolates in a smooth fashion.
 function interpolateListHeight(input, from)
-	if config.gamesettings["smooth_scroll"] == 2 then
+	if config.visualsettings["smooth_scroll"] == 2 then
 		return from
 	end
 	if from > input then
@@ -87,7 +98,7 @@ function interpolateListHeight(input, from)
 	end
 	return input
 end
-function drawCursor(x, y, a)
+function drawT48Cursor(x, y, a)
 	if a <= 0 then return end
     love.graphics.setColor(1,1,1,a)
     love.graphics.polygon("fill", x + 5, y + 0, x + 0, y + 10, x + 5, y + 8, x + 8, y + 20, x + 12, y + 18, x + 10, y + 7, x + 15, y + 5)
@@ -113,7 +124,7 @@ function love.draw()
 		
 	scene:render()
 
-	if config.gamesettings.display_gamemode == 1 or scene.title == "Title" then
+	if config.visualsettings.display_gamemode == 1 or scene.title == "Title" then
 		love.graphics.setFont(font_3x5_2)
 		love.graphics.setColor(1, 1, 1, 1)
 		love.graphics.printf(
@@ -121,10 +132,10 @@ function love.draw()
 			"fps - " .. version, 0, 460, 635, "right"
 		)
 	end
-	love.mouse.setVisible(config.gamesettings["cursor_type"] == 1)
-	if config.gamesettings["cursor_type"] ~= 1 then
+	love.mouse.setVisible(config.visualsettings.cursor_type == 1)
+	if config.visualsettings.cursor_type ~= 1 then
 		local lx, ly = getScaledPos(love.mouse.getPosition())
-		drawCursor(lx, ly, 9 - mouse_idle * 4)
+		drawT48Cursor(lx, ly, 9 - mouse_idle * 4)
 	end
 	
 	love.graphics.pop()

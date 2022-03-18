@@ -33,6 +33,12 @@ function initConfig()
 			config.gamesettings[option[1]] = 1
 		end
 	end
+	if not config.visualsettings then config.visualsettings = {} end
+	for _, option in ipairs(VisualConfigScene.options) do
+		if not config.visualsettings[option[1]] then
+			config.visualsettings[option[1]] = 1
+		end
+	end
 	
 	if not config.input then
 		scene = InputConfigScene()
