@@ -87,6 +87,14 @@ function interpolateListHeight(input, from)
 	end
 	return input
 end
+function drawCursor(x, y, a)
+	if a <= 0 then return end
+    love.graphics.setColor(1,1,1,a)
+    love.graphics.polygon("fill", x + 5, y + 0, x + 0, y + 10, x + 5, y + 8, x + 8, y + 20, x + 12, y + 18, x + 10, y + 7, x + 15, y + 5)
+    love.graphics.setColor(0,0,0,a)
+    love.graphics.polygon("line", x + 5, y + 0, x + 0, y + 10, x + 5, y + 8, x + 8, y + 20, x + 12, y + 18, x + 10, y + 7, x + 15, y + 5)
+    love.graphics.setColor(1,1,1,a)
+end
 function love.draw()
 	love.graphics.setCanvas(GLOBAL_CANVAS)
 	love.graphics.clear()
@@ -112,6 +120,11 @@ function love.draw()
 			string.format("%.2f", 1 / love.timer.getAverageDelta()) ..
 			"fps - " .. version, 0, 460, 635, "right"
 		)
+	end
+	love.mouse.setVisible(config.gamesettings["cursor_type"] == 1)
+	if config.gamesettings["cursor_type"] ~= 1 then
+		local lx, ly = getScaledPos(love.mouse.getPosition())
+		drawCursor(lx, ly, 9 - mouse_idle * 4)
 	end
 	
 	love.graphics.pop()
@@ -366,8 +379,8 @@ function love.run()
 			end
 			time_accumulator = time_accumulator - frame_duration
 			if love.mouse then 
-				left_clicked_before = love.mouse.isDown(1)
-				right_clicked_before = love.mouse.isDown(2)
+				left_clicked_before = love.mouse.isDown(1) or mouse_idle > 2
+				right_clicked_before = love.mouse.isDown(2) or mouse_idle > 2
 				if prev_cur_pos_x == love.mouse.getX() and prev_cur_pos_y == love.mouse.getY() then
 					mouse_idle = mouse_idle + love.timer.getDelta()
 				else
