@@ -60,6 +60,8 @@ function initModules()
 end
 left_clicked_before = false
 right_clicked_before = false
+prev_cur_pos_x, prev_cur_pos_y = 0, 0
+mouse_idle = 0
 -- For when mouse controls are part of menu controls
 function getScaledPos(cursor_x, cursor_y)
 	local screen_x, screen_y = love.graphics.getDimensions()
@@ -111,7 +113,6 @@ function love.draw()
 			"fps - " .. version, 0, 460, 635, "right"
 		)
 	end
-	getScaledPos(love.mouse.getPosition())
 	
 	love.graphics.pop()
 		
@@ -364,8 +365,17 @@ function love.run()
 				time_accumulator = time_accumulator + time - last_time
 			end
 			time_accumulator = time_accumulator - frame_duration
+			if love.mouse then 
+				left_clicked_before = love.mouse.isDown(1)
+				right_clicked_before = love.mouse.isDown(2)
+				if prev_cur_pos_x == love.mouse.getX() and prev_cur_pos_y == love.mouse.getY() then
+					mouse_idle = mouse_idle + love.timer.getDelta()
+				else
+					mouse_idle = 0
+				end
+				prev_cur_pos_x, prev_cur_pos_y = love.mouse.getPosition()
+			end
 		end
-		if love.mouse then left_clicked_before = love.mouse.isDown(1) right_clicked_before = love.mouse.isDown(2) end
 		last_time = love.timer.getTime()
 	end
 end
