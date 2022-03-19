@@ -123,6 +123,7 @@ end
 function GameMode:saveReplay()
 	-- Save replay.
 	local replay = {}
+	replay["toolassisted"] = self.ineligible
 	replay["inputs"] = self.replay_inputs
 	replay["random_low"] = self.random_low
 	replay["random_high"] = self.random_high
@@ -177,6 +178,13 @@ function GameMode:addReplayInput(inputs)
 end
 
 function GameMode:update(inputs, ruleset)
+	if frame_steps > 0 then
+		self.ineligible = true
+		frame_steps = frame_steps - 1
+		if frame_steps == 0 then
+			scene.paused = true
+		end
+	end
 	if self.game_over or self.completed then
 		if self.save_replay and self.game_over_frames == 0 then
 			self:saveReplay()
@@ -1034,6 +1042,9 @@ end
 function GameMode:drawCustom() end
 
 function GameMode:drawIfPaused()
+	if frame_steps > 0 then
+		scene.paused = false
+	end
 	love.graphics.setFont(font_3x5_3)
 	love.graphics.printf("PAUSED!", 64, 160, 160, "center")
 end
@@ -1068,8 +1079,13 @@ function GameMode:draw(paused)
 		)
 	end
 
-	if paused then
+	if paused or frame_steps > 0 then
 		self:drawIfPaused()
+	elseif self.ineligible then
+		love.graphics.setColor(1, 0, 0, 0.2)
+		love.graphics.setFont(font_3x5_4)
+		love.graphics.printf("X", 240, 20, 160, "center")
+		love.graphics.setColor(1, 1, 1, 1)
 	end
 
 	if self.completed then

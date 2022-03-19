@@ -58,10 +58,15 @@ function initModules()
 	table.sort(rulesets, function(a,b)
 	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
 end
+--#region Tetro48's code
+
 left_clicked_before = false
 right_clicked_before = false
 prev_cur_pos_x, prev_cur_pos_y = 0, 0
 mouse_idle = 0
+TAS_mode = false
+frame_steps = 0
+
 -- For when mouse controls are part of menu controls
 function getScaledPos(cursor_x, cursor_y)
 	local screen_x, screen_y = love.graphics.getDimensions()
@@ -106,6 +111,7 @@ function drawT48Cursor(x, y, a)
     love.graphics.polygon("line", x + 5, y + 0, x + 0, y + 10, x + 5, y + 8, x + 8, y + 20, x + 12, y + 18, x + 10, y + 7, x + 15, y + 5)
     love.graphics.setColor(1,1,1,a)
 end
+--#endregion
 function love.draw()
 	love.graphics.setCanvas(GLOBAL_CANVAS)
 	love.graphics.clear()
@@ -124,6 +130,13 @@ function love.draw()
 		
 	scene:render()
 
+	if TAS_mode then
+		love.graphics.setColor(1, 1, 1, love.timer.getTime() % 2 < 1 and 1 or 0)
+		love.graphics.setFont(font_3x5_3)
+		love.graphics.printf(
+			"TAS MODE ON", 240, 0, 160, "center"
+		)
+	end
 	if config.visualsettings.display_gamemode == 1 or scene.title == "Title" then
 		love.graphics.setFont(font_3x5_2)
 		love.graphics.setColor(1, 1, 1, 1)
@@ -151,10 +164,14 @@ function love.keypressed(key, scancode)
 		config["fullscreen"] = not config["fullscreen"]
 		saveConfig()
 		love.window.setFullscreen(config["fullscreen"])
+	elseif scancode == "f1" then
+		TAS_mode = not TAS_mode
 	elseif scancode == "f2" and scene.title ~= "Input Config" and scene.title ~= "Game" then
 		scene = InputConfigScene()
 		switchBGM(nil)
 		loadSave()
+	elseif scancode == "f3" and TAS_mode and scene.title == "Game" then
+		frame_steps = frame_steps + 1
 	-- secret sound playing :eyes:
 	elseif scancode == "f8" and scene.title == "Title" then
 		config.secret = not config.secret

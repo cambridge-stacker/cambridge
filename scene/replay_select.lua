@@ -148,10 +148,15 @@ function ReplaySelectScene:render()
 			if replay["timer"] ~= nil then
 				display_string = display_string.." - Time: "..formatTime(replay["timer"])
 			end
-			if #display_string > 75 then
+			if #display_string > 78 then
 				display_string = display_string:sub(1, 75) .. "..."
 			end
-			love.graphics.setColor(1,1,CursorHighlight(0, (260 - self.height_offset) + 20 * idx, 640, 20),FadeoutAtEdges((-self.height_offset) + 20 * idx, 180, 20))
+			local b, g = CursorHighlight(0, (260 - self.height_offset) + 20 * idx, 640, 20), 1
+			if replay["toolassisted"] then
+				g = 0
+				b = 0
+			end
+			love.graphics.setColor(1,g,b,FadeoutAtEdges((-self.height_offset) + 20 * idx, 180, 20))
 			love.graphics.printf(display_string, 6, (260 - self.height_offset) + 20 * idx, 640, "left")
 		end
 	end
