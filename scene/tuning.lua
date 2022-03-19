@@ -31,6 +31,12 @@ function TuningScene:update()
     self.dasSlider:update(x,y)
 	self.arrSlider:update(x,y)
 	self.dcdSlider:update(x,y)
+	if not love.mouse.isDown(1) or left_clicked_before then return end
+	if x > 20 and y > 40 and x < 70 and y < 70 then
+		playSE("mode_decide")
+		saveConfig()
+		scene = SettingsScene()
+	end
 end
 
 function TuningScene:render()
@@ -48,6 +54,10 @@ function TuningScene:render()
     
     love.graphics.setFont(font_3x5_4)
     love.graphics.print("TUNING SETTINGS", 80, 40)
+	local b = CursorHighlight(20, 40, 50, 30)
+	love.graphics.setColor(1, 1, b, 1)
+	love.graphics.printf("<-", 20, 40, 50, "center")
+	love.graphics.setColor(1, 1, 1, 1)
     
     love.graphics.setFont(font_3x5_2)
     love.graphics.print("These settings will only apply to modes\nthat do not use their own tunings.", 80, 90)

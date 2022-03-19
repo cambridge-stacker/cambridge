@@ -42,6 +42,11 @@ function ConfigScene:update()
 	self.bgmSlider:update(x,y)
 	--#region Mouse
 	if not love.mouse.isDown(1) or left_clicked_before then return end
+	if x > 20 and y > 40 and x < 70 and y < 70 then
+		playSE("mode_decide")
+		saveConfig()
+		scene = SettingsScene()
+	end
 	for i, option in ipairs(ConfigScene.options) do
 		if not option[3] then
 		for j, setting in ipairs(option[4]) do
@@ -68,13 +73,10 @@ function ConfigScene:render()
 
 	love.graphics.setFont(font_3x5_4)
 	love.graphics.print("GAME SETTINGS", 80, 40)
-	-- love.graphics.setColor(1, 1, 1, 0.5)
-	-- love.graphics.rectangle("fill", 580, 40, 60, 35)
-	-- love.graphics.setColor(1, 1, 1, 1)
-	-- love.graphics.setFont(font_3x5_3)
-	-- love.graphics.printf("SAVE", 580, 40, 60, "center")
-	-- love.graphics.setFont(font_3x5)
-	-- love.graphics.printf("(MOUSE ONLY)", 580, 62, 60, "center")
+	local b = CursorHighlight(20, 40, 50, 30)
+	love.graphics.setColor(1, 1, b, 1)
+	love.graphics.printf("<-", 20, 40, 50, "center")
+	love.graphics.setColor(1, 1, 1, 1)
 
 	--Lazy check to see if we're on the SFX or BGM slider. Probably will need to be rewritten if more options get added.
 	love.graphics.setColor(1, 1, 1, 0.5)

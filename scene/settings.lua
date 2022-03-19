@@ -29,6 +29,11 @@ end
 function SettingsScene:update()
 	if not love.mouse.isDown(1) or left_clicked_before then return end
 	local mouse_x, mouse_y = getScaledPos(love.mouse.getPosition())
+	if mouse_x > 20 and mouse_y > 40 and mouse_x < 70 and mouse_y < 70 then
+		playSE("main_decide")
+		saveConfig()
+		scene = TitleScene()
+	end
     if mouse_x > 75 and mouse_x < 275 then
         if mouse_y > 160 and mouse_y < 160 + #menu_screens * 50 then
             self.menu_state = math.floor((mouse_y - 110) / 50)
@@ -48,6 +53,11 @@ function SettingsScene:render()
 
     love.graphics.setFont(font_3x5_4)
     love.graphics.print("SETTINGS", 80, 40)
+    
+	local b = CursorHighlight(20, 40, 50, 30)
+	love.graphics.setColor(1, 1, b, 1)
+	love.graphics.printf("<-", 20, 40, 50, "center")
+	love.graphics.setColor(1, 1, 1, 1)
 
     love.graphics.setFont(font_3x5_2)
     love.graphics.print("Here, you can change some settings that change\nthe look and feel of the game.", 80, 90)

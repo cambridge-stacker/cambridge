@@ -30,6 +30,11 @@ function ConfigScene:update()
 	local x, y = getScaledPos(love.mouse.getPosition())
 	--#region Mouse
 	if not love.mouse.isDown(1) or left_clicked_before then return end
+	if x > 20 and y > 40 and x < 70 and y < 70 then
+		playSE("mode_decide")
+		saveConfig()
+		scene = SettingsScene()
+	end
 	for i, option in ipairs(ConfigScene.options) do
 		for j, setting in ipairs(option[3]) do
 			if x > 100 + 110 * j and x < 200 + 110 * j then
@@ -55,6 +60,10 @@ function ConfigScene:render()
 
 	love.graphics.setFont(font_3x5_4)
 	love.graphics.print("VISUAL SETTINGS", 80, 40)
+	local b = CursorHighlight(20, 40, 50, 30)
+	love.graphics.setColor(1, 1, b, 1)
+	love.graphics.printf("<-", 20, 40, 50, "center")
+	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_2)
 	love.graphics.print("(THIS WILL NOT BE STORED IN REPLAYS)", 80, 80)
 	-- love.graphics.setColor(1, 1, 1, 0.5)
