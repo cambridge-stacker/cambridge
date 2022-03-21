@@ -26,13 +26,13 @@ All assets needed are bundled with the executable.
 
 #### Bleeding edge
 
-If you want the bleeding edge version, download [this](https://github.com/MillaBasset/cambridge/archive/master.zip).
+If you want the bleeding edge version, download [this](https://github.com/MillaBasset/cambridge/archive/master.zip). Extract the ZIP to a folder of your choosing.
 
-Extract the ZIP, open a Command Prompt at the folder you extracted Cambridge to, then run this command:
+Assuming you're on a 64-bit system, you can double-click `start_win64.bat` to run the game. If that doesn't work, open a Command Prompt where you extracted Cambridge and run:
 
 	dist\windows\love.exe .
 
-Alternatively, if you're on a 32-bit system, run this instead:
+If you're on a 32-bit system, you'll want to double-click `start_win32.bat`. If that doesn't work, run this instead:
 
 	dist\win32\love.exe .
 
