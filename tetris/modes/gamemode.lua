@@ -3,6 +3,7 @@ require 'funcs'
 
 local playedReadySE = false
 local playedGoSE = false
+local ineligible = false
 
 local Grid = require 'tetris.components.grid'
 local Randomizer = require 'tetris.randomizers.randomizer'
@@ -78,6 +79,7 @@ function GameMode:new()
 	self.section_start_time = 0
 	self.section_times = { [0] = 0 }
 	self.secondary_section_times = { [0] = 0 }
+	ineligible = false
 end
 
 function GameMode:getARR() return 1 end
@@ -123,7 +125,7 @@ end
 function GameMode:saveReplay()
 	-- Save replay.
 	local replay = {}
-	replay["toolassisted"] = self.ineligible
+	replay["toolassisted"] = ineligible
 	replay["inputs"] = self.replay_inputs
 	replay["random_low"] = self.random_low
 	replay["random_high"] = self.random_high
@@ -179,7 +181,7 @@ end
 
 function GameMode:update(inputs, ruleset)
 	if frame_steps > 0 then
-		self.ineligible = true
+		ineligible = true
 		frame_steps = frame_steps - 1
 		if frame_steps == 0 then
 			scene.paused = true
@@ -1081,7 +1083,7 @@ function GameMode:draw(paused)
 
 	if paused or frame_steps > 0 then
 		self:drawIfPaused()
-	elseif self.ineligible then
+	elseif ineligible then
 		love.graphics.setColor(1, 0, 0, 0.2)
 		love.graphics.setFont(font_3x5_4)
 		love.graphics.printf("X", 240, 20, 160, "center")
