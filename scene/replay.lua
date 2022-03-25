@@ -35,6 +35,7 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	self.paused = false
 	self.replay = deepcopy(replay)
 	self.replay_index = 1
+	self.replay_speed = 1
 	DiscordRPC:update({
 		details = "Viewing a replay",
 		state = self.game.name,
@@ -43,31 +44,42 @@ function ReplayScene:new(replay, game_mode, ruleset)
 end
 
 function ReplayScene:update()
+	local frames_left = self.replay_speed
 	if love.window.hasFocus() and not self.paused then
-		self.inputs = self.replay["inputs"][self.replay_index]["inputs"]
-		self.replay["inputs"][self.replay_index]["frames"] = self.replay["inputs"][self.replay_index]["frames"] - 1
-		if self.replay["inputs"][self.replay_index]["frames"] == 0 and self.replay_index < table.getn(self.replay["inputs"]) then
-			self.replay_index = self.replay_index + 1
+		while frames_left > 0 do
+			frames_left = frames_left - 1
+			self.inputs = self.replay["inputs"][self.replay_index]["inputs"]
+			self.replay["inputs"][self.replay_index]["frames"] = self.replay["inputs"][self.replay_index]["frames"] - 1
+			if self.replay["inputs"][self.replay_index]["frames"] == 0 and self.replay_index < table.getn(self.replay["inputs"]) then
+				self.replay_index = self.replay_index + 1
+			end
+			local input_copy = {}
+			for input, value in pairs(self.inputs) do
+				input_copy[input] = value
+			end
+			self.game:update(input_copy, self.ruleset)
+			self.game.grid:update()
 		end
-		local input_copy = {}
-		for input, value in pairs(self.inputs) do
-			input_copy[input] = value
-		end
-		self.game:update(input_copy, self.ruleset)
-		self.game.grid:update()
-		DiscordRPC:update({
-			details = "Viewing a replay",
-			state = self.game.name,
-			largeImageKey = "ingame-"..self.game:getBackground().."00"
-		})
 	end
+	DiscordRPC:update({
+		details = "Viewing a".. (self.replay["toolassisted"] and " tool-assisted" or "") .." replay",
+		state = self.game.name,
+		largeImageKey = "ingame-"..self.game:getBackground().."00"
+	})
 end
 
 function ReplayScene:render()
 	self.game:draw(self.paused)
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_3)
-	love.graphics.printf("REPLAY", 0, 0, 635, "right")
+	if self.replay["toolassisted"] then
+		love.graphics.printf("TAS REPLAY", 0, 0, 635, "right")
+	else
+		love.graphics.printf("REPLAY", 0, 0, 635, "right")
+	end
+	if self.replay_speed > 1 then
+		love.graphics.printf(self.replay_speed.."X", 0, 15, 635, "right")
+	end
 end
 
 function ReplayScene:onInputPress(e)
@@ -86,6 +98,16 @@ function ReplayScene:onInputPress(e)
 				self.retry_ruleset, self.secret_inputs
 			) or ReplaySelectScene()
 	 	)
+	elseif e.input == "left" then
+		self.replay_speed = self.replay_speed - 1
+		if self.replay_speed < 1 then
+			self.replay_speed = 1
+		end
+	elseif e.input == "right" then
+		self.replay_speed = self.replay_speed + 1
+		if self.replay_speed > 99 then
+			self.replay_speed = 99
+		end
 	elseif e.input == "pause" and not (self.game.game_over or self.game.completed) then
 		self.paused = not self.paused
 		if self.paused then pauseBGM()

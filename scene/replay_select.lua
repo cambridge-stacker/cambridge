@@ -4,34 +4,47 @@ ReplaySelectScene.title = "Replays"
 
 local binser = require 'libs.binser'
 
-current_replay = 1
+local current_replay = 1
 
 function ReplaySelectScene:new()
 	-- reload custom modules
 	initModules()
 	-- load replays
 	replays = {}
+	replay_tree = {}
+	dict_ref = {}
+	for key, value in pairs(game_modes) do
+		dict_ref[value.name] = key
+		replay_tree[key] = {name = value.name}
+	end
 	replay_file_list = love.filesystem.getDirectoryItems("replays")
 	for i=1,#replay_file_list do
 		local data = love.filesystem.read("replays/"..replay_file_list[i])
 		local new_replay = binser.deserialize(data)[1]
-		replays[#replays + 1] = new_replay
+		local mode_name = self.nilCheck(new_replay, {mode = "znil"}).mode
+		replays[#replays+1] = new_replay
+		if dict_ref[mode_name] ~= nil then
+			table.insert(replay_tree[dict_ref[mode_name]], #replays)
+		end
 	end
-	table.sort(replays, function(a, b)
-		return a["timestamp"] > b["timestamp"]
-	end)
+	local function padnum(d) return ("%03d%s"):format(#d, d) end
+	table.sort(replay_tree, function(a,b)
+	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
+	for key, submenu in pairs(replay_tree) do
+		table.sort(submenu, function(a, b)
+			return replays[a]["timestamp"] > replays[b]["timestamp"]
+		end)
+	end
 	self.display_error = false
 	if table.getn(replays) == 0 then
 		self.display_warning = true
 		current_replay = 1
 	else
 		self.display_warning = false
-		if current_replay > table.getn(replays) then
-			current_replay = 1
-		end
 	end
 
 	self.menu_state = {
+		submenu = 0,
 		replay = current_replay,
 	}
 	self.das = 0
@@ -42,6 +55,14 @@ function ReplaySelectScene:new()
 		state = "Choosing a replay",
 		largeImageKey = "ingame-000"
 	})
+end
+
+
+function ReplaySelectScene.nilCheck(input, default)
+	if input == nil then
+		return default
+	end
+	return input
 end
 
 function ReplaySelectScene:update()
@@ -55,7 +76,7 @@ function ReplaySelectScene:update()
 
 	local mouse_x, mouse_y = getScaledPos(love.mouse.getPosition())
 	if love.mouse.isDown(1) and not left_clicked_before then
-		if self.display_error then
+		if self.display_error or self.display_warning then
 			scene = TitleScene()
 			return
 		end
@@ -104,7 +125,13 @@ function ReplaySelectScene:render()
 	--love.graphics.draw(misc_graphics["select_mode"], 20, 40)
 
 	love.graphics.setFont(font_3x5_4)
-	love.graphics.print("SELECT REPLAY", 20, 35)
+	if self.menu_state.submenu > 0 then
+		love.graphics.print("SELECT REPLAY", 20, 35)
+		love.graphics.setFont(font_3x5_3)
+		love.graphics.printf("MODE: "..replay_tree[self.menu_state.submenu].name, 300, 35, 320, "right")
+	else
+		love.graphics.print("SELECT MODE TO REPLAY", 20, 35)
+	end
 
 	if self.display_warning then
 		love.graphics.setFont(font_3x5_3)
@@ -136,33 +163,64 @@ function ReplaySelectScene:render()
 
 	love.graphics.setColor(1, 1, 1, 0.5)
 	love.graphics.rectangle("fill", 3, 258 + (self.menu_state.replay * 20) - self.height_offset, 634, 22)
-
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_2)
-	for idx, replay in ipairs(replays) do
-		if(idx >= self.height_offset/20-10 and idx <= self.height_offset/20+10) then
-			local display_string = os.date("%c", replay["timestamp"]).." - "..replay["mode"].." - "..replay["ruleset"]
-			if replay["level"] ~= nil then
-				display_string = display_string.." - Level: "..replay["level"]
+	if self.menu_state.submenu == 0 then
+		for idx, branch in ipairs(replay_tree) do
+			if(idx >= self.height_offset/20-10 and idx <= self.height_offset/20+10) then
+				local b = CursorHighlight(0, (260 - self.height_offset) + 20 * idx, 640, 20)
+				love.graphics.setColor(1,1,b,FadeoutAtEdges((-self.height_offset) + 20 * idx, 180, 20))
+				love.graphics.printf(branch.name, 6, (260 - self.height_offset) + 20 * idx, 640, "left")	
 			end
-			if replay["timer"] ~= nil then
-				display_string = display_string.." - Time: "..formatTime(replay["timer"])
+		end
+	else
+		if #replay_tree[self.menu_state.submenu] == 0 then
+			love.graphics.setFont(font_3x5_2)
+			love.graphics.printf(
+				"This submenu doesn't contain replays of this mode. ",
+				80, 250, 480, "center"
+			)
+			return
+		end
+		for idx, replay_idx in ipairs(replay_tree[self.menu_state.submenu]) do
+			if(idx >= self.height_offset/20-10 and idx <= self.height_offset/20+10) then
+				local replay = replays[replay_idx]
+				local display_string = os.date("%c", replay["timestamp"]).." - Ruleset: "..replay["ruleset"]
+				if replay["level"] ~= nil then
+					display_string = display_string.." - Level: "..replay["level"]
+				end
+				if replay["timer"] ~= nil then
+					display_string = display_string.." - Time: "..formatTime(replay["timer"])
+				end
+				if #display_string > 78 then
+					display_string = display_string:sub(1, 75) .. "..."
+				end
+				local b, g = CursorHighlight(0, (260 - self.height_offset) + 20 * idx, 640, 20), 1
+				if replay["toolassisted"] then
+					g = 0
+					b = 0
+				end
+				love.graphics.setColor(1,g,b,FadeoutAtEdges((-self.height_offset) + 20 * idx, 180, 20))
+				love.graphics.printf(display_string, 6, (260 - self.height_offset) + 20 * idx, 640, "left")
 			end
-			if #display_string > 78 then
-				display_string = display_string:sub(1, 75) .. "..."
-			end
-			local b, g = CursorHighlight(0, (260 - self.height_offset) + 20 * idx, 640, 20), 1
-			if replay["toolassisted"] then
-				g = 0
-				b = 0
-			end
-			love.graphics.setColor(1,g,b,FadeoutAtEdges((-self.height_offset) + 20 * idx, 180, 20))
-			love.graphics.printf(display_string, 6, (260 - self.height_offset) + 20 * idx, 640, "left")
 		end
 	end
 end
 
 function ReplaySelectScene:startReplay()
+	if self.menu_state.submenu == 0 then
+		self.menu_state.submenu = self.menu_state.replay
+		self.menu_state.replay = 1
+		self.height_offset = 0
+		playSE("main_decide")
+		return
+	elseif self.menu_state.submenu > 0 then
+		if #replay_tree[self.menu_state.submenu] == 0 then
+			self.menu_state.submenu = 0
+			self.menu_state.replay = 1
+			return
+		end
+	end
 	current_replay = self.menu_state.replay
 	-- Same as mode decide
 	playSE("mode_decide")
@@ -170,13 +228,13 @@ function ReplaySelectScene:startReplay()
 	local mode
 	local rules
 	for key, value in pairs(game_modes) do
-		if value.name == replays[self.menu_state.replay]["mode"] then
+		if value.name == replays[replay_tree[self.menu_state.submenu][self.menu_state.replay]]["mode"] then
 			mode = value
 			break
 		end
 	end
 	for key, value in pairs(rulesets) do
-		if value.name == replays[self.menu_state.replay]["ruleset"] then
+		if value.name == replays[replay_tree[self.menu_state.submenu][self.menu_state.replay]]["ruleset"] then
 			rules = value
 			break
 		end
@@ -187,11 +245,12 @@ function ReplaySelectScene:startReplay()
 	end
 	-- TODO compare replay versions to current versions for Cambridge, ruleset, and mode
 	scene = ReplayScene(
-		replays[self.menu_state.replay],
+		replays[replay_tree[self.menu_state.submenu][self.menu_state.replay]],
 		mode,
 		rules
 	)
 end
+
 
 function ReplaySelectScene:onInputPress(e)
 	if (self.display_warning or self.display_error) and e.input then
@@ -227,6 +286,11 @@ function ReplaySelectScene:onInputPress(e)
 		self.das_up = nil
 		self.das_down = nil
 	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
+		if self.menu_state.submenu ~= 0 then
+			self.menu_state.submenu = 0
+			self.menu_state.replay = 1
+			return
+		end
 		scene = TitleScene()
 	end
 end
@@ -244,7 +308,12 @@ function ReplaySelectScene:onInputRelease(e)
 end
 
 function ReplaySelectScene:changeOption(rel)
-	local len = table.getn(replays)
+	local len
+	if self.menu_state.submenu == 0 then
+		len = table.getn(replay_tree)
+	else
+		len = table.getn(replay_tree[self.menu_state.submenu])
+	end
 	self.menu_state.replay = Mod1(self.menu_state.replay + rel, len)
 	playSE("cursor")
 end
