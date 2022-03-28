@@ -40,6 +40,16 @@ If you're on a 32-bit system, you'll want to double-click `start_win32.bat`. If 
 
 Then, check the mod pack section at the bottom of this page.
 
+#### Flooding edge
+
+If you want the `flooding edge` version, download [this](https://github.com/Tetro48/cambridge/archive/master.zip).
+
+Note: It might have weird bugs that isn't addressed by [Tetro48](https://github.com/Tetro48/); it has a lot of changes.
+e.g.
+Mouse controls, cursor type, visual settings, replay tree, replay speed, tool-assisted speedrun mode, replay tunings (although that'd be helpful). 
+
+It is not really meant to be merged with main [Cambridge](https://github.com/MillaBasset/cambridge).
+
 ### macOS, Linux
 
 If you haven't already, install `love` with your favourite package manager (Homebrew on macOS, your system's default on Linux). **Make sure you're using LÖVE 11.3, because it won't work with earlier or later versions!**
