@@ -106,6 +106,7 @@ function ModeSelectScene:render()
 		return
 	end
 
+	love.graphics.printf("Tagline: "..game_modes[self.menu_state.mode].tagline, 320, 10, 300, "left")
 	if self.menu_state.select == "mode" then
 		love.graphics.setColor(1, 1, 1, 0.5)
 	elseif self.menu_state.select == "ruleset" then
