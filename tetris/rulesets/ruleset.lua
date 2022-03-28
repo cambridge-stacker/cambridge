@@ -273,8 +273,8 @@ end
 
 function Ruleset:canPieceMove(piece, grid) return true end
 function Ruleset:canPieceRotate(piece, grid) return true end
-function Ruleset:onPieceMove(piece) end
-function Ruleset:onPieceRotate(piece) end
-function Ruleset:onPieceDrop(piece) end
+function Ruleset:onPieceMove(piece, grid) end
+function Ruleset:onPieceRotate(piece, grid) end
+function Ruleset:onPieceDrop(piece, grid) end
 
 return Ruleset
