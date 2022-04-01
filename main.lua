@@ -103,9 +103,6 @@ function love.keypressed(key, scancode)
 		scene = InputConfigScene()
 		switchBGM(nil)
 		loadSave()
-	elseif scancode == "f8" and scene.title == "Arcade" then
-		scene = TitleScene()
-		playSE("mode_decide")
 	-- secret sound playing :eyes:
 	elseif scancode == "f8" and scene.title == "Title" then
 		config.secret = not config.secret

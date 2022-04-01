@@ -8,7 +8,6 @@ function Scene:render() end
 function Scene:onInputPress() end
 function Scene:onInputRelease() end
 
-ArcadeScene = require "scene.arcade"
 ExitScene = require "scene.exit"
 GameScene = require "scene.game"
 ReplayScene = require "scene.replay"
