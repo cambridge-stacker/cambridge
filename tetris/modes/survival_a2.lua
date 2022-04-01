@@ -19,7 +19,7 @@ function SurvivalA2Game:new()
 	self.roll_frames = 0
 	self.combo = 1
 	self.randomizer = History6RollsRandomizer()
-	
+
 	self.SGnames = {
 		"9", "8", "7", "6", "5", "4", "3", "2", "1",
 		"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
@@ -101,6 +101,7 @@ function SurvivalA2Game:onLineClear(cleared_row_count)
 			self.clear = true
 			if new_level < 999 then
 				self.game_over = true
+				return
 			end
 		end
 		self.level = new_level
