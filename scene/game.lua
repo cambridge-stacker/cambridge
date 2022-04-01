@@ -64,18 +64,19 @@ function GameScene:onInputPress(e)
 		highscore_hash = self.game.hash .. "-" .. self.ruleset.hash
 		submitHighscore(highscore_hash, highscore_entry)
 		self.game:onExit()
-		scene = e.input == "retry" and GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs) or ModeSelectScene()
+		scene = ArcadeScene()
+		-- e.input == "retry" and GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs) or ModeSelectScene()
 	elseif e.input == "retry" then
 		switchBGM(nil)
 		self.game:onExit()
-		scene = GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs)
+		scene = ArcadeScene() --GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs)
 	elseif e.input == "pause" and not (self.game.game_over or self.game.completed) then
 		self.paused = not self.paused
 		if self.paused then pauseBGM()
 		else resumeBGM() end
 	elseif e.input == "menu_back" then
 		self.game:onExit()
-		scene = ModeSelectScene()
+		scene = ArcadeScene() -- ModeSelectScene()
 	elseif e.input and string.sub(e.input, 1, 5) ~= "menu_" then
 		self.inputs[e.input] = true
 	end

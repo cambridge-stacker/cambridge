@@ -78,7 +78,7 @@ function KeyConfigScene:onInputPress(e)
                 if not config.input then config.input = {} end
                 config.input.keys = self.new_input
 				saveConfig()
-				scene = had_config and InputConfigScene() or TitleScene()
+				scene = had_config and InputConfigScene() or ArcadeScene()
 			elseif e.scancode == "delete" or e.scancode == "backspace" then
 				-- retry
 				self.input_state = 1
