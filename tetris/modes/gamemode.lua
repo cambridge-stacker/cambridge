@@ -4,6 +4,7 @@ require 'funcs'
 local playedReadySE = false
 local playedGoSE = false
 local ineligible = false
+local cursor_type_record = 1
 
 local Grid = require 'tetris.components.grid'
 local Randomizer = require 'tetris.randomizers.randomizer'
@@ -80,6 +81,16 @@ function GameMode:new()
 	self.section_times = { [0] = 0 }
 	self.secondary_section_times = { [0] = 0 }
 	ineligible = false
+	--#region Tetro48's set up code
+	cursor_type_record = config.visualsettings.cursor_type
+	if config.visualsettings.cursor_type ~= 1 then
+		is_cursor_visible = true
+	else
+		is_cursor_visible = love.mouse.isVisible()
+	end
+	config.visualsettings.cursor_type = 1
+	love.mouse.setVisible(is_cursor_visible)
+	--#endregion
 end
 
 function GameMode:getARR() return 1 end
@@ -431,7 +442,9 @@ function GameMode:onGameComplete()
 	self:onGameOver()
 end
 
-function GameMode:onExit() end
+function GameMode:onExit()
+	config.visualsettings.cursor_type = cursor_type_record
+end
 
 -- DAS functions
 

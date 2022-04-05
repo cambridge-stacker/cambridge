@@ -101,6 +101,7 @@ end
 left_clicked_before = false
 right_clicked_before = false
 prev_cur_pos_x, prev_cur_pos_y = 0, 0
+is_cursor_visible = true
 mouse_idle = 0
 TAS_mode = false
 frame_steps = 0
@@ -183,10 +184,20 @@ function love.draw()
 			"fps - " .. version, 0, 460, 635, "right"
 		)
 	end
-	love.mouse.setVisible(config.visualsettings.cursor_type == 1)
-	if config.visualsettings.cursor_type ~= 1 then
-		local lx, ly = getScaledPos(love.mouse.getPosition())
-		drawT48Cursor(lx, ly, 9 - mouse_idle * 4)
+	if scene.title == "Game" or scene.title == "Replay" then
+		-- if config.visualsettings.cursor_type ~= 1 then
+		-- 	is_cursor_visible = true
+		-- else
+		-- 	is_cursor_visible = love.mouse.isVisible()
+		-- end
+		-- config.visualsettings.cursor_type = 0
+		-- love.mouse.setVisible(is_cursor_visible)
+	else
+		love.mouse.setVisible(config.visualsettings.cursor_type == 1)
+		if config.visualsettings.cursor_type ~= 1 then
+			local lx, ly = getScaledPos(love.mouse.getPosition())
+			drawT48Cursor(lx, ly, 9 - mouse_idle * 4)
+		end
 	end
 	
 	love.graphics.pop()
