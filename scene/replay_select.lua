@@ -10,31 +10,33 @@ function ReplaySelectScene:new()
 	-- reload custom modules
 	initModules()
 	-- load replays
-	replays = {}
-	replay_tree = {}
-	dict_ref = {}
-	for key, value in pairs(game_modes) do
-		dict_ref[value.name] = key
-		replay_tree[key] = {name = value.name}
-	end
-	replay_file_list = love.filesystem.getDirectoryItems("replays")
-	for i=1,#replay_file_list do
-		local data = love.filesystem.read("replays/"..replay_file_list[i])
-		local new_replay = binser.deserialize(data)[1]
-		local mode_name = self.nilCheck(new_replay, {mode = "znil"}).mode
-		replays[#replays+1] = new_replay
-		if dict_ref[mode_name] ~= nil then
-			table.insert(replay_tree[dict_ref[mode_name]], #replays)
-		end
-	end
-	local function padnum(d) return ("%03d%s"):format(#d, d) end
-	table.sort(replay_tree, function(a,b)
-	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
-	for key, submenu in pairs(replay_tree) do
-		table.sort(submenu, function(a, b)
-			return replays[a]["timestamp"] > replays[b]["timestamp"]
-		end)
-	end
+
+	-- -- it's unused to avoid IO inconvenience.
+	-- replays = {}
+	-- replay_tree = {}
+	-- dict_ref = {}
+	-- for key, value in pairs(game_modes) do
+	-- 	dict_ref[value.name] = key
+	-- 	replay_tree[key] = {name = value.name}
+	-- end
+	-- local replay_file_list = love.filesystem.getDirectoryItems("replays")
+	-- for i=1,#replay_file_list do
+	-- 	local data = love.filesystem.read("replays/"..replay_file_list[i])
+	-- 	local new_replay = binser.deserialize(data)[1]
+	-- 	local mode_name = self.nilCheck(new_replay, {mode = "znil"}).mode
+	-- 	replays[#replays+1] = new_replay
+	-- 	if dict_ref[mode_name] ~= nil and mode_name ~= "znil" then
+	-- 		table.insert(replay_tree[dict_ref[mode_name]], #replays)
+	-- 	end
+	-- end
+	-- local function padnum(d) return ("%03d%s"):format(#d, d) end
+	-- table.sort(replay_tree, function(a,b)
+	-- return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
+	-- for key, submenu in pairs(replay_tree) do
+	-- 	table.sort(submenu, function(a, b)
+	-- 		return replays[a]["timestamp"] > replays[b]["timestamp"]
+	-- 	end)
+	-- end
 	self.display_error = false
 	if table.getn(replays) == 0 then
 		self.display_warning = true
@@ -185,7 +187,12 @@ function ReplaySelectScene:render()
 		for idx, replay_idx in ipairs(replay_tree[self.menu_state.submenu]) do
 			if(idx >= self.height_offset/20-10 and idx <= self.height_offset/20+10) then
 				local replay = replays[replay_idx]
-				local display_string = os.date("%c", replay["timestamp"]).." - Ruleset: "..replay["ruleset"]
+				local display_string
+				if replay_tree[self.menu_state.submenu].name == "Every thing" then
+					display_string = os.date("%c", replay["timestamp"]).." - ".. replay["mode"].." - "..replay["ruleset"]
+				else
+					display_string = os.date("%c", replay["timestamp"]).." - "..replay["ruleset"]
+				end
 				if replay["level"] ~= nil then
 					display_string = display_string.." - Level: "..replay["level"]
 				end
@@ -227,14 +234,15 @@ function ReplaySelectScene:startReplay()
 	-- Get game mode and ruleset
 	local mode
 	local rules
+	local pointer = replay_tree[self.menu_state.submenu][self.menu_state.replay]
 	for key, value in pairs(game_modes) do
-		if value.name == replays[replay_tree[self.menu_state.submenu][self.menu_state.replay]]["mode"] then
+		if value.name == replays[pointer]["mode"] then
 			mode = value
 			break
 		end
 	end
 	for key, value in pairs(rulesets) do
-		if value.name == replays[replay_tree[self.menu_state.submenu][self.menu_state.replay]]["ruleset"] then
+		if value.name == replays[pointer]["ruleset"] then
 			rules = value
 			break
 		end
@@ -245,7 +253,7 @@ function ReplaySelectScene:startReplay()
 	end
 	-- TODO compare replay versions to current versions for Cambridge, ruleset, and mode
 	scene = ReplayScene(
-		replays[replay_tree[self.menu_state.submenu][self.menu_state.replay]],
+		replays[pointer],
 		mode,
 		rules
 	)

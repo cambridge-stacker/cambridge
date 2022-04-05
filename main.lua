@@ -32,11 +32,11 @@ function love.load()
 
 	-- import custom modules
 	initModules()
+
+	loadReplayList()
 end
 
 function initModules()
-	-- replays are not loaded here, but they are cleared
-	replays = {}
 	game_modes = {}
 	mode_list = love.filesystem.getDirectoryItems("tetris/modes")
 	for i=1,#mode_list do
@@ -59,6 +59,44 @@ function initModules()
 	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
 end
 --#region Tetro48's code
+
+
+function loadReplayList()
+	replays = {}
+	replay_tree = {{name = "Every thing"}}
+	dict_ref = {}
+	for key, value in pairs(game_modes) do
+		dict_ref[value.name] = key + 1
+		replay_tree[key + 1] = {name = value.name}
+	end
+	local replay_file_list = love.filesystem.getDirectoryItems("replays")
+	local binser = require "libs/binser"
+	for i=1, #replay_file_list do
+		local data = love.filesystem.read("replays/"..replay_file_list[i])
+		local new_replay = binser.deserialize(data)[1]
+		local mode_name = nilCheck(new_replay, {mode = "znil"}).mode
+		replays[#replays+1] = new_replay
+		if dict_ref[mode_name] ~= nil and mode_name ~= "znil" then
+			table.insert(replay_tree[dict_ref[mode_name]], #replays)
+		end
+		table.insert(replay_tree[1], #replays)
+	end
+	local function padnum(d) return ("%03d%s"):format(#d, d) end
+	table.sort(replay_tree, function(a,b)
+	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
+	for key, submenu in pairs(replay_tree) do
+		table.sort(submenu, function(a, b)
+			return replays[a]["timestamp"] > replays[b]["timestamp"]
+		end)
+	end
+end
+
+function nilCheck(input, default)
+	if input == nil then
+		return default
+	end
+	return input
+end
 
 left_clicked_before = false
 right_clicked_before = false

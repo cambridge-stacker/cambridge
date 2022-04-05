@@ -64,6 +64,7 @@ function GameScene:onInputPress(e)
 		highscore_hash = self.game.hash .. "-" .. self.ruleset.hash
 		submitHighscore(highscore_hash, highscore_entry)
 		self.game:onExit()
+		loadReplayList()
 		scene = e.input == "retry" and GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs) or ModeSelectScene()
 	elseif e.input == "retry" then
 		switchBGM(nil)
