@@ -255,7 +255,7 @@ function Ruleset:processPiece(
 	drop_locked, hard_drop_locked,
 	hard_drop_enabled, additive_gravity, classic_lock
 )
-	local synchroes_allowed = ({not self.world or self.synchroes, true, false})[config.gamesettings.synchroes_allowed]
+	local synchroes_allowed = ({self.synchroes == nil and not self.world or self.synchroes, true, false})[config.gamesettings.synchroes_allowed]
 
 	if synchroes_allowed then
 		self:rotatePiece(inputs, piece, grid, prev_inputs, false)
