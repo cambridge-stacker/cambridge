@@ -37,8 +37,30 @@ function ReplaySelectScene:new()
 	-- 		return replays[a]["timestamp"] > replays[b]["timestamp"]
 	-- 	end)
 	-- end
+	-- loadReplayList()
+	local load_replays = love.thread.getChannel( 'replays' ):demand()
+	if load_replays then
+		replays = load_replays
+		print("loaded replays")
+	end
+	local load_tree = love.thread.getChannel( 'replay_tree' ):demand()
+	if load_tree then
+		replay_tree = load_tree
+		print("loaded replay tree")
+	end
+	local load_dict = love.thread.getChannel( 'dict_ref' ):demand()
+	if load_dict then
+		dict_ref = load_dict
+		print("loaded dict")
+	end
+	local load = love.thread.getChannel( 'loaded_replays' ):demand()
+	if load then
+		loaded_replays = true
+		print("loaded is true")
+	end
+	loadReplayList()
 	self.display_error = false
-	if table.getn(replays) == 0 then
+	if #replays == 0 then
 		self.display_warning = true
 		current_replay = 1
 	else
@@ -70,6 +92,9 @@ end
 function ReplaySelectScene:update()
 	switchBGM(nil) -- experimental
 	
+	if not loaded_replays then
+		return -- It's there to avoid input response when loading.
+	end
 	if self.das_up or self.das_down or self.das_left or self.das_right then
 		self.das = self.das + 1
 	else
@@ -127,7 +152,14 @@ function ReplaySelectScene:render()
 	--love.graphics.draw(misc_graphics["select_mode"], 20, 40)
 
 	love.graphics.setFont(font_3x5_4)
-	if self.menu_state.submenu > 0 then
+	if not loaded_replays then
+		love.graphics.setFont(font_3x5_3)
+		love.graphics.printf(
+			"Loading replays... Please wait",
+			80, 200, 480, "center"
+		)
+		return
+	elseif self.menu_state.submenu > 0 then
 		love.graphics.print("SELECT REPLAY", 20, 35)
 		love.graphics.setFont(font_3x5_3)
 		love.graphics.printf("MODE: "..replay_tree[self.menu_state.submenu].name, 300, 35, 320, "right")
@@ -188,7 +220,7 @@ function ReplaySelectScene:render()
 			if(idx >= self.height_offset/20-10 and idx <= self.height_offset/20+10) then
 				local replay = replays[replay_idx]
 				local display_string
-				if replay_tree[self.menu_state.submenu].name == "Every thing" then
+				if replay_tree[self.menu_state.submenu].name == "All" then
 					display_string = os.date("%c", replay["timestamp"]).." - ".. replay["mode"].." - "..replay["ruleset"]
 				else
 					display_string = os.date("%c", replay["timestamp"]).." - "..replay["ruleset"]
