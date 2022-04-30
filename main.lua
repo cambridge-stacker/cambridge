@@ -13,6 +13,8 @@ function love.load()
 	loadSave()
 	require "funcs"
 	require "scene"
+
+	require "threaded_replay_code"
 	
 	--config["side_next"] = false
 	--config["reverse_rotate"] = true
@@ -35,7 +37,6 @@ function love.load()
 
 	loadReplayList()
 end
-
 function initModules()
 	game_modes = {}
 	mode_list = love.filesystem.getDirectoryItems("tetris/modes")
@@ -62,34 +63,19 @@ end
 --#region Tetro48's code
 
 
+local io_thread
+
 function loadReplayList()
 	replays = {}
 	replay_tree = {{name = "All"}}
 	dict_ref = {}
+	loaded_replays = false
+	io_thread = love.thread.newThread( replay_load_code )
+	local mode_names = {}
 	for key, value in pairs(game_modes) do
-		dict_ref[value.name] = key + 1
-		replay_tree[key + 1] = {name = value.name}
+		table.insert(mode_names, value.name)
 	end
-	local replay_file_list = love.filesystem.getDirectoryItems("replays")
-	local binser = require "libs/binser"
-	for i=1, #replay_file_list do
-		local data = love.filesystem.read("replays/"..replay_file_list[i])
-		local new_replay = binser.deserialize(data)[1]
-		local mode_name = nilCheck(new_replay, {mode = "znil"}).mode
-		replays[#replays+1] = new_replay
-		if dict_ref[mode_name] ~= nil and mode_name ~= "znil" then
-			table.insert(replay_tree[dict_ref[mode_name]], #replays)
-		end
-		table.insert(replay_tree[1], #replays)
-	end
-	local function padnum(d) return ("%03d%s"):format(#d, d) end
-	table.sort(replay_tree, function(a,b)
-	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
-	for key, submenu in pairs(replay_tree) do
-		table.sort(submenu, function(a, b)
-			return replays[a]["timestamp"] > replays[b]["timestamp"]
-		end)
-	end
+	io_thread:start(mode_names)
 end
 
 function nilCheck(input, default)
@@ -99,6 +85,13 @@ function nilCheck(input, default)
 	return input
 end
 
+function popFromChannel(channel_name)
+	local load_from = love.thread.getChannel(channel_name):pop()
+	if load_from then
+		return load_from
+	end
+end
+
 left_clicked_before = false
 right_clicked_before = false
 prev_cur_pos_x, prev_cur_pos_y = 0, 0
@@ -106,6 +99,7 @@ is_cursor_visible = true
 mouse_idle = 0
 TAS_mode = false
 frame_steps = 0
+loaded_replays = false
 
 -- For when mouse controls are part of menu controls
 function getScaledPos(cursor_x, cursor_y)

@@ -37,8 +37,9 @@ function ReplaySelectScene:new()
 	-- 		return replays[a]["timestamp"] > replays[b]["timestamp"]
 	-- 	end)
 	-- end
+	-- loadReplayList()
 	self.display_error = false
-	if table.getn(replays) == 0 then
+	if #replays == 0 then
 		self.display_warning = true
 		current_replay = 1
 	else
@@ -70,6 +71,17 @@ end
 function ReplaySelectScene:update()
 	switchBGM(nil) -- experimental
 	
+	if not loaded_replays then
+		replays = popFromChannel('replays')
+		replay_tree = popFromChannel('replay_tree')
+		dict_ref = popFromChannel('dict_ref')
+		local load = love.thread.getChannel( 'loaded_replays' ):pop()
+		if load then
+			loaded_replays = true
+			scene = ReplaySelectScene()
+		end
+		return -- It's there to avoid input response when loading.
+	end
 	if self.das_up or self.das_down or self.das_left or self.das_right then
 		self.das = self.das + 1
 	else
@@ -132,7 +144,14 @@ function ReplaySelectScene:render()
 	--love.graphics.draw(misc_graphics["select_mode"], 20, 40)
 
 	love.graphics.setFont(font_3x5_4)
-	if self.menu_state.submenu > 0 then
+	if not loaded_replays then
+		love.graphics.setFont(font_3x5_3)
+		love.graphics.printf(
+			"Loading replays... Please wait",
+			80, 200, 480, "center"
+		)
+		return
+	elseif self.menu_state.submenu > 0 then
 		love.graphics.print("SELECT REPLAY", 20, 35)
 		love.graphics.setFont(font_3x5_3)
 		love.graphics.printf("MODE: "..replay_tree[self.menu_state.submenu].name, 300, 35, 320, "right")
