@@ -87,6 +87,11 @@ function ReplaySelectScene:update()
 			self:startReplay()
 		end
 	end
+	if self.menu_state.submenu > 0 then
+		if #replay_tree[self.menu_state.submenu] == 0 then
+			return
+		end
+	end
 	if self.auto_menu_offset ~= 0 then
 		self:changeOption(self.auto_menu_offset < 0 and -1 or 1)
 		if self.auto_menu_offset > 0 then self.auto_menu_offset = self.auto_menu_offset - 1 end
@@ -188,7 +193,7 @@ function ReplaySelectScene:render()
 			if(idx >= self.height_offset/20-10 and idx <= self.height_offset/20+10) then
 				local replay = replays[replay_idx]
 				local display_string
-				if replay_tree[self.menu_state.submenu].name == "Every thing" then
+				if replay_tree[self.menu_state.submenu].name == "All" then
 					display_string = os.date("%c", replay["timestamp"]).." - ".. replay["mode"].." - "..replay["ruleset"]
 				else
 					display_string = os.date("%c", replay["timestamp"]).." - "..replay["ruleset"]
@@ -317,6 +322,11 @@ end
 
 function ReplaySelectScene:changeOption(rel)
 	local len
+	if self.menu_state.submenu > 0 then
+		if #replay_tree[self.menu_state.submenu] == 0 then
+			return
+		end
+	end
 	if self.menu_state.submenu == 0 then
 		len = table.getn(replay_tree)
 	else

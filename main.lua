@@ -58,12 +58,13 @@ function initModules()
 	table.sort(rulesets, function(a,b)
 	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
 end
+
 --#region Tetro48's code
 
 
 function loadReplayList()
 	replays = {}
-	replay_tree = {{name = "Every thing"}}
+	replay_tree = {{name = "All"}}
 	dict_ref = {}
 	for key, value in pairs(game_modes) do
 		dict_ref[value.name] = key + 1
