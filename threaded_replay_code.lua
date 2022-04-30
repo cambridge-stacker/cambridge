@@ -37,8 +37,8 @@ replay_load_code = [[
 		end)
 	end
 	print("load")
-    love.thread.getChannel( 'loaded_replays' ):push( true )
     love.thread.getChannel( 'replays' ):push( replays )
     love.thread.getChannel( 'replay_tree' ):push( replay_tree )
     love.thread.getChannel( 'dict_ref' ):push( dict_ref )
+    love.thread.getChannel( 'loaded_replays' ):push( true )
 ]]

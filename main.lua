@@ -35,14 +35,7 @@ function love.load()
 	-- import custom modules
 	initModules()
 
-	initReplayList()
-
 	loadReplayList()
-end
-function initReplayList()
-	replays = {}
-	replay_tree = {{name = "All"}}
-	dict_ref = {}
 end
 function initModules()
 	game_modes = {}
@@ -70,20 +63,32 @@ end
 
 
 local io_thread
+
 function loadReplayList()
+	replays = {}
+	replay_tree = {{name = "All"}}
+	dict_ref = {}
+	loaded_replays = false
 	io_thread = love.thread.newThread( replay_load_code )
 	local mode_names = {}
 	for key, value in pairs(game_modes) do
 		table.insert(mode_names, value.name)
 	end
 	io_thread:start(mode_names)
-	print("loading replays")
 end
+
 function nilCheck(input, default)
 	if input == nil then
 		return default
 	end
 	return input
+end
+
+function popFromChannel(channel_name)
+	local load_from = love.thread.getChannel(channel_name):pop()
+	if load_from then
+		return load_from
+	end
 end
 
 left_clicked_before = false

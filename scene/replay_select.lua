@@ -38,27 +38,6 @@ function ReplaySelectScene:new()
 	-- 	end)
 	-- end
 	-- loadReplayList()
-	local load_replays = love.thread.getChannel( 'replays' ):demand()
-	if load_replays then
-		replays = load_replays
-		print("loaded replays")
-	end
-	local load_tree = love.thread.getChannel( 'replay_tree' ):demand()
-	if load_tree then
-		replay_tree = load_tree
-		print("loaded replay tree")
-	end
-	local load_dict = love.thread.getChannel( 'dict_ref' ):demand()
-	if load_dict then
-		dict_ref = load_dict
-		print("loaded dict")
-	end
-	local load = love.thread.getChannel( 'loaded_replays' ):demand()
-	if load then
-		loaded_replays = true
-		print("loaded is true")
-	end
-	loadReplayList()
 	self.display_error = false
 	if #replays == 0 then
 		self.display_warning = true
@@ -93,6 +72,14 @@ function ReplaySelectScene:update()
 	switchBGM(nil) -- experimental
 	
 	if not loaded_replays then
+		replays = popFromChannel('replays')
+		replay_tree = popFromChannel('replay_tree')
+		dict_ref = popFromChannel('dict_ref')
+		local load = love.thread.getChannel( 'loaded_replays' ):pop()
+		if load then
+			loaded_replays = true
+			scene = ReplaySelectScene()
+		end
 		return -- It's there to avoid input response when loading.
 	end
 	if self.das_up or self.das_down or self.das_left or self.das_right then
