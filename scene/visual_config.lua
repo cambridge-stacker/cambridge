@@ -12,6 +12,7 @@ ConfigScene.options = {
 	{"smooth_scroll", "Smooth Scrolling", {"On", "Off"}},
 	{"cursor_highlight", "Cursor Highlight", {"On", "Off"}},
 	{"cursor_type", "Cursor Type", {"Standard", "Tetro48's"}},
+	{"mode_entry", "Mode Entry", {"Instant", "Animated"}},
 }
 local optioncount = #ConfigScene.options
 

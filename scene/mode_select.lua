@@ -35,6 +35,7 @@ function ModeSelectScene:new()
 	self.menu_ruleset_height = 20
 	self.auto_menu_offset = 0
 	self.auto_menu_state = "mode"
+	self.start_frames, self.starting = 0, false
 	DiscordRPC:update({
 		details = "In menus",
 		state = "Choosing a mode",
@@ -44,6 +45,14 @@ end
 
 function ModeSelectScene:update()
 	switchBGM(nil) -- experimental
+
+	if self.starting then
+		self.start_frames = self.start_frames + 1
+		if self.start_frames > 60 or config.visualsettings.mode_entry == 1 then
+			self:startMode()
+		end
+		return
+	end
 
 	local mouse_x, mouse_y = getScaledPos(love.mouse.getPosition())
 	if love.mouse.isDown(1) and not left_clicked_before then
@@ -57,7 +66,8 @@ function ModeSelectScene:update()
 		end
 		self.auto_menu_offset = math.floor((mouse_y - 260)/20)
 		if self.auto_menu_offset == 0 and self.auto_menu_state == "mode" then
-			self:startMode()
+			playSE("mode_decide")
+			self.starting = true
 		end
 	end
 	if self.das_up or self.das_down then
@@ -129,6 +139,11 @@ function ModeSelectScene:render()
 	for idx, mode in pairs(game_modes) do
 		if(idx >= self.menu_mode_height / 20-10 and idx <= self.menu_mode_height / 20+10) then
 			local b = CursorHighlight(0,(260 - self.menu_mode_height) + 20 * idx,320,20)
+			if idx == self.menu_state.mode then
+				if self.start_frames % 10 > 4 then
+					b = 0
+				end
+			end
 			love.graphics.setColor(1,1,b,FadeoutAtEdges((-self.menu_mode_height) + 20 * idx, 180, 20))
 			love.graphics.printf(mode.name, 40, (260 - self.menu_mode_height) + 20 * idx, 200, "left")
 		end
@@ -156,7 +171,6 @@ function ModeSelectScene:startMode()
 	current_ruleset = self.menu_state.ruleset
 	config.current_mode = current_mode
 	config.current_ruleset = current_ruleset
-	playSE("mode_decide")
 	saveConfig()
 	scene = GameScene(
 		game_modes[self.menu_state.mode],
@@ -166,6 +180,7 @@ function ModeSelectScene:startMode()
 end
 
 function ModeSelectScene:onInputPress(e)
+	if self.starting then return end
 	if self.display_warning and e.input then
 		scene = TitleScene()
 	elseif e.type == "wheel" then
@@ -176,7 +191,9 @@ function ModeSelectScene:onInputPress(e)
 			self:changeOption(-e.y)
 		end
 	elseif e.input == "menu_decide" or e.scancode == "return" then
-		self:startMode()
+		playSE("mode_decide")
+		self.starting = true
+		-- self:startMode()
 	elseif e.input == "up" or e.scancode == "up" then
 		self:changeOption(-1)
 		self.das_up = true
