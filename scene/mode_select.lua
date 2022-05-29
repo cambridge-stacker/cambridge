@@ -134,8 +134,8 @@ function ModeSelectScene:render()
 		love.graphics.setColor(1, 1, 1, 0.25)
 	end
 
-	self.menu_mode_height = interpolateListHeight(self.menu_mode_height / 20, mode_selected) * 20
-	self.menu_ruleset_height = interpolateListHeight(self.menu_ruleset_height / 20, ruleset_selected) * 20
+	self.menu_mode_height = interpolateListPos(self.menu_mode_height / 20, mode_selected) * 20
+	self.menu_ruleset_height = interpolateListPos(self.menu_ruleset_height / 20, ruleset_selected) * 20
 
 	love.graphics.rectangle("fill", 20, 258 + (mode_selected * 20) - self.menu_mode_height, 240, 22)
 

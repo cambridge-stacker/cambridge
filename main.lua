@@ -120,7 +120,7 @@ function CursorHighlight(x,y,w,h)
 	end
 end
 --Interpolates in a smooth fashion.
-function interpolateListHeight(input, from)
+function interpolateListPos(input, from)
 	if config.visualsettings["smooth_scroll"] == 2 then
 		return from
 	end

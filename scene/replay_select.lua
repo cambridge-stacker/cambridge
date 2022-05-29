@@ -138,7 +138,7 @@ function ReplaySelectScene:render()
 		0.5, 0.5
 	)
 	
-	self.height_offset = interpolateListHeight(self.height_offset / 20, self.menu_state.replay) * 20
+	self.height_offset = interpolateListPos(self.height_offset / 20, self.menu_state.replay) * 20
 
 	-- Same graphic as mode select
 	--love.graphics.draw(misc_graphics["select_mode"], 20, 40)
