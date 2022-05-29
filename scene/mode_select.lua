@@ -66,8 +66,7 @@ function ModeSelectScene:update()
 		end
 		self.auto_menu_offset = math.floor((mouse_y - 260)/20)
 		if self.auto_menu_offset == 0 and self.auto_menu_state == "mode" then
-			playSE("mode_decide")
-			self.starting = true
+			self:indirectStartMode()
 		end
 	end
 	if self.das_up or self.das_down then
@@ -116,46 +115,79 @@ function ModeSelectScene:render()
 		return
 	end
 
-	love.graphics.printf("Tagline: "..game_modes[self.menu_state.mode].tagline, 320, 10, 300, "left")
+	local mode_selected, ruleset_selected = self.menu_state.mode, self.menu_state.ruleset
+
+	local tagline_position = config.visualsettings.tagline_position
+
+	local tagline_y = tagline_position == 1 and 5 or 435
+	local render_list_size = tagline_position == 2 and 18 or 20
+
+	if tagline_position ~= 3 then
+		love.graphics.printf(
+			"Tagline: "..game_modes[mode_selected].tagline,
+			 20, tagline_y, 600, "left")
+	end
+
 	if self.menu_state.select == "mode" then
 		love.graphics.setColor(1, 1, 1, 0.5)
 	elseif self.menu_state.select == "ruleset" then
 		love.graphics.setColor(1, 1, 1, 0.25)
 	end
-	self.menu_mode_height = interpolateListHeight(self.menu_mode_height / 20, self.menu_state.mode) * 20
-	self.menu_ruleset_height = interpolateListHeight(self.menu_ruleset_height / 20, self.menu_state.ruleset) * 20
-	love.graphics.rectangle("fill", 20, 258 + (self.menu_state.mode * 20) - self.menu_mode_height, 240, 22)
+
+	self.menu_mode_height = interpolateListHeight(self.menu_mode_height / 20, mode_selected) * 20
+	self.menu_ruleset_height = interpolateListHeight(self.menu_ruleset_height / 20, ruleset_selected) * 20
+
+	love.graphics.rectangle("fill", 20, 258 + (mode_selected * 20) - self.menu_mode_height, 240, 22)
 
 	if self.menu_state.select == "mode" then
 		love.graphics.setColor(1, 1, 1, 0.25)
 	elseif self.menu_state.select == "ruleset" then
 		love.graphics.setColor(1, 1, 1, 0.5)
 	end
-	love.graphics.rectangle("fill", 340, 258 + (self.menu_state.ruleset * 20) - self.menu_ruleset_height, 200, 22)
+
+	love.graphics.rectangle("fill", 340, 258 + (ruleset_selected * 20) - self.menu_ruleset_height, 200, 22)
 
 	love.graphics.setColor(1, 1, 1, 1)
-
 	love.graphics.setFont(font_3x5_2)
+	local fade_offset = tagline_position == 2 and -20 or 0
 	for idx, mode in pairs(game_modes) do
-		if(idx >= self.menu_mode_height / 20-10 and idx <= self.menu_mode_height / 20+10) then
-			local b = CursorHighlight(0,(260 - self.menu_mode_height) + 20 * idx,320,20)
-			if idx == self.menu_state.mode then
-				if self.start_frames % 10 > 4 then
-					b = 0
-				end
+		if(idx >= self.menu_mode_height / 20 - 10 and
+		   idx <= self.menu_mode_height / 20 + 10) then
+			local b = CursorHighlight(
+				0,
+				(260 - self.menu_mode_height) + 20 * idx,
+				320,
+				20)
+			if idx == self.menu_state.mode and self.starting then
+				b = self.start_frames % 10 > 4 and 0 or 1
 			end
-			love.graphics.setColor(1,1,b,FadeoutAtEdges((-self.menu_mode_height) + 20 * idx, 180, 20))
-			love.graphics.printf(mode.name, 40, (260 - self.menu_mode_height) + 20 * idx, 200, "left")
+			love.graphics.setColor(1,1,b,FadeoutAtEdges(
+				-self.menu_mode_height + 20 * idx - fade_offset,
+				render_list_size * 10 - 20,
+				20))
+			love.graphics.printf(mode.name,
+			40, (260 - self.menu_mode_height) + 20 * idx, 200, "left")
 		end
 	end
 	for idx, ruleset in pairs(rulesets) do
-		if(idx >= self.menu_ruleset_height / 20-10 and idx <= self.menu_ruleset_height / 20+10) then
-			local b = CursorHighlight(320,(260 - self.menu_ruleset_height) + 20 * idx,320,20)
-			love.graphics.setColor(1,1,b,FadeoutAtEdges(-self.menu_ruleset_height + 20 * idx, 180, 20))
-			love.graphics.printf(ruleset.name, 360, (260 - self.menu_ruleset_height) + 20 * idx, 160, "left")
+		if(idx >= self.menu_ruleset_height / 20 - 10 and
+		   idx <= self.menu_ruleset_height / 20 + 10) then
+			local b = CursorHighlight(
+				320,
+				(260 - self.menu_ruleset_height) + 20 * idx,
+				320,
+				20)
+			love.graphics.setColor(1, 1, b, FadeoutAtEdges(
+				-self.menu_ruleset_height + 20 * idx - fade_offset,
+				render_list_size * 10 - 20,
+				20)
+			)
+			love.graphics.printf(ruleset.name,
+			360, (260 - self.menu_ruleset_height) + 20 * idx, 160, "left")
 		end
 	end
-	love.graphics.setColor(1,1,1,1)
+
+	love.graphics.setColor(1, 1, 1, 1)
 end
 function FadeoutAtEdges(input, edge_distance, edge_width)
 	if input < 0 then
@@ -166,6 +198,15 @@ function FadeoutAtEdges(input, edge_distance, edge_width)
 	end
 	return 1
 end
+function ModeSelectScene:indirectStartMode()
+	playSE("mode_decide")
+	if config.visualsettings.mode_entry == 1 then
+		self:startMode()
+	else
+		self.starting = true
+	end
+end
+--Direct way of starting a mode.
 function ModeSelectScene:startMode()
 	current_mode = self.menu_state.mode
 	current_ruleset = self.menu_state.ruleset
@@ -180,9 +221,16 @@ function ModeSelectScene:startMode()
 end
 
 function ModeSelectScene:onInputPress(e)
-	if self.starting then return end
 	if self.display_warning and e.input then
 		scene = TitleScene()
+	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
+		if self.starting then
+			self.starting = false
+			self.start_frames = 0
+		else
+			scene = TitleScene()
+		end
+	elseif self.starting then return
 	elseif e.type == "wheel" then
 		if e.x % 2 == 1 then
 			self:switchSelect()
@@ -191,9 +239,7 @@ function ModeSelectScene:onInputPress(e)
 			self:changeOption(-e.y)
 		end
 	elseif e.input == "menu_decide" or e.scancode == "return" then
-		playSE("mode_decide")
-		self.starting = true
-		-- self:startMode()
+		self:indirectStartMode()
 	elseif e.input == "up" or e.scancode == "up" then
 		self:changeOption(-1)
 		self.das_up = true
@@ -204,8 +250,6 @@ function ModeSelectScene:onInputPress(e)
 		self.das_up = nil
 	elseif e.input == "left" or e.input == "right" or e.scancode == "left" or e.scancode == "right" then
 		self:switchSelect()
-	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
-		scene = TitleScene()
 	elseif e.input then
 		self.secret_inputs[e.input] = true
 	end

@@ -13,6 +13,7 @@ ConfigScene.options = {
 	{"cursor_highlight", "Cursor Highlight", {"On", "Off"}},
 	{"cursor_type", "Cursor Type", {"Standard", "Tetro48's"}},
 	{"mode_entry", "Mode Entry", {"Instant", "Animated"}},
+	{"tagline_position", "Tagline placement", {"Top", "Bottom", "None"}},
 }
 local optioncount = #ConfigScene.options
 
