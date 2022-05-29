@@ -170,7 +170,23 @@ function GameMode:saveReplay()
 	-- 		end
 	-- 	end
 	-- end
-	love.filesystem.write(string.format("replays/%s - %s - %s.crp", self.name, self.ruleset.name, os.date("%Y-%m-%d_%H-%M-%S")), binser.serialize(replay))
+	local init_name
+	if config.gamesettings.replay_name == 2 then
+		init_name = string.format("replays/%s.crp", os.date("%Y-%m-%d_%H-%M-%S"))
+	else
+		init_name = string.format("replays/%s - %s - %s.crp", self.name, self.ruleset.name, os.date("%Y-%m-%d_%H-%M-%S"))
+	end
+	local replay_name = init_name
+	local replay_number = 0
+	while true do
+		if love.filesystem.getInfo(replay_name, "file") then
+			replay_number = replay_number + 1
+			replay_name = string.format("%s (%d)", init_name, replay_number)
+		else
+			break
+		end
+	end
+	love.filesystem.write(replay_name, binser.serialize(replay))
 end
 
 function GameMode:addReplayInput(inputs)

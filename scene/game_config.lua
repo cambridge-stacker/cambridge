@@ -17,6 +17,7 @@ ConfigScene.options = {
 	{"das_last_key", "DAS Last Key", false, {"Off", "On"}},
 	{"buffer_lock", "Buffer Drop Type", false, {"Off", "Hold", "Tap"}},
 	{"synchroes_allowed", "Synchroes", false, {"Per ruleset", "On", "Off"}},
+	{"replay_name", "Replay file name", false, {"Full", "Date"}},
 	{"sfx_volume", "SFX", true, "sfxSlider"},
 	{"bgm_volume", "BGM", true, "bgmSlider"},
 }
