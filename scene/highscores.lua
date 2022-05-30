@@ -2,7 +2,7 @@ local HighscoreScene = Scene:extend()
 
 HighscoreScene.title = "Highscores"
 
---#region Custom code
+--#region Custom mouse code
 
 --This is for mouse. Can be removed only if the code in Mouse Controls region is removed.
 local left_clicked_before = true
