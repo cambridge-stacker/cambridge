@@ -5,6 +5,7 @@ TitleScene.restart_message = false
 
 local main_menu_screens = {
 	ModeSelectScene,
+	HighscoresScene,
 	ReplaySelectScene,
 	SettingsScene,
 	CreditsScene,
@@ -42,6 +43,11 @@ function TitleScene:new()
 	self.y_offset = 0
 	self.text = ""
 	self.text_flag = false
+	if config.visualsettings.mode_select_type == 1 then
+		main_menu_screens[1] = ModeSelectScene
+	else
+		main_menu_screens[1] = RevModeSelectScene
+	end
 	DiscordRPC:update({
 		details = "In menus",
 		state = mainmenuidle[love.math.random(#mainmenuidle)],
@@ -61,7 +67,7 @@ function TitleScene:update()
 	local mouse_x, mouse_y = getScaledPos(love.mouse.getPosition())
 	if not love.mouse.isDown(1) or left_clicked_before then return end
 	if mouse_x > 40 and mouse_x < 160 then
-		if mouse_y > 300 and mouse_y < 400 then
+		if mouse_y > 300 and mouse_y < 300 + #main_menu_screens * 20 then
 			self.main_menu_state = math.floor((mouse_y - 280) / 20)
 			playSE("main_decide")
 			scene = main_menu_screens[self.main_menu_state]()

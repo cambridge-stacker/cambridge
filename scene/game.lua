@@ -76,7 +76,11 @@ function GameScene:onInputPress(e)
 		else resumeBGM() end
 	elseif e.input == "menu_back" then
 		self.game:onExit()
-		scene = ModeSelectScene()
+		if config.visualsettings.mode_select_type == 1 then
+			scene = ModeSelectScene()
+		else
+			scene = RevModeSelectScene()
+		end
 	elseif e.input and string.sub(e.input, 1, 5) ~= "menu_" then
 		self.inputs[e.input] = true
 	end

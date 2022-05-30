@@ -14,6 +14,7 @@ ConfigScene.options = {
 	{"cursor_type", "Cursor Type", {"Standard", "Tetro48's"}},
 	{"mode_entry", "Mode Entry", {"Instant", "Animated"}},
 	{"tagline_position", "Tagline placement", {"Top", "Bottom", "None"}},
+	{"mode_select_type", "Mode Select Type", {"Default", "Oshi's idea"}},
 }
 local optioncount = #ConfigScene.options
 
