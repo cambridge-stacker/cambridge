@@ -65,7 +65,6 @@ function ModeSelectScene:new()
 			current_ruleset = 1
 		end
 	end
-
 	self.menu_state = {
 		mode = current_mode,
 		ruleset = current_ruleset,
@@ -87,6 +86,7 @@ function ModeSelectScene:new()
     left_clicked_before = true
 end
 function ModeSelectScene:update()
+	switchBGM(nil)
 	if self.starting then
 		self.start_frames = self.start_frames + 1
 		if self.start_frames > 60 or config.visualsettings.mode_entry == 1 then
