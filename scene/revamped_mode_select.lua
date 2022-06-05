@@ -285,11 +285,11 @@ function ModeSelectScene:onInputPress(e)
         end
     elseif self.starting then return
     elseif e.type == "wheel" then
-        if e.x % 2 == 1 then
-            self:switchSelect()
+        if e.x ~= 0 then
+            self:changeRuleset(-e.x)
         end
         if e.y ~= 0 then
-            self:changeOption(-e.y)
+            self:changeMode(-e.y)
         end
     elseif e.input == "menu_decide" or e.scancode == "return" then
         self:indirectStartMode()
