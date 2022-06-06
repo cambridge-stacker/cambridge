@@ -6,6 +6,7 @@ local menu_screens = {
     InputConfigScene,
     GameConfigScene,
     VisualConfigScene,
+	AudioConfigScene,
     TuningScene
 }
 

@@ -39,6 +39,12 @@ function initConfig()
 			config.visualsettings[option[1]] = 1
 		end
 	end
+	if not config.audiosettings then config.audiosettings = {} end
+	for _, option in ipairs(AudioConfigScene.options) do
+		if not config.visualsettings[option[1]] then
+			config.visualsettings[option[1]] = 1
+		end
+	end
 	
 	if not config.input then
 		scene = InputConfigScene()
