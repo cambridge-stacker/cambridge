@@ -55,7 +55,7 @@ function PhantomManiaGame:getDasLimit()
 end
 
 function PhantomManiaGame:getLineClearDelay()
-	return self:getLineARE()
+	return self:getLineARE() - 2
 end
 
 function PhantomManiaGame:getLockDelay()
