@@ -108,7 +108,7 @@ end
 
 function ConfigScene:renderInt(idx, option)
 	local postfix = option[9] or ""
-	love.graphics.printf(string.format(option[8], config.audiosettings[option[1]]) .. postfix, 160, self.option_pos_y[idx], 320, "center")
+	love.graphics.printf(string.format(option[8], config.audiosettings[option[1]] or 0) .. postfix, 160, self.option_pos_y[idx], 320, "center")
 end
 function ConfigScene:renderSlider(idx, option)
 	self.sliders[option[1]]:draw()

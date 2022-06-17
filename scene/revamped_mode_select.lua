@@ -52,6 +52,7 @@ end
 function ModeSelectScene:new()
 	-- reload custom modules
 	initModules()
+	if highscores == nil then highscores = {} end
 	if #game_modes == 0 or #rulesets == 0 then
 		self.display_warning = true
 		current_mode = 1
