@@ -11,9 +11,6 @@ ConfigScene.options = {
 	-- Format if otherwise:			{name in config, displayed name, type, description, min, max, increase by, string format, postfix (not necessary), sound effect name}
 	{"sfx_volume", "SFX Volume", "slider", nil, 0, 100, 5, "%02d", "%", "cursor"},
 	{"bgm_volume", "BGM Volume", "slider", nil, 0, 100, 5, "%02d", "%", "cursor"},
-	{"sound_sources", "SFX sources per file", "int", "High values may result in high memory consumption, "..
-	"though it allows multiples of the same sound effect to be played at once."..
-	"\n(There's some exceptions, e.g. SFX added through modes/rulesets)", 0, 30, 1, "%0d", nil, "cursor"}
 }
 local optioncount = #ConfigScene.options
 

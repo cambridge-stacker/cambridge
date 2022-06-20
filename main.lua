@@ -34,8 +34,6 @@ function love.load()
 
 	-- import custom modules
 	initModules()
-	
-	generateSoundTable()
 
 	loadReplayList()
 end
