@@ -36,6 +36,12 @@ sound_paths = {
 sounds = {}
 sounds_played = {}
 buffer_sounds = {}
+for k,v in pairs(sound_paths) do
+	--a compatibility patch for subsound modding. Missing that was an oversight.
+	if(type(v) == "table") then
+		sounds[k] = {}
+	end
+end
 -- Replace each sound effect string with its love audiosource counterpart, but only if it exists. This lets the game handle missing SFX.
 function generateSoundTable()
 	if config.sound_sources == nil then config.sound_sources = 1 end
