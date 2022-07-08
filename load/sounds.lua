@@ -91,13 +91,13 @@ local function playRawSEOnce(audio_source)
 end
 
 function playSE(sound, subsound)
-	if type(buffer_sounds[sound][subsound]) == "table" then
-		sounds_played[sound][subsound] = sounds_played[sound][subsound] + 1
-		local index = Mod1(sounds_played[sound][subsound], config.sound_sources)
-		playRawSE(buffer_sounds[sound][subsound][index])
-		return
-	end
 	if type(buffer_sounds[sound]) == "table" then
+		if type(buffer_sounds[sound][subsound]) == "table" then
+			sounds_played[sound][subsound] = sounds_played[sound][subsound] + 1
+			local index = Mod1(sounds_played[sound][subsound], config.sound_sources)
+			playRawSE(buffer_sounds[sound][subsound][index])
+			return
+		end
 		sounds_played[sound] = sounds_played[sound] + 1
 		local index = Mod1(sounds_played[sound], config.sound_sources)
 		playRawSE(buffer_sounds[sound][index])
@@ -117,12 +117,12 @@ function playSE(sound, subsound)
 end
 
 function playSEOnce(sound, subsound)
-	if type(buffer_sounds[sound][subsound]) == "table" then
-		local index = Mod1(sounds_played[sound][subsound], config.sound_sources)
-		playRawSEOnce(buffer_sounds[sound][subsound][index])
-		return
-	end
 	if type(buffer_sounds[sound]) == "table" then
+		if type(buffer_sounds[sound][subsound]) == "table" then
+			local index = Mod1(sounds_played[sound][subsound], config.sound_sources)
+			playRawSEOnce(buffer_sounds[sound][subsound][index])
+			return
+		end
 		local index = Mod1(sounds_played[sound], config.sound_sources)
 		playRawSEOnce(buffer_sounds[sound][index])
 		return
