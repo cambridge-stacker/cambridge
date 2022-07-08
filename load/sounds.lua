@@ -91,6 +91,19 @@ local function playRawSEOnce(audio_source)
 end
 
 function playSE(sound, subsound)
+	if sound ~= nil then
+		if sounds[sound] then
+			if subsound ~= nil then
+				if sounds[sound][subsound] then
+					playRawSE(sounds[sound][subsound])
+					return
+				end
+			else
+				playRawSE(sounds[sound])
+				return
+			end
+		end
+	end
 	if type(buffer_sounds[sound]) == "table" then
 		if type(buffer_sounds[sound][subsound]) == "table" then
 			sounds_played[sound][subsound] = sounds_played[sound][subsound] + 1
@@ -103,20 +116,22 @@ function playSE(sound, subsound)
 		playRawSE(buffer_sounds[sound][index])
 		return
 	end
+end
+
+function playSEOnce(sound, subsound)
 	if sound ~= nil then
 		if sounds[sound] then
 			if subsound ~= nil then
 				if sounds[sound][subsound] then
-					playRawSE(sound[sound][subsound])
+					playRawSEOnce(sounds[sound][subsound])
+					return
 				end
 			else
-				playRawSE(sound[sound])
+				playRawSEOnce(sounds[sound])
+				return
 			end
 		end
 	end
-end
-
-function playSEOnce(sound, subsound)
 	if type(buffer_sounds[sound]) == "table" then
 		if type(buffer_sounds[sound][subsound]) == "table" then
 			local index = Mod1(sounds_played[sound][subsound], config.sound_sources)
@@ -126,16 +141,5 @@ function playSEOnce(sound, subsound)
 		local index = Mod1(sounds_played[sound], config.sound_sources)
 		playRawSEOnce(buffer_sounds[sound][index])
 		return
-	end
-	if sound ~= nil then
-		if sounds[sound] then
-			if subsound ~= nil then
-				if sounds[sound][subsound] then
-					playRawSEOnce(sounds[sound][subsound])
-				end
-			else
-				playRawSEOnce(sounds[sound])
-			end
-		end
 	end
 end
