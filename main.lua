@@ -216,7 +216,7 @@ function love.keypressed(key, scancode)
 		scene = InputConfigScene()
 		switchBGM(nil)
 		loadSave()
-	elseif scancode == "f3" and TAS_mode and scene.title == "Game" then
+	elseif scancode == "f3" and TAS_mode and (scene.title == "Game" or scene.title == "Replay") then
 		frame_steps = frame_steps + 1
 	-- secret sound playing :eyes:
 	elseif scancode == "f8" and scene.title == "Title" then
