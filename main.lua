@@ -148,6 +148,15 @@ function drawT48Cursor(x, y, a)
     love.graphics.setColor(1,1,1,a)
 end
 --#endregion
+
+local function drawTASWatermark()
+	love.graphics.setFont(font_3x5_4)
+	love.graphics.setColor(1, 1, 1, 0.2)
+	love.graphics.printf(
+		"T A S", -250, 550, 150, "center", -0.75, 8, 8
+	)
+end
+
 function love.draw()
 	love.graphics.setCanvas(GLOBAL_CANVAS)
 	love.graphics.clear()
@@ -166,7 +175,16 @@ function love.draw()
 		
 	scene:render()
 
+	if scene.replay then
+		if scene.replay["toolassisted"] == true then
+			drawTASWatermark()
+		end
+	end
+
 	if TAS_mode then
+		if scene.title == "Game" or scene.title == "Replay" and not scene.replay["toolassisted"] == true then
+			drawTASWatermark()
+		end
 		love.graphics.setColor(1, 1, 1, love.timer.getTime() % 2 < 1 and 1 or 0)
 		love.graphics.setFont(font_3x5_3)
 		love.graphics.printf(
