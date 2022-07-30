@@ -45,7 +45,7 @@ end
 
 function ReplayScene:update()
 	local frames_left = self.replay_speed
-	if love.window.hasFocus() and not self.paused then
+	if love.window.hasFocus() and not self.paused and not self.rerecord then
 		while frames_left > 0 do
 			frames_left = frames_left - 1
 			self.inputs = self.replay["inputs"][self.replay_index]["inputs"]
@@ -60,6 +60,13 @@ function ReplayScene:update()
 			self.game:update(input_copy, self.ruleset)
 			self.game.grid:update()
 		end
+	elseif self.rerecord and not self.paused then
+		local input_copy = {}
+		for input, value in pairs(self.inputs) do
+			input_copy[input] = value
+		end
+		self.game:update(input_copy, self.ruleset)
+		self.game.grid:update()
 	end
 	DiscordRPC:update({
 		details = "Viewing a".. (self.replay["toolassisted"] and " tool-assisted" or "") .." replay",
@@ -70,6 +77,9 @@ end
 
 function ReplayScene:render()
 	self.game:draw(self.paused)
+	if self.rerecord then
+		return
+	end
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_3)
 	if self.replay["toolassisted"] then
@@ -98,6 +108,16 @@ function ReplayScene:onInputPress(e)
 				self.retry_ruleset, self.secret_inputs
 			) or ReplaySelectScene()
 	 	)
+	elseif e.input == "pause" and not (self.game.game_over or self.game.completed) then
+		self.paused = not self.paused
+		if self.paused then pauseBGM()
+		else resumeBGM() end
+	elseif e.input and string.sub(e.input, 1, 5) ~= "menu_" and self.rerecord then
+		self.inputs[e.input] = true
+	elseif e.input == "hold" then
+		self.rerecord = true
+		self.replay_speed = 1
+		self.paused = true
 	elseif e.input == "left" then
 		self.replay_speed = self.replay_speed - 1
 		if self.replay_speed < 1 then
@@ -108,10 +128,12 @@ function ReplayScene:onInputPress(e)
 		if self.replay_speed > 99 then
 			self.replay_speed = 99
 		end
-	elseif e.input == "pause" and not (self.game.game_over or self.game.completed) then
-		self.paused = not self.paused
-		if self.paused then pauseBGM()
-		else resumeBGM() end
+	end
+end
+
+function ReplayScene:onInputRelease(e)
+	if e.input and string.sub(e.input, 1, 5) ~= "menu_" and self.rerecord then
+		self.inputs[e.input] = false
 	end
 end
 
