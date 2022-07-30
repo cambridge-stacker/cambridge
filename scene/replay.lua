@@ -117,6 +117,7 @@ function ReplayScene:onInputPress(e)
 	elseif e.input == "hold" then
 		self.rerecord = true
 		self.replay_speed = 1
+		self.game.save_replay = config.gamesettings.save_replay == 1
 		self.paused = true
 	elseif e.input == "left" then
 		self.replay_speed = self.replay_speed - 1
