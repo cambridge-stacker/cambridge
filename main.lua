@@ -212,7 +212,7 @@ function love.keypressed(key, scancode)
 		love.window.setFullscreen(config["fullscreen"])
 	elseif scancode == "f1" then
 		TAS_mode = not TAS_mode
-	elseif scancode == "f2" and scene.title ~= "Input Config" and scene.title ~= "Game" then
+	elseif scancode == "f2" and scene.title ~= "Input Config" and scene.title ~= "Game" and scene.title ~= "Replay" then
 		scene = InputConfigScene()
 		switchBGM(nil)
 		loadSave()
