@@ -236,6 +236,11 @@ function love.keypressed(key, scancode)
 		loadSave()
 	elseif scancode == "f3" and TAS_mode and (scene.title == "Game" or scene.title == "Replay") then
 		frame_steps = frame_steps + 1
+	-- load state tool
+	elseif scancode == "f4" and TAS_mode and (scene.title == "Replay") then
+		love.thread.getChannel("savestate"):push( "save" )
+	elseif scancode == "f5" and TAS_mode and (scene.title == "Replay") then
+		love.thread.getChannel("savestate"):push( "load" )
 	-- secret sound playing :eyes:
 	elseif scancode == "f8" and scene.title == "Title" then
 		config.secret = not config.secret

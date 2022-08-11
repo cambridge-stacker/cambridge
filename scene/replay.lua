@@ -4,6 +4,9 @@ local ReplayScene = Scene:extend()
 
 ReplayScene.title = "Replay"
 
+local savestate_frames = nil
+local state_loaded = false
+
 function ReplayScene:new(replay, game_mode, ruleset)
 	config.gamesettings = replay["gamesettings"]
 	if replay["delayed_auto_shift"] then config.das = replay["delayed_auto_shift"] end
@@ -36,6 +39,8 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	self.replay = deepcopy(replay)
 	self.replay_index = 1
 	self.replay_speed = 1
+	self.frames = 0
+	self.relative_frames = 0
 	DiscordRPC:update({
 		details = "Viewing a replay",
 		state = self.game.name,
@@ -43,15 +48,28 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	})
 end
 
+function ReplayScene:replayCutoff()
+	self.retry_replay["inputs"][self.replay_index]["frames"] = self.relative_frames
+	for i = self.replay_index + 1, #self.retry_replay["inputs"] do
+		self.retry_replay.inputs[i] = nil
+	end
+end
+
 function ReplayScene:update()
 	local frames_left = self.replay_speed
+	if TAS_mode and state_loaded then
+		frames_left = savestate_frames
+	end
 	if love.window.hasFocus() and not self.paused and not self.rerecord then
 		while frames_left > 0 do
 			frames_left = frames_left - 1
 			self.inputs = self.replay["inputs"][self.replay_index]["inputs"]
 			self.replay["inputs"][self.replay_index]["frames"] = self.replay["inputs"][self.replay_index]["frames"] - 1
-			if self.replay["inputs"][self.replay_index]["frames"] == 0 and self.replay_index < table.getn(self.replay["inputs"]) then
+			self.relative_frames = self.relative_frames + 1
+			self.frames = self.frames + 1
+			if self.replay["inputs"][self.replay_index]["frames"] == 0 and self.replay_index < #self.replay["inputs"] then
 				self.replay_index = self.replay_index + 1
+				self.relative_frames = 1
 			end
 			local input_copy = {}
 			for input, value in pairs(self.inputs) do
@@ -68,11 +86,30 @@ function ReplayScene:update()
 		self.game:update(input_copy, self.ruleset)
 		self.game.grid:update()
 	end
+	if state_loaded then
+		state_loaded = false
+		self.paused = true
+	end
 	DiscordRPC:update({
 		details = "Viewing a".. (self.replay["toolassisted"] and " tool-assisted" or "") .." replay",
 		state = self.game.name,
 		largeImageKey = "ingame-"..self.game:getBackground().."00"
 	})
+	
+	if love.thread.getChannel("savestate"):peek() == "save" then
+		love.thread.getChannel("savestate"):clear()
+		savestate_frames = self.frames
+	end
+
+	if love.thread.getChannel("savestate"):peek() == "load" and savestate_frames ~= nil then
+		love.thread.getChannel("savestate"):clear()
+		--restarts like usual, but not really.
+		scene = ReplayScene(
+			self.retry_replay, self.retry_mode,
+			self.retry_ruleset, self.secret_inputs
+		)
+		state_loaded = true
+	end
 end
 
 function ReplayScene:render()
@@ -101,6 +138,8 @@ function ReplayScene:onInputPress(e)
 		self.game:onExit()
 		loadSave()
 		love.math.setRandomSeed(os.time())
+		-- quite dependent on async replay loading
+		if self.rerecord then loadReplayList() end
 		scene = (
 			(e.input == "retry") and
 			ReplayScene(
@@ -108,6 +147,7 @@ function ReplayScene:onInputPress(e)
 				self.retry_ruleset, self.secret_inputs
 			) or ReplaySelectScene()
 	 	)
+		savestate_frames = nil
 	elseif e.input == "pause" and not (self.game.game_over or self.game.completed) then
 		self.paused = not self.paused
 		if self.paused then pauseBGM()
@@ -116,8 +156,11 @@ function ReplayScene:onInputPress(e)
 		self.inputs[e.input] = true
 	elseif e.input == "hold" then
 		self.rerecord = true
+		savestate_frames = self.frames
+		self:replayCutoff()
 		self.replay_speed = 1
 		self.game.save_replay = config.gamesettings.save_replay == 1
+		self.game.replay_inputs = self.retry_replay.inputs
 		self.paused = true
 	elseif e.input == "left" then
 		self.replay_speed = self.replay_speed - 1
