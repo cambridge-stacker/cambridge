@@ -99,11 +99,17 @@ function ReplayScene:update()
 	if love.thread.getChannel("savestate"):peek() == "save" then
 		love.thread.getChannel("savestate"):clear()
 		savestate_frames = self.frames
+		print("State saved at frame "..self.frames)
 	end
 
-	if love.thread.getChannel("savestate"):peek() == "load" and savestate_frames ~= nil then
+	if love.thread.getChannel("savestate"):peek() == "load" then
 		love.thread.getChannel("savestate"):clear()
+		if savestate_frames == nil then
+			print("Load the state first. Press F4 for that. Alt-F4 will close the game, so, keep that in mind.")
+			return
+		end
 		--restarts like usual, but not really.
+		self.game:onExit()
 		scene = ReplayScene(
 			self.retry_replay, self.retry_mode,
 			self.retry_ruleset, self.secret_inputs
