@@ -83,6 +83,7 @@ function ReplayScene:update()
 		for input, value in pairs(self.inputs) do
 			input_copy[input] = value
 		end
+		self.frames = self.frames + 1
 		self.game:update(input_copy, self.ruleset)
 		self.game.grid:update()
 	end
