@@ -92,7 +92,7 @@ function ReplayScene:update()
 		self.paused = true
 	end
 	DiscordRPC:update({
-		details = "Viewing a".. (self.replay["toolassisted"] and " tool-assisted" or "") .." replay",
+		details = self.rerecord and self.game.rpc_details or ("Viewing a".. (self.replay["toolassisted"] and " tool-assisted" or "") .." replay"),
 		state = self.game.name,
 		largeImageKey = "ingame-"..self.game:getBackground().."00"
 	})
