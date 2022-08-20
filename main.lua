@@ -261,16 +261,25 @@ function love.keypressed(key, scancode)
 	-- function keys are reserved
 	elseif string.match(scancode, "^f[1-9]$") or string.match(scancode, "^f[1-9][0-9]+$") then
 		return	
-	-- escape is reserved for menu_back
-	elseif scancode == "escape" then
+	-- escape is reserved for menu_back except in modes
+	elseif scancode == "escape" and not scene.game then
 		scene:onInputPress({input="menu_back", type="key", key=key, scancode=scancode})
 	-- pass any other key to the scene, with its configured mapping
 	else
-		local input_pressed = nil
 		if config.input and config.input.keys then
-			input_pressed = config.input.keys[scancode]
+			local result_inputs = {}
+			for input_type, value in pairs(config.input.keys) do
+				if scancode == value then
+					table.insert(result_inputs, input_type)
+				end
+			end
+			for _, input in pairs(result_inputs) do
+				scene:onInputPress({input=input, type="key", key=key, scancode=scancode})
+			end
+			if #result_inputs == 0 then
+				scene:onInputPress({type="key", key=key, scancode=scancode})
+			end
 		end
-		scene:onInputPress({input=input_pressed, type="key", key=key, scancode=scancode})
 	end
 end
 
@@ -283,11 +292,20 @@ function love.keyreleased(key, scancode)
 		return	
 	-- handle all other keys; tab is reserved, but the input config scene keeps it from getting configured as a game input, so pass tab to the scene here
 	else
-		local input_released = nil
 		if config.input and config.input.keys then
-			input_released = config.input.keys[scancode]
+			local result_inputs = {}
+			for input_type, value in pairs(config.input.keys) do
+				if scancode == value then
+					table.insert(result_inputs, input_type)
+				end
+			end
+			for _, input in pairs(result_inputs) do
+				scene:onInputRelease({input=input, type="key", key=key, scancode=scancode})
+			end
+			if #result_inputs == 0 then
+				scene:onInputRelease({type="key", key=key, scancode=scancode})
+			end
 		end
-		scene:onInputRelease({input=input_released, type="key", key=key, scancode=scancode})
 	end
 end
 

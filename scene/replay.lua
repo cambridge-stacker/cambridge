@@ -140,6 +140,7 @@ function ReplayScene:onInputPress(e)
 	if (
 		e.input == "menu_back" or
 		e.input == "menu_decide" or
+		e.input == "mode_exit" or
 		e.input == "retry"
  	) then
 		self.game:onExit()

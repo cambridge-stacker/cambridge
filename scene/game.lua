@@ -74,7 +74,7 @@ function GameScene:onInputPress(e)
 		self.paused = not self.paused
 		if self.paused then pauseBGM()
 		else resumeBGM() end
-	elseif e.input == "menu_back" then
+	elseif e.input == "mode_exit" then
 		self.game:onExit()
 		if config.visualsettings.mode_select_type == 1 then
 			scene = ModeSelectScene()
