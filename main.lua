@@ -30,7 +30,6 @@ function love.load()
 	initConfig()
 
 	love.window.setFullscreen(config["fullscreen"])
-	if config.secret then playSE("welcome") end
 
 	-- import custom modules
 	initModules()
@@ -38,6 +37,9 @@ function love.load()
 	generateSoundTable()
 
 	loadReplayList()
+
+	-- this is executed after the sound table is generated. why is that is unknown.
+	if config.secret then playSE("welcome") end
 end
 function initModules()
 	game_modes = {}
