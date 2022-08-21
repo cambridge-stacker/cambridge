@@ -247,7 +247,7 @@ function love.keypressed(key, scancode)
 		saveConfig()
 		scene.restart_message = true
 		if config.secret then playSE("mode_decide")
-		else playSE("erase") end
+		else playSE("erase", "single") end
 		-- f12 is reserved for saving screenshots
 	elseif scancode == "f12" then
 		local ss_name = os.date("ss/%Y-%m-%d_%H-%M-%S.png")
