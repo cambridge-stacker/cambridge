@@ -91,16 +91,16 @@ function HighscoreScene:update()
     --#region Mouse controls.
 	local mouse_x, mouse_y = getScaledPos(love.mouse.getPosition())
 	if love.mouse.isDown(1) and not left_clicked_before then
-        if mouse_x > 20 and mouse_y > 40 and mouse_x < 70 and mouse_y < 70 then
-            playSE("main_decide")
-            self:back()
-        end
         if self.hash == nil then
             self.auto_menu_offset = math.floor((mouse_y - 260)/20)
             if self.auto_menu_offset == 0 then
                 playSE("main_decide")
                 self:selectHash()
             end
+        end
+        if mouse_x > 20 and mouse_y > 40 and mouse_x < 70 and mouse_y < 70 then
+            playSE("main_decide")
+            self:back()
         end
     end
     left_clicked_before = love.mouse.isDown(1) or mouse_idle > 2
@@ -236,6 +236,7 @@ function HighscoreScene:changeOption(rel)
         self.hash_id = Mod1(self.hash_id + rel, len)
 	else
 		len = #self.hash_highscore
+		len = math.max(len-17, 1)
         self.list_pointer = Mod1(self.list_pointer + rel, len)
 	end
 	playSE("cursor")
