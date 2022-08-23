@@ -107,7 +107,9 @@ function KeyConfigScene:render()
 end
 
 function KeyConfigScene:rebindKey(key)
-	self.set_inputs[configurable_inputs[self.input_state]] = "key " .. love.keyboard.getKeyFromScancode(key) .. " (" .. key .. ")"
+	if key ~= nil then
+		self.set_inputs[configurable_inputs[self.input_state]] = "key " .. love.keyboard.getKeyFromScancode(key) .. " (" .. key .. ")"
+	end
 	self.new_input[configurable_inputs[self.input_state]] = key
 end
 
