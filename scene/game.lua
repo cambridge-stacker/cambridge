@@ -65,7 +65,8 @@ function GameScene:onInputPress(e)
 		submitHighscore(highscore_hash, highscore_entry)
 		self.game:onExit()
 		loadReplayList()
-		scene = e.input == "retry" and GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs) or ModeSelectScene()
+		scene = e.input == "retry" and GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs) or
+				config.visualsettings.mode_select_type == 1 and RevModeSelectScene() or ModeSelectScene()
 	elseif e.input == "retry" then
 		switchBGM(nil)
 		self.game:onExit()
