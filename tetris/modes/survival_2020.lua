@@ -201,7 +201,7 @@ end
 
 Survival2020Game.opacityFunction = function(age)
 	if age > 300 then return 0
-	else return 1 - Math.max(age - 240, 0) / 60 end
+	else return 1 - math.max(age - 240, 0) / 60 end
 end
 
 function Survival2020Game:drawGrid()
