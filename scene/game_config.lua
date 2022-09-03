@@ -18,8 +18,6 @@ ConfigScene.options = {
 	{"buffer_lock", "Buffer Drop Type", false, {"Off", "Hold", "Tap"}},
 	{"synchroes_allowed", "Synchroes", false, {"Per ruleset", "On", "Off"}},
 	{"replay_name", "Replay file name", false, {"Full", "Date"}},
-	{"sfx_volume", "SFX", true, "sfxSlider"},
-	{"bgm_volume", "BGM", true, "bgmSlider"},
 }
 local optioncount = #ConfigScene.options
 
@@ -32,16 +30,11 @@ function ConfigScene:new()
 		details = "In settings",
 		state = "Changing game settings",
 	})
-
-	self.sfxSlider = newSlider(165, 420, 225, config.sfx_volume * 100, 0, 100, function(v) config.sfx_volume = v / 100 end, {width=20, knob="circle", track="roundrect"})
-	self.bgmSlider = newSlider(465, 420, 225, config.bgm_volume * 100, 0, 100, function(v) config.bgm_volume = v / 100 end, {width=20, knob="circle", track="roundrect"})
 end
 
 function ConfigScene:update()
-	local x, y = getScaledPos(love.mouse.getPosition())
-	self.sfxSlider:update(x,y)
-	self.bgmSlider:update(x,y)
 	--#region Mouse
+	local x, y = getScaledPos(love.mouse.getPosition())
 	if not love.mouse.isDown(1) or left_clicked_before then return end
 	if x > 20 and y > 40 and x < 70 and y < 70 then
 		playSE("mode_decide")
@@ -79,13 +72,8 @@ function ConfigScene:render()
 	love.graphics.printf("<-", 20, 40, 50, "center")
 	love.graphics.setColor(1, 1, 1, 1)
 
-	--Lazy check to see if we're on the SFX or BGM slider. Probably will need to be rewritten if more options get added.
 	love.graphics.setColor(1, 1, 1, 0.5)
-	if not ConfigScene.options[self.highlight][3] then
-		love.graphics.rectangle("fill", 25, 98 + self.highlight * 20, 170, 22)
-	else
-		love.graphics.rectangle("fill", 65 + (1+self.highlight-#self.options) * 300, 362, 215, 33)
-	end
+	love.graphics.rectangle("fill", 25, 98 + self.highlight * 20, 170, 22)
 
 	love.graphics.setFont(font_3x5_2)
 	for i, option in ipairs(ConfigScene.options) do
@@ -99,15 +87,6 @@ function ConfigScene:render()
 			end
 		end
 	end
-
-	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.setFont(font_3x5_3)
-	love.graphics.print("SFX Volume: " .. math.floor(self.sfxSlider:getValue()) .. "%", 75, 365)
-	love.graphics.print("BGM Volume: " .. math.floor(self.bgmSlider:getValue()) .. "%", 375, 365)
-
-	love.graphics.setColor(1, 1, 1, 0.75)
-	self.sfxSlider:draw()
-	self.bgmSlider:draw()
 end
 
 function ConfigScene:onInputPress(e)

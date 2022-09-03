@@ -9,8 +9,8 @@ ConfigScene.options = {
 	-- Option types: int, slider, options
 	-- Format if type is options:	{name in config, displayed name, type, description, options}
 	-- Format if otherwise:			{name in config, displayed name, type, description, min, max, increase by, string format, postfix (not necessary), sound effect name}
-	{"sfx_volume", "SFX Volume", "slider", nil, 0, 100, 5, "%02d", "%", "cursor"},
-	{"bgm_volume", "BGM Volume", "slider", nil, 0, 100, 5, "%02d", "%", "cursor"},
+	{"sfx_volume", "SFX Volume", "slider", nil, 0, 1, 5, "%02d", "%", "cursor"},
+	{"bgm_volume", "BGM Volume", "slider", nil, 0, 1, 5, "%02d", "%", "cursor"},
 	{"sound_sources", "SFX sources per file", "int", "High values may result in high memory consumption, "..
 	"though it allows multiples of the same sound effect to be played at once."..
 	"\n(There's some exceptions, e.g. SFX added through modes/rulesets)", 0, 30, 1, "%0d", nil, "cursor"}
@@ -22,9 +22,12 @@ function ConfigScene:new()
 	self.config = config.input
 	self.highlight = 1
 	self.option_pos_y = {}
-	self.sliders = {}
 	config.audiosettings.sfx_volume = config.sfx_volume * 100
 	config.audiosettings.bgm_volume = config.bgm_volume * 100
+	self.sliders = {
+		sfx_volume = newSlider(320, 155, 480, config.sfx_volume*100, 0, 100, function(v) config.sfx_volume = v/100 end, {width=20, knob="circle", track="roundrect"}),
+		bgm_volume = newSlider(320, 210, 480, config.bgm_volume*100, 0, 100, function(v) config.bgm_volume = v/100 end, {width=20, knob="circle", track="roundrect"}),
+	}
 	
 	--#region Init option positions and sliders
 
@@ -37,7 +40,7 @@ function ConfigScene:new()
 			if config.audiosettings[option[1]] == nil then
 				config.audiosettings[option[1]] = (option[6] - option[5]) / 2 + option[5]
 			end
-			self.sliders[option[1]] = newSlider(320, y, 480, config.audiosettings[option[1]], option[5], option[6], function(v) config.audiosettings[option[1]] = math.floor(v) end, {width=20, knob="circle", track="roundrect"})
+			self.sliders[option[1]] = self.sliders[option[1]] or newSlider(320, y, 480, config.audiosettings[option[1]], option[5], option[6], function(v) config.audiosettings[option[1]] = math.floor(v) end, {width=20, knob="circle", track="roundrect"})
 		end
 	end
 	--#endregion
@@ -64,7 +67,6 @@ function ConfigScene:update()
 	for i, option in ipairs(ConfigScene.options) do
 		
 	end
-	--#endregion
 end
 
 function ConfigScene:render()
@@ -132,6 +134,8 @@ function ConfigScene:changeValue(by)
 	if option[3] == "slider" then
 		local sld = self.sliders[option[1]]
 		sld.value = math.max(sld.min, math.min(sld.max, (sld:getValue() + by) / (sld.max - sld.min)))
+		local x, y = getScaledPos(love.mouse.getPosition())
+		sld:update(x, y)
 	end
 	if option[3] == "options" then
         config.audiosettings[option[1]] = Mod1(config.audiosettings[option[1]]+by, #option[3])
@@ -158,11 +162,11 @@ function ConfigScene:onInputPress(e)
 		playSE("cursor")
 		self.highlight = Mod1(self.highlight+1, optioncount)
 	elseif e.input == "left" or e.scancode == "left" then
-        playSE(option[10] or "cursor_lr")
         self:changeValue(-option[7])
-	elseif e.input == "right" or e.scancode == "right" then
         playSE(option[10] or "cursor_lr")
+	elseif e.input == "right" or e.scancode == "right" then
 		self:changeValue(option[7])
+        playSE(option[10] or "cursor_lr")
 	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
 		loadSave()
 		scene = SettingsScene()
