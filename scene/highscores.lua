@@ -142,6 +142,18 @@ function HighscoreScene:render()
     if self.hash_highscore ~= nil then
         self.menu_list_y = interpolateListPos(self.menu_list_y / 20, self.list_pointer) * 20
         love.graphics.printf("num", 20, 100, 100)
+		if #self.hash_highscore > 17 then
+			if self.list_pointer == #self.hash_highscore - 17 then
+				love.graphics.printf("^^", 5, 450, 15)
+			else
+				love.graphics.printf("v", 5, 460, 15)
+			end
+			if self.list_pointer == 1 then
+				love.graphics.printf("vv", 5, 100, 15)
+			else
+				love.graphics.printf("^", 5, 110, 15)
+			end
+		end
         for key, slot in pairs(self.hash_highscore) do
             local idx = 1
             for name, value in pairs(slot) do
@@ -153,6 +165,7 @@ function HighscoreScene:render()
                 love.graphics.printf(tostring(value), -20 + idx * 100, 120 + 20 * key - self.menu_list_y, 100)
                 idx = idx + 1
             end
+			love.graphics.setColor(1, 1, 1, FadeoutAtEdges((-self.menu_list_y - 170) + 20 * key, 170, 20))
             love.graphics.printf(tostring(key), 20, 120 + 20 * key - self.menu_list_y, 100)
         end
     else
@@ -231,14 +244,22 @@ end
 
 function HighscoreScene:changeOption(rel)
 	local len
+	local old_value
 	if self.hash_highscore == nil then
 		len = #self.hash_table
+		old_value = self.hash_id
         self.hash_id = Mod1(self.hash_id + rel, len)
+		if old_value ~= self.hash_id then
+			playSE("cursor")
+		end
 	else
 		len = #self.hash_highscore
 		len = math.max(len-17, 1)
+		old_value = self.list_pointer
         self.list_pointer = Mod1(self.list_pointer + rel, len)
+		if old_value ~= self.list_pointer then
+			playSE("cursor")
+		end
 	end
-	playSE("cursor")
 end
 return HighscoreScene
