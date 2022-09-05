@@ -5,7 +5,7 @@ CreditsScene.title = "Credits"
 function CreditsScene:new()
     self.frames = 0
     -- higher = slower
-    self.scroll_speed = 1.8
+    self.scroll_speed = 1.6
     switchBGM("credit_roll", "gm3")
 
     DiscordRPC:update({
@@ -19,11 +19,15 @@ function CreditsScene:update()
     if love.window.hasFocus() then
         self.frames = self.frames + 1
     end
-    if self.frames >= 2100 * self.scroll_speed or (love.mouse.isDown(1) and not left_clicked_before) then
-        if(not (love.mouse.isDown(1) and not left_clicked_before)) then playSE("mode_decide") end
+    if love.mouse.isDown(1) and not left_clicked_before then
         scene = TitleScene()
         switchBGM(nil)
-    elseif self.frames == math.floor(1950 * self.scroll_speed) then
+    end
+    if self.frames >= 2300 * self.scroll_speed then
+        playSE("mode_decide")
+        scene = TitleScene()
+        switchBGM(nil)
+    elseif self.frames == math.floor(2150 * self.scroll_speed) then
         fadeoutBGM(2)
     end
 end
@@ -40,14 +44,15 @@ function CreditsScene:render()
 
     love.graphics.setFont(font_3x5_4)
     love.graphics.print("Cambridge Credits", 320, 500 - offset)
-    love.graphics.print("THANK YOU\nFOR PLAYING!", 320, math.max(2050 - offset, 240))
+    love.graphics.print("THANK YOU\nFOR PLAYING!", 320, math.max(2250 - offset, 240))
 
     love.graphics.setFont(font_3x5_3)
     love.graphics.print("Game Developers", 320, 550 - offset)
     love.graphics.print("Project Heads", 320, 640 - offset)
     love.graphics.print("Notable Game Developers", 320, 750 - offset)
-    love.graphics.print("Special Thanks", 320, 1000 - offset)
-    love.graphics.print("- Milla", 320, math.max(2130 - offset, 320))
+    love.graphics.print("Flooding edge Maintainer", 320, 1000 - offset)
+    love.graphics.print("Special Thanks", 320, 1070 - offset)
+    love.graphics.print("- Milla", 320, math.max(2330 - offset, 320))
 
     love.graphics.setFont(font_3x5_2)
     love.graphics.print("Oshisaure\nJoe Zeng", 320, 590 - offset)
@@ -60,6 +65,7 @@ function CreditsScene:render()
         "Rin - Puzzle Trial\nsinefuse - stackfuse",
         320, 790 - offset
     )
+    love.graphics.print("Tetro48", 320, 1040 - offset)
     love.graphics.print(
         "321MrHaatz\nAdventium\nAgentBasey\nArchina\nAurora\n" ..
         "Caithness\nCheez\ncolour_thief\nCommando\nCublex\n" ..
@@ -75,7 +81,7 @@ function CreditsScene:render()
         "Tetra Legends Discord\nTetra Online Discord\nMultimino Discord\n" ..
         "Hard Drop Discord\nRusty's Systemspace\nCambridge Discord\n" ..
         "And to you, the player!",
-        320, 1040 - offset
+        320, 1110 - offset
     )
 end
 
