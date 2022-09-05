@@ -48,7 +48,9 @@ Note: It might have weird bugs that isn't addressed by [Tetro48](https://github.
 e.g.
 Mouse controls, cursor type, visual settings, replay tree, replay speed, tool-assisted speedrun mode, replay tunings (although that'd be helpful). 
 
-It is not really meant to be merged with main [Cambridge](https://github.com/MillaBasset/cambridge).
+~~It is not really meant to be merged with main [Cambridge](https://github.com/MillaBasset/cambridge).~~ (RETRACTED)
+
+If you ever try merging this to main [Cambridge](https://github.com/MillaBasset/cambridge) (before it's merged with this fork), well, then, good effing luck doing that.
 
 ### macOS, Linux
 
