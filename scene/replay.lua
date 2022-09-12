@@ -57,7 +57,10 @@ end
 
 function ReplayScene:update()
 	local frames_left = self.replay_speed
+	local pre_sfx_volume
 	if TAS_mode and state_loaded then
+		pre_sfx_volume = config.sfx_volume
+		config.sfx_volume = 0	--This is to stop blasting your ears every time you load a state.
 		frames_left = savestate_frames
 	end
 	if love.window.hasFocus() and (not self.paused or frame_steps > 0) and not self.rerecord then
@@ -93,6 +96,7 @@ function ReplayScene:update()
 	end
 	if state_loaded then
 		state_loaded = false
+		config.sfx_volume = pre_sfx_volume --Returns the volume to normal.
 		self.paused = true
 	end
 	DiscordRPC:update({
