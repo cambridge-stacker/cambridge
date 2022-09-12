@@ -80,7 +80,6 @@ function GameMode:new()
 	self.section_start_time = 0
 	self.section_times = { [0] = 0 }
 	self.secondary_section_times = { [0] = 0 }
-	ineligible = false
 	--#region Tetro48's set up code
 	cursor_type_record = config.visualsettings.cursor_type
 	if config.visualsettings.cursor_type ~= 1 then
@@ -136,7 +135,7 @@ end
 function GameMode:saveReplay()
 	-- Save replay.
 	local replay = {}
-	replay["toolassisted"] = ineligible
+	replay["toolassisted"] = self.ineligible
 	replay["inputs"] = self.replay_inputs
 	replay["random_low"] = self.random_low
 	replay["random_high"] = self.random_high
@@ -207,13 +206,6 @@ function GameMode:addReplayInput(inputs)
 end
 
 function GameMode:update(inputs, ruleset)
-	if frame_steps > 0 then
-		ineligible = true
-		frame_steps = frame_steps - 1
-		if frame_steps == 0 then
-			scene.paused = true
-		end
-	end
 	if self.game_over or self.completed then
 		if self.save_replay and self.game_over_frames == 0 then
 			self:saveReplay()
@@ -1073,9 +1065,6 @@ end
 function GameMode:drawCustom() end
 
 function GameMode:drawIfPaused()
-	if frame_steps > 0 then
-		scene.paused = false
-	end
 	love.graphics.setFont(font_3x5_3)
 	love.graphics.printf("PAUSED!", 64, 160, 160, "center")
 end
@@ -1112,11 +1101,6 @@ function GameMode:draw(paused)
 
 	if paused or frame_steps > 0 then
 		self:drawIfPaused()
-	elseif ineligible then
-		love.graphics.setColor(1, 0, 0, 0.2)
-		love.graphics.setFont(font_3x5_4)
-		love.graphics.printf("X", 240, 20, 160, "center")
-		love.graphics.setColor(1, 1, 1, 1)
 	end
 
 	if self.completed then

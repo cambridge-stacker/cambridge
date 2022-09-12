@@ -60,7 +60,11 @@ function ReplayScene:update()
 	if TAS_mode and state_loaded then
 		frames_left = savestate_frames
 	end
-	if love.window.hasFocus() and not self.paused and not self.rerecord then
+	if love.window.hasFocus() and (not self.paused or frame_steps > 0) and not self.rerecord then
+		if frame_steps > 0 then
+			self.game.ineligible = self.rerecord or self.game.ineligible
+			frame_steps = frame_steps - 1
+		end
 		while frames_left > 0 do
 			frames_left = frames_left - 1
 			self.inputs = self.replay["inputs"][self.replay_index]["inputs"]

@@ -33,7 +33,11 @@ function GameScene:new(game_mode, ruleset, inputs)
 end
 
 function GameScene:update()
-	if love.window.hasFocus() and not self.paused then
+	if love.window.hasFocus() and (not self.paused or frame_steps > 0) then
+		if frame_steps > 0 then
+			self.game.ineligible = true
+			frame_steps = frame_steps - 1
+		end
 		local inputs = {}
 		for input, value in pairs(self.inputs) do
 			inputs[input] = value
