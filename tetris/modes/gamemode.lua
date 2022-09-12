@@ -3,7 +3,6 @@ require 'funcs'
 
 local playedReadySE = false
 local playedGoSE = false
-local ineligible = false
 local cursor_type_record = 1
 
 local Grid = require 'tetris.components.grid'
