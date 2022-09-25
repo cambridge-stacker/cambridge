@@ -155,8 +155,37 @@ local function drawTASWatermark()
 	love.graphics.setFont(font_3x5_4)
 	love.graphics.setColor(1, 1, 1, 0.2)
 	love.graphics.printf(
-		"T A S", -250, 550, 150, "center", -0.75, 8, 8
+		"T A S", -300, 100, 150, "center", 0, 8, 8
 	)
+end
+
+local function drawWatermarks()
+	local is_TAS_used = false
+	if scene.replay then
+		if scene.replay["toolassisted"] == true then
+			is_TAS_used = true
+		end
+	end
+
+	if scene.game then
+		if scene.game.ineligible then
+			is_TAS_used = true
+		end
+	end
+
+	if TAS_mode then
+		if scene.title == "Game" or scene.title == "Replay" and not scene.replay["toolassisted"] == true then
+			is_TAS_used = true
+		end
+		love.graphics.setColor(1, 1, 1, love.timer.getTime() % 2 < 1 and 1 or 0)
+		love.graphics.setFont(font_3x5_3)
+		love.graphics.printf(
+			"TAS MODE ON", 240, 0, 160, "center"
+		)
+	end
+	if is_TAS_used then
+		drawTASWatermark()
+	end
 end
 
 function love.draw()
@@ -177,22 +206,8 @@ function love.draw()
 		
 	scene:render()
 
-	if scene.replay then
-		if scene.replay["toolassisted"] == true then
-			drawTASWatermark()
-		end
-	end
+	drawWatermarks()
 
-	if TAS_mode then
-		if scene.title == "Game" or scene.title == "Replay" and not scene.replay["toolassisted"] == true then
-			drawTASWatermark()
-		end
-		love.graphics.setColor(1, 1, 1, love.timer.getTime() % 2 < 1 and 1 or 0)
-		love.graphics.setFont(font_3x5_3)
-		love.graphics.printf(
-			"TAS MODE ON", 240, 0, 160, "center"
-		)
-	end
 	if config.visualsettings.display_gamemode == 1 or scene.title == "Title" then
 		love.graphics.setFont(font_3x5_2)
 		love.graphics.setColor(1, 1, 1, 1)
