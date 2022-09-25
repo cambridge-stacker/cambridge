@@ -9,35 +9,7 @@ local current_replay = 1
 function ReplaySelectScene:new()
 	-- reload custom modules
 	initModules()
-	-- load replays
-
-	-- -- it's unused to avoid IO inconvenience.
-	-- replays = {}
-	-- replay_tree = {}
-	-- dict_ref = {}
-	-- for key, value in pairs(game_modes) do
-	-- 	dict_ref[value.name] = key
-	-- 	replay_tree[key] = {name = value.name}
-	-- end
-	-- local replay_file_list = love.filesystem.getDirectoryItems("replays")
-	-- for i=1,#replay_file_list do
-	-- 	local data = love.filesystem.read("replays/"..replay_file_list[i])
-	-- 	local new_replay = binser.deserialize(data)[1]
-	-- 	local mode_name = self.nilCheck(new_replay, {mode = "znil"}).mode
-	-- 	replays[#replays+1] = new_replay
-	-- 	if dict_ref[mode_name] ~= nil and mode_name ~= "znil" then
-	-- 		table.insert(replay_tree[dict_ref[mode_name]], #replays)
-	-- 	end
-	-- end
-	-- local function padnum(d) return ("%03d%s"):format(#d, d) end
-	-- table.sort(replay_tree, function(a,b)
-	-- return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
-	-- for key, submenu in pairs(replay_tree) do
-	-- 	table.sort(submenu, function(a, b)
-	-- 		return replays[a]["timestamp"] > replays[b]["timestamp"]
-	-- 	end)
-	-- end
-	-- loadReplayList()
+	
 	self.display_error = false
 	if #replays == 0 then
 		self.display_warning = true
@@ -53,6 +25,7 @@ function ReplaySelectScene:new()
 	self.das = 0
 	self.height_offset = 0
 	self.auto_menu_offset = 0
+	self.state_string = ""
 	DiscordRPC:update({
 		details = "In menus",
 		state = "Choosing a replay",
@@ -68,10 +41,17 @@ function ReplaySelectScene.nilCheck(input, default)
 	return input
 end
 
+local function demandFromChannel(channel_name)
+	local load_from = love.thread.getChannel(channel_name):demand()
+	if load_from then
+		return load_from
+	end
+end
 function ReplaySelectScene:update()
 	switchBGM(nil) -- experimental
 	
 	if not loaded_replays then
+		self.state_string = love.thread.getChannel('load_state'):peek()
 		replays = popFromChannel('replays')
 		replay_tree = popFromChannel('replay_tree')
 		dict_ref = popFromChannel('dict_ref')
@@ -149,6 +129,10 @@ function ReplaySelectScene:render()
 		love.graphics.printf(
 			"Loading replays... Please wait",
 			80, 200, 480, "center"
+		)
+		love.graphics.printf(
+			"Thread's current job:\n"..nilCheck(self.state_string, "nil"),
+			0, 250, 640, "center"
 		)
 		return
 	elseif self.menu_state.submenu > 0 then
@@ -277,7 +261,7 @@ function ReplaySelectScene:startReplay()
 	end
 	-- TODO compare replay versions to current versions for Cambridge, ruleset, and mode
 	scene = ReplayScene(
-		replays[pointer],
+		deepcopy(replays[pointer]), --This has to be done to avoid serious glitches with it.
 		mode,
 		rules
 	)

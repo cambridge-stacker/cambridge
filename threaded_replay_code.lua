@@ -15,13 +15,18 @@ replay_load_code = [[
 		replay_tree[key + 1] = {name = value}
 	end
 	print("Loading replay file list")
+	love.thread.getChannel( 'load_state' ):clear()
+	love.thread.getChannel( 'load_state' ):push( "Loading replay file list" )
 	local replay_file_list = love.filesystem.getDirectoryItems("replays")
 	local binser = require "libs/binser"
 	require "funcs"
 	print("Loading replay contents")
+	love.thread.getChannel( 'load_state' ):clear()
+	love.thread.getChannel( 'load_state' ):push( "Loading replay contents" )
 	for i=1, #replay_file_list do
 		local data = love.filesystem.read("replays/"..replay_file_list[i])
 		local new_replay = binser.deserialize(data)[1]
+		if nilCheck(new_replay, {mode = "znil"}).mode == "znil" then print ("znil at replays/"..replay_file_list[i]) end
 		local mode_name = nilCheck(new_replay, {mode = "znil"}).mode
 		replays[#replays+1] = new_replay
 		if dict_ref[mode_name] ~= nil and mode_name ~= "znil" then
@@ -30,6 +35,8 @@ replay_load_code = [[
 		table.insert(replay_tree[1], #replays)
 	end
 	print("Sorting replays...")
+	love.thread.getChannel( 'load_state' ):clear()
+	love.thread.getChannel( 'load_state' ):push( "Sorting replays..." )
 	local function padnum(d) return ("%03d%s"):format(#d, d) end
 	table.sort(replay_tree, function(a,b)
 	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
@@ -39,6 +46,8 @@ replay_load_code = [[
 		end)
 	end
 	print("Pushing replays...")
+	love.thread.getChannel( 'load_state' ):clear()
+	love.thread.getChannel( 'load_state' ):push( "Pushing replays..." )
     love.thread.getChannel( 'replays' ):push( replays )
     love.thread.getChannel( 'replay_tree' ):push( replay_tree )
     love.thread.getChannel( 'dict_ref' ):push( dict_ref )
