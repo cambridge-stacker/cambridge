@@ -15,6 +15,7 @@ ConfigScene.options = {
 	{"mode_entry", "Mode Entry", {"Instant", "Animated"}},
 	{"tagline_position", "Tagline placement", {"Top", "Bottom", "None"}},
 	{"mode_select_type", "Mode Select Type", {"Default", "Oshi's idea"}},
+	{"credits_position", "Credits Pos-ing", {"Right", "Center"}},
 }
 local optioncount = #ConfigScene.options
 

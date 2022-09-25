@@ -129,8 +129,18 @@ function CreditsScene:update()
     end
 end
 
+local alignment_table = {"right", "center", "left"}
+
+local alignment_coordinates = {320, 160}
+
 function CreditsScene:render()
     local offset = self.frames
+
+    local credits_pos = config.visualsettings.credits_position
+
+    local text_x = alignment_coordinates[credits_pos]
+
+    local align = alignment_table[4-credits_pos]
 
     love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.draw(
@@ -140,16 +150,16 @@ function CreditsScene:render()
     )
 
     love.graphics.setFont(font_3x5_4)
-    love.graphics.print("Cambridge Credits", 320, 500 - offset)
-    love.graphics.print("THANK YOU\nFOR PLAYING!", 320, math.max(self.final_y - offset, 240))
-    love.graphics.print("- Milla", 320, math.max(self.final_y + 80 - offset, 320))
+    love.graphics.printf("Cambridge Credits", text_x, 500 - offset, 320, align)
+    love.graphics.printf("THANK YOU\nFOR PLAYING!", text_x, math.max(self.final_y - offset, 240), 320, align)
+    love.graphics.printf("- Milla", text_x, math.max(self.final_y + 80 - offset, 320), 320, align)
 
     for index, block in ipairs(self.credit_blocks) do
         love.graphics.setFont(font_3x5_3)
-        love.graphics.print(block.title, 320, block.y - offset)
+        love.graphics.printf(block.title, text_x, block.y - offset, 320, align)
         love.graphics.setFont(font_3x5_2)
         for key, value in ipairs(block) do
-            love.graphics.print(value, 320, block.y + 30 + key * 18 - offset)
+            love.graphics.printf(value, text_x, block.y + 30 + key * 18 - offset, 320, align)
         end
     end
     -- love.graphics.print("Game Developers", 320, 550 - offset)
