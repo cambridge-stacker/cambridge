@@ -58,9 +58,11 @@ function KeyConfigScene:new()
 		self.reconfiguration = true
 		self.new_input = config.input.keys
 		for input_name, key in pairs(config.input.keys) do
-			self.set_inputs[input_name] = "key " .. love.keyboard.getKeyFromScancode(key) .. " (" .. key .. ")"
+			self.set_inputs[input_name] = self:formatKey(key)
 		end
 	end
+
+	self.safety_frames = 0
 
 	DiscordRPC:update({
 		details = "In settings",
@@ -69,6 +71,7 @@ function KeyConfigScene:new()
 end
 
 function KeyConfigScene:update()
+	self.safety_frames = self.safety_frames - 1
 end
 
 function KeyConfigScene:render()
@@ -106,20 +109,31 @@ function KeyConfigScene:render()
 	love.graphics.printf("function keys (F1, F2, etc.), and tab can't be changed", 0, 40, 640, "left")
 end
 
+function KeyConfigScene:formatKey(key)
+	if love.keyboard.getKeyFromScancode(key) == key then
+		return "key ".. key
+	else
+		return "scancode " .. love.keyboard.getKeyFromScancode(key) .. ", key (" .. key .. ")"
+	end
+end
+
 function KeyConfigScene:rebindKey(key)
 	if key ~= nil then
-		self.set_inputs[configurable_inputs[self.input_state]] = "key " .. love.keyboard.getKeyFromScancode(key) .. " (" .. key .. ")"
+		self.set_inputs[configurable_inputs[self.input_state]] = self:formatKey(key)
 	end
 	self.new_input[configurable_inputs[self.input_state]] = key
 end
 
 function KeyConfigScene:refreshInputStates()
 	for input_name, key in pairs(self.new_input) do
-		self.set_inputs[input_name] = "key " .. love.keyboard.getKeyFromScancode(key) .. " (" .. key .. ")"
+		self.set_inputs[input_name] = self:formatKey(key)
 	end
 end
 
 function KeyConfigScene:onInputPress(e)
+	if self.safety_frames > 0 then
+		return
+	end
 	if e.type == "key" then
 		-- function keys, and tab are reserved and can't be remapped
 		if e.scancode == "escape"  then
@@ -162,6 +176,7 @@ function KeyConfigScene:onInputPress(e)
 					playSE("main_decide")
 					self.set_inputs[configurable_inputs[self.input_state]] = "<press a key>"
 					self.key_rebinding = true
+					self.safety_frames = 2
 				end
 				self.failed_input_assignment = nil
 			end
