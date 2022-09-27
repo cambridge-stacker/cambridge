@@ -134,6 +134,7 @@ function KeyConfigScene:onInputPress(e)
 	if self.safety_frames > 0 then
 		return
 	end
+	self.safety_frames = 2
 	if e.type == "key" then
 		-- function keys, and tab are reserved and can't be remapped
 		if e.scancode == "escape"  then
@@ -155,7 +156,6 @@ function KeyConfigScene:onInputPress(e)
 			end
 		elseif self.reconfiguration then
 			if self.key_rebinding then
-				self.safety_frames = 2
 				if e.scancode == "tab" then
 					self:rebindKey(nil) --this is done by purpose
 					self.set_inputs[configurable_inputs[self.input_state]] = "erased"
@@ -177,12 +177,10 @@ function KeyConfigScene:onInputPress(e)
 					playSE("main_decide")
 					self.set_inputs[configurable_inputs[self.input_state]] = "<press a key>"
 					self.key_rebinding = true
-					self.safety_frames = 2
 				end
 				self.failed_input_assignment = nil
 			end
 		elseif self.input_state > #configurable_inputs then
-			self.safety_frames = 2
 			if e.scancode == "return" then
 				-- save new input, then load next scene
 				local had_config = config.input ~= nil
