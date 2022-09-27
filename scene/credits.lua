@@ -105,11 +105,9 @@ function CreditsScene:new()
     local y_calculation = 550
     for key, value in pairs(self.credit_blocks) do
         value.y = y_calculation
-        print(key, #value)
         y_calculation = y_calculation + (#value * 18) + 80
     end
     self.final_y = y_calculation + 120
-    print(self.final_y, y_calculation)
 end
 
 function CreditsScene:update()
