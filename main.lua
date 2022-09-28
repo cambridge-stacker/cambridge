@@ -74,6 +74,7 @@ function loadReplayList()
 	replay_tree = {{name = "All"}}
 	dict_ref = {}
 	loaded_replays = false
+	
 	io_thread = love.thread.newThread( replay_load_code )
 	local mode_names = {}
 	for key, value in pairs(game_modes) do
@@ -328,52 +329,76 @@ end
 
 function love.joystickpressed(joystick, button)
 	local input_pressed = nil
-	if
-		config.input and
-		config.input.joysticks and
-		config.input.joysticks[joystick:getName()] and
-		config.input.joysticks[joystick:getName()].buttons
-	then
-		input_pressed = config.input.joysticks[joystick:getName()].buttons[button]
+	if config.input and config.input.joysticks then
+		local result_inputs = {}
+		for input_type, v in pairs(config.input.joysticks) do
+			if joystick:getName().."-buttons-"..button == v then
+				table.insert(result_inputs, input_type)
+			end
+		end
+		for _, input in pairs(result_inputs) do
+			scene:onInputPress({input=input, type="joybutton", name=joystick:getName(), button=button})
+		end
+		if #result_inputs == 0 then
+			scene:onInputPress({type="joybutton", name=joystick:getName(), button=button})
+		end
 	end
-	scene:onInputPress({input=input_pressed, type="joybutton", name=joystick:getName(), button=button})
+	-- scene:onInputPress({input=input_pressed, type="joybutton", name=joystick:getName(), button=button})
 end
 
 function love.joystickreleased(joystick, button)
 	local input_released = nil
-	if
-		config.input and
-		config.input.joysticks and
-		config.input.joysticks[joystick:getName()] and
-		config.input.joysticks[joystick:getName()].buttons
-	then
-		input_released = config.input.joysticks[joystick:getName()].buttons[button]
+	if config.input and config.input.joysticks then
+		local result_inputs = {}
+		for input_type, v in pairs(config.input.joysticks) do
+			if joystick:getName().."-buttons-"..button == v then
+				table.insert(result_inputs, input_type)
+			end
+		end
+		for _, input in pairs(result_inputs) do
+			scene:onInputRelease({input=input, type="joybutton", name=joystick:getName(), button=button})
+		end
+		if #result_inputs == 0 then
+			scene:onInputRelease({type="joybutton", name=joystick:getName(), button=button})
+		end
 	end
-	scene:onInputRelease({input=input_released, type="joybutton", name=joystick:getName(), button=button})
+	-- scene:onInputRelease({input=input_released, type="joybutton", name=joystick:getName(), button=button})
 end
 
 function love.joystickaxis(joystick, axis, value)
 	local input_pressed = nil
-	local positive_released = nil
-	local negative_released = nil
-	if
-		config.input and
-		config.input.joysticks and
-		config.input.joysticks[joystick:getName()] and
-		config.input.joysticks[joystick:getName()].axes and
-		config.input.joysticks[joystick:getName()].axes[axis] 
-	then
+	if config.input and config.input.joysticks then
 		if math.abs(value) >= 1 then
-			input_pressed = config.input.joysticks[joystick:getName()].axes[axis][value >= 1 and "positive" or "negative"]
+			local result_inputs = {}
+			for input_type, v in pairs(config.input.joysticks) do
+				if joystick:getName().."-axes-"..axis.."-"..(value >= 1 and "positive" or "negative") == v then
+					table.insert(result_inputs, input_type)
+				end
+			end
+			for _, input in pairs(result_inputs) do
+				scene:onInputPress({input=input, type="joyaxis", name=joystick:getName(), axis=axis, value=value})
+			end
+			if #result_inputs == 0 then
+				scene:onInputPress({type="joyaxis", name=joystick:getName(), axis=axis, value=value})
+			end
+			-- scene:onInputPress({input=input_pressed, type="joyaxis", name=joystick:getName(), axis=axis, value=value})
+		else
+			local result_inputs = {}
+			for input_type, v in pairs(config.input.joysticks) do
+				if joystick:getName().."-axes-"..axis.."-".."negative" == v then
+					table.insert(result_inputs, input_type)
+				end
+				if joystick:getName().."-axes-"..axis.."-".."positive" == v then
+					table.insert(result_inputs, input_type)
+				end
+			end
+			for _, input in pairs(result_inputs) do
+				scene:onInputRelease({input=input, type="joyaxis", name=joystick:getName(), axis=axis, value=value})
+			end
+			if #result_inputs == 0 then
+				scene:onInputRelease({type="joyaxis", name=joystick:getName(), axis=axis, value=value})
+			end
 		end
-		positive_released = config.input.joysticks[joystick:getName()].axes[axis].positive
-		negative_released = config.input.joysticks[joystick:getName()].axes[axis].negative
-	end
-	if math.abs(value) >= 1 then
-		scene:onInputPress({input=input_pressed, type="joyaxis", name=joystick:getName(), axis=axis, value=value})
-	else
-		scene:onInputRelease({input=positive_released, type="joyaxis", name=joystick:getName(), axis=axis, value=value})
-		scene:onInputRelease({input=negative_released, type="joyaxis", name=joystick:getName(), axis=axis, value=value})
 	end
 end
 
@@ -385,18 +410,21 @@ local directions = {
 	["r"] = "right",
 }
 
+--wtf
 function love.joystickhat(joystick, hat, direction)
 	local input_pressed = nil
 	local has_hat = false
 	if
 		config.input and
-		config.input.joysticks and
-		config.input.joysticks[joystick:getName()] and
-		config.input.joysticks[joystick:getName()].hats and
-		config.input.joysticks[joystick:getName()].hats[hat]
+		config.input.joysticks
 	then
 		if direction ~= "c" then
-			input_pressed = config.input.joysticks[joystick:getName()].hats[hat][direction]
+			for input_type, value in pairs(config.input.joysticks) do
+				if joystick:getName().."-hat-"..hat.."-"..direction == value then
+					input_pressed = true
+					break
+				end
+			end
 		end
 		has_hat = true
 	end
@@ -405,20 +433,57 @@ function love.joystickhat(joystick, hat, direction)
 			local char = direction:sub(i, i)
 			local _, count = last_hat_direction:gsub(char, char)
 			if count == 0 then
-				scene:onInputPress({input=config.input.joysticks[joystick:getName()].hats[hat][char], type="joyhat", name=joystick:getName(), hat=hat, direction=char})
+				local result_inputs = {}
+				for input_type, value in pairs(config.input.joysticks) do
+					if joystick:getName().."-hat-"..hat.."-"..directions[char] == value then
+						table.insert(result_inputs, input_type)
+					end
+				end
+				for _, input in pairs(result_inputs) do
+					scene:onInputPress({input=input, type="joyhat", name=joystick:getName(), hat=hat, direction=char})
+				end
+				if #result_inputs == 0 then
+					scene:onInputPress({input=directions[char], type="joyhat", name=joystick:getName(), hat=hat, direction=char})
+				end
+				--scene:onInputPress({input=config.input.joysticks[joystick:getName()].hats[hat][char], type="joyhat", name=joystick:getName(), hat=hat, direction=char})
 			end
 		end
 		for i = 1, #last_hat_direction do
 			local char = last_hat_direction:sub(i, i)
 			local _, count = direction:gsub(char, char)
 			if count == 0 then
-				scene:onInputRelease({input=config.input.joysticks[joystick:getName()].hats[hat][char], type="joyhat", name=joystick:getName(), hat=hat, direction=char})
+				local result_inputs = {}
+				for input_type, value in pairs(config.input.joysticks) do
+					if joystick:getName().."-hat-"..hat.."-"..directions[char] == value then
+						table.insert(result_inputs, input_type)
+					end
+				end
+				for _, input in pairs(result_inputs) do
+					scene:onInputRelease({input=input, type="joyhat", name=joystick:getName(), hat=hat, direction=char})
+				end
+				if #result_inputs == 0 then
+					scene:onInputRelease({input=directions[char], type="joyhat", name=joystick:getName(), hat=hat, direction=char})
+				end
+				-- scene:onInputRelease({input=config.input.joysticks[joystick:getName()].hats[hat][char], type="joyhat", name=joystick:getName(), hat=hat, direction=char})
 			end
 		end
 		last_hat_direction = direction
 	elseif has_hat then
-		for i, direction in ipairs{"d", "l", "ld", "lu", "r", "rd", "ru", "u"} do
-			scene:onInputRelease({input=config.input.joysticks[joystick:getName()].hats[hat][direction], type="joyhat", name=joystick:getName(), hat=hat, direction=direction})
+		--why redefine the local variable?
+		for i, fdirection in ipairs{"d", "l", "ld", "lu", "r", "rd", "ru", "u"} do
+			local result_inputs = {}
+			for input_type, value in pairs(config.input.joysticks) do
+				if joystick:getName().."-hat-"..hat.."-"..(directions[fdirection] or "nil") == value then
+					table.insert(result_inputs, input_type)
+				end
+			end
+			for _, input in pairs(result_inputs) do
+				scene:onInputRelease({input=input, type="joyhat", name=joystick:getName(), hat=hat, direction=fdirection})
+			end
+			if #result_inputs == 0 then
+				scene:onInputRelease({input=directions[fdirection] or nil, type="joyhat", name=joystick:getName(), hat=hat, direction=fdirection})
+			end
+			-- scene:onInputRelease({input=config.input.joysticks[joystick:getName()].hats[hat][direction], type="joyhat", name=joystick:getName(), hat=hat, direction=direction})
 		end
 		last_hat_direction = ""
 	elseif direction ~= "c" then
@@ -439,7 +504,7 @@ function love.joystickhat(joystick, hat, direction)
 		last_hat_direction = direction
 	else
 		for i, direction in ipairs{"d", "l", "ld", "lu", "r", "rd", "ru", "u"} do
-			scene:onInputRelease({input=nil, type="joyhat", name=joystick:getName(), hat=hat, direction=direction})
+			scene:onInputRelease({input=directions[direction], type="joyhat", name=joystick:getName(), hat=hat, direction=direction})
 		end
 		last_hat_direction = ""
 	end
