@@ -51,14 +51,14 @@ local mutually_exclusive_inputs = {
 
 function KeyConfigScene:mutexCheck(input, keybind)
 	for key, value in pairs(mutually_exclusive_inputs) do
-		if type(value) == "table" then
-			for k2, v2 in pairs(value) do
-				if self.new_input[v2] == keybind then
-					return true
+		if key == input then
+			if type(value) == "table" then
+				for k2, v2 in pairs(value) do
+					if self.new_input[v2] == keybind then
+						return true
+					end
 				end
 			end
-		end
-		if key == input then
 			if self.new_input[value] == keybind then
 				return true
 			end
