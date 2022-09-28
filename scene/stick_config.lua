@@ -145,7 +145,7 @@ function StickConfigScene:render()
 		if self.rebinding then
 			love.graphics.printf("Press joystick input for " .. input_naming[configurable_inputs[self.input_state]] .. ", tab to erase.", 0, 0, 640, "left")
 		end
-		love.graphics.printf("Press escape to exit while not rebinding. Auto-saves after you rebound an input.", 0, 20, 640, "left")
+		love.graphics.printf("Press escape to exit and save while not rebinding.", 0, 20, 640, "left")
 	else
 		love.graphics.printf("Press joystick input for " .. input_naming[configurable_inputs[self.input_state]] .. ", tab to skip.", 0, 0, 640, "left")
 	end
@@ -182,6 +182,10 @@ function StickConfigScene:onInputPress(e)
 	if e.type == "key" then
 		-- function keys, escape, and tab are reserved and can't be remapped
 		if e.scancode == "escape" then
+			if self.reconfiguration then
+                config.input.joysticks = self.new_input
+				saveConfig()
+			end
 			scene = InputConfigScene()
 		elseif self.input_state > #configurable_inputs then
 			if e.scancode == "return" then
