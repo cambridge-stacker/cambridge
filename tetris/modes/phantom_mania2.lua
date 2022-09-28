@@ -202,13 +202,13 @@ end
 local cool_cutoffs = {
 	frameTime(0,36), frameTime(0,36), frameTime(0,36), frameTime(0,36), frameTime(0,36),
 	frameTime(0,30), frameTime(0,30), frameTime(0,30), frameTime(0,30), frameTime(0,30),
-	frameTime(0,27), frameTime(0,27), frameTime(0,27),
+	frameTime(0,30), frameTime(0,30), frameTime(0,30),
 }
 
 local regret_cutoffs = {
 	frameTime(0,50), frameTime(0,50), frameTime(0,50), frameTime(0,50), frameTime(0,50),
-	frameTime(0,40), frameTime(0,40), frameTime(0,40), frameTime(0,40), frameTime(0,40),
-	frameTime(0,35), frameTime(0,35), frameTime(0,35),
+	frameTime(0,42), frameTime(0,42), frameTime(0,42), frameTime(0,42), frameTime(0,42),
+	frameTime(0,42), frameTime(0,42), frameTime(0,42),
 }
 
 function PhantomMania2Game:updateSectionTimes(old_level, new_level)
