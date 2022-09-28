@@ -49,7 +49,7 @@ function StickConfigScene:mutexCheck(input, binding)
 			if self.new_input[value] == binding then
 				return true
 			end
-		else
+		elseif value == input then
 			if self.new_input[key] == binding then
 				return true
 			end

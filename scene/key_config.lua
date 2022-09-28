@@ -42,7 +42,11 @@ local input_naming = {
 
 --A list of inputs that shouldn't have the same keybinds with the other.
 local mutually_exclusive_inputs = {
-	menu_decide = "menu_back"
+	menu_decide = "menu_back",
+	left = "right",
+	right = "up",
+	up = "down",
+	down = "left",
 }
 
 function KeyConfigScene:mutexCheck(input, keybind)
@@ -51,7 +55,7 @@ function KeyConfigScene:mutexCheck(input, keybind)
 			if self.new_input[value] == keybind then
 				return true
 			end
-		else
+		elseif value == input then
 			if self.new_input[key] == keybind then
 				return true
 			end
