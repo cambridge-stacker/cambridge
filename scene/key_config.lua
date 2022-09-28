@@ -144,7 +144,7 @@ function KeyConfigScene:rebindKey(key)
 		return true
 	end
 	if self:mutexCheck(configurable_inputs[self.input_state], key) then
-		self.set_inputs[configurable_inputs[self.input_state]] = "<mutex, try again>"
+		self.set_inputs[configurable_inputs[self.input_state]] = "<press an other key>"
 		return false
 	end
 	self.set_inputs[configurable_inputs[self.input_state]] = self:formatKey(key)
