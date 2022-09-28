@@ -26,7 +26,7 @@ replay_load_code = [[
 	for i=1, #replay_file_list do
 		local data = love.filesystem.read("replays/"..replay_file_list[i])
 		local new_replay = binser.deserialize(data)[1]
-		if nilCheck(new_replay, {mode = "znil"}).mode == "znil" then print ("znil at replays/"..replay_file_list[i]) end
+		if nilCheck(new_replay, {mode = "znil"}).mode == "znil" then print ("No data (Likely 0 bytes) at replays/"..replay_file_list[i]) end
 		local mode_name = nilCheck(new_replay, {mode = "znil"}).mode
 		replays[#replays+1] = new_replay
 		if dict_ref[mode_name] ~= nil and mode_name ~= "znil" then
