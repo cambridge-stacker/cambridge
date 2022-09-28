@@ -1,4 +1,6 @@
-./package
+#!/bin/sh
+
+./package-love.sh
 mkdir dist
 mkdir dist/windows
 mkdir dist/win32

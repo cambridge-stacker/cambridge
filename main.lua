@@ -213,7 +213,7 @@ function love.draw()
 		love.graphics.setFont(font_3x5_2)
 		love.graphics.setColor(1, 1, 1, 1)
 		love.graphics.printf(
-			string.format("%.2f", 1 / love.timer.getAverageDelta()) ..
+			string.format("%.2f", 1.0 / love.timer.getAverageDelta()) ..
 			"fps - " .. version, 0, 460, 635, "right"
 		)
 	end
@@ -521,6 +521,7 @@ function love.resize(w, h)
 end
 
 local TARGET_FPS = 60
+local FRAME_DURATION = 1.0 / TARGET_FPS
 
 function love.run()
 	if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
@@ -530,7 +531,7 @@ function love.run()
 	local dt = 0
 
 	local last_time = love.timer.getTime()
-	local time_accumulator = 0
+	local time_accumulator = 0.0
 	return function()
 		if love.event then
 			love.event.pump()
@@ -550,24 +551,35 @@ function love.run()
 		
 		if scene and scene.update and love.timer then
 			scene:update()
-			
-			local frame_duration = 1.0 / TARGET_FPS
-			if time_accumulator < frame_duration then
+
+			if time_accumulator < FRAME_DURATION then
 				if love.graphics and love.graphics.isActive() and love.draw then
 					love.graphics.origin()
 					love.graphics.clear(love.graphics.getBackgroundColor())
 					love.draw()
 					love.graphics.present()
 				end
-				local end_time = last_time + frame_duration
-				local time = love.timer.getTime()
-				while time < end_time do
-					love.timer.sleep(0.001)
-					time = love.timer.getTime()
+
+				-- request 1ms delays first but stop short of overshooting, then do "0ms" delays without overshooting (0ms requests generally do a delay of some nonzero amount of time, but maybe less than 1ms)
+				for milliseconds=0.001,0.000,-0.001 do
+					local max_delay = 0.0
+					while max_delay < FRAME_DURATION do
+						local delay_start_time = love.timer.getTime()
+						if delay_start_time - last_time < FRAME_DURATION - max_delay then
+							love.timer.sleep(milliseconds)
+							local last_delay = love.timer.getTime() - delay_start_time
+							if last_delay > max_delay then
+								max_delay = last_delay
+							end
+						else
+							break
+						end
+					end
 				end
-				time_accumulator = time_accumulator + time - last_time
+				while love.timer.getTime() - last_time < FRAME_DURATION do
+					-- busy loop, do nothing here until delay is finished; delays above stop short of finishing, so this part can finish it off precisely
+				end
 			end
-			time_accumulator = time_accumulator - frame_duration
 			if love.mouse then 
 				left_clicked_before = love.mouse.isDown(1) or mouse_idle > 2
 				right_clicked_before = love.mouse.isDown(2) or mouse_idle > 2
@@ -578,7 +590,11 @@ function love.run()
 				end
 				prev_cur_pos_x, prev_cur_pos_y = love.mouse.getPosition()
 			end
+
+			local finish_delay_time = love.timer.getTime()
+			local real_frame_duration = finish_delay_time - last_time
+			time_accumulator = time_accumulator + real_frame_duration - FRAME_DURATION
+			last_time = finish_delay_time
 		end
-		last_time = love.timer.getTime()
 	end
 end
