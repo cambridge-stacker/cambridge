@@ -40,6 +40,26 @@ local input_naming = {
 	mode_exit = "Exit Mode",
 }
 
+--A list of inputs that shouldn't have the same keybinds with the other.
+local mutually_exclusive_inputs = {
+	menu_decide = "menu_back"
+}
+
+function KeyConfigScene:mutexCheck(input, keybind)
+	for key, value in pairs(mutually_exclusive_inputs) do
+		if key == input then
+			if self.new_input[value] == keybind then
+				return true
+			end
+		else
+			if self.new_input[key] == keybind then
+				return true
+			end
+		end
+	end
+	return false
+end
+
 local function newSetInputs()
 	local set_inputs = {}
 	for i, input in ipairs(configurable_inputs) do
@@ -118,10 +138,18 @@ function KeyConfigScene:formatKey(key)
 end
 
 function KeyConfigScene:rebindKey(key)
-	if key ~= nil then
-		self.set_inputs[configurable_inputs[self.input_state]] = self:formatKey(key)
+	if key == nil then
+		self.new_input[configurable_inputs[self.input_state]] = nil
+		self.set_inputs[configurable_inputs[self.input_state]] = "erased"
+		return true
 	end
+	if self:mutexCheck(configurable_inputs[self.input_state], key) then
+		self.set_inputs[configurable_inputs[self.input_state]] = "<mutex, try again>"
+		return false
+	end
+	self.set_inputs[configurable_inputs[self.input_state]] = self:formatKey(key)
 	self.new_input[configurable_inputs[self.input_state]] = key
+	return true
 end
 
 function KeyConfigScene:refreshInputStates()
@@ -140,12 +168,15 @@ function KeyConfigScene:onInputPress(e)
 		if e.scancode == "escape"  then
 			self.esc_pressed = true
 			if self.key_rebinding or not self.reconfiguration then
-				self:rebindKey(e.scancode)
-				playSE("mode_decide")
-				if self.key_rebinding then
-					self.key_rebinding = false
+				if self:rebindKey(e.scancode) then
+					playSE("mode_decide")
+					if self.key_rebinding then
+						self.key_rebinding = false
+					else
+						self.input_state = self.input_state + 1
+					end
 				else
-					self.input_state = self.input_state + 1
+					playSE("erase", "single")
 				end
 				config.input.keys = self.new_input
 				saveConfig()
@@ -158,12 +189,14 @@ function KeyConfigScene:onInputPress(e)
 			if self.key_rebinding then
 				if e.scancode == "tab" then
 					self:rebindKey(nil) --this is done by purpose
-					self.set_inputs[configurable_inputs[self.input_state]] = "erased"
 				else
-					self:rebindKey(e.scancode)
-					playSE("mode_decide")
+					if self:rebindKey(e.scancode) then
+						playSE("mode_decide")
+						self.key_rebinding = false
+					else
+						playSE("erase", "single")
+					end
 				end
-				self.key_rebinding = false
                 config.input.keys = self.new_input
 				saveConfig()
 			else
@@ -197,10 +230,11 @@ function KeyConfigScene:onInputPress(e)
 		elseif e.scancode == "tab" then
 			self.set_inputs[configurable_inputs[self.input_state]] = "skipped"
 			self.input_state = self.input_state + 1
+		-- all other keys can be configured
+		elseif self:rebindKey(e.scancode) then
+			self.input_state = self.input_state + 1
 		else
-			-- all other keys can be configured
-			self:rebindKey(e.scancode)
-            self.input_state = self.input_state + 1
+			playSE("erase", "single")
 		end
 	end
 end
