@@ -107,7 +107,7 @@ function StickConfigScene:formatBinding(binding)
 	elseif secondmid_substring == "axes" then
 		local third_substring = second_substring:sub(1, second_substring:find("-") - 1)
 		return "Axis " ..
-		(second_substring == "positive" and "+" or "-") .. second_substring ..
+		(second_substring == "positive" and "+" or "-") .. third_substring ..
 		" " .. joy_name
 	end
 	return "Missing"
