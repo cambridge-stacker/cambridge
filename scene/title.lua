@@ -3,6 +3,9 @@ local TitleScene = Scene:extend()
 TitleScene.title = "Title"
 TitleScene.restart_message = false
 
+local enter_pressed = false
+local menu_frames = 0
+
 local main_menu_screens = {
 	ModeSelectScene,
 	HighscoresScene,
@@ -61,11 +64,14 @@ function TitleScene:update()
 		self.frames = self.frames + 1
 		self.snow_bg_opacity = self.snow_bg_opacity + 0.01
 	end
+	if enter_pressed then
+		menu_frames = menu_frames + 1
+	end
 	if self.frames < 125 then self.y_offset = self.frames
 	elseif self.frames < 185 then self.y_offset = 125
 	else self.y_offset = 310 - self.frames end
 	local mouse_x, mouse_y = getScaledPos(love.mouse.getPosition())
-	if not love.mouse.isDown(1) or left_clicked_before then return end
+	if not love.mouse.isDown(1) or left_clicked_before or menu_frames < 10 * #main_menu_screens then return end
 	if mouse_x > 40 and mouse_x < 160 then
 		if mouse_y > 300 and mouse_y < 300 + #main_menu_screens * 20 then
 			self.main_menu_state = math.floor((mouse_y - 280) / 20)
@@ -94,11 +100,22 @@ function TitleScene:render()
 		0.5, 0.5
 	)
 
-	-- 490, 192
+	if not enter_pressed then
+		love.graphics.setFont(font_3x5_3)
+		love.graphics.printf("Welcome To Cambridge: Flooding Edge!\n\n\n\n\nPress Enter or "..config.input.keys.menu_decide, 80, 240, 480, "center")
+		love.graphics.setFont(font_3x5_2)
+		love.graphics.printf("This particular fork has a lot of changes, so expect that there'd be a lot of bugs!\nReport bugs found here to Tetro48, in detail.", 120, 280, 400, "center")
+	end
+	local x, y
+	if enter_pressed then
+		x, y = 490, 192
+	else
+		x, y = 256, 140
+	end
 	for _, b in ipairs(block_offsets) do
 		love.graphics.draw(
 			blocks["2tie"][b.color],
-			490 + b.x, 192 + b.y, 0,
+			x + b.x, y + b.y, 0,
 			2, 2
 		)
 	end
@@ -130,14 +147,18 @@ function TitleScene:render()
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.print(self.restart_message and "Restart Cambridge..." or "", 0, 0)
 
+	if not enter_pressed then
+		return
+	end
+
 	love.graphics.setColor(1, 1, 1, 0.5)
-	love.graphics.rectangle("fill", 20, 278 + 20 * self.main_menu_state, 160, 22)
+	love.graphics.rectangle("fill", math.min(20, -120 * self.main_menu_state + (menu_frames * 24) - 20), 278 + 20 * self.main_menu_state, 160, 22)
 
 	love.graphics.setColor(1, 1, 1, 1)
 	for i, screen in pairs(main_menu_screens) do
 		local b = CursorHighlight(40,280 + 20 * i,120,20)
 		love.graphics.setColor(1,1,b,1)
-		love.graphics.printf(screen.title, 40, 280 + 20 * i, 120, "left")
+		love.graphics.printf(screen.title, math.min(40, -120 * i + (menu_frames * 24)), 280 + 20 * i, 120, "left")
 	end
 end
 
@@ -147,6 +168,13 @@ function TitleScene:changeOption(rel)
 end
 
 function TitleScene:onInputPress(e)
+	if not enter_pressed then
+		if e.scancode == "return" or e.scancode == "kpenter" or e.input == "menu_decide" then
+			enter_pressed = true
+			playSE("main_decide")
+		end
+		return
+	end
 	if e.input == "menu_decide" or e.scancode == "return" then
 		playSE("main_decide")
 		scene = main_menu_screens[self.main_menu_state]()
