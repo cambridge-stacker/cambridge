@@ -418,14 +418,7 @@ function love.joystickhat(joystick, hat, direction)
 		config.input and
 		config.input.joysticks
 	then
-		if direction ~= "c" then
-			for input_type, value in pairs(config.input.joysticks) do
-				if joystick:getName().."-hat-"..hat.."-"..direction == value then
-					input_pressed = true
-					break
-				end
-			end
-		end
+		input_pressed = direction ~= "c"
 		has_hat = true
 	end
 	if input_pressed then
