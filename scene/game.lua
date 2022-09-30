@@ -70,7 +70,7 @@ function GameScene:onInputPress(e)
 		self.game:onExit()
 		loadReplayList()
 		scene = e.input == "retry" and GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs) or
-				config.visualsettings.mode_select_type == 1 and RevModeSelectScene() or ModeSelectScene()
+				config.visualsettings.mode_select_type == 1 and ModeSelectScene() or RevModeSelectScene()
 	elseif e.input == "retry" then
 		switchBGM(nil)
 		self.game:onExit()
