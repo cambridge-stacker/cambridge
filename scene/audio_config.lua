@@ -129,6 +129,9 @@ function ConfigScene:changeValue(by)
 	local option = self.options[self.highlight]
 	if option[3] == "int" then
 		--This is quite cumbersome.
+		if config.audiosettings[option[1]] == nil then
+			config.audiosettings[option[1]] = 0
+		end
 		config.audiosettings[option[1]] = Mod1(config.audiosettings[option[1]] + by + option[5], option[5] + option[6]) - option[5]
 	end
 	if option[3] == "slider" then
