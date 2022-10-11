@@ -188,6 +188,31 @@ local function drawWatermarks()
 		drawTASWatermark()
 	end
 end
+local last_time = 0
+local function getDeltaTime()
+	local time = love.timer.getTime()
+	local dt = time - last_time
+	last_time = time
+	return dt
+end
+local time_table = {}
+local last_fps = 0
+local function getMeanDelta()
+	if #time_table > 24 then
+		table.remove(time_table, 1)
+	end
+	local dt = getDeltaTime()
+	table.insert(time_table, dt)
+	local acc = 0
+	for i = 1, #time_table do
+		acc = acc + time_table[i]
+	end
+	acc = acc / #time_table
+	if math.floor(love.timer.getTime()) + dt > love.timer.getTime() then
+		last_fps = acc
+	end
+	return last_fps
+end
 
 function love.draw()
 	love.graphics.setCanvas(GLOBAL_CANVAS)
@@ -213,7 +238,7 @@ function love.draw()
 		love.graphics.setFont(font_3x5_2)
 		love.graphics.setColor(1, 1, 1, 1)
 		love.graphics.printf(
-			string.format("%.2f", 1.0 / love.timer.getAverageDelta()) ..
+			string.format("%.2f", 1.0 / getMeanDelta()) ..
 			"fps - " .. version, 0, 460, 635, "right"
 		)
 	end
