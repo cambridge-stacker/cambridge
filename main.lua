@@ -66,12 +66,6 @@ end
 
 --#region Tetro48's code
 
-local notifications = {}
-
-function createNotification(title, message)
-	notifications[#notifications+1] = {title = title, message = message, time = 0}
-end
-
 local io_thread
 
 function loadReplayList()
@@ -248,42 +242,6 @@ function love.draw()
 		)
 	end
 
-	--#region
-	local notification_count = 0
-	for idx, notification in ipairs(notifications) do
-		if notification_count < 5 then
-			notification_count = notification_count + 1
-		else
-			break
-		end
-		if notification.time > 300 then
-			notification.back = true
-			notification.time = 25
-		end
-		notification.time = notification.time + (notification.back and -1 or 1)
-		local sliding_pos = math.min(25, notification.time) * 8
-		love.graphics.setColor(0.4, 0.4, 0.4)
-		love.graphics.rectangle("fill", 640 - sliding_pos, -40 + idx * 40, 200, 40)
-		love.graphics.setColor(0.6, 0.6, 0.6)
-		love.graphics.rectangle("line", 642 - sliding_pos, -38 + idx * 40, 196, 36)
-		love.graphics.setFont(font_3x5_2)
-		if #notification.message > 20 or #notification.title > 20 then
-			love.graphics.setColor(1, 1, 0, notification.back and 0 or math.max(0, 2 - notification.time / 30))
-			love.graphics.printf(notification.title, 660 - sliding_pos, (#notification.title > 20 and -40 or -30) + idx * 40, 170, "left")
-			love.graphics.setColor(1, 1, 1, notification.back and 1 or 1 - math.max(0, 3 - notification.time / 30))
-			love.graphics.printf(notification.message, 660 - sliding_pos, -40 + idx * 40, 170, "left")
-		else
-			love.graphics.setColor(1, 1, 0, 1)
-			love.graphics.printf(notification.title, 660 - sliding_pos, -40 + idx * 40, 170, "left")
-			love.graphics.setColor(1, 1, 1, 1)
-			love.graphics.printf(notification.message, 660 - sliding_pos, -20 + idx * 40, 170, "left")
-		end
-		if notification.time < 0 and notification.back then
-			table.remove(notifications, 1)
-		end
-	end
-	--#endregion
-	
 	if scene.title == "Game" or scene.title == "Replay" then
 		-- if config.visualsettings.cursor_type ~= 1 then
 		-- 	is_cursor_visible = true
