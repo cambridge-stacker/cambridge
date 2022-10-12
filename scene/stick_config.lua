@@ -82,15 +82,9 @@ function StickConfigScene:new()
 	self.set_inputs = newSetInputs()
 	self.new_input = {}
 	self.axis_timer = 0
+	self.joystick_name = ""
 
 	if not config.input then config.input = {} end
-	if config.input.joysticks then
-		self.reconfiguration = true
-		self.new_input = config.input.joysticks
-		for input_name, binding in pairs(config.input.joysticks) do
-			self.set_inputs[input_name] = self:formatBinding(binding)
-		end
-	end
 
 	self.safety_frames = 0
 
@@ -101,25 +95,20 @@ function StickConfigScene:new()
 end
 --too many impl details and substrings
 function StickConfigScene:formatBinding(binding)
-	local joy_name = binding:sub(1, binding:find("-") - 1)
 	local substring = binding:sub(binding:find("-") + 1, #binding)
-	local secondmid_substring = substring:sub(1, substring:find("-") - 1)
-	local second_substring = substring:sub(substring:find("-") + 1, #substring)
-	if secondmid_substring == "buttons" then
+	local mid_substring = binding:sub(1, binding:find("-") - 1)
+	if mid_substring == "buttons" then
 		return "Button " ..
-		second_substring ..
-		" " .. joy_name
-	elseif secondmid_substring == "hat" then
-		local thirdmid_substring = second_substring:sub(1, second_substring:find("-") - 1)
-		local third_substring = second_substring:sub(second_substring:find("-") + 1)
+		substring
+	elseif mid_substring == "hat" then
+		local secondmid_substring = substring:sub(1, substring:find("-") - 1)
+		local second_substring = substring:sub(substring:find("-") + 1)
 		return "Hat " ..
-		thirdmid_substring .. " " .. third_substring ..
-		" " .. joy_name
-	elseif secondmid_substring == "axes" then
-		local third_substring = second_substring:sub(1, second_substring:find("-") - 1)
+		secondmid_substring .. " " .. second_substring
+	elseif mid_substring == "axes" then
+		local second_substring = substring:sub(1, substring:find("-") - 1)
 		return "Axis " ..
-		(second_substring == "positive" and "+" or "-") .. third_substring ..
-		" " .. joy_name
+		(substring == "positive" and "+" or "-") .. second_substring
 	end
 	return "Missing"
 end
@@ -136,6 +125,11 @@ function StickConfigScene:render()
 		0.5, 0.5
 	)
 
+	love.graphics.setFont(font_3x5_3)
+	if self.joystick_name == "" then
+		love.graphics.printf("Interact with a joystick to map inputs.", 160, 240, 320, "center")
+		return
+	end
 	love.graphics.setFont(font_3x5_2)
 	for i, input in ipairs(configurable_inputs) do
 		if i == self.input_state then
@@ -160,6 +154,7 @@ function StickConfigScene:render()
 	else
 		love.graphics.printf("Press joystick input for " .. input_naming[configurable_inputs[self.input_state]] .. ", tab to skip.", 0, 0, 640, "left")
 	end
+	love.graphics.printf("Current joystick name: "..self.joystick_name, 0, 40, 640, "left")
 
 	self.axis_timer = self.axis_timer + 1
 end
@@ -194,7 +189,7 @@ function StickConfigScene:onInputPress(e)
 		-- function keys, escape, and tab are reserved and can't be remapped
 		if e.scancode == "escape" then
 			if self.reconfiguration then
-                config.input.joysticks = self.new_input
+                config.input.joysticks[self.joystick_name] = self.new_input
 				saveConfig()
 			end
 			scene = InputConfigScene()
@@ -203,7 +198,7 @@ function StickConfigScene:onInputPress(e)
 				-- save new input, then load next scene
 				local had_config = config.input ~= nil
                 if not config.input then config.input = {} end
-                config.input.joysticks = self.new_input
+                config.input.joysticks[self.joystick_name] = self.new_input
 				saveConfig()
 				scene = had_config and InputConfigScene() or TitleScene()
 			elseif e.scancode == "delete" or e.scancode == "backspace" then
@@ -216,6 +211,7 @@ function StickConfigScene:onInputPress(e)
 			if self.rebinding then
 				if e.scancode == "tab" then
 					self:rebind(nil) --this is done on purpose
+					self.rebinding = false
 				end
 			else
 				if e.scancode == "up" or e.direction == "u" then
@@ -236,13 +232,25 @@ function StickConfigScene:onInputPress(e)
 			self.input_state = self.input_state + 1
         end
 	elseif string.sub(e.type, 1, 3) == "joy" then
+		if self.joystick_name == "" then
+			self.joystick_name = e.name
+			if config.input.joysticks[e.name] == nil then
+				config.input.joysticks[e.name] = {}
+			end
+			self.reconfiguration = true
+			self.new_input = config.input.joysticks[e.name]
+			for input_name, binding in pairs(config.input.joysticks[e.name]) do
+				self.set_inputs[input_name] = self:formatBinding(binding)
+			end
+			return
+		end
 		if self.input_state <= #configurable_inputs and (not self.reconfiguration or self.rebinding) then
 			if e.type == "joybutton" then
 				-- if not self.new_input[e.name].buttons then
 				-- 	self.new_input[e.name].buttons = {}
 				-- end
 				-- if self.new_input[e.name].buttons[e.button] then return end
-				local input_result = e.name .. "-buttons-" .. e.button
+				local input_result = "buttons-" .. e.button
 				if self:rebind(input_result) then
 					playSE("mode_decide")
 					self.rebinding = false
@@ -264,7 +272,7 @@ function StickConfigScene:onInputPress(e)
 					-- 	self.new_input[e.name].axes[e.axis][e.value >= 1 and "positive" or "negative"]
 					-- ) then return end
 
-					local input_result = e.name .. "-axes-" .. e.axis .. "-" .. (e.value >= 1 and "positive" or "negative")
+					local input_result = "axes-" .. e.axis .. "-" .. (e.value >= 1 and "positive" or "negative")
 					if self:rebind(input_result) then
 						playSE("mode_decide")
 						self.rebinding = false
@@ -283,7 +291,7 @@ function StickConfigScene:onInputPress(e)
 						"Hat " ..
 						e.hat .. " " .. e.direction ..
 						" " .. string.sub(e.name, 1, 10) .. (string.len(e.name) > 10 and "..." or "")
-					local input_result = e.name .. "-hat-" .. e.hat .. "-" .. e.direction
+					local input_result = "hat-" .. e.hat .. "-" .. e.direction
 					if self:rebind(input_result) then
 						playSE("mode_decide")
 						self.rebinding = false
