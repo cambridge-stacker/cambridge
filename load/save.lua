@@ -29,9 +29,9 @@ local function updateInputConfig()
 		if config.input.joysticks.menu_decide ~= nil then
 			local input_table = {}
 			for key, binding in pairs(config.input.joysticks) do
-				print(binding)
 				local joy_name = binding:sub(1, binding:find("-") - 1)
 				local substring = binding:sub(binding:find("-") + 1, #binding)
+				input_table[joy_name] = input_table[joy_name] or {}
 				input_table[joy_name][key] = substring
 			end
 			config.input.joysticks.menu_decide = nil
