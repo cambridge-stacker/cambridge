@@ -102,7 +102,10 @@ function TitleScene:render()
 
 	if not enter_pressed then
 		love.graphics.setFont(font_3x5_3)
-		love.graphics.printf("Welcome To Cambridge: Flooding Edge!\n\n\n\n\nPress Enter or "..config.input.keys.menu_decide, 80, 240, 480, "center")
+		love.graphics.printf("Welcome To Cambridge: Flooding Edge!", 80, 240, 480, "center")
+		if love.timer.getTime() % 2 <= 1 then
+			love.graphics.printf("Press Enter or "..config.input.keys.menu_decide, 80, 360, 480, "center")
+		end
 		love.graphics.setFont(font_3x5_2)
 		love.graphics.printf("This particular fork has a lot of changes, so expect that there'd be a lot of bugs!\nReport bugs found here to Tetro48, in detail.", 120, 280, 400, "center")
 	end
@@ -172,6 +175,8 @@ function TitleScene:onInputPress(e)
 		if e.scancode == "return" or e.scancode == "kpenter" or e.input == "menu_decide" then
 			enter_pressed = true
 			playSE("main_decide")
+		elseif e.input == "menu_back" or e.scancode == "backspace" or e.scancode == "delete" then
+			love.event.quit()
 		end
 		return
 	end
