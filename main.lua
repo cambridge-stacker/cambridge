@@ -265,6 +265,16 @@ function love.draw()
 	love.graphics.draw(GLOBAL_CANVAS)
 end
 
+local function multipleInputs(input_table, input)
+	local result_inputs = {}
+	for input_type, value in pairs(input_table) do
+		if input == value then
+			table.insert(result_inputs, input_type)
+		end
+	end
+	return result_inputs
+end
+
 function love.keypressed(key, scancode)
 	-- global hotkeys
 	if scancode == "f11" then
@@ -310,12 +320,7 @@ function love.keypressed(key, scancode)
 	-- pass any other key to the scene, with its configured mapping
 	else
 		if config.input and config.input.keys then
-			local result_inputs = {}
-			for input_type, value in pairs(config.input.keys) do
-				if scancode == value then
-					table.insert(result_inputs, input_type)
-				end
-			end
+			local result_inputs = multipleInputs(config.input.keys, scancode)
 			for _, input in pairs(result_inputs) do
 				scene:onInputPress({input=input, type="key", key=key, scancode=scancode})
 			end
@@ -336,12 +341,7 @@ function love.keyreleased(key, scancode)
 	-- handle all other keys; tab is reserved, but the input config scene keeps it from getting configured as a game input, so pass tab to the scene here
 	else
 		if config.input and config.input.keys then
-			local result_inputs = {}
-			for input_type, value in pairs(config.input.keys) do
-				if scancode == value then
-					table.insert(result_inputs, input_type)
-				end
-			end
+			local result_inputs = multipleInputs(config.input.keys, scancode)
 			for _, input in pairs(result_inputs) do
 				scene:onInputRelease({input=input, type="key", key=key, scancode=scancode})
 			end
@@ -353,13 +353,10 @@ function love.keyreleased(key, scancode)
 end
 
 function love.joystickpressed(joystick, button)
-	local input_pressed = nil
 	if config.input and config.input.joysticks then
 		local result_inputs = {}
-		for input_type, v in pairs(config.input.joysticks) do
-			if joystick:getName().."-buttons-"..button == v then
-				table.insert(result_inputs, input_type)
-			end
+		if config.input.joysticks[joystick:getName()] then
+			result_inputs = multipleInputs(config.input.joysticks[joystick:getName()], "buttons-"..button)
 		end
 		for _, input in pairs(result_inputs) do
 			scene:onInputPress({input=input, type="joybutton", name=joystick:getName(), button=button})
@@ -375,10 +372,8 @@ function love.joystickreleased(joystick, button)
 	local input_released = nil
 	if config.input and config.input.joysticks then
 		local result_inputs = {}
-		for input_type, v in pairs(config.input.joysticks) do
-			if joystick:getName().."-buttons-"..button == v then
-				table.insert(result_inputs, input_type)
-			end
+		if config.input.joysticks[joystick:getName()] then
+			result_inputs = multipleInputs(config.input.joysticks[joystick:getName()], "buttons-"..button)
 		end
 		for _, input in pairs(result_inputs) do
 			scene:onInputRelease({input=input, type="joybutton", name=joystick:getName(), button=button})
@@ -395,13 +390,11 @@ function love.joystickaxis(joystick, axis, value)
 	if config.input and config.input.joysticks then
 		if math.abs(value) >= 1 then
 			local result_inputs = {}
-			for input_type, v in pairs(config.input.joysticks) do
-				if joystick:getName().."-axes-"..axis.."-"..(value >= 1 and "positive" or "negative") == v then
-					table.insert(result_inputs, input_type)
+			if config.input.joysticks[joystick:getName()] then
+				result_inputs = multipleInputs(config.input.joysticks[joystick:getName()],"axes-"..axis.."-"..(value >= 1 and "positive" or "negative"))
+				for _, input in pairs(result_inputs) do
+					scene:onInputPress({input=input, type="joyaxis", name=joystick:getName(), axis=axis, value=value})
 				end
-			end
-			for _, input in pairs(result_inputs) do
-				scene:onInputPress({input=input, type="joyaxis", name=joystick:getName(), axis=axis, value=value})
 			end
 			if #result_inputs == 0 then
 				scene:onInputPress({type="joyaxis", name=joystick:getName(), axis=axis, value=value})
@@ -409,12 +402,14 @@ function love.joystickaxis(joystick, axis, value)
 			-- scene:onInputPress({input=input_pressed, type="joyaxis", name=joystick:getName(), axis=axis, value=value})
 		else
 			local result_inputs = {}
-			for input_type, v in pairs(config.input.joysticks) do
-				if joystick:getName().."-axes-"..axis.."-".."negative" == v then
-					table.insert(result_inputs, input_type)
-				end
-				if joystick:getName().."-axes-"..axis.."-".."positive" == v then
-					table.insert(result_inputs, input_type)
+			if config.input.joysticks[joystick:getName()] then
+				for input_type, v in pairs(config.input.joysticks[joystick:getName()]) do
+					if "axes-"..axis.."-".."negative" == v then
+						table.insert(result_inputs, input_type)
+					end
+					if "axes-"..axis.."-".."positive" == v then
+						table.insert(result_inputs, input_type)
+					end
 				end
 			end
 			for _, input in pairs(result_inputs) do
@@ -441,7 +436,8 @@ function love.joystickhat(joystick, hat, direction)
 	local has_hat = false
 	if
 		config.input and
-		config.input.joysticks
+		config.input.joysticks and
+		config.input.joysticks[joystick:getName()]
 	then
 		input_pressed = direction ~= "c"
 		has_hat = true
@@ -452,8 +448,8 @@ function love.joystickhat(joystick, hat, direction)
 			local _, count = last_hat_direction:gsub(char, char)
 			if count == 0 then
 				local result_inputs = {}
-				for input_type, value in pairs(config.input.joysticks) do
-					if joystick:getName().."-hat-"..hat.."-"..directions[char] == value then
+				for input_type, value in pairs(config.input.joysticks[joystick:getName()]) do
+					if "hat-"..hat.."-"..directions[char] == value then
 						table.insert(result_inputs, input_type)
 					end
 				end
@@ -471,8 +467,8 @@ function love.joystickhat(joystick, hat, direction)
 			local _, count = direction:gsub(char, char)
 			if count == 0 then
 				local result_inputs = {}
-				for input_type, value in pairs(config.input.joysticks) do
-					if joystick:getName().."-hat-"..hat.."-"..directions[char] == value then
+				for input_type, value in pairs(config.input.joysticks[joystick:getName()]) do
+					if "hat-"..hat.."-"..directions[char] == value then
 						table.insert(result_inputs, input_type)
 					end
 				end
@@ -489,12 +485,7 @@ function love.joystickhat(joystick, hat, direction)
 	elseif has_hat then
 		--why redefine the local variable?
 		for i, fdirection in ipairs{"d", "l", "ld", "lu", "r", "rd", "ru", "u"} do
-			local result_inputs = {}
-			for input_type, value in pairs(config.input.joysticks) do
-				if joystick:getName().."-hat-"..hat.."-"..(directions[fdirection] or "nil") == value then
-					table.insert(result_inputs, input_type)
-				end
-			end
+			local result_inputs = multipleInputs(config.input.joysticks[joystick:getName()], "hat-"..hat.."-"..(directions[fdirection] or "nil"))
 			for _, input in pairs(result_inputs) do
 				scene:onInputRelease({input=input, type="joyhat", name=joystick:getName(), hat=hat, direction=fdirection})
 			end
