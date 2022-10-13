@@ -73,7 +73,16 @@ function loadReplayList()
 	replay_tree = {{name = "All"}}
 	dict_ref = {}
 	loaded_replays = false
-	
+
+	--proper disposal to avoid some memory problems
+	if io_thread then
+		io_thread:release()
+		love.thread.getChannel( 'replays' ):clear()
+		love.thread.getChannel( 'replay_tree' ):clear()
+		love.thread.getChannel( 'dict_ref' ):clear()
+		love.thread.getChannel( 'loaded_replays' ):clear()
+	end
+
 	io_thread = love.thread.newThread( replay_load_code )
 	local mode_names = {}
 	for key, value in pairs(game_modes) do
