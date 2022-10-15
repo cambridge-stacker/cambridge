@@ -46,11 +46,9 @@ If you want the `flooding edge` version, download [this](https://github.com/Tetr
 
 Note: It might have weird bugs that isn't addressed by [Tetro48](https://github.com/Tetro48/); it has a lot of changes.
 e.g.
-Mouse controls, cursor type, visual settings, replay tree, replay speed, tool-assisted speedrun mode, replay tunings (although that'd be helpful). 
+Mouse controls, cursor type, visual settings, separate audio settings, replay tree, replay speed, tool-assisted speedrun mode, input re-work, replay tunings (although that'd be helpful), and many many more.
 
-~~It is not really meant to be merged with main [Cambridge](https://github.com/MillaBasset/cambridge).~~ (RETRACTED)
-
-If you ever try merging this to main [Cambridge](https://github.com/MillaBasset/cambridge) (before it's merged with this fork), well, then, good effing luck doing that.
+Any bugs found here that does not also apply to vanilla version must only be reported on this fork. Do not make issues related to this fork on [the fork's origin](https://github.com/MillaBasset/cambridge).
 
 ### macOS, Linux
 
