@@ -18,7 +18,7 @@ replay_load_code = [[
 	love.thread.getChannel( 'load_state' ):clear()
 	love.thread.getChannel( 'load_state' ):push( "Loading replay file list" )
 	local replay_file_list = love.filesystem.getDirectoryItems("replays")
-	local binser = require "libs/binser"
+	local binser = require "libs.binser"
 	require "funcs"
 	print("Loading replay contents")
 	love.thread.getChannel( 'load_state' ):clear()
