@@ -41,21 +41,39 @@ function love.load()
 	-- this is executed after the sound table is generated. why is that is unknown.
 	if config.secret then playSE("welcome") end
 end
+function recursivelyLoadRequireFileTable(table, directory, blacklisted_string)
+	--LOVE 12.0 will warn about require strings having forward slashes in them if this is not done.
+	local require_string = string.gsub(directory, "/", ".")
+	local list = love.filesystem.getDirectoryItems(directory)
+	for index, name in ipairs(list) do
+		
+		if love.filesystem.getInfo(directory.."/"..name, "directory") then
+			table[#table+1] = {name = name, is_directory = true}
+			recursivelyLoadRequireFileTable(table[#table], directory.."/"..name, blacklisted_string)
+		end
+		if name ~= blacklisted_string and name:sub(-4) == ".lua" then
+			table[#table+1] = require(require_string.."."..name:sub(1, -5))
+		end
+	end
+end
 function initModules()
 	game_modes = {}
-	mode_list = love.filesystem.getDirectoryItems("tetris/modes")
-	for i=1,#mode_list do
-		if(mode_list[i] ~= "gamemode.lua" and string.sub(mode_list[i], -4) == ".lua") then
-			game_modes[#game_modes+1] = require ("tetris.modes."..string.sub(mode_list[i],1,-5))
-		end
-	end
+	recursivelyLoadRequireFileTable(game_modes, "tetris/modes", "gamemode.lua")
+	-- mode_list = love.filesystem.getDirectoryItems("tetris/modes")
+	-- for i=1,#mode_list do
+	-- 	if(mode_list[i] ~= "gamemode.lua" and string.sub(mode_list[i], -4) == ".lua") then
+	-- 		game_modes[#game_modes+1] = require ("tetris.modes."..string.sub(mode_list[i],1,-5))
+	-- 	end
+	-- end
 	rulesets = {}
-	rule_list = love.filesystem.getDirectoryItems("tetris/rulesets")
-	for i=1,#rule_list do
-		if(rule_list[i] ~= "ruleset.lua" and string.sub(rule_list[i], -4) == ".lua") then
-			rulesets[#rulesets+1] = require ("tetris.rulesets."..string.sub(rule_list[i],1,-5))
-		end
-	end
+	recursivelyLoadRequireFileTable(rulesets, "tetris/rulesets", "ruleset.lua")
+	-- rule_list = love.filesystem.getDirectoryItems("tetris/rulesets")
+	-- for i=1,#rule_list do
+	-- 	if(rule_list[i] ~= "ruleset.lua" and string.sub(rule_list[i], -4) == ".lua") then
+	-- 		rulesets[#rulesets+1] = require ("tetris.rulesets."..string.sub(rule_list[i],1,-5))
+	-- 	end
+	-- end
+
 	--sort mode/rule lists
 	local function padnum(d) return ("%03d%s"):format(#d, d) end
 	table.sort(game_modes, function(a,b)
@@ -121,12 +139,15 @@ function getScaledPos(cursor_x, cursor_y)
 	return (cursor_x - (screen_x - scale_factor * 640) / 2)/scale_factor, (cursor_y - (screen_y - scale_factor * 480) / 2)/scale_factor
 end
 
+local highlights = 0
+
 function CursorHighlight(x,y,w,h)
 	local mouse_x, mouse_y = getScaledPos(love.mouse.getPosition())
 	if mouse_idle > 2 or config.visualsettings.cursor_highlight ~= 1 then
 		return 1
 	end
 	if mouse_x > x and mouse_x < x+w and mouse_y > y and mouse_y < y+h then
+		highlights = highlights + 1
 		return 0
 	else
 		return 1
@@ -605,7 +626,7 @@ function love.run()
 					-- busy loop, do nothing here until delay is finished; delays above stop short of finishing, so this part can finish it off precisely
 				end
 			end
-			if love.mouse then 
+			if love.mouse then
 				left_clicked_before = love.mouse.isDown(1) or mouse_idle > 2
 				right_clicked_before = love.mouse.isDown(2) or mouse_idle > 2
 				if prev_cur_pos_x == love.mouse.getX() and prev_cur_pos_y == love.mouse.getY() then
