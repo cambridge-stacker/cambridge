@@ -8,7 +8,14 @@ end
 function loadFromFile(filename)
 	local file_data = love.filesystem.read(filename)
 	if file_data == nil then
-		return {} -- new object
+		--Gets backup just in case.
+		file_data = love.filesystem.read(filename..".backup")
+		-- if no backup
+		if file_data == nil then
+			return {} -- new object
+		end
+	else
+		love.filesystem.write(filename..".backup", file_data) -- backup creation if sucessful
 	end
 	local save_data = binser.deserialize(file_data)
 	if save_data == nil then
@@ -115,14 +122,21 @@ function initConfig()
 	end
 end
 
+function saveToFile(filename, data)
+	local is_successful, message = love.filesystem.write(filename..".tmp", data) --temporary file.
+	if not is_successful then
+		error("Failed to save file: "..filename..". Error message: "..message)
+	end
+	love.filesystem.remove(filename..".tmp") --cleanup.
+	love.filesystem.write(filename, data)
+end
+
 function saveConfig()
-	love.filesystem.write(
-		'config.sav', binser.serialize(config)
-	)
+	saveToFile("config.sav", binser.serialize(config))
 end
 
 function saveHighscores()
-	love.filesystem.write(
+	saveToFile(
 		'highscores.sav', binser.serialize(highscores)
 	)
 end
