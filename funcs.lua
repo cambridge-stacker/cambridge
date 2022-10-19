@@ -20,7 +20,7 @@ end
 
 function strTrueValues(tbl)
 	-- returns a concatenation of all the keys in tbl with value true, separated with spaces
-	str = ""
+	local str = ""
 	for k, v in pairs(tbl) do
 		if v == true then
 			str = str .. k .. " "
@@ -60,7 +60,7 @@ function formatTime(frames)
 	min  = math.floor(frames/3600)
 	sec  = math.floor(frames/60) % 60
 	hund = math.floor(frames/.6) % 100
-	str = string.format("%02d:%02d.%02d", min, sec, hund)
+	local str = string.format("%02d:%02d.%02d", min, sec, hund)
 	return str
 end
 
