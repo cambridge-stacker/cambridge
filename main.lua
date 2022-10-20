@@ -152,6 +152,12 @@ mouse_idle = 0
 TAS_mode = false
 frame_steps = 0
 loaded_replays = false
+local system_cursor_type = "arrow"
+
+---@param type love.CursorType
+function setSystemCursorType(type)
+	system_cursor_type = type
+end
 
 -- For when mouse controls are part of menu controls
 function getScaledPos(cursor_x, cursor_y)
@@ -160,7 +166,6 @@ function getScaledPos(cursor_x, cursor_y)
 	return (cursor_x - (screen_x - scale_factor * 640) / 2)/scale_factor, (cursor_y - (screen_y - scale_factor * 480) / 2)/scale_factor
 end
 
-local highlights = 0
 
 function CursorHighlight(x,y,w,h)
 	local mouse_x, mouse_y = getScaledPos(love.mouse.getPosition())
@@ -168,7 +173,7 @@ function CursorHighlight(x,y,w,h)
 		return 1
 	end
 	if mouse_x > x and mouse_x < x+w and mouse_y > y and mouse_y < y+h then
-		highlights = highlights + 1
+		setSystemCursorType("hand")
 		return 0
 	else
 		return 1
@@ -648,6 +653,10 @@ function love.run()
 				end
 			end
 			if love.mouse then
+				love.mouse.setCursor(love.mouse.getSystemCursor(system_cursor_type))
+				if system_cursor_type ~= "arrow" then
+					system_cursor_type = "arrow"
+				end
 				left_clicked_before = love.mouse.isDown(1) or mouse_idle > 2
 				right_clicked_before = love.mouse.isDown(2) or mouse_idle > 2
 				if prev_cur_pos_x == love.mouse.getX() and prev_cur_pos_y == love.mouse.getY() then

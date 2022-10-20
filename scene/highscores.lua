@@ -23,6 +23,7 @@ local function CursorHighlight(x,y,w,h)
 		return 1
 	end
 	if mouse_x > x and mouse_x < x+w and mouse_y > y and mouse_y < y+h then
+		if setSystemCursorType then setSystemCursorType("hand") end
 		return 0
 	else
 		return 1
