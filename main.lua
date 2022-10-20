@@ -1,10 +1,14 @@
 function love.load()
+	love.graphics.setDefaultFilter("linear", "nearest")
+	require "load.fonts"
+	love.graphics.setFont(font_3x5_4)
+	love.graphics.printf("Please wait...\nLoading...", 160, 160, 320, "center")
+	love.graphics.present()
+	love.graphics.clear()
 	math.randomseed(os.time())
 	highscores = {}
-	love.graphics.setDefaultFilter("linear", "nearest")
 	require "load.rpc"
 	require "load.graphics"
-	require "load.fonts"
 	require "load.sounds"
 	require "load.bgm"
 	require "load.save"
