@@ -67,18 +67,6 @@ function ReplaySelectScene:update()
 	else
 		self.das = 0
 	end
-
-	local mouse_x, mouse_y = getScaledPos(love.mouse.getPosition())
-	if love.mouse.isDown(1) and not left_clicked_before then
-		if self.display_error or self.display_warning then
-			scene = TitleScene()
-			return
-		end
-		self.auto_menu_offset = math.floor((mouse_y - 260)/20)
-		if self.auto_menu_offset == 0 then
-			self:startReplay()
-		end
-	end
 	if self.menu_state.submenu > 0 then
 		if #replay_tree[self.menu_state.submenu] == 0 then
 			return
@@ -271,6 +259,15 @@ end
 function ReplaySelectScene:onInputPress(e)
 	if (self.display_warning or self.display_error) and e.input then
 		scene = TitleScene()
+	elseif e.type == "mouse" and not loaded_replays then
+		if self.display_error or self.display_warning then
+			scene = TitleScene()
+			return
+		end
+		self.auto_menu_offset = math.floor((e.y - 260)/20)
+		if self.auto_menu_offset == 0 then
+			self:startReplay()
+		end
 	elseif e.type == "wheel" then
 		if e.y ~= 0 then
 			self:changeOption(-e.y)

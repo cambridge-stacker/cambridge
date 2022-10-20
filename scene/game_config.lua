@@ -32,29 +32,6 @@ function ConfigScene:new()
 	})
 end
 
-function ConfigScene:update()
-	--#region Mouse
-	local x, y = getScaledPos(love.mouse.getPosition())
-	if not love.mouse.isDown(1) or left_clicked_before then return end
-	if x > 20 and y > 40 and x < 70 and y < 70 then
-		playSE("mode_decide")
-		saveConfig()
-		scene = SettingsScene()
-	end
-	for i, option in ipairs(ConfigScene.options) do
-		for j, setting in ipairs(option[3]) do
-			if x > 100 + 110 * j and x < 200 + 110 * j then
-				if y > 100 + i * 20 and y < 120 + i * 20 then
-					self.main_menu_state = math.floor((y - 280) / 20)
-					playSE("cursor_lr")
-					config.gamesettings[option[1]] = Mod1(j, #option[3])
-				end
-			end
-		end
-	end
-	--#endregion
-end
-
 function ConfigScene:render()
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.draw(
@@ -86,6 +63,24 @@ function ConfigScene:render()
 end
 
 function ConfigScene:onInputPress(e)
+	if e.type == "mouse" then
+		if e.x > 20 and e.y > 40 and e.x < 70 and e.y < 70 then
+			playSE("mode_decide")
+			saveConfig()
+			scene = SettingsScene()
+		end
+		for i, option in ipairs(ConfigScene.options) do
+			for j, setting in ipairs(option[3]) do
+				if e.x > 100 + 110 * j and e.x < 200 + 110 * j then
+					if e.y > 100 + i * 20 and e.y < 120 + i * 20 then
+						self.main_menu_state = math.floor((e.y - 280) / 20)
+						playSE("cursor_lr")
+						config.gamesettings[option[1]] = Mod1(j, #option[3])
+					end
+				end
+			end
+		end
+	end
 	if e.input == "menu_decide" or e.scancode == "return" then
 		playSE("mode_decide")
 		saveConfig()

@@ -575,6 +575,22 @@ function love.joystickhat(joystick, hat, direction)
 	end
 end
 
+function love.mousepressed(x, y, button, istouch, presses)
+	if mouse_idle > 2 then return end
+	local screen_x, screen_y = love.graphics.getDimensions()
+	local scale_factor = math.min(screen_x / 640, screen_y / 480)
+	local local_x, local_y = (x - (screen_x - scale_factor * 640) / 2)/scale_factor, (y - (screen_y - scale_factor * 480) / 2)/scale_factor
+	scene:onInputPress({input=nil, type="mouse", x=local_x, y=local_y, button=button, istouch=istouch, presses=presses})
+end
+
+function love.mousereleased(x, y, button, istouch, presses)
+	if mouse_idle > 2 then return end
+	local screen_x, screen_y = love.graphics.getDimensions()
+	local scale_factor = math.min(screen_x / 640, screen_y / 480)
+	local local_x, local_y = (x - (screen_x - scale_factor * 640) / 2)/scale_factor, (y - (screen_y - scale_factor * 480) / 2)/scale_factor
+	scene:onInputRelease({input=nil, type="mouse", x=local_x, y=local_y, button=button, istouch=istouch, presses=presses})
+end
+
 function love.wheelmoved(x, y)
 	scene:onInputPress({input=nil, type="wheel", x=x, y=y})
 end

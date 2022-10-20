@@ -57,62 +57,6 @@ function ModeSelectScene:update()
 		end
 		return
 	end
-
-	local mouse_x, mouse_y = getScaledPos(love.mouse.getPosition())
-	if love.mouse.isDown(1) and not left_clicked_before then
-		if mouse_y < 80 then
-			if mouse_x > 0 and mouse_y > 40 and mouse_x < 50 then
-				playSE("main_decide")
-				if self.menu_state.select == "mode" then
-					if #self.game_mode_selections > 1 then
-						self:menuGoBack("mode")
-						self.menu_state.mode = 1
-						return
-					end
-				else
-					if #self.ruleset_folder_selections > 1 then
-						self:menuGoBack("ruleset")
-						self.menu_state.ruleset = 1
-						return
-					end
-				end
-				scene = TitleScene()
-			end
-			return
-		end
-		if #self.game_mode_folder == 0 then
-			self:menuGoBack("mode")
-			self.menu_state.mode = 1
-			return
-		end
-		if #self.ruleset_folder == 0 then
-			self:menuGoBack("ruleset")
-			self.menu_state.ruleset = 1
-			return
-		end
-		if mouse_x < 320 then
-			self.auto_menu_state = "mode"
-		else
-			self.auto_menu_state = "ruleset"
-		end
-		if self.auto_menu_state ~= self.menu_state.select then
-			self:switchSelect()
-		end
-		self.auto_menu_offset = math.floor((mouse_y - 260)/20)
-		if self.auto_menu_offset == 0 and self.auto_menu_state == "mode" then
-			if self.game_mode_folder[self.menu_state.mode].is_directory then
-				playSE("main_decide")
-				self:menuGoForward("mode")
-				self.menu_state.mode = 1
-				return
-			end
-			self:indirectStartMode()
-		elseif self.ruleset_folder[self.menu_state.ruleset].is_directory and mouse_x > 320 and self.auto_menu_offset == 0 then
-			playSE("main_decide")
-			self:menuGoForward("ruleset")
-			self.menu_state.ruleset = 1
-		end
-	end
 	if self.das_up or self.das_down then
 		self.das = self.das + 1
 	else
@@ -375,6 +319,59 @@ function ModeSelectScene:onInputPress(e)
 			self.start_frames = 0
 		else
 			scene = TitleScene()
+		end
+	elseif e.type == "mouse" and e.button == 1 then
+		if e.y < 80 then
+			if e.x > 0 and e.y > 40 and e.x < 50 then
+				playSE("main_decide")
+				if self.menu_state.select == "mode" then
+					if #self.game_mode_selections > 1 then
+						self:menuGoBack("mode")
+						self.menu_state.mode = 1
+						return
+					end
+				else
+					if #self.ruleset_folder_selections > 1 then
+						self:menuGoBack("ruleset")
+						self.menu_state.ruleset = 1
+						return
+					end
+				end
+				scene = TitleScene()
+			end
+			return
+		end
+		if #self.game_mode_folder == 0 then
+			self:menuGoBack("mode")
+			self.menu_state.mode = 1
+			return
+		end
+		if #self.ruleset_folder == 0 then
+			self:menuGoBack("ruleset")
+			self.menu_state.ruleset = 1
+			return
+		end
+		if e.x < 320 then
+			self.auto_menu_state = "mode"
+		else
+			self.auto_menu_state = "ruleset"
+		end
+		if self.auto_menu_state ~= self.menu_state.select then
+			self:switchSelect()
+		end
+		self.auto_menu_offset = math.floor((e.y - 260)/20)
+		if self.auto_menu_offset == 0 and self.auto_menu_state == "mode" then
+			if self.game_mode_folder[self.menu_state.mode].is_directory then
+				playSE("main_decide")
+				self:menuGoForward("mode")
+				self.menu_state.mode = 1
+				return
+			end
+			self:indirectStartMode()
+		elseif self.ruleset_folder[self.menu_state.ruleset].is_directory and mouse_x > 320 and self.auto_menu_offset == 0 then
+			playSE("main_decide")
+			self:menuGoForward("ruleset")
+			self.menu_state.ruleset = 1
 		end
 	elseif self.starting then return
 	elseif e.type == "wheel" then

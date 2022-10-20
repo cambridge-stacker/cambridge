@@ -31,12 +31,6 @@ function TuningScene:update()
     self.dasSlider:update(x,y)
 	self.arrSlider:update(x,y)
 	self.dcdSlider:update(x,y)
-	if not love.mouse.isDown(1) or left_clicked_before then return end
-	if x > 20 and y > 40 and x < 70 and y < 70 then
-		playSE("mode_decide")
-		saveConfig()
-		scene = SettingsScene()
-	end
 end
 
 function TuningScene:render()
@@ -74,6 +68,13 @@ function TuningScene:render()
 end
 
 function TuningScene:onInputPress(e)
+	if e.type == "mouse" then
+		if e.x > 20 and e.y > 40 and e.x < 70 and e.y < 70 then
+			playSE("mode_decide")
+			saveConfig()
+			scene = SettingsScene()
+		end
+	end
 	if e.input == "menu_decide" or e.scancode == "return" then
 		playSE("mode_decide")
 		saveConfig()

@@ -2,33 +2,6 @@ local ModeSelectScene = Scene:extend()
 
 ModeSelectScene.title = "Mode list"
 
---#region Custom mouse code
-
---This is for mouse. Can be removed only if the code in Mouse Controls region is removed.
-local left_clicked_before = true
-local mouse_idle = 0
-local prev_cur_pos_x, prev_cur_pos_y = 0, 0
-
-
--- For when mouse controls are part of menu controls
-local function getScaledPos(cursor_x, cursor_y)
-	local screen_x, screen_y = love.graphics.getDimensions()
-	local scale_factor = math.min(screen_x / 640, screen_y / 480)
-	return (cursor_x - (screen_x - scale_factor * 640) / 2)/scale_factor, (cursor_y - (screen_y - scale_factor * 480) / 2)/scale_factor
-end
-
-local function CursorHighlight(x,y,w,h)
-	local mouse_x, mouse_y = getScaledPos(love.mouse.getPosition())
-	if mouse_idle > 2 or config.visualsettings.cursor_highlight ~= 1 then
-		return 1
-	end
-	if mouse_x > x and mouse_x < x+w and mouse_y > y and mouse_y < y+h then
-		if setSystemCursorType then setSystemCursorType("hand") end
-		return 0
-	else
-		return 1
-	end
-end
 --Interpolates in a smooth fashion unless the visual setting for scrolling is nil or off.
 local function interpolateListPos(input, from, speed)
 	if config.visualsettings["smooth_scroll"] == 2 or config.visualsettings["smooth_scroll"] == nil then
@@ -48,7 +21,6 @@ local function interpolateListPos(input, from, speed)
 	end
 	return input
 end
---#endregion
 
 function ModeSelectScene:new()
 	-- reload custom modules
@@ -87,9 +59,6 @@ function ModeSelectScene:new()
 		state = "Chosen ??? and ???.",
 		largeImageKey = "ingame-000"
 	})
-
-    --It's here to avoid some seems-to-be bug with the scene's built-in mouse controls.
-    left_clicked_before = true
 end
 function ModeSelectScene:update()
 	switchBGM(nil)
@@ -100,68 +69,6 @@ function ModeSelectScene:update()
 		end
 		return
 	end
-
-    --#region Mouse controls.
-	local mouse_x, mouse_y = getScaledPos(love.mouse.getPosition())
-	if love.mouse.isDown(1) and not left_clicked_before then
-		left_clicked_before = love.mouse.isDown(1) or mouse_idle > 2
-		if mouse_y < 80 then
-			if mouse_x > 0 and mouse_y > 40 and mouse_x < 50 then
-				playSE("main_decide")
-				if #self.game_mode_selections > 1 then
-					self:menuGoBack("mode")
-					self.menu_state.mode = 1
-					return
-				end
-				if #self.ruleset_folder_selections > 1 then
-					self:menuGoBack("ruleset")
-					self.menu_state.ruleset = 1
-					return
-				end
-				scene = TitleScene()
-			end
-			return
-		end
-		if #self.game_mode_folder == 0 then
-			self:menuGoBack("mode")
-			self.menu_state.mode = 1
-			return
-		end
-		if #self.ruleset_folder == 0 then
-			self:menuGoBack("ruleset")
-			self.menu_state.ruleset = 1
-			return
-		end
-        if mouse_y < 440 then
-            if mouse_x < 260 then
-                self.auto_mode_offset = math.floor((mouse_y - 260)/20)
-                if self.auto_mode_offset == 0 then
-					if self.game_mode_folder[self.menu_state.mode].is_directory then
-						playSE("main_decide")
-						self:menuGoForward("mode")
-						self.menu_state.mode = 1
-						return
-					end
-					self:indirectStartMode()
-                end
-            end
-        else
-            self.auto_ruleset_offset = math.floor((mouse_x - 260)/120)
-			if self.auto_ruleset_offset == 0 and self.ruleset_folder[self.menu_state.ruleset].is_directory then
-				playSE("main_decide")
-				self:menuGoForward("ruleset")
-				self.menu_state.ruleset = 1
-			end
-        end
-	end
-    left_clicked_before = love.mouse.isDown(1) or mouse_idle > 2
-    if prev_cur_pos_x == love.mouse.getX() and prev_cur_pos_y == love.mouse.getY() then
-        mouse_idle = mouse_idle + love.timer.getDelta()
-    else
-        mouse_idle = 0
-    end
-    prev_cur_pos_x, prev_cur_pos_y = love.mouse.getPosition()
-    --#endregion
 	if self.das_up or self.das_down then
 		self.das_y = self.das_y + 1
 	else
@@ -431,6 +338,55 @@ function ModeSelectScene:onInputPress(e)
 		else
 			scene = TitleScene()
 		end
+	elseif e.type == "mouse" then
+		if e.y < 80 then
+			if e.x > 0 and e.y > 40 and e.x < 50 then
+				playSE("main_decide")
+				if #self.game_mode_selections > 1 then
+					self:menuGoBack("mode")
+					self.menu_state.mode = 1
+					return
+				end
+				if #self.ruleset_folder_selections > 1 then
+					self:menuGoBack("ruleset")
+					self.menu_state.ruleset = 1
+					return
+				end
+				scene = TitleScene()
+			end
+			return
+		end
+		if #self.game_mode_folder == 0 then
+			self:menuGoBack("mode")
+			self.menu_state.mode = 1
+			return
+		end
+		if #self.ruleset_folder == 0 then
+			self:menuGoBack("ruleset")
+			self.menu_state.ruleset = 1
+			return
+		end
+        if e.y < 440 then
+            if e.x < 260 then
+                self.auto_mode_offset = math.floor((e.y - 260)/20)
+                if self.auto_mode_offset == 0 then
+					if self.game_mode_folder[self.menu_state.mode].is_directory then
+						playSE("main_decide")
+						self:menuGoForward("mode")
+						self.menu_state.mode = 1
+						return
+					end
+					self:indirectStartMode()
+                end
+            end
+        else
+            self.auto_ruleset_offset = math.floor((e.x - 260)/120)
+			if self.auto_ruleset_offset == 0 and self.ruleset_folder[self.menu_state.ruleset].is_directory then
+				playSE("main_decide")
+				self:menuGoForward("ruleset")
+				self.menu_state.ruleset = 1
+			end
+        end
     elseif self.starting then return
     elseif e.type == "wheel" then
         if e.x ~= 0 then

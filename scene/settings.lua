@@ -28,20 +28,6 @@ function SettingsScene:new()
 end
 
 function SettingsScene:update()
-	if not love.mouse.isDown(1) or left_clicked_before then return end
-	local mouse_x, mouse_y = getScaledPos(love.mouse.getPosition())
-	if mouse_x > 20 and mouse_y > 40 and mouse_x < 70 and mouse_y < 70 then
-		playSE("main_decide")
-		saveConfig()
-		scene = TitleScene()
-	end
-    if mouse_x > 75 and mouse_x < 275 then
-        if mouse_y > 160 and mouse_y < 160 + #menu_screens * 50 then
-            self.menu_state = math.floor((mouse_y - 110) / 50)
-            playSE("main_decide")
-            scene = menu_screens[self.menu_state]()
-        end
-    end
 end
 
 function SettingsScene:render()
@@ -81,6 +67,20 @@ function SettingsScene:changeOption(rel)
 end
 
 function SettingsScene:onInputPress(e)
+	if e.type == "mouse" then
+		if e.x > 20 and e.y > 40 and e.x < 70 and e.y < 70 then
+			playSE("main_decide")
+			saveConfig()
+			scene = TitleScene()
+		end
+		if e.x > 75 and e.x < 275 then
+			if e.y > 160 and e.y < 160 + #menu_screens * 50 then
+				self.menu_state = math.floor((e.y - 110) / 50)
+				playSE("main_decide")
+				scene = menu_screens[self.menu_state]()
+			end
+		end
+	end
 	if e.input == "menu_decide" or e.scancode == "return" then
 		playSE("main_decide")
 		scene = menu_screens[self.menu_state]()

@@ -70,15 +70,6 @@ function TitleScene:update()
 	if self.frames < 125 then self.y_offset = self.frames
 	elseif self.frames < 185 then self.y_offset = 125
 	else self.y_offset = 310 - self.frames end
-	local mouse_x, mouse_y = getScaledPos(love.mouse.getPosition())
-	if not love.mouse.isDown(1) or left_clicked_before or menu_frames < 10 * #main_menu_screens then return end
-	if mouse_x > 40 and mouse_x < 160 then
-		if mouse_y > 300 and mouse_y < 300 + #main_menu_screens * 20 then
-			self.main_menu_state = math.floor((mouse_y - 280) / 20)
-			playSE("main_decide")
-			scene = main_menu_screens[self.main_menu_state]()
-		end
-	end
 end
 
 local block_offsets = {
@@ -171,6 +162,15 @@ function TitleScene:changeOption(rel)
 end
 
 function TitleScene:onInputPress(e)
+	if e.type == "mouse" and menu_frames > 10 * #main_menu_screens then
+		if e.x > 40 and e.x < 160 then
+			if e.y > 300 and e.y < 300 + #main_menu_screens * 20 then
+				self.main_menu_state = math.floor((e.y - 280) / 20)
+				playSE("main_decide")
+				scene = main_menu_screens[self.main_menu_state]()
+			end
+		end
+	end
 	if not enter_pressed then
 		if e.scancode == "return" or e.scancode == "kpenter" or e.input == "menu_decide" then
 			enter_pressed = true
