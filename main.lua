@@ -88,6 +88,23 @@ end
 
 --#region Tetro48's code
 
+
+local function recursionStringValueExtract(tbl, get_from, key_check)
+	local result = {}
+	for key, value in pairs(tbl) do
+		print(value, get_from, key_check)
+		if type(value) == "table" and (key_check == nil or value[key_check]) then
+			local recursion_result = recursionStringValueExtract(value, get_from, key_check)
+			for k2, v2 in pairs(recursion_result) do
+				table.insert(result, v2)
+			end
+		elseif tostring(value) == "Object" then
+			table.insert(result, value)
+		end
+	end
+	return result
+end
+
 local io_thread
 
 function loadReplayList()
@@ -107,7 +124,7 @@ function loadReplayList()
 
 	io_thread = love.thread.newThread( replay_load_code )
 	local mode_names = {}
-	for key, value in pairs(game_modes) do
+	for key, value in pairs(recursionStringValueExtract(game_modes, "name", "is_directory")) do
 		table.insert(mode_names, value.name)
 	end
 	io_thread:start(mode_names)
