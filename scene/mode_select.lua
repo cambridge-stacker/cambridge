@@ -368,7 +368,7 @@ function ModeSelectScene:onInputPress(e)
 				return
 			end
 			self:indirectStartMode()
-		elseif self.ruleset_folder[self.menu_state.ruleset].is_directory and mouse_x > 320 and self.auto_menu_offset == 0 then
+		elseif self.ruleset_folder[self.menu_state.ruleset].is_directory and e.x > 320 and self.auto_menu_offset == 0 then
 			playSE("main_decide")
 			self:menuGoForward("ruleset")
 			self.menu_state.ruleset = 1
