@@ -52,7 +52,7 @@ function ReplaySelectScene:update()
 	
 	if not loaded_replays then
 		self.state_string = love.thread.getChannel('load_state'):peek()
-		replays = popFromChannel('replays')
+		replays = popFromChannel('replays') or replays
 		replay_tree = popFromChannel('replay_tree')
 		dict_ref = popFromChannel('dict_ref')
 		local load = love.thread.getChannel( 'loaded_replays' ):pop()
@@ -259,7 +259,7 @@ end
 function ReplaySelectScene:onInputPress(e)
 	if (self.display_warning or self.display_error) and e.input then
 		scene = TitleScene()
-	elseif e.type == "mouse" and not loaded_replays then
+	elseif e.type == "mouse" and loaded_replays then
 		if self.display_error or self.display_warning then
 			scene = TitleScene()
 			return
