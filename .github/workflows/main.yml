@@ -11,13 +11,13 @@ jobs:
           if [ ! -d "dist"]; then
             mkdir dist
           fi
-          if [ ! -d "dist/windows"]; then
+          if [ ! -d "dist/windows/"]; then
             mkdir dist/windows
           fi
-          if [ ! -d "dist/win32"]; then
+          if [ ! -d "dist/win32/"]; then
             mkdir dist/win32
           fi
-          if [ ! -d "dist/other"]; then
+          if [ ! -d "dist/other/"]; then
             mkdir dist/other
           fi
           cat dist/windows/love.exe cambridge.love > dist/windows/cambridge.exe
@@ -48,19 +48,19 @@ jobs:
           rm -f dist/windows/cambridge.exe
           rm -f dist/windows/SOURCES.md
           rm -f dist/windows/LICENSE.md
-          if [-d "dist/windows/libs"]; then
+          if [-d "dist/windows/libs/"]; then
             rm -r -f dist/windows/libs
           fi
           rm -f dist/win32/cambridge.exe
           rm -f dist/win32/SOURCES.md
           rm -f dist/win32/LICENSE.md
-          if [-d "dist/win32/libs"]; then
+          if [-d "dist/win32/libs/"]; then
             rm -r -f dist/win32/libs
           fi
           rm -f dist/other/cambridge.love
           rm -f dist/other/SOURCES.md
           rm -f dist/other/LICENSE.md
-          if [-d "dist/other"]; then
+          if [-d "dist/other/"]; then
             rm -r -f dist/other
           fi
           rm -f dist/cambridge-windows.zip
