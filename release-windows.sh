@@ -1,6 +1,6 @@
 #!/bin/sh
 
-./package-love.sh
+./package.sh
 mkdir dist
 mkdir dist/windows
 mkdir dist/win32
