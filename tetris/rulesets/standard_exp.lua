@@ -1,5 +1,5 @@
 local Piece = require 'tetris.components.piece'
-local Ruleset = require 'tetris.rulesets.arika_srs'
+local Ruleset = require 'tetris.rulesets.standard_ti'
 
 local SRS = Ruleset:extend()
 
@@ -27,8 +27,6 @@ function SRS:checkNewLow(piece)
 	for _, block in pairs(piece:getBlockOffsets()) do
 		local y = piece.position.y + block.y
 		if y > piece.lowest_y then
-			--piece.manipulations = 0
-			--piece.rotations = 0
 			piece.lowest_y = y
 		end
 	end

@@ -1,5 +1,5 @@
 local Piece = require 'tetris.components.piece'
-local Ruleset = require 'tetris.rulesets.standard_exp'
+local Ruleset = require 'tetris.rulesets.standard_ace'
 
 local SRS = Ruleset:extend()
 
@@ -33,8 +33,8 @@ SRS.wallkicks_line = {
 	},
 };
 
-function SRS:attemptWallkicks(piece, new_piece, rot_dir, grid)
 
+function SRS:attemptWallkicks(piece, new_piece, rot_dir, grid)
 	local kicks
 	if piece.shape == "O" then
 		return
@@ -67,6 +67,12 @@ function SRS:checkNewLow(piece)
 			piece.lowest_y = y
 		end
 	end
+end
+
+function SRS:onPieceCreate(piece, grid)
+	piece.manipulations = 0
+	piece.rotations = 0
+	piece.lowest_y = -math.huge
 end
 
 function SRS:onPieceDrop(piece, grid)
