@@ -114,10 +114,6 @@ function CreditsScene:update()
     if love.window.hasFocus() then
         self.frames = self.frames + self.scroll_speed
     end
-    if love.mouse.isDown(1) and not left_clicked_before then
-        scene = TitleScene()
-        switchBGM(nil)
-    end
     if self.frames >= self.final_y + 150 then
         playSE("mode_decide")
         scene = TitleScene()
@@ -197,6 +193,10 @@ function CreditsScene:render()
 end
 
 function CreditsScene:onInputPress(e)
+    if e.type == "mouse" and e.button == 1 then
+        scene = TitleScene()
+        switchBGM(nil)
+    end
     if e.scancode == "space" then
         self.scroll_speed = 4
     end
