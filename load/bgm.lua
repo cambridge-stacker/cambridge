@@ -1,9 +1,40 @@
-bgm = {
+bgm_paths = {
+	"res/bgm/track1.mp3",
+	"res/bgm/track2.mp3",
+	"res/bgm/track3.mp3",
+	"res/bgm/track4.mp3",
+	"res/bgm/track5.mp3",
+	"res/bgm/track6.mp3",
+	"res/bgm/track7.mp3",
+	"res/bgm/track8.mp3",
+	"res/bgm/track9.mp3",
+	"res/bgm/track10.mp3",
 	credit_roll = {
-		gm3 = love.audio.newSource("res/bgm/tgm_credit_roll.mp3", "stream"),
+		gm3 = "res/bgm/tgm_credit_roll.mp3",
 	},
-	pacer_test = love.audio.newSource("res/bgm/pacer_test.mp3", "stream"),
+	pacer_test = "res/bgm/pacer_test.mp3",
 }
+
+bgm = {}
+
+for k,v in pairs(bgm_paths) do
+	if(type(v) == "table") then
+		-- list of subsounds
+		for k2,v2 in pairs(v) do
+			if(love.filesystem.getInfo(v2)) then
+				-- this file exists
+				bgm[k] = bgm[k] or {}
+				bgm[k][k2] = love.audio.newSource(v2, "stream")
+			end
+		end
+	else
+		if(love.filesystem.getInfo(v)) then
+			-- this file exists
+			bgm[k] = love.audio.newSource(v, "stream")
+		end
+	end
+end
+
 
 local current_bgm = nil
 local bgm_locked = false
@@ -16,9 +47,9 @@ function switchBGM(sound, subsound)
 	if bgm_locked or config.bgm_volume <= 0 then
 		current_bgm = nil
 	elseif sound ~= nil then
-		if subsound ~= nil then
+		if subsound ~= nil and bgm[sound][subsound] ~= nil then
 			current_bgm = bgm[sound][subsound]
-		else
+		elseif bgm[sound] ~= nil then
 			current_bgm = bgm[sound]
 		end
 	else
