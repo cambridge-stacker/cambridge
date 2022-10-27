@@ -19,7 +19,8 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	self.retry_mode = game_mode
 	self.retry_ruleset = ruleset
 	self.secret_inputs = replay["secret_inputs"]
-	self.game = game_mode(self.secret_inputs)
+	self.replay = deepcopy(replay)
+	self.game = game_mode(self.secret_inputs, self.replay.properties)
 	self.game.save_replay = false
 	self.ruleset = ruleset(self.game)
 	self.game:initialize(self.ruleset)
@@ -36,7 +37,6 @@ function ReplayScene:new(replay, game_mode, ruleset)
 		hold=false,
 	}
 	self.paused = false
-	self.replay = deepcopy(replay)
 	self.replay_index = 1
 	self.replay_speed = 1
 	self.frames = 0

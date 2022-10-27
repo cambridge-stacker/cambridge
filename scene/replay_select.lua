@@ -159,8 +159,10 @@ function ReplaySelectScene:render()
 		return
 	end
 
-	love.graphics.setColor(1, 1, 1, 0.5)
-	love.graphics.rectangle("fill", 3, 258 + (self.menu_state.replay * 20) - self.height_offset, 634, 22)
+	if not self.chosen_replay then
+		love.graphics.setColor(1, 1, 1, 0.5)
+		love.graphics.rectangle("fill", 3, 258 + (self.menu_state.replay * 20) - self.height_offset, 634, 22)
+	end
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_2)
 	if self.menu_state.submenu == 0 then
@@ -170,6 +172,29 @@ function ReplaySelectScene:render()
 				love.graphics.setColor(1,1,b,FadeoutAtEdges((-self.height_offset) + 20 * idx, 180, 20))
 				love.graphics.printf(branch.name, 6, (260 - self.height_offset) + 20 * idx, 640, "left")	
 			end
+		end
+	elseif self.chosen_replay then
+		local pointer = replay_tree[self.menu_state.submenu][self.menu_state.replay]
+		local replay = replays[pointer]
+		if replay then
+			local idx = 0
+			love.graphics.setFont(font_3x5_4)
+			love.graphics.printf("Mode: " .. replay["mode"], 80, 120, 480, "center")
+			love.graphics.setFont(font_3x5_3)
+			love.graphics.printf(os.date("Timestamp: %c", replay["timestamp"]), 80, 160, 480, "center")
+			if replay.highscore_data then
+				love.graphics.setFont(font_3x5_2)
+				love.graphics.printf("In-replay highscore data:", 80, 190, 480, "center")
+				for key, value in pairs(replay["highscore_data"]) do
+					idx = idx + 1
+					love.graphics.printf(key..": "..value, 80, 200 + idx * 20, 480, "center")
+				end
+			else
+				love.graphics.setFont(font_3x5_3)
+				love.graphics.printf("Legacy replay\nLevel: "..replay["level"], 80, 190, 480, "center")
+			end
+			love.graphics.setFont(font_3x5_2)
+			love.graphics.printf("Enter or LMB or ".. config.input.keys.menu_decide ..": Start\nDel or Backspace or RMB or "..config.input.keys.menu_back..": Return", 80, 250 + idx * 20, 480, "center")
 		end
 	else
 		if #replay_tree[self.menu_state.submenu] == 0 then
@@ -199,6 +224,10 @@ function ReplaySelectScene:render()
 					display_string = display_string:sub(1, 75) .. "..."
 				end
 				local b, g = CursorHighlight(0, (260 - self.height_offset) + 20 * idx, 640, 20), 1
+				if not replay["highscore_data"] then
+					g = 0.5
+					b = 0.8
+				end
 				if replay["toolassisted"] then
 					g = 0
 					b = 0
@@ -208,6 +237,20 @@ function ReplaySelectScene:render()
 			end
 		end
 	end
+end
+local function recursionStringValueExtract(tbl, key_check)
+	local result = {}
+	for key, value in pairs(tbl) do
+		if type(value) == "table" and (key_check == nil or value[key_check]) then
+			local recursion_result = recursionStringValueExtract(value, key_check)
+			for k2, v2 in pairs(recursion_result) do
+				table.insert(result, v2)
+			end
+		elseif tostring(value) == "Object" then
+			table.insert(result, value)
+		end
+	end
+	return result
 end
 
 function ReplaySelectScene:startReplay()
@@ -225,19 +268,17 @@ function ReplaySelectScene:startReplay()
 		end
 	end
 	current_replay = self.menu_state.replay
-	-- Same as mode decide
-	playSE("mode_decide")
 	-- Get game mode and ruleset
 	local mode
 	local rules
 	local pointer = replay_tree[self.menu_state.submenu][self.menu_state.replay]
-	for key, value in pairs(game_modes) do
+	for key, value in pairs(recursionStringValueExtract(game_modes, "is_directory")) do
 		if value.name == replays[pointer]["mode"] then
 			mode = value
 			break
 		end
 	end
-	for key, value in pairs(rulesets) do
+	for key, value in pairs(recursionStringValueExtract(rulesets, "is_directory")) do
 		if value.name == replays[pointer]["ruleset"] then
 			rules = value
 			break
@@ -247,6 +288,20 @@ function ReplaySelectScene:startReplay()
 		self.display_error = true
 		return
 	end
+
+	if replays[pointer]["highscore_data"] and not self.chosen_replay then
+		self.chosen_replay = true
+		playSE("main_decide")
+		self.das_down = nil
+		self.das_up = nil
+		self.das_left = nil
+		self.das_right = nil
+		return
+	end
+
+	-- Same as mode decide
+	playSE("mode_decide")
+
 	-- TODO compare replay versions to current versions for Cambridge, ruleset, and mode
 	scene = ReplayScene(
 		deepcopy(replays[pointer]), --This has to be done to avoid serious glitches with it.
@@ -260,13 +315,18 @@ function ReplaySelectScene:onInputPress(e)
 	if (self.display_warning or self.display_error) and e.input then
 		scene = TitleScene()
 	elseif e.type == "mouse" and loaded_replays then
-		if self.display_error or self.display_warning then
-			scene = TitleScene()
-			return
+		if e.button == 1 then
+			if self.display_error or self.display_warning then
+				scene = TitleScene()
+				return
+			end
+			self.auto_menu_offset = math.floor((e.y - 260)/20)
+			if self.auto_menu_offset == 0 or self.chosen_replay then
+				self:startReplay()
+			end
 		end
-		self.auto_menu_offset = math.floor((e.y - 260)/20)
-		if self.auto_menu_offset == 0 then
-			self:startReplay()
+		if e.button == 2 and self.chosen_replay then
+			self.chosen_replay = false
 		end
 	elseif e.type == "wheel" then
 		if e.y ~= 0 then
@@ -274,6 +334,10 @@ function ReplaySelectScene:onInputPress(e)
 		end
 	elseif e.input == "menu_decide" or e.scancode == "return" then
 		self:startReplay()
+	elseif self.chosen_replay then
+		if e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
+			self.chosen_replay = false
+		end
 	elseif e.input == "up" or e.scancode == "up" then
 		self:changeOption(-1)
 		self.das_up = true
@@ -328,9 +392,9 @@ function ReplaySelectScene:changeOption(rel)
 		end
 	end
 	if self.menu_state.submenu == 0 then
-		len = table.getn(replay_tree)
+		len = #replay_tree
 	else
-		len = table.getn(replay_tree[self.menu_state.submenu])
+		len = #replay_tree[self.menu_state.submenu]
 	end
 	self.menu_state.replay = Mod1(self.menu_state.replay + rel, len)
 	playSE("cursor")

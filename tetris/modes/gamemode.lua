@@ -17,11 +17,12 @@ GameMode.hash = ""
 GameMode.tagline = ""
 GameMode.rollOpacityFunction = function(age) return 0 end
 
-function GameMode:new()
+function GameMode:new(secret_inputs, properties)
 	self.replay_inputs = {}
 	self.random_low, self.random_high = love.math.getRandomSeed()
 	self.random_state = love.math.getRandomState()
 	self.save_replay = config.gamesettings.save_replay == 1
+	self.replay_properties = properties or {}
 	
 	self.grid = Grid(10, 24)
 	self.randomizer = Randomizer()
@@ -131,9 +132,28 @@ function GameMode:initialize(ruleset)
 	self.lock_on_hard_drop = ({ruleset.harddrop_lock, self.instant_hard_drop, true,  false})[config.gamesettings.manlock]
 end
 
+function GameMode:isReplay()
+	return scene.replay ~= nil
+end
+
+---@param string string
+---@return any property
+function GameMode:getReplayProperty(string, default)
+	--This may return nil.
+	return self.replay_properties[string] or default
+end
+
+---@param string string
+function GameMode:setReplayProperty(string, data)
+	self.replay_properties[string] = data
+end
+
 function GameMode:saveReplay()
 	-- Save replay.
 	local replay = {}
+	replay["cambridge_version"] = version
+	replay["highscore_data"] = self:getHighscoreData()
+	replay["properties"] = self.replay_properties
 	replay["toolassisted"] = self.ineligible
 	replay["inputs"] = self.replay_inputs
 	replay["random_low"] = self.random_low
@@ -141,6 +161,8 @@ function GameMode:saveReplay()
 	replay["random_state"] = self.random_state
 	replay["mode"] = self.name
 	replay["ruleset"] = self.ruleset.name
+	replay["mode_hash"] = self.hash
+	replay["ruleset_hash"] = self.ruleset.hash
 	replay["timer"] = self.frames
 	replay["score"] = self.score
 	replay["level"] = self.level
