@@ -24,6 +24,7 @@ sound_paths = {
 		triple = "res/se/triple.wav",
 		quad = "res/se/quad.wav"
 	},
+	screenshot = "res/se/screenshot.wav",
 	fall = "res/se/fall.wav",
 	ready = "res/se/ready.wav",
 	go = "res/se/go.wav",

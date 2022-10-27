@@ -153,6 +153,7 @@ TAS_mode = false
 frame_steps = 0
 loaded_replays = false
 local system_cursor_type = "arrow"
+local screenshot_images = {}
 
 ---@param type love.CursorType
 function setSystemCursorType(type)
@@ -206,6 +207,11 @@ function drawT48Cursor(x, y, a)
     love.graphics.setColor(1,1,1,a)
 end
 --#endregion
+
+local function screenshotFunction(image)
+	playSE("screenshot")
+	screenshot_images[#screenshot_images+1] = {image = love.graphics.newImage(image), time = 0, y_position = #screenshot_images * 260}
+end
 
 local function drawTASWatermark()
 	love.graphics.setFont(font_3x5_4)
@@ -269,6 +275,31 @@ local function getMeanDelta()
 	return last_fps
 end
 
+--What a mess trying to do something with it
+local function drawScreenshotPreviews()
+	local accumulated_y = 0
+	for idx, value in ipairs(screenshot_images) do
+		local image_x, image_y = value.image:getDimensions()
+		local local_scale_factor = math.min(image_x / 640, image_y / 480)
+		value.time = value.time + math.max(value.time < 300 and 4 or 1, value.time / 10 - 30)
+		value.y_position = interpolateListPos(value.y_position, accumulated_y)
+		local scaled_width, scaled_zero = getScaledPos(love.graphics.getWidth(), 0)
+		local x = (scaled_width) - ((image_x / 4) / local_scale_factor) + math.max(0, value.time - 300)
+		local rect_x, rect_y, rect_w, rect_h = x - 1, scaled_zero + value.y_position - 1, ((image_x / 4) / local_scale_factor) + 2, ((image_y / 4) / local_scale_factor) + 2
+		love.graphics.setColor(0, 0, 0)
+		love.graphics.rectangle("fill", rect_x, rect_y, rect_w, rect_h)
+		love.graphics.setColor(1, 1, 1)
+		love.graphics.draw(value.image, x, scaled_zero + value.y_position, 0, 0.25 / local_scale_factor, 0.25 / local_scale_factor)
+		love.graphics.setColor(1, 1, 1, math.max(0, 1 - (value.time / 60)))
+		love.graphics.rectangle("fill", rect_x, rect_y, rect_w, rect_h)
+		if value.time > (image_x / local_scale_factor) + 100 then
+			value.image:release()
+			table.remove(screenshot_images, idx)
+		end
+		accumulated_y = accumulated_y + (image_y / local_scale_factor / 4) + 5
+	end
+end
+
 function love.draw()
 	love.graphics.setCanvas(GLOBAL_CANVAS)
 	love.graphics.clear()
@@ -298,6 +329,7 @@ function love.draw()
 		)
 	end
 
+	drawScreenshotPreviews()
 	if scene.title == "Game" or scene.title == "Replay" then
 		-- if config.visualsettings.cursor_type ~= 1 then
 		-- 	is_cursor_visible = true
@@ -366,7 +398,10 @@ function love.keypressed(key, scancode)
 			love.filesystem.createDirectory("ss")
 		end
 		print("Saving screenshot as "..love.filesystem.getSaveDirectory().."/"..ss_name)
-		GLOBAL_CANVAS:newImageData():encode("png", ss_name)
+		local image = GLOBAL_CANVAS:newImageData()
+		image:encode("png", ss_name)
+		screenshotFunction(image)
+		image:release()
 	-- function keys are reserved
 	elseif string.match(scancode, "^f[1-9]$") or string.match(scancode, "^f[1-9][0-9]+$") then
 		return	
