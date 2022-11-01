@@ -365,29 +365,42 @@ end
 function love.filedropped(file)
 	file:open("r")
 	local data = file:read()
-	if file:getFilename():sub(-4) ~= ".lua" then
-		love.window.showMessageBox(love.window.getTitle(), "This file is not a Lua file.", "warning")
+	local raw_file_directory = file:getFilename()
+	if raw_file_directory:sub(-4) ~= ".lua" and raw_file_directory:sub(-4) ~= ".crp" then
+		love.window.showMessageBox(love.window.getTitle(), "This file is not a Lua nor replay file.", "warning")
 		file:close()
 		return
 	end
-	local msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "Where do you put this file?", {"Modes", "Rulesets", "Nevermind"}, "info")
-	if msgbox_choice == 0 or msgbox_choice == 3 then
-		file:close()
-		return
+	local char_pos = raw_file_directory:gsub("\\", "/"):reverse():find("/")
+	local filename = raw_file_directory:sub(-char_pos+1)
+	local final_directory
+	local msgbox_choice = 0
+	if raw_file_directory:sub(-4) == ".lua" then
+		msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "Where do you put "..filename.."?", { "Cancel", "Rulesets", "Modes"}, "info")
+		if msgbox_choice == 0 or msgbox_choice == 1 then
+			file:close()
+			return
+		end
+		local directory_string = "rulesets/"
+		if msgbox_choice == 2 then
+			directory_string = "modes/"
+		end
+		final_directory = "tetris/"..directory_string
+	else
+		msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "Do you want to insert replay "..filename.."?", {"No", "Yes"})
+		if msgbox_choice < 2 then
+			return
+		end
+		final_directory = "replays/"
 	end
-	local directory_string = "rulesets/"
-	if msgbox_choice == 1 then
-		directory_string = "modes/"
+	local do_write = 2
+	if love.filesystem.getInfo(final_directory..filename) then
+		do_write = love.window.showMessageBox(love.window.getTitle(), "This file ("..filename..") already exists! Do you want to override it?", {"No", "Yes"}, "warning")
 	end
-	local do_write = 1
-	local char_pos = file:getFilename():gsub("\\", "/"):reverse():find("/")
-	local filename = file:getFilename():sub(#file:getFilename()-char_pos+2)
-	if love.filesystem.getInfo("tetris/"..directory_string..filename) then
-		do_write = love.window.showMessageBox(love.window.getTitle(), "This file ("..filename..") already exists! Do you want to override it?", {"Yes", "No"}, "warning")
-	end
-	if do_write == 1 then
-		love.filesystem.createDirectory("tetris/"..directory_string)
-		love.filesystem.write("tetris/"..directory_string..filename, data)
+
+	if do_write == 2 then
+		love.filesystem.createDirectory(final_directory)
+		love.filesystem.write(final_directory..filename, data)
 	end
 	file:close()
 end
