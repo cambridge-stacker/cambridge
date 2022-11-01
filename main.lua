@@ -362,6 +362,36 @@ local function multipleInputs(input_table, input)
 	return result_inputs
 end
 
+function love.filedropped(file)
+	file:open("r")
+	local data = file:read()
+	if file:getFilename():sub(-4) ~= ".lua" then
+		love.window.showMessageBox(love.window.getTitle(), "This file is not a Lua file.", "warning")
+		file:close()
+		return
+	end
+	local msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "Where do you put this file?", {"Modes", "Rulesets", "Nevermind"}, "info")
+	if msgbox_choice == 0 or msgbox_choice == 3 then
+		file:close()
+		return
+	end
+	local directory_string = "rulesets/"
+	if msgbox_choice == 1 then
+		directory_string = "modes/"
+	end
+	local do_write = 1
+	local char_pos = file:getFilename():gsub("\\", "/"):reverse():find("/")
+	local filename = file:getFilename():sub(#file:getFilename()-char_pos+2)
+	if love.filesystem.getInfo("tetris/"..directory_string..filename) then
+		do_write = love.window.showMessageBox(love.window.getTitle(), "This file ("..filename..") already exists! Do you want to override it?", {"Yes", "No"}, "warning")
+	end
+	if do_write == 1 then
+		love.filesystem.createDirectory("tetris/"..directory_string)
+		love.filesystem.write("tetris/"..directory_string..filename, data)
+	end
+	file:close()
+end
+
 function love.keypressed(key, scancode)
 	-- global hotkeys
 	if scancode == "f11" then
