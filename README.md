@@ -42,11 +42,11 @@ Then, check the mod pack section at the bottom of this page.
 
 #### Flooding edge
 
-If you want the `flooding edge` version, download [this](https://github.com/Tetro48/cambridge/archive/master.zip).
+If you want the `flooding edge` version, download [this](https://github.com/Tetro48/cambridge/archive/master.zip) or get the latest artifacts from Github Actions.
 
 Note: It might have weird bugs that isn't addressed by [Tetro48](https://github.com/Tetro48/); it has a lot of changes.
 e.g.
-Mouse controls, cursor type, visual settings, separate audio settings, replay tree, replay speed, tool-assisted speedrun mode, input re-work, replay tunings (although that'd be helpful), and many many more.
+Mouse controls, cursor type, visual settings, separate audio settings, replay tree, replay speed, tool-assisted speedrun mode, input re-work, replay tunings (although that'd be helpful), file drag-n-drop, and many many more.
 
 Any bugs found here that does not also apply to vanilla version must only be reported on this fork. Do not make issues related to this fork on [the fork's origin](https://github.com/MillaBasset/cambridge).
 
