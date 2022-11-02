@@ -382,7 +382,7 @@ function love.filedropped(file)
 			return
 		end
 		local directory_string = "rulesets/"
-		if msgbox_choice == 2 then
+		if msgbox_choice == 3 then
 			directory_string = "modes/"
 		end
 		final_directory = "tetris/"..directory_string
