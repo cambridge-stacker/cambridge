@@ -328,7 +328,6 @@ function love.draw()
 		)
 	end
 
-	drawScreenshotPreviews()
 	if scene.title == "Game" or scene.title == "Replay" then
 		-- if config.visualsettings.cursor_type ~= 1 then
 		-- 	is_cursor_visible = true
@@ -350,6 +349,13 @@ function love.draw()
 	love.graphics.setCanvas()
 	love.graphics.setColor(1,1,1,1)
 	love.graphics.draw(GLOBAL_CANVAS)
+	
+	love.graphics.translate(
+		(width - scale_factor * 640) / 2,
+		(height - scale_factor * 480) / 2
+	)
+	love.graphics.scale(scale_factor)
+	drawScreenshotPreviews()
 end
 
 local function multipleInputs(input_table, input)
