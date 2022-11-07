@@ -205,7 +205,6 @@ function drawT48Cursor(x, y, a)
     love.graphics.polygon("line", x + 5, y + 0, x + 0, y + 10, x + 5, y + 8, x + 8, y + 20, x + 12, y + 18, x + 10, y + 7, x + 15, y + 5)
     love.graphics.setColor(1,1,1,a)
 end
---#endregion
 
 local function screenshotFunction(image)
 	playSE("screenshot")
@@ -298,6 +297,8 @@ local function drawScreenshotPreviews()
 		accumulated_y = accumulated_y + (image_y / local_scale_factor / 4) + 5
 	end
 end
+
+--#endregion
 
 function love.draw()
 	love.graphics.setCanvas(GLOBAL_CANVAS)
