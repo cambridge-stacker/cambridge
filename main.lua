@@ -459,14 +459,15 @@ function love.keypressed(key, scancode)
 		scene:onInputPress({input="menu_back", type="key", key=key, scancode=scancode})
 	-- pass any other key to the scene, with its configured mapping
 	else
+		local result_inputs = {}
 		if config.input and config.input.keys then
-			local result_inputs = multipleInputs(config.input.keys, scancode)
+			result_inputs = multipleInputs(config.input.keys, scancode)
 			for _, input in pairs(result_inputs) do
 				scene:onInputPress({input=input, type="key", key=key, scancode=scancode})
 			end
-			if #result_inputs == 0 then
-				scene:onInputPress({type="key", key=key, scancode=scancode})
-			end
+		end
+		if #result_inputs == 0 then
+			scene:onInputPress({type="key", key=key, scancode=scancode})
 		end
 	end
 end
@@ -480,14 +481,15 @@ function love.keyreleased(key, scancode)
 		return	
 	-- handle all other keys; tab is reserved, but the input config scene keeps it from getting configured as a game input, so pass tab to the scene here
 	else
+		local result_inputs = {}
 		if config.input and config.input.keys then
-			local result_inputs = multipleInputs(config.input.keys, scancode)
+			result_inputs = multipleInputs(config.input.keys, scancode)
 			for _, input in pairs(result_inputs) do
 				scene:onInputRelease({input=input, type="key", key=key, scancode=scancode})
 			end
-			if #result_inputs == 0 then
-				scene:onInputRelease({type="key", key=key, scancode=scancode})
-			end
+		end
+		if #result_inputs == 0 then
+			scene:onInputRelease({type="key", key=key, scancode=scancode})
 		end
 	end
 end
