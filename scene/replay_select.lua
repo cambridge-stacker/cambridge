@@ -4,6 +4,7 @@ ReplaySelectScene.title = "Replays"
 
 local binser = require 'libs.binser'
 
+local current_submenu = 0
 local current_replay = 1
 
 function ReplaySelectScene:new()
@@ -19,7 +20,7 @@ function ReplaySelectScene:new()
 	end
 
 	self.menu_state = {
-		submenu = 0,
+		submenu = current_submenu,
 		replay = current_replay,
 	}
 	self.das = 0
@@ -179,22 +180,33 @@ function ReplaySelectScene:render()
 		if replay then
 			local idx = 0
 			love.graphics.setFont(font_3x5_4)
-			love.graphics.printf("Mode: " .. replay["mode"], 80, 120, 480, "center")
+			love.graphics.printf("Mode: " .. replay["mode"], 0, 120, 640, "center")
 			love.graphics.setFont(font_3x5_3)
-			love.graphics.printf(os.date("Timestamp: %c", replay["timestamp"]), 80, 160, 480, "center")
+			love.graphics.printf(os.date("Timestamp: %c", replay["timestamp"]), 0, 160, 640, "center")
+			if replay.cambridge_version then
+				idx = idx + 1.5
+				love.graphics.setFont(font_3x5_2)
+				love.graphics.printf("Cambridge version for this replay: "..replay.cambridge_version, 0, 190, 640, "center")
+				if replay.cambridge_version ~= version then
+					love.graphics.setFont(font_3x5_2)
+					love.graphics.setColor(1, 0, 0)
+					love.graphics.printf("Warning! The versions don't match!\nStuff may break, so, start at your own risk.", 0, 90, 640, "center")
+					love.graphics.setColor(1, 1, 1)
+				end
+			end
 			if replay.highscore_data then
 				love.graphics.setFont(font_3x5_2)
-				love.graphics.printf("In-replay highscore data:", 80, 190, 480, "center")
+				love.graphics.printf("In-replay highscore data:", 0, 190 + idx * 20, 640, "center")
 				for key, value in pairs(replay["highscore_data"]) do
 					idx = idx + 1
-					love.graphics.printf(key..": "..value, 80, 200 + idx * 20, 480, "center")
+					love.graphics.printf(key..": "..value, 0, 200 + idx * 20, 640, "center")
 				end
 			else
 				love.graphics.setFont(font_3x5_3)
-				love.graphics.printf("Legacy replay\nLevel: "..replay["level"], 80, 190, 480, "center")
+				love.graphics.printf("Legacy replay\nLevel: "..replay["level"], 0, 190, 640, "center")
 			end
 			love.graphics.setFont(font_3x5_2)
-			love.graphics.printf("Enter or LMB or ".. config.input.keys.menu_decide ..": Start\nDel or Backspace or RMB or "..config.input.keys.menu_back..": Return", 80, 250 + idx * 20, 480, "center")
+			love.graphics.printf("Enter or LMB or ".. config.input.keys.menu_decide ..": Start\nDel or Backspace or RMB or "..config.input.keys.menu_back..": Return", 0, 250 + idx * 20, 640, "center")
 		end
 	else
 		if #replay_tree[self.menu_state.submenu] == 0 then
@@ -267,6 +279,7 @@ function ReplaySelectScene:startReplay()
 			return
 		end
 	end
+	current_submenu = self.menu_state.submenu
 	current_replay = self.menu_state.replay
 	-- Get game mode and ruleset
 	local mode
