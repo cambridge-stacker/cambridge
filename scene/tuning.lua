@@ -87,11 +87,11 @@ function TuningScene:onInputPress(e)
 		self.highlight = Mod1(self.highlight+1, optioncount)
 	elseif e.input == "left" or e.scancode == "left" then
 		playSE("cursor")
-		sld = self[self.options[self.highlight][3]]
+		local sld = self[self.options[self.highlight][3]]
 		sld.value = math.max(sld.min, math.min(sld.max, (sld:getValue() - 1) / (sld.max - sld.min)))
 	elseif e.input == "right" or e.scancode == "right" then
 		playSE("cursor")
-		sld = self[self.options[self.highlight][3]]
+		local sld = self[self.options[self.highlight][3]]
 		sld.value = math.max(sld.min, math.min(sld.max, (sld:getValue() + 1) / (sld.max - sld.min)))
 	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
 		loadSave()

@@ -35,7 +35,7 @@ function History6Rolls35PoolRandomizer:generatePiece()
 		for i = 1, 6 do
 			index = love.math.random(#self.pool)
 			x = self.pool[index]
-			if not inHistory(x, self.history) or i == 6 then
+			if not self.inHistory(x, self.history) or i == 6 then
 				break
 			end
 		end
@@ -64,7 +64,7 @@ function History6Rolls35PoolRandomizer:updateHistory(shape)
 	return highdrought
 end
 
-function inHistory(piece, history)
+function History6Rolls35PoolRandomizer.inHistory(piece, history)
 	for idx, entry in pairs(history) do
 		if entry == piece then
 			return true

@@ -194,7 +194,7 @@ function MarathonA3Game:updateSectionTimes(old_level, new_level)
 	if math.floor(old_level / 100) < math.floor(new_level / 100) or
 	new_level >= 999 then
 		-- record new section
-		section_time = self.frames - self.section_start_time
+		local section_time = self.frames - self.section_start_time
 		table.insert(self.section_times, section_time)
 		if new_level < 999 then self.section_start_time = self.frames end
 
@@ -215,7 +215,7 @@ function MarathonA3Game:updateSectionTimes(old_level, new_level)
 		self.section_cool = false
 	elseif old_level % 100 < 70 and new_level % 100 >= 70 then
 		-- record section 70 time
-		section_70_time = self.frames - self.section_start_time
+		local section_70_time = self.frames - self.section_start_time
 		table.insert(self.secondary_section_times, section_70_time)
 
 		if section <= 9 and self.secondary_section_times[section] < cool_cutoffs[section] and
@@ -430,7 +430,7 @@ function MarathonA3Game:drawScoringInfo()
 	end
 
 	-- draw section time data
-	current_section = self.level >= 999 and 11 or math.floor(self.level / 100) + 1
+	local current_section = self.level >= 999 and 11 or math.floor(self.level / 100) + 1
 	self:drawSectionTimesWithSecondary(current_section, 10)
 	--[[
 

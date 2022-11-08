@@ -176,7 +176,7 @@ function MarathonA2Game:updateSectionTimes(old_level, new_level)
 	if math.floor(old_level / 100) < math.floor(new_level / 100) or
 	new_level >= 999 then
 		-- record new section
-		section_time = self.frames - self.section_start_time
+		local section_time = self.frames - self.section_start_time
 		self.section_times[math.floor(old_level / 100)] = section_time
 		self.section_start_time = self.frames
 		self.section_tetrises[math.floor(old_level / 100)] = self.tetris_count
@@ -339,7 +339,7 @@ function MarathonA2Game:drawGrid()
 	else
 		self.grid:draw()
 		if self.piece ~= nil and self.level < 100 then
-			self:drawGhostPiece(ruleset)
+			self:drawGhostPiece()
 		end
 	end
 end

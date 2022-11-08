@@ -70,7 +70,7 @@ function SurvivalAXGame:getGravity()
 end
 
 function SurvivalAXGame:getSection()
-	return math.floor(level / 100) + 1
+	return math.floor(self.level / 100) + 1
 end
 
 function SurvivalAXGame:advanceOneFrame()

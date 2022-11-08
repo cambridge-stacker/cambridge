@@ -412,9 +412,9 @@ function GameMode:update(inputs, ruleset)
 	self.prev_inputs = inputs
 end
 
-function GameMode:updateScore() end
+function GameMode:updateScore(level, drop_bonus, rows) end
 
-function GameMode:advanceOneFrame()
+function GameMode:advanceOneFrame(inputs, ruleset)
 	if self.clear then
 		self.completed = true
 	elseif self.ready_frames == 0 then
@@ -514,7 +514,7 @@ function GameMode:stopDAS()
 	self.das = { direction = "none", frames = -1 }
 end
 
-function GameMode:chargeDAS(inputs)
+function GameMode:chargeDAS(inputs, das_limit, arr)
 	if config.gamesettings.das_last_key == 2 then
 		if inputs["right"] == true and self.das.direction ~= "right" and not self.prev_inputs["right"] then
 			self:startRightDAS()
@@ -996,7 +996,7 @@ function GameMode:drawSectionTimesWithSecondary(current_section, section_limit)
 	end
 
 	local current_x
-	if table.getn(self.section_times) < table.getn(self.secondary_section_times) then
+	if #self.section_times < #self.secondary_section_times then
 		current_x = section_x
 	else
 		current_x = section_secondary_x

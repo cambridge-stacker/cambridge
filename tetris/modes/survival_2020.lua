@@ -188,7 +188,7 @@ end
 function Survival2020Game:updateSectionTimes(old_level, new_level)
 	if math.floor(old_level / 100) < math.floor(new_level / 100) then
 		local section = math.floor(old_level / 100) + 1
-		section_time = self.frames - self.section_start_time
+		local section_time = self.frames - self.section_start_time
 		table.insert(self.section_times, section_time)
 		self.section_start_time = self.frames
 		if section_time <= frameTime(0,30) then

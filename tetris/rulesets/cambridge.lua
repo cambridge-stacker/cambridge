@@ -385,7 +385,7 @@ function CRS:attemptWallkicks(piece, new_piece, rot_dir, grid)
 	assert(piece.rotation ~= new_piece.rotation)
 
 	for idx, offset in pairs(kicks) do
-		kicked_piece = new_piece:withOffset(offset)
+		local kicked_piece = new_piece:withOffset(offset)
 		if grid:canPlacePiece(kicked_piece) then
 			piece:setRelativeRotation(rot_dir)
 			piece:setOffset(offset)
