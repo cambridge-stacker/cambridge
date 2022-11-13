@@ -693,6 +693,9 @@ local TARGET_FPS = 60
 local FRAME_DURATION = 1.0 / TARGET_FPS
 
 function setTargetFPS(fps)
+	if fps <= 0 then
+		error("Illegal target FPS.")
+	end
 	TARGET_FPS = fps
 	FRAME_DURATION = 1.0 / TARGET_FPS
 end
