@@ -692,6 +692,15 @@ end
 local TARGET_FPS = 60
 local FRAME_DURATION = 1.0 / TARGET_FPS
 
+function setTargetFPS(fps)
+	TARGET_FPS = fps
+	FRAME_DURATION = 1.0 / TARGET_FPS
+end
+
+function getTargetFPS()
+	return TARGET_FPS
+end
+
 function love.run()
 	if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
 
