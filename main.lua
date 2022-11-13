@@ -324,8 +324,8 @@ function love.draw()
 		love.graphics.setFont(font_3x5_2)
 		love.graphics.setColor(1, 1, 1, 1)
 		love.graphics.printf(
-			string.format("%.2f", 1.0 / getMeanDelta()) ..
-			"fps - " .. version, 0, 460, 635, "right"
+			string.format("(%.2f) %.2f fps - %s", getTargetFPS(), 1.0 / getMeanDelta(), version),
+			0, 460, 635, "right"
 		)
 	end
 
