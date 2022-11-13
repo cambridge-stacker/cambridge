@@ -19,7 +19,8 @@ local configurable_inputs = {
 	"hold",
 	"retry",
 	"pause",
-	"mode_exit"
+	"mode_exit",
+	"frame_step",
 }
 
 local input_naming = {
@@ -38,6 +39,7 @@ local input_naming = {
 	retry = "Retry",
 	pause = "Pause",
 	mode_exit = "Exit Mode",
+	frame_step = "Frame Step",
 }
 
 --A list of inputs that shouldn't have the same keybinds with the other.

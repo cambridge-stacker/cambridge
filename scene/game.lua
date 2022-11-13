@@ -71,6 +71,8 @@ function GameScene:onInputPress(e)
 		loadReplayList()
 		scene = e.input == "retry" and GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs) or
 				config.visualsettings.mode_select_type == 1 and ModeSelectScene() or RevModeSelectScene()
+	elseif e.input == "frame_step" and TAS_mode then
+		frame_steps = frame_steps + 1
 	elseif e.input == "retry" then
 		switchBGM(nil)
 		self.game:onExit()

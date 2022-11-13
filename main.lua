@@ -424,8 +424,8 @@ function love.keypressed(key, scancode)
 		scene = InputConfigScene()
 		switchBGM(nil)
 		loadSave()
-	elseif scancode == "f3" and TAS_mode and (scene.title == "Game" or scene.title == "Replay") then
-		frame_steps = frame_steps + 1
+	elseif scancode == "f3" then
+		print("The old way of framestepping is deprecated!")
 	-- load state tool
 	elseif scancode == "f4" and TAS_mode and (scene.title == "Replay") then
 		love.thread.getChannel("savestate"):push( "save" )
