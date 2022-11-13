@@ -16,6 +16,7 @@ SurvivalA2Game.tagline = "The game starts fast and only gets faster!"
 
 function SurvivalA2Game:new()
 	SurvivalA2Game.super:new()
+	setTargetFPS(61.68)
 	self.roll_frames = 0
 	self.combo = 1
 	self.randomizer = History6RollsRandomizer()
@@ -28,6 +29,10 @@ function SurvivalA2Game:new()
 
 	self.lock_drop = true
 	self.lock_hard_drop = true
+end
+
+function SurvivalA2Game:onExit()
+	setTargetFPS(60)
 end
 
 function SurvivalA2Game:getARE()

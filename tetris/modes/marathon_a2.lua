@@ -17,6 +17,7 @@ MarathonA2Game.tagline = "The points don't matter! Can you reach the invisible r
 function MarathonA2Game:new()
 	MarathonA2Game.super:new()
 
+	setTargetFPS(61.68)
 	self.roll_frames = 0
 	self.combo = 1
 	self.grade_combo = 1
@@ -40,6 +41,10 @@ function MarathonA2Game:new()
 	self.lock_hard_drop = false
 	self.enable_hold = false
 	self.next_queue_length = 1
+end
+
+function MarathonA2Game:onExit()
+	setTargetFPS(60)
 end
 
 function MarathonA2Game:getARE()
