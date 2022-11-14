@@ -266,9 +266,8 @@ local function getMeanDelta()
 	for i = 1, #time_table do
 		acc = acc + time_table[i]
 	end
-	acc = acc / #time_table
 	if math.floor(love.timer.getTime()) + dt > love.timer.getTime() then
-		last_fps = acc
+		last_fps = acc / #time_table
 	end
 	return last_fps
 end
