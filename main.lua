@@ -357,6 +357,7 @@ function love.draw()
 	)
 	love.graphics.scale(scale_factor)
 	drawScreenshotPreviews()
+	love.graphics.setColor(1, 1, 1, 1)
 end
 
 local function multipleInputs(input_table, input)
