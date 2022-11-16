@@ -300,6 +300,7 @@ end
 --#endregion
 
 function love.draw()
+	local mean_delta = getMeanDelta()
 	love.graphics.setCanvas(GLOBAL_CANVAS)
 	love.graphics.clear()
 
@@ -323,7 +324,7 @@ function love.draw()
 		love.graphics.setFont(font_3x5_2)
 		love.graphics.setColor(1, 1, 1, 1)
 		love.graphics.printf(
-			string.format("(%.2f) %.2f fps - %s", getTargetFPS(), 1.0 / getMeanDelta(), version),
+			string.format("(%.2f) %.2f fps - %s", getTargetFPS(), 1.0 / mean_delta, version),
 			0, 460, 635, "right"
 		)
 	end
