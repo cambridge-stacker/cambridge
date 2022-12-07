@@ -450,7 +450,7 @@ function MarathonA3Game:drawScoringInfo()
 	end
 	
 	local current_x
-	if table.getn(self.section_times) < table.getn(self.secondary_section_times) then
+	if #self.section_times < #self.secondary_section_times then
 		current_x = section_x
 	else
 		current_x = section_70_x
