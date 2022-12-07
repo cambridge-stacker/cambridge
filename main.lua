@@ -57,6 +57,9 @@ function recursivelyLoadRequireFileTable(table, directory, blacklisted_string)
 		end
 		if name ~= blacklisted_string and name:sub(-4) == ".lua" then
 			table[#table+1] = require(require_string.."."..name:sub(1, -5))
+			if table[#table] == true then
+				error("This file doesn't return an instance of an object. Add it on " ..directory.."/"..name)
+			end
 		end
 	end
 end
