@@ -396,7 +396,9 @@ function love.errorhandler(msg)
 		love.graphics.printf("Cambridge Crashed!", pos, pos-40, love.graphics.getWidth() - pos, "center")
 		if font_3x5_2 then love.graphics.setFont(font_3x5_2) end
 		for i = 1, 7 do
-			love.graphics.print(line_error-4+i.. ": " .. lua_file_content[line_error-4+i] .. (line_error-4+i == line_error and " <---" or "") , pos, pos + (i * 15) - 5)
+			if line_error-4+i > 0 and line_error-4+i <= #lua_file_content then
+				love.graphics.print(line_error-4+i.. ": " .. lua_file_content[line_error-4+i] .. (line_error-4+i == line_error and " <---" or "") , pos, pos + (i * 15) - 5)
+			end
 		end
 		love.graphics.printf(p, pos, pos + 120, love.graphics.getWidth() - pos)
 		love.graphics.present()
