@@ -1,31 +1,65 @@
-backgrounds = {
-	[0] = love.graphics.newImage("res/backgrounds/0.png"),
-	love.graphics.newImage("res/backgrounds/100.png"),
-	love.graphics.newImage("res/backgrounds/200.png"),
-	love.graphics.newImage("res/backgrounds/300.png"),
-	love.graphics.newImage("res/backgrounds/400.png"),
-	love.graphics.newImage("res/backgrounds/500.png"),
-	love.graphics.newImage("res/backgrounds/600.png"),
-	love.graphics.newImage("res/backgrounds/700.png"),
-	love.graphics.newImage("res/backgrounds/800.png"),
-	love.graphics.newImage("res/backgrounds/900.png"),
-	love.graphics.newImage("res/backgrounds/1000.png"),
-	love.graphics.newImage("res/backgrounds/1100.png"),
-	love.graphics.newImage("res/backgrounds/1200.png"),
-	love.graphics.newImage("res/backgrounds/1300.png"),
-	love.graphics.newImage("res/backgrounds/1400.png"),
-	love.graphics.newImage("res/backgrounds/1500.png"),
-	love.graphics.newImage("res/backgrounds/1600.png"),
-	love.graphics.newImage("res/backgrounds/1700.png"),
-	love.graphics.newImage("res/backgrounds/1800.png"),
-	love.graphics.newImage("res/backgrounds/1900.png"),
-	title = love.graphics.newImage("res/backgrounds/title.png"),
-	title_no_icon = love.graphics.newImage("res/backgrounds/title-no-icon.jpg"),
-	title_night = love.graphics.newImage("res/backgrounds/title-night.jpg"),
-	snow = love.graphics.newImage("res/backgrounds/snow.png"),
-	input_config = love.graphics.newImage("res/backgrounds/options-input.png"),
-	game_config = love.graphics.newImage("res/backgrounds/options-game.png"),
+local image_formats = {"png", "jpg", "bmp", "tga"}
+local function loadImageTable(image_table, path_table)
+	for k,v in pairs(path_table) do
+		if(type(v) == "table") then
+			-- list of subimages
+			for k2,v2 in pairs(v) do
+				for _, v3 in pairs(image_formats) do
+					if(love.filesystem.getInfo(v2.."."..v3)) then
+						-- this file exists
+						image_table[k] = image_table[k] or {}
+						image_table[k][k2] = love.graphics.newImage(v2.."."..v3)
+						break
+					end
+				end
+				if image_table[k][k2] == nil then
+					error(("Image (%s) not found!"):format(v2))
+				end
+			end
+		else
+			for _, v2 in pairs(image_formats) do
+				if(love.filesystem.getInfo(v.."."..v2)) then
+					-- this file exists
+					image_table[k] = love.graphics.newImage(v.."."..v2)
+					break
+				end
+			end
+			if image_table[k] == nil then
+				error(("Image (%s) not found!"):format(v))
+			end
+		end
+	end
+end
+backgrounds = {}
+backgrounds_paths = {
+	[0] = "res/backgrounds/0",
+	"res/backgrounds/100",
+	"res/backgrounds/200",
+	"res/backgrounds/300",
+	"res/backgrounds/400",
+	"res/backgrounds/500",
+	"res/backgrounds/600",
+	"res/backgrounds/700",
+	"res/backgrounds/800",
+	"res/backgrounds/900",
+	"res/backgrounds/1000",
+	"res/backgrounds/1100",
+	"res/backgrounds/1200",
+	"res/backgrounds/1300",
+	"res/backgrounds/1400",
+	"res/backgrounds/1500",
+	"res/backgrounds/1600",
+	"res/backgrounds/1700",
+	"res/backgrounds/1800",
+	"res/backgrounds/1900",
+	title = "res/backgrounds/title",
+	title_no_icon = "res/backgrounds/title-no-icon",
+	title_night = "res/backgrounds/title-night",
+	snow = "res/backgrounds/snow",
+	input_config = "res/backgrounds/options-input",
+	game_config = "res/backgrounds/options-game",
 }
+loadImageTable(backgrounds, backgrounds_paths)
 
 -- in order, the colors are:
 -- red, orange, yellow, green, cyan, blue
@@ -36,57 +70,59 @@ backgrounds = {
 -- X is an invisible "block"
 -- don't use these for piece colors when making a ruleset
 -- all the others are fine to use
-blocks = {
+blocks = {}
+blocks_paths = {
 	["2tie"] = {
-		R = love.graphics.newImage("res/img/s1.png"),
-		O = love.graphics.newImage("res/img/s3.png"),
-		Y = love.graphics.newImage("res/img/s7.png"),
-		G = love.graphics.newImage("res/img/s6.png"),
-		C = love.graphics.newImage("res/img/s2.png"),
-		B = love.graphics.newImage("res/img/s4.png"),
-		M = love.graphics.newImage("res/img/s5.png"),
-		W = love.graphics.newImage("res/img/s9.png"),
-		D = love.graphics.newImage("res/img/s8.png"),
-		F = love.graphics.newImage("res/img/s9.png"),
-		A = love.graphics.newImage("res/img/s8.png"),
-		X = love.graphics.newImage("res/img/s9.png"),
+		R = "res/img/s1",
+		O = "res/img/s3",
+		Y = "res/img/s7",
+		G = "res/img/s6",
+		C = "res/img/s2",
+		B = "res/img/s4",
+		M = "res/img/s5",
+		W = "res/img/s9",
+		D = "res/img/s8",
+		F = "res/img/s9",
+		A = "res/img/s8",
+		X = "res/img/s9",
 	},
 	["bone"] = {
-		R = love.graphics.newImage("res/img/bone.png"),
-		O = love.graphics.newImage("res/img/bone.png"),
-		Y = love.graphics.newImage("res/img/bone.png"),
-		G = love.graphics.newImage("res/img/bone.png"),
-		C = love.graphics.newImage("res/img/bone.png"),
-		B = love.graphics.newImage("res/img/bone.png"),
-		M = love.graphics.newImage("res/img/bone.png"),
-		W = love.graphics.newImage("res/img/bone.png"),
-		D = love.graphics.newImage("res/img/bone.png"),
-		F = love.graphics.newImage("res/img/bone.png"),
-		A = love.graphics.newImage("res/img/bone.png"),
-		X = love.graphics.newImage("res/img/bone.png"),
+		R = "res/img/bone",
+		O = "res/img/bone",
+		Y = "res/img/bone",
+		G = "res/img/bone",
+		C = "res/img/bone",
+		B = "res/img/bone",
+		M = "res/img/bone",
+		W = "res/img/bone",
+		D = "res/img/bone",
+		F = "res/img/bone",
+		A = "res/img/bone",
+		X = "res/img/bone",
 	},
 	["gem"] = {
-		R = love.graphics.newImage("res/img/gem1.png"),
-		O = love.graphics.newImage("res/img/gem3.png"),
-		Y = love.graphics.newImage("res/img/gem7.png"),
-		G = love.graphics.newImage("res/img/gem6.png"),
-		C = love.graphics.newImage("res/img/gem2.png"),
-		B = love.graphics.newImage("res/img/gem4.png"),
-		M = love.graphics.newImage("res/img/gem5.png"),
-		W = love.graphics.newImage("res/img/gem9.png"),
-		D = love.graphics.newImage("res/img/gem9.png"),
-		F = love.graphics.newImage("res/img/gem9.png"),
-		A = love.graphics.newImage("res/img/gem9.png"),
-		X = love.graphics.newImage("res/img/gem9.png"),
+		R = "res/img/gem1",
+		O = "res/img/gem3",
+		Y = "res/img/gem7",
+		G = "res/img/gem6",
+		C = "res/img/gem2",
+		B = "res/img/gem4",
+		M = "res/img/gem5",
+		W = "res/img/gem9",
+		D = "res/img/gem9",
+		F = "res/img/gem9",
+		A = "res/img/gem9",
+		X = "res/img/gem9",
 	},
 	["square"] = {
-		W = love.graphics.newImage("res/img/squares.png"),
-		Y = love.graphics.newImage("res/img/squareg.png"),
-		F = love.graphics.newImage("res/img/squares.png"),
-		X = love.graphics.newImage("res/img/squares.png"),
+		W = "res/img/squares",
+		Y = "res/img/squareg",
+		F = "res/img/squares",
+		X = "res/img/squares",
 	}
 }
 
+loadImageTable(blocks, blocks_paths)
 ColourSchemes = {
 	Arika = {
 		I = "R",
@@ -114,12 +150,14 @@ for name, blockset in pairs(blocks) do
 	end
 end
 
-misc_graphics = {
-	frame = love.graphics.newImage("res/img/frame.png"),
-	ready = love.graphics.newImage("res/img/ready.png"),
-	go = love.graphics.newImage("res/img/go.png"),
-	select_mode = love.graphics.newImage("res/img/select_mode.png"),
-	strike = love.graphics.newImage("res/img/strike.png"),
-	santa = love.graphics.newImage("res/img/santa.png"),
-	icon = love.graphics.newImage("res/img/cambridge_transparent.png")
+misc_graphics = {}
+misc_graphics_paths = {
+	frame = "res/img/frame",
+	ready = "res/img/ready",
+	go = "res/img/go",
+	select_mode = "res/img/select_mode",
+	strike = "res/img/strike",
+	santa = "res/img/santa",
+	icon = "res/img/cambridge_transparent"
 }
+loadImageTable(misc_graphics, misc_graphics_paths)
