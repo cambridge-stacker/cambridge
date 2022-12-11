@@ -392,9 +392,7 @@ function love.errorhandler(msg)
 		if not love.graphics.isActive() then return end
 		local pos = 70
 		love.graphics.clear(89/255, 157/255, 220/255)
-		if font_3x5_4 then love.graphics.setFont(font_3x5_4) end
 		love.graphics.printf("Cambridge Crashed!", pos, pos-40, love.graphics.getWidth() - pos, "center")
-		if font_3x5_2 then love.graphics.setFont(font_3x5_2) end
 		for i = 1, 7 do
 			local local_line = line_error-4+i
 			if local_line > 0 and local_line <= #lua_file_content then
