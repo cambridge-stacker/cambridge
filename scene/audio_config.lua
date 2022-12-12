@@ -6,14 +6,14 @@ require 'load.save'
 
 ConfigScene.options = {
 	-- this serves as reference to what the options' values mean i guess?
-	-- Option types: int, slider, options
+	-- Option types: slider, options
 	-- Format if type is options:	{name in config, displayed name, type, description, options}
 	-- Format if otherwise:			{name in config, displayed name, type, description, min, max, increase by, string format, postfix (not necessary), sound effect name}
 	{"sfx_volume", "SFX Volume", "slider", nil, 0, 1, 5, "%02d", "%", "cursor"},
 	{"bgm_volume", "BGM Volume", "slider", nil, 0, 1, 5, "%02d", "%", "cursor"},
-	{"sound_sources", "SFX sources per file", "int", "High values may result in high memory consumption, "..
+	{"sound_sources", "SFX sources per file", "slider", "High values may result in high memory consumption, "..
 	"though it allows multiples of the same sound effect to be played at once."..
-	"\n(There's some exceptions, e.g. SFX added through modes/rulesets)", 0, 30, 1, "%0d", nil, "cursor"}
+	"\n(There's some exceptions, e.g. SFX added through modes/rulesets)", 1, 30, 1, "%0d", nil, "cursor"}
 }
 local optioncount = #ConfigScene.options
 
@@ -57,16 +57,6 @@ function ConfigScene:update()
 	for i, slider in pairs(self.sliders) do
 		slider:update(x, y)
 	end
-	if not love.mouse.isDown(1) or left_clicked_before then return end
-	if x > 20 and y > 40 and x < 70 and y < 70 then
-		playSE("mode_decide")
-		saveConfig()
-		scene = SettingsScene()
-	end
-	--THIS HAS WAY TOO MANY VARIABLES
-	for i, option in ipairs(ConfigScene.options) do
-		
-	end
 end
 
 function ConfigScene:render()
@@ -93,9 +83,7 @@ function ConfigScene:render()
 	for i, option in ipairs(ConfigScene.options) do
         love.graphics.setColor(1, 1, 1, 1)
         love.graphics.printf(option[2], 40, self.option_pos_y[i], 170, "left")
-		if option[3] == "int" then
-			self:renderInt(i, option)
-		elseif option[3] == "slider" then
+		if option[3] == "slider" then
 			self:renderSlider(i, option)
 		elseif option[3] == "options" then
 			self:renderOptions(i, option)
@@ -108,15 +96,12 @@ function ConfigScene:render()
 	love.graphics.setColor(1, 1, 1, 0.75)
 end
 
-function ConfigScene:renderInt(idx, option)
-	local postfix = option[9] or ""
-	love.graphics.printf(string.format(option[8], config.audiosettings[option[1]] or 0) .. postfix, 160, self.option_pos_y[idx], 320, "center")
-end
 function ConfigScene:renderSlider(idx, option)
 	self.sliders[option[1]]:draw()
 	local postfix = option[9] or ""
 	love.graphics.printf(string.format(option[8],self.sliders[option[1]]:getValue()) .. postfix, 160, self.option_pos_y[idx], 320, "center")
 end
+
 function ConfigScene:renderOptions(idx, option)
 	for j, setting in ipairs(option[5]) do
 		local b = CursorHighlight(100 + 110 * j, self.option_pos_y[idx], 100, 20)
@@ -127,13 +112,6 @@ end
 
 function ConfigScene:changeValue(by)
 	local option = self.options[self.highlight]
-	if option[3] == "int" then
-		--This is quite cumbersome.
-		if config.audiosettings[option[1]] == nil then
-			config.audiosettings[option[1]] = 0
-		end
-		config.audiosettings[option[1]] = Mod1(config.audiosettings[option[1]] + by + option[5], option[5] + option[6]) - option[5]
-	end
 	if option[3] == "slider" then
 		local sld = self.sliders[option[1]]
 		sld.value = math.max(sld.min, math.min(sld.max, (sld:getValue() + by) / (sld.max - sld.min)))
@@ -147,6 +125,13 @@ end
 
 function ConfigScene:onInputPress(e)
 	local option = self.options[self.highlight]
+	if e.type == "mouse" then
+		if e.x > 20 and e.y > 40 and e.x < 70 and e.y < 70 then
+			playSE("mode_decide")
+			saveConfig()
+			scene = SettingsScene()
+		end
+	end
 	if e.input == "menu_decide" or e.scancode == "return" then
 		if config.sound_sources ~= config.audiosettings.sound_sources then
 			config.sound_sources = config.audiosettings.sound_sources
