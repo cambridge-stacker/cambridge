@@ -125,14 +125,7 @@ end
 
 function ConfigScene:onInputPress(e)
 	local option = self.options[self.highlight]
-	if e.type == "mouse" then
-		if e.x > 20 and e.y > 40 and e.x < 70 and e.y < 70 then
-			playSE("mode_decide")
-			saveConfig()
-			scene = SettingsScene()
-		end
-	end
-	if e.input == "menu_decide" or e.scancode == "return" then
+	if e.input == "menu_decide" or e.scancode == "return" or (e.type == "mouse" and e.x > 20 and e.y > 40 and e.x < 70 and e.y < 70) then
 		if config.sound_sources ~= config.audiosettings.sound_sources then
 			config.sound_sources = config.audiosettings.sound_sources
 			--why is this necessary???
