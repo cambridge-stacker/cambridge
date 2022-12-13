@@ -411,7 +411,7 @@ function Grid:draw()
 			blocks[self.grid[y][x].skin][self.grid[y][x].colour] then
 				if self.grid_age[y][x] < 2 then
 					love.graphics.setColor(1, 1, 1, 1)
-					love.graphics.draw(blocks[self.grid[y][x].skin]["F"], 48+x*16, y*16)
+					drawSizeIndependentImage(blocks[self.grid[y][x].skin]["F"], 48+x*16, y*16, 0, 16, 16)
 				else
 					if self.grid[y][x].colour == "X" then
 						love.graphics.setColor(0, 0, 0, 0)
@@ -420,7 +420,7 @@ function Grid:draw()
 					else
 						love.graphics.setColor(0.5, 0.5, 0.5, 1)
 					end
-					love.graphics.draw(blocks[self.grid[y][x].skin][self.grid[y][x].colour], 48+x*16, y*16)
+					drawSizeIndependentImage(blocks[self.grid[y][x].skin][self.grid[y][x].colour], 48+x*16, y*16, 0, 16, 16)
 				end
 				if self.grid[y][x].skin ~= "bone" and self.grid[y][x].colour ~= "X" then
 					love.graphics.setColor(0.8, 0.8, 0.8, 1)
@@ -482,7 +482,7 @@ function Grid:drawInvisible(opacity_function, garbage_opacity_function, lock_fla
 					opacity = opacity_function(self.grid_age[y][x])
 				end
 				love.graphics.setColor(brightness, brightness, brightness, opacity)
-				love.graphics.draw(blocks[self.grid[y][x].skin][self.grid[y][x].colour], 48+x*16, y*16)
+				drawSizeIndependentImage(blocks[self.grid[y][x].skin][self.grid[y][x].colour], 48+x*16, y*16, 0, 16, 16)
 				if lock_flash then
 					if opacity > 0 and self.grid[y][x].colour ~= "X" then
 						love.graphics.setColor(0.64, 0.64, 0.64)
@@ -525,7 +525,7 @@ function Grid:drawCustom(colour_function, gamestate)
 					A = 0
 				end
 				love.graphics.setColor(R, G, B, A)
-				love.graphics.draw(blocks[self.grid[y][x].skin][self.grid[y][x].colour], 48+x*16, y*16)
+				drawSizeIndependentImage(blocks[self.grid[y][x].skin][self.grid[y][x].colour], 48+x*16, y*16, 0, 16, 16)
                 if outline > 0 and self.grid[y][x].colour ~= "X" then
                     love.graphics.setColor(0.64, 0.64, 0.64, outline)
                     love.graphics.setLineWidth(1)

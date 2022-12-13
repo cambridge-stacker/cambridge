@@ -169,15 +169,16 @@ function Piece:draw(opacity, brightness, grid, partial_das)
 		local x = self.position.x + offset.x
 		local y = self.position.y + offset.y
 		if self.big then
-			love.graphics.draw(
+			drawSizeIndependentImage(
 				blocks[self.skin][self.colour],
 				64+x*32+partial_das*2, 16+y*32+gravity_offset*2,
-				0, 2, 2
+				0, 32, 32
 			)
 		else
-			love.graphics.draw(
+			drawSizeIndependentImage(
 				blocks[self.skin][self.colour],
-				64+x*16+partial_das, 16+y*16+gravity_offset
+				64+x*16+partial_das, 16+y*16+gravity_offset,
+				0, 16, 16
 			)
 		end
 	end

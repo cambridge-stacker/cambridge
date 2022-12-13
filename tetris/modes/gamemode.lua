@@ -846,9 +846,9 @@ function GameMode:drawLineClearAnimation()
 				animation_table[1], animation_table[2],
 				animation_table[3], animation_table[4]
 			)
-			love.graphics.draw(
+			drawSizeIndependentImage(
 				blocks[animation_table[5]][animation_table[6]],
-				animation_table[7], animation_table[8]
+				animation_table[7], animation_table[8], 0, 16, 16
 			)
 		end
 	end
@@ -892,7 +892,7 @@ function GameMode:drawNextQueue(ruleset)
 		for index, offset in pairs(offsets) do
 			local x = offset.x + ruleset:getDrawOffset(piece, rotation).x + ruleset.spawn_positions[piece].x
 			local y = offset.y + ruleset:getDrawOffset(piece, rotation).y + 4.7
-			love.graphics.draw(blocks[skin][colourscheme[piece]], pos_x+x*16, pos_y+y*16)
+			drawSizeIndependentImage(blocks[skin][colourscheme[piece]], pos_x+x*16, pos_y+y*16, 0, 16, 16)
 		end
 	end
 	for i = 1, self.next_queue_length do

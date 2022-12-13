@@ -61,10 +61,10 @@ end
 
 function ConfigScene:render()
 	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.draw(
+	drawSizeIndependentImage(
 		backgrounds["game_config"],
 		0, 0, 0,
-		0.5, 0.5
+		640, 480
 	)
 
 	love.graphics.setFont(font_3x5_4)
@@ -125,7 +125,7 @@ end
 
 function ConfigScene:onInputPress(e)
 	local option = self.options[self.highlight]
-	if e.input == "menu_decide" or e.scancode == "return" or (e.type == "mouse" and e.x > 20 and e.y > 40 and e.x < 70 and e.y < 70) then
+	if e.input == "menu_decide" or e.scancode == "return" or (e.type == "mouse" and e.button == 1 and e.x > 20 and e.y > 40 and e.x < 70 and e.y < 70) then
 		if config.sound_sources ~= config.audiosettings.sound_sources then
 			config.sound_sources = config.audiosettings.sound_sources
 			--why is this necessary???
