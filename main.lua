@@ -151,6 +151,7 @@ mouse_idle = 0
 TAS_mode = false
 frame_steps = 0
 loaded_replays = false
+local prev_cur_pos_x, prev_cur_pos_y = 0, 0
 local system_cursor_type = "arrow"
 local screenshot_images = {}
 
@@ -890,6 +891,12 @@ function love.run()
 					love.graphics.present()
 				end
 				if love.mouse then
+					if prev_cur_pos_x == love.mouse.getX() and prev_cur_pos_y == love.mouse.getY() then
+						mouse_idle = mouse_idle + love.timer.getDelta()
+					else
+						mouse_idle = 0
+					end
+					prev_cur_pos_x, prev_cur_pos_y = love.mouse.getPosition()
 					love.mouse.setCursor(love.mouse.getSystemCursor(system_cursor_type))
 					if system_cursor_type ~= "arrow" then
 						system_cursor_type = "arrow"
