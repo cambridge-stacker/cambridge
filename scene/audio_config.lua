@@ -8,9 +8,9 @@ ConfigScene.options = {
 	-- this serves as reference to what the options' values mean i guess?
 	-- Option types: slider, options
 	-- Format if type is options:	{name in config, displayed name, type, description, options}
-	-- Format if otherwise:			{name in config, displayed name, type, description, min, max, increase by, string format, postfix (not necessary), sound effect name}
-	{"sfx_volume", "SFX Volume", "slider", nil, 0, 1, 5, "%02d", "%", "cursor"},
-	{"bgm_volume", "BGM Volume", "slider", nil, 0, 1, 5, "%02d", "%", "cursor"},
+	-- Format if otherwise:			{name in config, displayed name, type, description, min, max, increase by, string format, sound effect name}
+	{"sfx_volume", "SFX Volume", "slider", nil, 0, 1, 5, "%02d%%", "cursor"},
+	{"bgm_volume", "BGM Volume", "slider", nil, 0, 1, 5, "%02d%%", "cursor"},
 	{"sound_sources", "SFX sources per file", "slider", "High values may result in high memory consumption, "..
 	"though it allows multiples of the same sound effect to be played at once."..
 	"\n(There's some exceptions, e.g. SFX added through modes/rulesets)", 1, 30, 1, "%0d", nil, "cursor"}
@@ -98,8 +98,7 @@ end
 
 function ConfigScene:renderSlider(idx, option)
 	self.sliders[option[1]]:draw()
-	local postfix = option[9] or ""
-	love.graphics.printf(string.format(option[8],self.sliders[option[1]]:getValue()) .. postfix, 160, self.option_pos_y[idx], 320, "center")
+	love.graphics.printf(string.format(option[8],self.sliders[option[1]]:getValue()), 160, self.option_pos_y[idx], 320, "center")
 end
 
 function ConfigScene:renderOptions(idx, option)
@@ -144,10 +143,10 @@ function ConfigScene:onInputPress(e)
 		self.highlight = Mod1(self.highlight+1, optioncount)
 	elseif e.input == "left" or e.scancode == "left" then
         self:changeValue(-option[7])
-        playSE(option[10] or "cursor_lr")
+        playSE(option[9] or "cursor_lr")
 	elseif e.input == "right" or e.scancode == "right" then
 		self:changeValue(option[7])
-        playSE(option[10] or "cursor_lr")
+        playSE(option[9] or "cursor_lr")
 	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
 		loadSave()
 		scene = SettingsScene()
