@@ -101,10 +101,10 @@ function ReplaySelectScene:update()
 end
 
 function ReplaySelectScene:render()
-	love.graphics.draw(
+	drawSizeIndependentImage(
 		backgrounds[0],
 		0, 0, 0,
-		0.5, 0.5
+		640, 480
 	)
 	
 	self.height_offset = interpolateListPos(self.height_offset / 20, self.menu_state.replay) * 20

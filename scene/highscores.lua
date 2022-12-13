@@ -119,10 +119,10 @@ function HighscoreScene:selectHash()
     self.hash_highscore = highscores[self.hash]
 end
 function HighscoreScene:render()
-	love.graphics.draw(
+	drawSizeIndependentImage(
 		backgrounds[0],
 		0, 0, 0,
-		0.5, 0.5
+		640, 480
 	)
 
     love.graphics.setFont(font_3x5_4)

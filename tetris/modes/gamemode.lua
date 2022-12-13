@@ -1033,10 +1033,10 @@ end
 
 function GameMode:drawBackground()
 	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.draw(
+	drawSizeIndependentImage(
 		backgrounds[self:getBackground()],
 		0, 0, 0,
-		0.5, 0.5
+		640, 480
 	)
 end
 

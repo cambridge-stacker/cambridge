@@ -137,10 +137,10 @@ function CreditsScene:render()
     local align = alignment_table[4-credits_pos]
 
     love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.draw(
+	drawSizeIndependentImage(
 		backgrounds[19],
 		0, 0, 0,
-		0.5, 0.5
+        640, 480
     )
 
     love.graphics.setFont(font_3x5_4)

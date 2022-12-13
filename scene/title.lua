@@ -85,10 +85,10 @@ local block_offsets = {
 function TitleScene:render()
 	love.graphics.setFont(font_3x5_4)
 	love.graphics.setColor(1, 1, 1, 1 - self.snow_bg_opacity)
-	love.graphics.draw(
+	drawSizeIndependentImage(
 		backgrounds["title_no_icon"], -- title, title_night
 		0, 0, 0,
-		0.5, 0.5
+		640, 480
 	)
 
 	if not enter_pressed then
@@ -107,10 +107,10 @@ function TitleScene:render()
 		x, y = 256, 140
 	end
 	for _, b in ipairs(block_offsets) do
-		love.graphics.draw(
+		drawSizeIndependentImage(
 			blocks["2tie"][b.color],
 			x + b.x, y + b.y, 0,
-			2, 2
+			32, 32
 		)
 	end
 
@@ -125,11 +125,7 @@ function TitleScene:render()
 
 	love.graphics.setFont(font_3x5_2)
 	love.graphics.setColor(1, 1, 1, self.snow_bg_opacity)
-	love.graphics.draw(
-		backgrounds["snow"],
-		0, 0, 0,
-		0.5, 0.5
-	)
+	drawSizeIndependentImage(backgrounds["snow"], 0, 0, 0, 640, 480)
 
 	love.graphics.draw(
 		misc_graphics["santa"],

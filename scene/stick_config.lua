@@ -121,10 +121,10 @@ end
 
 function StickConfigScene:render()
 	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.draw(
+	drawSizeIndependentImage(
 		backgrounds["input_config"],
 		0, 0, 0,
-		0.5, 0.5
+		640, 480
 	)
 
 	love.graphics.setFont(font_3x5_3)
