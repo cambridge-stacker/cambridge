@@ -114,7 +114,7 @@ function ConfigScene:changeValue(by)
 	local option = self.options[self.highlight]
 	if option[3] == "slider" then
 		local sld = self.sliders[option[1]]
-		sld.value = math.max(sld.min, math.min(sld.max, (sld:getValue() + by) / (sld.max - sld.min)))
+		sld.value = math.max(0, math.min(sld.max, (sld:getValue() + by - sld.min))) / (sld.max - sld.min)
 		local x, y = getScaledPos(love.mouse.getPosition())
 		sld:update(x, y)
 	end
