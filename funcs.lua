@@ -18,6 +18,18 @@ function deepcopy(t)
 	return target
 end
 
+---@param image love.Image
+---@param origin_x integer
+---@param origin_y integer
+---@param draw_width integer
+---@param draw_height integer
+function drawSizeIndependentImage(image, origin_x, origin_y, r, draw_width, draw_height)
+	local width, height = image:getDimensions()
+	local width_scale_factor = width / draw_width
+	local height_scale_factor = height / draw_height
+	love.graphics.draw(image, origin_x, origin_y, r, 1/width_scale_factor, 1/height_scale_factor)
+end
+
 function strTrueValues(tbl)
 	-- returns a concatenation of all the keys in tbl with value true, separated with spaces
 	local str = ""
