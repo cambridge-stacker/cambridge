@@ -146,9 +146,6 @@ function popFromChannel(channel_name)
 	end
 end
 
-left_clicked_before = false
-right_clicked_before = false
-prev_cur_pos_x, prev_cur_pos_y = 0, 0
 is_cursor_visible = true
 mouse_idle = 0
 TAS_mode = false
@@ -162,11 +159,11 @@ function setSystemCursorType(type)
 	system_cursor_type = type
 end
 
--- For when mouse controls are part of menu controls
-function getScaledPos(cursor_x, cursor_y)
+-- For when you need to convert given coordinate to where it'd be in scaled 640x480 equivalent.
+function getScaledPos(x, y)
 	local screen_x, screen_y = love.graphics.getDimensions()
 	local scale_factor = math.min(screen_x / 640, screen_y / 480)
-	return (cursor_x - (screen_x - scale_factor * 640) / 2)/scale_factor, (cursor_y - (screen_y - scale_factor * 480) / 2)/scale_factor
+	return (x - (screen_x - scale_factor * 640) / 2)/scale_factor, (y - (screen_y - scale_factor * 480) / 2)/scale_factor
 end
 
 
@@ -892,6 +889,12 @@ function love.run()
 					love.draw()
 					love.graphics.present()
 				end
+				if love.mouse then
+					love.mouse.setCursor(love.mouse.getSystemCursor(system_cursor_type))
+					if system_cursor_type ~= "arrow" then
+						system_cursor_type = "arrow"
+					end
+				end
 
 				-- request 1ms delays first but stop short of overshooting, then do "0ms" delays without overshooting (0ms requests generally do a delay of some nonzero amount of time, but maybe less than 1ms)
 				for milliseconds=0.001,0.000,-0.001 do
@@ -912,20 +915,6 @@ function love.run()
 				while love.timer.getTime() - last_time < FRAME_DURATION do
 					-- busy loop, do nothing here until delay is finished; delays above stop short of finishing, so this part can finish it off precisely
 				end
-			end
-			if love.mouse then
-				love.mouse.setCursor(love.mouse.getSystemCursor(system_cursor_type))
-				if system_cursor_type ~= "arrow" then
-					system_cursor_type = "arrow"
-				end
-				left_clicked_before = love.mouse.isDown(1) or mouse_idle > 2
-				right_clicked_before = love.mouse.isDown(2) or mouse_idle > 2
-				if prev_cur_pos_x == love.mouse.getX() and prev_cur_pos_y == love.mouse.getY() then
-					mouse_idle = mouse_idle + love.timer.getDelta()
-				else
-					mouse_idle = 0
-				end
-				prev_cur_pos_x, prev_cur_pos_y = love.mouse.getPosition()
 			end
 
 			local finish_delay_time = love.timer.getTime()
