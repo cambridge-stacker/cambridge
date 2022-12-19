@@ -63,7 +63,7 @@ function ReplayScene:update()
 		config.sfx_volume = 0	--This is to stop blasting your ears every time you load a state.
 		frames_left = savestate_frames
 	end
-	if love.window.hasFocus() and (not self.paused or frame_steps > 0) and not self.rerecord then
+	if love.window.hasFocus() and (not self.paused or frame_steps > 0) and (TAS_mode or not self.rerecord) then
 		if frame_steps > 0 then
 			self.game.ineligible = self.rerecord or self.game.ineligible
 			frame_steps = frame_steps - 1
