@@ -170,7 +170,7 @@ function ReplayScene:onInputPress(e)
 		self.paused = not self.paused
 		if self.paused then pauseBGM()
 		else resumeBGM() end
-	elseif e.input and string.sub(e.input, 1, 5) ~= "menu_" and self.rerecord then
+	elseif e.input and string.sub(e.input, 1, 5) ~= "menu_" and self.rerecord and e.input ~= "frame_step" then
 		self.inputs[e.input] = true
 	elseif e.input == "hold" then
 		self.rerecord = true

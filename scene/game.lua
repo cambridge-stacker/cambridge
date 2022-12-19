@@ -88,7 +88,7 @@ function GameScene:onInputPress(e)
 		else
 			scene = RevModeSelectScene()
 		end
-	elseif e.input and string.sub(e.input, 1, 5) ~= "menu_" then
+	elseif e.input and string.sub(e.input, 1, 5) ~= "menu_" and e.input ~= "frame_step" then
 		self.inputs[e.input] = true
 	end
 end
