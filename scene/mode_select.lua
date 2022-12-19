@@ -47,6 +47,37 @@ function ModeSelectScene:new()
 	})
 end
 
+local menu_DAS_hold = {["up"] = 0, ["down"] = 0, ["left"] = 0, ["right"] = 0}
+local menu_DAS_frames = {["up"] = 0, ["down"] = 0, ["left"] = 0, ["right"] = 0}
+local menu_ARR = {[0] = 8, 6, 5, 4, 3, 2, 2, 2, 1}
+function ModeSelectScene:menuDASInput(input, input_string, das, forced_arr)
+	local result = false
+	local arr = forced_arr or self:getMenuARR(menu_DAS_hold[input_string])
+	if input then
+		menu_DAS_frames[input_string] = menu_DAS_frames[input_string] + 1
+		menu_DAS_hold[input_string] = menu_DAS_hold[input_string] + 1
+		if menu_DAS_frames[input_string] > das or menu_DAS_frames[input_string] == 1 then
+			menu_DAS_frames[input_string] = math.max(1, menu_DAS_frames[input_string] - arr)
+			result = true
+		end
+	else
+		menu_DAS_frames[input_string] = 0
+		menu_DAS_hold[input_string] = 0
+	end
+	return result
+end
+
+function ModeSelectScene:getMenuARR(number)
+	if number < 60 then
+		if (number / 30) > #menu_ARR then
+			return #menu_ARR
+		else
+			return menu_ARR[math.floor(number / 30)]
+		end
+	end
+	return math.ceil(32 / math.sqrt(number))
+end
+
 function ModeSelectScene:update()
 	switchBGM(nil) -- experimental
 
@@ -67,9 +98,11 @@ function ModeSelectScene:update()
 		if self.auto_menu_offset > 0 then self.auto_menu_offset = self.auto_menu_offset - 1 end
 		if self.auto_menu_offset < 0 then self.auto_menu_offset = self.auto_menu_offset + 1 end
 	end
-	if self.das >= 15 then
-		self:changeOption(self.das_up and -1 or 1)
-		self.das = self.das - 4
+	if self:menuDASInput(self.das_up, "up", 12) then
+		self:changeOption(-1)
+	end
+	if self:menuDASInput(self.das_down, "down", 12) then
+		self:changeOption(1)
 	end
 
 	DiscordRPC:update({
@@ -395,11 +428,9 @@ function ModeSelectScene:onInputPress(e)
 		end
 		self:indirectStartMode()
 	elseif e.input == "up" or e.scancode == "up" then
-		self:changeOption(-1)
 		self.das_up = true
 		self.das_down = nil
 	elseif e.input == "down" or e.scancode == "down" then
-		self:changeOption(1)
 		self.das_down = true
 		self.das_up = nil
 	elseif e.input == "left" or e.input == "right" or e.scancode == "left" or e.scancode == "right" then

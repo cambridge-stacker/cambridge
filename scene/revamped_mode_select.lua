@@ -60,6 +60,38 @@ function ModeSelectScene:new()
 		largeImageKey = "ingame-000"
 	})
 end
+
+local menu_DAS_hold = {["up"] = 0, ["down"] = 0, ["left"] = 0, ["right"] = 0}
+local menu_DAS_frames = {["up"] = 0, ["down"] = 0, ["left"] = 0, ["right"] = 0}
+local menu_ARR = {[0] = 8, 6, 5, 4, 3, 2, 2, 2, 1}
+function ModeSelectScene:menuDASInput(input, input_string, das, forced_arr)
+	local result = false
+	local arr = forced_arr or self:getMenuARR(menu_DAS_hold[input_string])
+	if input then
+		menu_DAS_frames[input_string] = menu_DAS_frames[input_string] + 1
+		menu_DAS_hold[input_string] = menu_DAS_hold[input_string] + 1
+		if menu_DAS_frames[input_string] > das or menu_DAS_frames[input_string] == 1 then
+			menu_DAS_frames[input_string] = math.max(1, menu_DAS_frames[input_string] - arr)
+			result = true
+		end
+	else
+		menu_DAS_frames[input_string] = 0
+		menu_DAS_hold[input_string] = 0
+	end
+	return result
+end
+
+function ModeSelectScene:getMenuARR(number)
+	if number < 60 then
+		if (number / 30) > #menu_ARR then
+			return #menu_ARR
+		else
+			return menu_ARR[math.floor(number / 30)]
+		end
+	end
+	return math.ceil(32 / math.sqrt(number))
+end
+
 function ModeSelectScene:update()
 	switchBGM(nil)
 	if self.starting then
@@ -89,13 +121,17 @@ function ModeSelectScene:update()
 		if self.auto_ruleset_offset > 0 then self.auto_ruleset_offset = self.auto_ruleset_offset - 1 end
 		if self.auto_ruleset_offset < 0 then self.auto_ruleset_offset = self.auto_ruleset_offset + 1 end
 	end
-	if self.das_y >= 15 then
-		self:changeMode(self.das_up and -1 or 1)
-		self.das_y = self.das_y - 4
+	if self:menuDASInput(self.das_up, "up", 12) then
+		self:changeMode(-1)
 	end
-	if self.das_x >= 15 then
-		self:changeRuleset(self.das_left and -1 or 1)
-		self.das_x = self.das_x - 15
+	if self:menuDASInput(self.das_down, "down", 12) then
+		self:changeMode(1)
+	end
+	if self:menuDASInput(self.das_left, "left", 15, 15) then
+		self:changeRuleset(-1)
+	end
+	if self:menuDASInput(self.das_right, "right", 15, 15) then
+		self:changeRuleset(1)
 	end
 	DiscordRPC:update({
 		details = "In menus",
@@ -398,19 +434,15 @@ function ModeSelectScene:onInputPress(e)
     elseif e.input == "menu_decide" or e.scancode == "return" then
         self:indirectStartMode()
     elseif e.input == "up" or e.scancode == "up" then
-        self:changeMode(-1)
         self.das_up = true
         self.das_down = nil
     elseif e.input == "down" or e.scancode == "down" then
-        self:changeMode(1)
         self.das_down = true
         self.das_up = nil
     elseif e.input == "left" or e.scancode == "left" then
-        self:changeRuleset(-1)
         self.das_left = true
         self.das_right = nil
     elseif e.input == "right" or e.scancode == "right" then
-        self:changeRuleset(1)
         self.das_right = true
         self.das_left = nil
     elseif e.input then
