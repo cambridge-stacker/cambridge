@@ -27,10 +27,10 @@ function ReplaySelectScene:new()
 	self.height_offset = 0
 	self.auto_menu_offset = 0
 	self.state_string = ""
-	DiscordRPC:update({
+	DiscordGameSDK:update({
 		details = "In menus",
 		state = "Choosing a replay",
-		largeImageKey = "ingame-000"
+		large_image = "ingame-000"
 	})
 end
 
@@ -93,10 +93,10 @@ function ReplaySelectScene:update()
 		self.das = self.das - 4
 	end
 
-	DiscordRPC:update({
+	DiscordGameSDK:update({
 		details = "In menus",
 		state = "Choosing a replay",
-		largeImageKey = "ingame-000"
+		large_image = "ingame-000"
 	})
 end
 

@@ -25,10 +25,10 @@ function GameScene:new(game_mode, ruleset, inputs)
 		hold=false,
 	}
 	self.paused = false
-	DiscordRPC:update({
+	DiscordGameSDK:update({
 		details = self.game.rpc_details,
 		state = self.game.name,
-		largeImageKey = "ingame-"..self.game:getBackground().."00"
+		large_image = "ingame-"..self.game:getBackground().."00"
 	})
 end
 
@@ -44,10 +44,10 @@ function GameScene:update()
 		end
 		self.game:update(inputs, self.ruleset)
 		self.game.grid:update()
-		DiscordRPC:update({
+		DiscordGameSDK:update({
 			details = self.game.rpc_details,
 			state = self.game.name,
-			largeImageKey = "ingame-"..self.game:getBackground().."00"
+			large_image = "ingame-"..self.game:getBackground().."00"
 		})
 	end
 end

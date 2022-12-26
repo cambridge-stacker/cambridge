@@ -52,11 +52,11 @@ function TitleScene:new()
 	else
 		main_menu_screens[1] = RevModeSelectScene
 	end
-	DiscordRPC:update({
+	DiscordGameSDK:update({
 		details = "In menus",
 		state = mainmenuidle[love.math.random(#mainmenuidle)],
-		largeImageKey = "icon2",
-		largeImageText = version
+		large_image = "icon2",
+		large_text = version
 	})
 end
 
@@ -93,6 +93,9 @@ function TitleScene:render()
 	)
 
 	if not enter_pressed then
+		--This is intentional. Because it works weird. 
+		DiscordGameSDK:update({})
+
 		love.graphics.setFont(font_3x5_3)
 		love.graphics.printf("Welcome To Cambridge: Flooding Edge!", 80, 240, 480, "center")
 		if love.timer.getTime() % 2 <= 1 then
@@ -195,8 +198,8 @@ function TitleScene:onInputPress(e)
 		self.text = self.text .. (e.scancode or "")
 		if self.text == "ffffff" then
 			self.text_flag = true
-			DiscordRPC:update({
-				largeImageKey = "snow"
+			DiscordGameSDK:update({
+				large_image = "snow"
 			})
 		end
 	end

@@ -26,7 +26,7 @@ function ConfigScene:new()
 	self.config = config.input
 	self.highlight = 1
 
-	DiscordRPC:update({
+	DiscordGameSDK:update({
 		details = "In settings",
 		state = "Changing game settings",
 	})

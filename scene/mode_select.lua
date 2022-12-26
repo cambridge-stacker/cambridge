@@ -40,10 +40,10 @@ function ModeSelectScene:new()
 	self.auto_menu_offset = 0
 	self.auto_menu_state = "mode"
 	self.start_frames, self.starting = 0, false
-	DiscordRPC:update({
+	DiscordGameSDK:update({
 		details = "In menus",
 		state = "Choosing a mode",
-		largeImageKey = "ingame-000"
+		large_image = "ingame-000"
 	})
 end
 
@@ -105,10 +105,10 @@ function ModeSelectScene:update()
 		self:changeOption(1)
 	end
 
-	DiscordRPC:update({
+	DiscordGameSDK:update({
 		details = "In menus",
 		state = "Choosing a " .. self.menu_state.select,
-		largeImageKey = "ingame-000"
+		large_image = "ingame-000"
 	})
 end
 

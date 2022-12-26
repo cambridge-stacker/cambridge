@@ -15,7 +15,7 @@ TuningScene.options = {
 local optioncount = #TuningScene.options
 
 function TuningScene:new()
-    DiscordRPC:update({
+    DiscordGameSDK:update({
         details = "In settings",
         state = "Changing tuning settings",
     })

@@ -7,7 +7,7 @@ function love.load()
 	love.graphics.clear()
 	math.randomseed(os.time())
 	highscores = {}
-	require "load.rpc"
+	require "load.gamesdk"
 	require "load.graphics"
 	require "load.sounds"
 	require "load.bgm"

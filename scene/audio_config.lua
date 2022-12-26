@@ -45,7 +45,7 @@ function ConfigScene:new()
 	end
 	--#endregion
 
-	DiscordRPC:update({
+	DiscordGameSDK:update({
 		details = "In settings",
 		state = "Changing audio settings",
 	})

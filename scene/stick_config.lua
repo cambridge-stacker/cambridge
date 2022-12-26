@@ -90,7 +90,7 @@ function StickConfigScene:new()
 
 	self.safety_frames = 0
 
-	DiscordRPC:update({
+	DiscordGameSDK:update({
 		details = "In settings",
 		state = "Changing joystick config",
 	})
