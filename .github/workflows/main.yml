@@ -18,7 +18,7 @@ jobs:
           [! -d "dist/windows/libs/discordGameSDK/lib/x86_64/"] && mkdir -p dist/windows/libs/discordGameSDK/lib/x86_64/
           [! -d "dist/win32/libs/discordGameSDK/lib/x86/"] && mkdir -p dist/win32/libs/discordGameSDK/lib/x86/
           cp libs/discordGameSDK/lib/x86_64/discord_game_sdk.dll*  dist/windows/libs/discordGameSDK/lib/x86_64/
-          cp libs/discordGameSDK/lib/x86/discord_game_sdk.dll* dist/win32/libs/discordGameSDK/lib/
+          cp libs/discordGameSDK/lib/x86/discord_game_sdk.dll* dist/win32/libs/discordGameSDK/lib/x86/
       - name: Upload Windows 32-bit artifact
         uses: actions/upload-artifact@v3
         with:
