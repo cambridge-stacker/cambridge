@@ -25,7 +25,7 @@ function love.load()
 	--config["das_last_key"] = false
 	--config["fullscreen"] = false
 
-	love.window.setMode(love.graphics.getWidth(), love.graphics.getHeight(), {resizable = true});
+	love.window.setMode(love.graphics.getWidth(), love.graphics.getHeight(), {resizable = true, vsync = false});
 		
 	-- used for screenshots
 	GLOBAL_CANVAS = love.graphics.newCanvas()
