@@ -843,6 +843,10 @@ local TARGET_FPS = 60
 local FRAME_DURATION = 1.0 / TARGET_FPS
 
 function setTargetFPS(fps)
+	if fps == -1 then
+		TARGET_FPS = -1
+		return
+	end
 	if fps <= 0 then
 		error("Illegal target FPS.")
 	end
@@ -883,7 +887,7 @@ function love.run()
 		if scene and scene.update and love.timer then
 			scene:update()
 
-			if time_accumulator < FRAME_DURATION then
+			if time_accumulator < FRAME_DURATION or TARGET_FPS == -1 then
 				if love.graphics and love.graphics.isActive() and love.draw then
 					love.graphics.origin()
 					love.graphics.clear(love.graphics.getBackgroundColor())
@@ -902,25 +906,26 @@ function love.run()
 						system_cursor_type = "arrow"
 					end
 				end
-
-				-- request 1ms delays first but stop short of overshooting, then do "0ms" delays without overshooting (0ms requests generally do a delay of some nonzero amount of time, but maybe less than 1ms)
-				for milliseconds=0.001,0.000,-0.001 do
-					local max_delay = 0.0
-					while max_delay < FRAME_DURATION do
-						local delay_start_time = love.timer.getTime()
-						if delay_start_time - last_time < FRAME_DURATION - max_delay then
-							love.timer.sleep(milliseconds)
-							local last_delay = love.timer.getTime() - delay_start_time
-							if last_delay > max_delay then
-								max_delay = last_delay
+				if TARGET_FPS ~= -1 then
+					-- request 1ms delays first but stop short of overshooting, then do "0ms" delays without overshooting (0ms requests generally do a delay of some nonzero amount of time, but maybe less than 1ms)
+					for milliseconds=0.001,0.000,-0.001 do
+						local max_delay = 0.0
+						while max_delay < FRAME_DURATION do
+							local delay_start_time = love.timer.getTime()
+							if delay_start_time - last_time < FRAME_DURATION - max_delay then
+								love.timer.sleep(milliseconds)
+								local last_delay = love.timer.getTime() - delay_start_time
+								if last_delay > max_delay then
+									max_delay = last_delay
+								end
+							else
+								break
 							end
-						else
-							break
 						end
 					end
-				end
-				while love.timer.getTime() - last_time < FRAME_DURATION do
-					-- busy loop, do nothing here until delay is finished; delays above stop short of finishing, so this part can finish it off precisely
+					while love.timer.getTime() - last_time < FRAME_DURATION do
+						-- busy loop, do nothing here until delay is finished; delays above stop short of finishing, so this part can finish it off precisely
+					end
 				end
 			end
 
