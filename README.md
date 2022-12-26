@@ -36,7 +36,7 @@ If you're on a 32-bit system, you'll want to double-click `start_win32.bat`. If 
 
 	dist\win32\love.exe .
 
-32-bit systems do not support rich presence integration.
+32-bit systems do not support the outdated rich presence integration.
 
 Then, check the mod pack section at the bottom of this page.
 
