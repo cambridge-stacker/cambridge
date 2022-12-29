@@ -7,7 +7,7 @@ current_ruleset = 1
 
 function ModeSelectScene:new()
 	-- reload custom modules
-	initModules()
+	initModules(true)
 	self.game_mode_folder = game_modes
 	self.game_mode_selections = {game_modes}
 	self.ruleset_folder = rulesets
