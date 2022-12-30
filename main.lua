@@ -70,8 +70,6 @@ function initModules(reload)
 	if reload then
 		for key, value in pairs(package.loaded) do
 			if string.sub(key, 1, 7) == "tetris." then
-				print("unloaded "..key.."!")
-				
 				package.loaded[key] = nil
 			end
 		end
