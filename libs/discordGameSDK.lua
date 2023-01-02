@@ -920,7 +920,7 @@ end
 
 local updateActivityCallback = ffi.cast("callbackPtr", function(callback_data, discord_result)
   if discord_result == libGameSDK.DiscordResult_Ok then
-    -- print("Successfully updated Discord activity")
+    print("Successfully updated Discord activity")
   else 
     print("Failed updating Discord activity: " .. tostring(discord_result))
   end
