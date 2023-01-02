@@ -30,6 +30,42 @@ function drawSizeIndependentImage(image, origin_x, origin_y, r, draw_width, draw
 	love.graphics.draw(image, origin_x, origin_y, r, 1/width_scale_factor, 1/height_scale_factor)
 end
 
+function HSVToRGB(h, s, v)
+    if s <= 0 then return v,v,v end
+    h = h*6
+    local c = v*s
+    local x = (1-math.abs((h%2)-1))*c
+    local m,r,g,b = (v-c), 0, 0, 0
+    if h < 1 then
+        r, g, b = c, x, 0
+    elseif h < 2 then
+        r, g, b = x, c, 0
+    elseif h < 3 then
+        r, g, b = 0, c, x
+    elseif h < 4 then
+        r, g, b = 0, x, c
+    elseif h < 5 then
+        r, g, b = x, 0, c
+    else
+        r, g, b = c, 0, x
+    end
+    return r+m, g+m, b+m
+end
+
+---@param string string
+function rainbowString(string)
+	local tbl = {}
+	local char = ''
+    for i = 1, #string do
+        char = string.char(string:byte(i)) or ' '
+		local r, g, b = HSVToRGB(((love.timer.getTime() / 4) + i / #string) % 1, 1, 1)
+		-- print(r, g, b, a, (love.timer.getTime() + i / 20) % 1)
+		table.insert(tbl, {r, g, b, 1})
+		table.insert(tbl, char)
+    end
+	return tbl
+end
+
 function strTrueValues(tbl)
 	-- returns a concatenation of all the keys in tbl with value true, separated with spaces
 	local str = ""
