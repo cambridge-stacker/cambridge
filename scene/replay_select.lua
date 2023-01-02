@@ -2,6 +2,7 @@ local ReplaySelectScene = Scene:extend()
 
 ReplaySelectScene.title = "Replays"
 
+local sha2 = require "libs.sha2"
 local binser = require 'libs.binser'
 
 local current_submenu = 0
@@ -27,7 +28,7 @@ function ReplaySelectScene:new()
 	self.height_offset = 0
 	self.auto_menu_offset = 0
 	self.state_string = ""
-	DiscordGameSDK:update({
+	DiscordRPC:update({
 		details = "In menus",
 		state = "Choosing a replay",
 		large_image = "ingame-000"
@@ -93,7 +94,7 @@ function ReplaySelectScene:update()
 		self.das = self.das - 4
 	end
 
-	DiscordGameSDK:update({
+	DiscordRPC:update({
 		details = "In menus",
 		state = "Choosing a replay",
 		large_image = "ingame-000"
@@ -194,13 +195,40 @@ function ReplaySelectScene:render()
 					love.graphics.setColor(1, 1, 1)
 				end
 			end
+			if replay.sha256_table then
+				if config.visualsettings.debug_level > 2 then
+					idx = idx + 2
+					love.graphics.setFont(font_3x5_2)
+					love.graphics.printf(("SHA256 replay checksums:\n   Mode: %s\nRuleset: %s"):format(replay.sha256_table.mode, replay.sha256_table.ruleset), 0, 140 + idx * 20, 640, "center")
+				end
+				if replay.sha256_table.mode ~= self.replay_sha_table.mode then
+					idx = idx + 1
+					love.graphics.setColor(1, 0, 0)
+					love.graphics.printf("SHA256 checksum for mode doesn't match!", 0, 170 + idx * 20, 640, "center")
+					idx = idx + 1
+					love.graphics.setFont(font_3x5)
+					love.graphics.printf(("Replay: %s\nMode:   %s"):format(replay.sha256_table.mode, self.replay_sha_table.mode), 0, 170 + idx * 20, 640, "center")
+					love.graphics.setColor(1, 1, 1)
+				end
+				if replay.sha256_table.ruleset ~= self.replay_sha_table.ruleset then
+					idx = idx + 2
+					love.graphics.setColor(1, 0, 0)
+					love.graphics.setFont(font_3x5_2)
+					love.graphics.printf("SHA256 checksum for ruleset doesn't match!", 0, 170 + idx * 20, 640, "center")
+					idx = idx + 1
+					love.graphics.setFont(font_3x5)
+					love.graphics.printf(("Replay: %s\nRuleset:%s"):format(replay.sha256_table.ruleset, self.replay_sha_table.ruleset), 0, 170 + idx * 20, 640, "center")
+					love.graphics.setColor(1, 1, 1)
+				end
+			end
 			if replay.highscore_data then
 				love.graphics.setFont(font_3x5_2)
 				love.graphics.printf("In-replay highscore data:", 0, 190 + idx * 20, 640, "center")
 				for key, value in pairs(replay["highscore_data"]) do
-					idx = idx + 1
+					idx = idx + 0.8
 					love.graphics.printf(key..": "..value, 0, 200 + idx * 20, 640, "center")
 				end
+				idx = idx - 1
 			else
 				love.graphics.setFont(font_3x5_3)
 				love.graphics.printf("Legacy replay\nLevel: "..replay["level"], 0, 190, 640, "center")
@@ -304,6 +332,7 @@ function ReplaySelectScene:startReplay()
 
 	if replays[pointer]["highscore_data"] and not self.chosen_replay then
 		self.chosen_replay = true
+		self.replay_sha_table = {mode = sha2.sha256(binser.serialize(mode)), ruleset = sha2.sha256(binser.serialize(rules))}
 		playSE("main_decide")
 		self.das_down = nil
 		self.das_up = nil

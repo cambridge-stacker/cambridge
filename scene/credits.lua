@@ -8,7 +8,7 @@ function CreditsScene:new()
     self.scroll_speed = 1
     switchBGM("credit_roll", "gm3")
 
-    DiscordGameSDK:update({
+    DiscordRPC:update({
         details = "Watching the credits",
         state = "Thanks for playing the game!",
         large_image = "ingame-1900",

@@ -1,4 +1,6 @@
 local Sequence = require 'tetris.randomizers.fixed_sequence'
+local binser   = require 'libs.binser'
+local sha2     = require 'libs.sha2'
 
 local ReplayScene = Scene:extend()
 
@@ -15,6 +17,7 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	if replay["das_cut_delay"] then config.dcd = replay["das_cut_delay"] end
 	love.math.setRandomSeed(replay["random_low"], replay["random_high"])
 	love.math.setRandomState(replay["random_state"])
+	self.sha_tbl = {mode = sha2.sha256(binser.s(game_mode)), ruleset = sha2.sha256(binser.s(ruleset))}
 	self.retry_replay = replay
 	self.retry_mode = game_mode
 	self.retry_ruleset = ruleset
@@ -41,7 +44,7 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	self.replay_speed = 1
 	self.frames = 0
 	self.relative_frames = 0
-	DiscordGameSDK:update({
+	DiscordRPC:update({
 		details = "Viewing a replay",
 		state = self.game.name,
 		large_image = "ingame-"..self.game:getBackground().."00"
@@ -99,7 +102,7 @@ function ReplayScene:update()
 		config.sfx_volume = pre_sfx_volume --Returns the volume to normal.
 		self.paused = true
 	end
-	DiscordGameSDK:update({
+	DiscordRPC:update({
 		details = self.rerecord and self.game.rpc_details or ("Viewing a".. (self.replay["toolassisted"] and " tool-assisted" or "") .." replay"),
 		state = self.game.name,
 		large_image = "ingame-"..self.game:getBackground().."00"

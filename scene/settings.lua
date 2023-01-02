@@ -20,7 +20,7 @@ local settingsidle = {
 
 function SettingsScene:new()
     self.menu_state = 1
-    DiscordGameSDK:update({
+    DiscordRPC:update({
         details = "In settings",
         state = settingsidle[love.math.random(#settingsidle)],
         large_image = "settings",

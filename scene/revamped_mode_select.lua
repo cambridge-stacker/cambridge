@@ -54,7 +54,7 @@ function ModeSelectScene:new()
 	self.auto_mode_offset = 0
     self.auto_ruleset_offset = 0
 	self.start_frames, self.starting = 0, false
-	DiscordGameSDK:update({
+	DiscordRPC:update({
 		details = "In menus",
 		state = "Chosen ??? and ???.",
 		large_image = "ingame-000"
@@ -133,7 +133,7 @@ function ModeSelectScene:update()
 	if self:menuDASInput(self.das_right, "right", 15, 15) then
 		self:changeRuleset(1)
 	end
-	DiscordGameSDK:update({
+	DiscordRPC:update({
 		details = "In menus",
 		state = "Chosen ".. ((self.game_mode_folder[self.menu_state.mode] or {name = "no mode"}).name) .." and ".. ((self.ruleset_folder[self.menu_state.ruleset] or {name = "no ruleset"}).name) ..".",
 		large_image = "ingame-000"

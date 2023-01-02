@@ -122,7 +122,7 @@ function KeyConfigScene:new()
 
 	self.safety_frames = 0
 
-	DiscordGameSDK:update({
+	DiscordRPC:update({
 		details = "In settings",
 		state = "Changing key config",
 	})

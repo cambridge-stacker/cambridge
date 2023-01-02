@@ -7,7 +7,7 @@ require 'load.save'
 ConfigScene.options = {
 	-- this serves as reference to what the options' values mean i guess?
 	-- Format: {name in config, displayed name, options}
-	{"display_gamemode", "Debug Info", {"On", "Off"}},
+	{"display_gamemode", "Display Info", {"On", "Off"}},
 	{"smooth_movement", "Smooth Piece Drop", {"On", "Off"}},
 	{"smooth_scroll", "Smooth Scrolling", {"On", "Off"}},
 	{"cursor_highlight", "Cursor Highlight", {"On", "Off"}},
@@ -16,6 +16,7 @@ ConfigScene.options = {
 	{"tagline_position", "Tagline placement", {"Top", "Bottom", "None"}},
 	{"mode_select_type", "Mode Select Type", {"Default", "Oshi's idea"}},
 	{"credits_position", "Credits Pos-ing", {"Right", "Center"}},
+	{"debug_level", "Debug Level", {"Off", "Min", "Max"}}
 }
 local optioncount = #ConfigScene.options
 
@@ -24,7 +25,7 @@ function ConfigScene:new()
 	self.config = config.input
 	self.highlight = 1
 
-	DiscordGameSDK:update({
+	DiscordRPC:update({
 		details = "In settings",
 		state = "Changing visual settings",
 	})

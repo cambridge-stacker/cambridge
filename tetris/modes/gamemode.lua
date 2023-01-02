@@ -9,6 +9,7 @@ local Grid = require 'tetris.components.grid'
 local Randomizer = require 'tetris.randomizers.randomizer'
 local BagRandomizer = require 'tetris.randomizers.bag'
 local binser = require 'libs.binser'
+local sha256_table = {}
 
 local GameMode = Object:extend()
 
@@ -17,7 +18,7 @@ GameMode.hash = ""
 GameMode.tagline = ""
 GameMode.rollOpacityFunction = function(age) return 0 end
 
-function GameMode:new(secret_inputs, properties)
+function GameMode:new(secret_inputs, properties, sha_tbl)
 	self.replay_inputs = {}
 	self.random_low, self.random_high = love.math.getRandomSeed()
 	self.random_state = love.math.getRandomState()
@@ -163,6 +164,7 @@ function GameMode:saveReplay()
 	replay["ruleset"] = self.ruleset.name
 	replay["mode_hash"] = self.hash
 	replay["ruleset_hash"] = self.ruleset.hash
+	replay["sha256_table"] = scene.sha_tbl
 	replay["timer"] = self.frames
 	replay["score"] = self.score
 	replay["level"] = self.level

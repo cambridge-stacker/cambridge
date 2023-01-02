@@ -9,7 +9,7 @@ local menu_screens = {
 
 function ConfigScene:new()
     self.menu_state = 1
-    DiscordGameSDK:update({
+    DiscordRPC:update({
         details = "In settings",
         state = "Changing input config",
         large_image = "settings-input"
