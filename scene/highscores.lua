@@ -56,7 +56,7 @@ function HighscoreScene:new()
     end
 	local function padnum(d) return ("%03d%s"):format(#d, d) end
 	table.sort(self.hash_table, function(a,b)
-	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
+	return tostring(a):gsub("%d+",padnum) < tostring(b):gsub("%d+",padnum) end)
     self.hash = nil
     self.hash_highscore = nil
     self.hash_id = 1
