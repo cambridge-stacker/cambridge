@@ -479,12 +479,21 @@ function love.draw()
 
 	drawWatermarks()
 
+	local bottom_right_corner_y_offset = 0
+	love.graphics.setFont(font_3x5_2)
+	love.graphics.setColor(1, 1, 1, 1)
 	if config.visualsettings.display_gamemode == 1 or scene.title == "Title" then
-		love.graphics.setFont(font_3x5_2)
-		love.graphics.setColor(1, 1, 1, 1)
+		bottom_right_corner_y_offset = bottom_right_corner_y_offset + 20
 		love.graphics.printf(
 			string.format("(%g) %.2f fps - %s", getTargetFPS(), 1.0 / mean_delta, version),
-			0, 460, 635, "right"
+			0, 480 - bottom_right_corner_y_offset, 635, "right"
+		)
+	end
+	if config.visualsettings.debug_level > 1 then
+		bottom_right_corner_y_offset = bottom_right_corner_y_offset + 18
+		love.graphics.printf(
+			string.format("Lua memory use: %.1fKB", collectgarbage("count")),
+			0, 480 - bottom_right_corner_y_offset, 635, "right"
 		)
 	end
 
@@ -517,6 +526,14 @@ function love.draw()
 	love.graphics.scale(scale_factor)
 	drawScreenshotPreviews()
 	love.graphics.setColor(1, 1, 1, 1)
+	if config.visualsettings.debug_level > 2 then
+		bottom_right_corner_y_offset = bottom_right_corner_y_offset + 113
+		local stats = love.graphics.getStats()
+		love.graphics.printf(
+			string.format("GPU stats:\nDraw calls: %d\nTexture Memory: %dKB\nImages loaded: %d\nFonts loaded: %d\nBatched draw calls: %d", stats.drawcalls + 1, stats.texturememory / 1024, stats.images, stats.fonts, stats.drawcallsbatched),
+			0, 480 - bottom_right_corner_y_offset, 635, "right"
+		)
+	end
 end
 
 local function multipleInputs(input_table, input)
