@@ -31,7 +31,7 @@ function ReplaySelectScene:new()
 	DiscordRPC:update({
 		details = "In menus",
 		state = "Choosing a replay",
-		large_image = "ingame-000"
+		largeImageKey = "ingame-000"
 	})
 end
 
@@ -97,7 +97,7 @@ function ReplaySelectScene:update()
 	DiscordRPC:update({
 		details = "In menus",
 		state = "Choosing a replay",
-		large_image = "ingame-000"
+		largeImageKey = "ingame-000"
 	})
 end
 

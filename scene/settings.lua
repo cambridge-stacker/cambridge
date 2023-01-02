@@ -23,7 +23,7 @@ function SettingsScene:new()
     DiscordRPC:update({
         details = "In settings",
         state = settingsidle[love.math.random(#settingsidle)],
-        large_image = "settings",
+        largeImageKey = "settings",
     })
 end
 

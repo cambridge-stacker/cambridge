@@ -57,7 +57,7 @@ function ModeSelectScene:new()
 	DiscordRPC:update({
 		details = "In menus",
 		state = "Chosen ??? and ???.",
-		large_image = "ingame-000"
+		largeImageKey = "ingame-000"
 	})
 end
 
@@ -136,7 +136,7 @@ function ModeSelectScene:update()
 	DiscordRPC:update({
 		details = "In menus",
 		state = "Chosen ".. ((self.game_mode_folder[self.menu_state.mode] or {name = "no mode"}).name) .." and ".. ((self.ruleset_folder[self.menu_state.ruleset] or {name = "no ruleset"}).name) ..".",
-		large_image = "ingame-000"
+		largeImageKey = "ingame-000"
 	})
 end
 function ModeSelectScene:render()

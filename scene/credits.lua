@@ -11,7 +11,7 @@ function CreditsScene:new()
     DiscordRPC:update({
         details = "Watching the credits",
         state = "Thanks for playing the game!",
-        large_image = "ingame-1900",
+        largeImageKey = "ingame-1900",
     })
     self.credit_blocks = {
         {

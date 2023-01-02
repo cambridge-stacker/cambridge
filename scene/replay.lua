@@ -47,7 +47,7 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	DiscordRPC:update({
 		details = "Viewing a replay",
 		state = self.game.name,
-		large_image = "ingame-"..self.game:getBackground().."00"
+		largeImageKey = "ingame-"..self.game:getBackground().."00"
 	})
 end
 
@@ -105,7 +105,7 @@ function ReplayScene:update()
 	DiscordRPC:update({
 		details = self.rerecord and self.game.rpc_details or ("Viewing a".. (self.replay["toolassisted"] and " tool-assisted" or "") .." replay"),
 		state = self.game.name,
-		large_image = "ingame-"..self.game:getBackground().."00"
+		largeImageKey = "ingame-"..self.game:getBackground().."00"
 	})
 	
 	if love.thread.getChannel("savestate"):peek() == "save" then

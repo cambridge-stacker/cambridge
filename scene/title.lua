@@ -55,8 +55,8 @@ function TitleScene:new()
 	DiscordRPC:update({
 		details = "In menus",
 		state = mainmenuidle[love.math.random(#mainmenuidle)],
-		large_image = "icon2",
-		large_text = version
+		largeImageKey = "icon2",
+		largeImageText = version
 	})
 end
 
@@ -93,9 +93,6 @@ function TitleScene:render()
 	)
 
 	if not enter_pressed then
-		--This is intentional. Because it works weird. 
-		DiscordRPC:update({})
-
 		love.graphics.setFont(font_3x5_3)
 		love.graphics.printf("Welcome To Cambridge: Flooding Edge!", 80, 240, 480, "center")
 		if love.timer.getTime() % 2 <= 1 then
@@ -199,7 +196,7 @@ function TitleScene:onInputPress(e)
 		if self.text == "ffffff" then
 			self.text_flag = true
 			DiscordRPC:update({
-				large_image = "snow"
+				largeImageKey = "snow"
 			})
 		end
 	end
