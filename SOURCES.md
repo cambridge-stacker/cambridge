@@ -105,6 +105,7 @@ SOFTWARE.
 
 
 sha2 (https://github.com/Egor-Skriptunoff/pure_lua_SHA)
+------------------------
 
 MIT License
 
