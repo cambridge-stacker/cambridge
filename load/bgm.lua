@@ -48,8 +48,10 @@ function switchBGM(sound, subsound)
 		current_bgm = nil
 	elseif sound ~= nil then
 		if bgm[sound] ~= nil then
-			if subsound ~= nil and bgm[sound][subsound] ~= nil then
-				current_bgm = bgm[sound][subsound]
+			if subsound ~= nil then
+				if bgm[sound][subsound] ~= nil then
+					current_bgm = bgm[sound][subsound]
+				end
 			else
 				current_bgm = bgm[sound]
 			end
