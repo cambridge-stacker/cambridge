@@ -408,6 +408,9 @@ function ModeSelectScene:onInputPress(e)
 		end
 	elseif self.starting then return
 	elseif e.type == "wheel" then
+		if #self.ruleset_folder == 0 or #self.game_mode_folder == 0 then
+			return
+		end
 		if e.x % 2 == 1 then
 			self:switchSelect()
 		end
