@@ -47,10 +47,12 @@ function switchBGM(sound, subsound)
 	if bgm_locked or config.bgm_volume <= 0 then
 		current_bgm = nil
 	elseif sound ~= nil then
-		if subsound ~= nil and bgm[sound][subsound] ~= nil then
-			current_bgm = bgm[sound][subsound]
-		elseif bgm[sound] ~= nil then
-			current_bgm = bgm[sound]
+		if bgm[sound] ~= nil then
+			if subsound ~= nil and bgm[sound][subsound] ~= nil then
+				current_bgm = bgm[sound][subsound]
+			else
+				current_bgm = bgm[sound]
+			end
 		end
 	else
 		current_bgm = nil
