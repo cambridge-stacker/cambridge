@@ -334,6 +334,12 @@ function ModeSelectScene:onInputPress(e)
 			self:menuGoBack("ruleset")
 		end
 	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
+		local has_started = self.starting
+		if self.starting then
+			self.starting = false
+			self.start_frames = 0
+			return
+		end
 		if self.menu_state.select == "mode" then
 			if #self.game_mode_selections > 1 then
 				self:menuGoBack("mode")
@@ -347,10 +353,7 @@ function ModeSelectScene:onInputPress(e)
 				return
 			end
 		end
-		if self.starting then
-			self.starting = false
-			self.start_frames = 0
-		else
+		if not has_started then
 			scene = TitleScene()
 		end
 	elseif e.type == "mouse" and e.button == 1 then
