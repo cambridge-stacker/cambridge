@@ -76,6 +76,9 @@ function generateSoundTable()
 end
 
 local function playRawSE(audio_source)
+	if type(audio_source) == "table" then
+		error("Tried to play a table.")
+	end
 	audio_source:setVolume(config.sfx_volume)
 	if audio_source:isPlaying() then
 		audio_source:stop()

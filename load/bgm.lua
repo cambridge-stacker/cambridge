@@ -53,6 +53,9 @@ function switchBGM(sound, subsound)
 					current_bgm = bgm[sound][subsound]
 				end
 			else
+				if type(bgm[sound]) == "table" then
+					error("Tried to play a table.")
+				end
 				current_bgm = bgm[sound]
 			end
 		end
