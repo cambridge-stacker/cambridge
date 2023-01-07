@@ -1,7 +1,19 @@
 name: 'Custom Assembly'
 on: [push, pull_request]
 jobs:
+  syntax-check:
+    strategy:
+      matrix:
+        luaVersion: ["5.1", "5.4", "luajit-2.1.0-beta3"]
+
+    steps:
+    - uses: actions/checkout@master
+    - uses: leafo/gh-actions-lua@v9
+      with:
+        luaVersion: ${{ matrix.luaVersion }}
+
   assembly:
+    needs: syntax-check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
