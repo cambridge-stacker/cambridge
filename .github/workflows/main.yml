@@ -30,7 +30,7 @@ jobs:
           if [[ "$GITHUB_REF" =~ ^refs/tags/* ]]; then
             echo "version = \"${GITHUB_REF#refs/tags/}\"" > load/version.lua
           else
-            echo "version = \"build-${{ GITHUB_RUN_NUMBER }}\"" > load/version.lua
+            echo "version = \"build-${GITHUB_RUN_NUMBER}\"" > load/version.lua
           fi
       - name: Assemble
         run: |
