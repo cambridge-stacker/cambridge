@@ -30,7 +30,7 @@ jobs:
           if [[ "$GITHUB_REF" =~ ^refs/tags/* ]]; then
             echo 'version = "${GITHUB_REF#refs/tags/}"' > load/version.lua
           else
-            echo 'version = "build-$GITHUB_RUN_NUMBER"' > load/version.lua
+            echo 'version = "build-${ GITHUB_RUN_NUMBER }"' > load/version.lua
           fi
       - name: Assemble
         run: |
@@ -95,9 +95,10 @@ jobs:
         tag: "build-${{ github.run_number }}"
     - name: Re-package the artifacts
       run: |
-        zip -r9 dist/cambridge_other.zip dist/cambridge_other
-        zip -r9 dist/cambridge_windows_x64.zip dist/cambridge_windows_x64
-        zip -r9 dist/cambridge_windows_x86.zip dist/cambridge_windows_x86
+        (cd ./cambridge_other && zip -r9 ../cambridge_other.zip .)
+        (cd ./cambridge_windows_x64 && zip -r9 ../cambridge_windows_x64.zip .)
+        (cd ./cambridge_windows_x86 && zip -r9 ../cambridge_windows_x86.zip .)
+      working-directory: dist/
     - name: "Pre-release"
       uses: softprops/action-gh-release@v1
       id: create_release
