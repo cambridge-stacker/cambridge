@@ -101,7 +101,7 @@ function initConfig()
 	end
 	
 	if not config.input then
-		scene = InputConfigScene()
+		scene = TutorialKeybinder()
 	else
 		if config.input.keys then
 			if config.input.joysticks == nil then
