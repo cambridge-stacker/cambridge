@@ -9,8 +9,8 @@ local current_submenu = 0
 local current_replay = 1
 
 function ReplaySelectScene:new()
-	-- reload custom modules
-	initModules()
+	-- fully reload custom modules
+	initModules(true)
 	
 	self.display_error = false
 	if #replays == 0 then
