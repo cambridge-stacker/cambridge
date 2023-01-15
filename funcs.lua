@@ -1,3 +1,4 @@
+---@return any
 function copy(t)
 	-- returns top-layer shallow copy of t
 	if type(t) ~= "table" then return t end
@@ -7,6 +8,7 @@ function copy(t)
 	return target
 end
 
+---@return any
 function deepcopy(t)
     -- returns infinite-layer deep copy of t
 	if type(t) ~= "table" then return t end
@@ -30,6 +32,9 @@ function drawSizeIndependentImage(image, origin_x, origin_y, r, draw_width, draw
 	love.graphics.draw(image, origin_x, origin_y, r, 1/width_scale_factor, 1/height_scale_factor)
 end
 
+---@param h number
+---@param s number
+---@param v number
 function HSVToRGB(h, s, v)
     if s <= 0 then return v,v,v end
     h = h*6
@@ -66,6 +71,7 @@ function rainbowString(string)
 	return tbl
 end
 
+---@param tbl table
 function strTrueValues(tbl)
 	-- returns a concatenation of all the keys in tbl with value true, separated with spaces
 	local str = ""
@@ -77,6 +83,9 @@ function strTrueValues(tbl)
 	return str
 end
 
+---@param min integer
+---@param sec integer
+---@param hth integer
 function frameTime(min, sec, hth)
 	-- returns a time in frames from a time in minutes-seconds-hundredths format
 	if min == nil then min = 0 end
@@ -85,6 +94,8 @@ function frameTime(min, sec, hth)
 	return min*3600 + sec*60 + math.ceil(hth * 0.6)
 end
 
+---@param v1 table
+---@param v2 table
 function vAdd(v1, v2)
 	-- returns the sum of vectors v1 and v2
 	return {
@@ -93,6 +104,7 @@ function vAdd(v1, v2)
 	}
 end
 
+---@param v table
 function vNeg(v)
 	-- returns the opposite of vector v
 	return {
@@ -101,6 +113,7 @@ function vNeg(v)
 	}
 end
 
+---@param frames number
 function formatTime(frames)
 	-- returns a mm:ss:hh (h=hundredths) representation of the time in frames given 
 	if frames < 0 then return formatTime(0) end
@@ -131,11 +144,16 @@ function formatBigNum(number)
 		.. string.gsub(string.sub(s, pos+1), "(...)", ",%1")
 end
 
+---@param n number
+---@param m number
 function Mod1(n, m)
 	-- returns a number congruent to n modulo m in the range [1;m] (as opposed to [0;m-1])
 	return ((n-1) % m) + 1
 end
 
+---@param table table
+---@param element any
+---@return boolean
 function table.contains(table, element)
 	for _, value in pairs(table) do
 	  	if value == element then
@@ -145,6 +163,8 @@ function table.contains(table, element)
 	return false
 end
 
+---@param table table
+---@return table
 function table.keys(table)
 	local target = {}
 	for key in pairs(table) do
@@ -153,6 +173,7 @@ function table.keys(table)
 	return target
 end
 
+---@param table table
 function table.numkeys(table)
 	local count = 0
 	for k in pairs(table) do
@@ -186,6 +207,9 @@ function table.equalvalues(t1, t2)
 	end
 end
 
+---@param x number
+---@param min number
+---@param max number
 function clamp(x, min, max)
 	if max < min then
 		min, max = max, min

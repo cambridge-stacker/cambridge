@@ -44,6 +44,9 @@ function love.load()
 	-- this is executed after the sound table is generated. why is that is unknown.
 	if config.secret then playSE("welcome") end
 end
+---@param table table
+---@param directory string
+---@param blacklisted_string string
 function recursivelyLoadRequireFileTable(table, directory, blacklisted_string)
 	--LOVE 12.0 will warn about require strings having forward slashes in them if this is not done.
 	local require_string = string.gsub(directory, "/", ".")
@@ -101,6 +104,9 @@ end
 --#region Tetro48's code
 
 
+---@param tbl table
+---@param key_check any
+---@return table
 local function recursionStringValueExtract(tbl, key_check)
 	local result = {}
 	for key, value in pairs(tbl) do
@@ -141,6 +147,7 @@ function loadReplayList()
 	io_thread:start(mode_names)
 end
 
+---@return any
 function nilCheck(input, default)
 	if input == nil then
 		return default
@@ -170,6 +177,8 @@ function setSystemCursorType(type)
 end
 
 -- For when you need to convert given coordinate to where it'd be in scaled 640x480 equivalent.
+---@param x number
+---@param y number
 function getScaledPos(x, y)
 	local screen_x, screen_y = love.graphics.getDimensions()
 	local scale_factor = math.min(screen_x / 640, screen_y / 480)
@@ -177,6 +186,11 @@ function getScaledPos(x, y)
 end
 
 
+---@param x number
+---@param y number
+---@param w number
+---@param h number
+---@return integer
 function CursorHighlight(x,y,w,h)
 	local mouse_x, mouse_y = getScaledPos(love.mouse.getPosition())
 	if mouse_idle > 2 or config.visualsettings.cursor_highlight ~= 1 then
@@ -190,6 +204,9 @@ function CursorHighlight(x,y,w,h)
 	end
 end
 --Interpolates in a smooth fashion.
+---@param input number
+---@param from number
+---@return number
 function interpolateListPos(input, from)
 	if config.visualsettings["smooth_scroll"] == 2 then
 		return from
@@ -207,6 +224,9 @@ function interpolateListPos(input, from)
 	end
 	return input
 end
+---@param x number
+---@param y number
+---@param a number
 function drawT48Cursor(x, y, a)
 	if a <= 0 then return end
     love.graphics.setColor(1,1,1,a)
@@ -216,6 +236,7 @@ function drawT48Cursor(x, y, a)
     love.graphics.setColor(1,1,1,a)
 end
 
+---@param image love.ImageData
 local function screenshotFunction(image)
 	playSE("screenshot")
 	screenshot_images[#screenshot_images+1] = {image = love.graphics.newImage(image), time = 0, y_position = #screenshot_images * 260}
@@ -545,6 +566,7 @@ local function multipleInputs(input_table, input)
 	return result_inputs
 end
 
+---@param file love.File
 function love.filedropped(file)
 	file:open("r")
 	local data = file:read()
@@ -588,6 +610,8 @@ function love.filedropped(file)
 	file:close()
 end
 
+---@param key string
+---@param scancode string
 function love.keypressed(key, scancode)
 	-- global hotkeys
 	if scancode == "f11" then
@@ -648,6 +672,8 @@ function love.keypressed(key, scancode)
 	end
 end
 
+---@param key string
+---@param scancode string
 function love.keyreleased(key, scancode)
 	-- escape is reserved for menu_back
 	if scancode == "escape" then
@@ -670,6 +696,8 @@ function love.keyreleased(key, scancode)
 	end
 end
 
+---@param joystick love.Joystick
+---@param button integer
 function love.joystickpressed(joystick, button)
 	local result_inputs = {}
 	if config.input and config.input.joysticks then
@@ -686,6 +714,8 @@ function love.joystickpressed(joystick, button)
 	-- scene:onInputPress({input=input_pressed, type="joybutton", name=joystick:getName(), button=button})
 end
 
+---@param joystick love.Joystick
+---@param button integer
 function love.joystickreleased(joystick, button)
 	local result_inputs = {}
 	if config.input and config.input.joysticks then
@@ -701,6 +731,9 @@ function love.joystickreleased(joystick, button)
 	end
 end
 
+---@param joystick love.Joystick
+---@param axis number
+---@param value number
 function love.joystickaxis(joystick, axis, value)
 	local input_pressed = nil
 	local result_inputs = {}
@@ -744,6 +777,9 @@ local directions = {
 }
 
 --wtf
+---@param joystick love.Joystick
+---@param hat number
+---@param direction string
 function love.joystickhat(joystick, hat, direction)
 	local input_pressed = nil
 	local has_hat = false
@@ -832,6 +868,11 @@ function love.joystickhat(joystick, hat, direction)
 	end
 end
 
+---@param x number
+---@param y number
+---@param button integer
+---@param istouch boolean
+---@param presses integer
 function love.mousepressed(x, y, button, istouch, presses)
 	if mouse_idle > 2 then return end
 	local screen_x, screen_y = love.graphics.getDimensions()
@@ -840,6 +881,11 @@ function love.mousepressed(x, y, button, istouch, presses)
 	scene:onInputPress({input=nil, type="mouse", x=local_x, y=local_y, button=button, istouch=istouch, presses=presses})
 end
 
+---@param x number
+---@param y number
+---@param button integer
+---@param istouch boolean
+---@param presses integer
 function love.mousereleased(x, y, button, istouch, presses)
 	if mouse_idle > 2 then return end
 	local screen_x, screen_y = love.graphics.getDimensions()
@@ -848,6 +894,8 @@ function love.mousereleased(x, y, button, istouch, presses)
 	scene:onInputRelease({input=nil, type="mouse", x=local_x, y=local_y, button=button, istouch=istouch, presses=presses})
 end
 
+---@param x number
+---@param y number
 function love.wheelmoved(x, y)
 	scene:onInputPress({input=nil, type="wheel", x=x, y=y})
 end
@@ -860,6 +908,8 @@ function love.focus(f)
 	end
 end
 
+---@param w integer
+---@param h integer
 function love.resize(w, h)
 		GLOBAL_CANVAS:release()
 		GLOBAL_CANVAS = love.graphics.newCanvas(w, h)
@@ -868,6 +918,7 @@ end
 local TARGET_FPS = 60
 local FRAME_DURATION = 1.0 / TARGET_FPS
 
+---@param fps number
 function setTargetFPS(fps)
 	if fps == -1 then
 		TARGET_FPS = -1
