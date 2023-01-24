@@ -370,6 +370,8 @@ function ReplaySelectScene:onInputPress(e)
 		if e.button == 2 and self.chosen_replay then
 			self.chosen_replay = false
 		end
+	elseif not loaded_replays then
+		--does nothing.
 	elseif e.type == "wheel" then
 		if e.y ~= 0 then
 			self:changeOption(-e.y)
