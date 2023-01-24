@@ -113,16 +113,17 @@ end
 
 function Ruleset:movePiece(piece, grid, move, instant)
 	if not self:canPieceMove(piece, grid) then return end
+	local block_offset = (piece.big and not piece.half_block) and 2 or 1
 	local was_drop_blocked = piece:isDropBlocked(grid)
 	local offset = ({x=0, y=0})
 	local moves = 0
 	local y = piece.position.y
 	if move == "left" then
 		offset.x = -1
-		moves = 1
+		moves = block_offset
 	elseif move == "right" then
 		offset.x = 1
-		moves = 1
+		moves = block_offset
 	elseif move == "speedleft" then
 		offset.x = -1
 		moves = grid.width
@@ -198,10 +199,10 @@ end
 function Ruleset:initializePiece(
 	inputs, data, grid, gravity, prev_inputs,
 	move, lock_delay, drop_speed,
-	drop_locked, hard_drop_locked, big, irs
+	drop_locked, hard_drop_locked, big, irs, half_block
 )
 	local spawn_positions
-	if big then
+	if big and not half_block then
 		spawn_positions = self.big_spawn_positions
 	else
 		spawn_positions = self.spawn_positions
@@ -222,19 +223,27 @@ function Ruleset:initializePiece(
 	if (config.gamesettings.spawn_positions == 1) then
 		spawn_dy = (
 			self.spawn_above_field and
-			self:getAboveFieldOffset(data.shape, data.orientation) or 0
+			(self:getAboveFieldOffset(data.shape, data.orientation) * (big and 2 or 1)) or 0
 		)
 	else
 		spawn_dy = (
 			config.gamesettings.spawn_positions == 3 and
-			self:getAboveFieldOffset(data.shape, data.orientation) or 0
+			(self:getAboveFieldOffset(data.shape, data.orientation) * (big and 2 or 1)) or 0
 		)
+	end
+	
+	local spawn_y = spawn_positions[data.shape].y - spawn_dy
+	if big and not half_block then
+		spawn_x = spawn_x + math.floor(spawn_positions[data.shape].x * grid.width / 10)
+		spawn_y = spawn_y + spawn_positions[data.shape].y
+	elseif big and half_block then
+		spawn_y = math.ceil(spawn_y / 2) * 2
 	end
 
 	local piece = Piece(data.shape, data.orientation - 1, {
 		x = spawn_x,
-		y = spawn_positions[data.shape].y - spawn_dy
-	}, self.block_offsets, 0, 0, data.skin, colours[data.shape], big)
+		y = spawn_y
+	}, self.block_offsets, 0, 0, data.skin, colours[data.shape], big, half_block)
 
 	self:onPieceCreate(piece)
 	if irs then

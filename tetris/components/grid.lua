@@ -67,13 +67,13 @@ end
 function Grid:canPlaceBigPiece(piece)
 	local offsets = piece:getBlockOffsets()
 	for index, offset in pairs(offsets) do
-		local x = piece.position.x + offset.x
-		local y = piece.position.y + offset.y
+		local x = piece.position.x + offset.x * 2
+		local y = piece.position.y + offset.y * 2
 		if (
-		   self:isOccupied(x * 2 + 0, y * 2 + 0)
-		or self:isOccupied(x * 2 + 1, y * 2 + 0)
-		or self:isOccupied(x * 2 + 0, y * 2 + 1)
-		or self:isOccupied(x * 2 + 1, y * 2 + 1)
+		   self:isOccupied(x + 0, y + 0)
+		or self:isOccupied(x + 1, y + 0)
+		or self:isOccupied(x + 0, y + 1)
+		or self:isOccupied(x + 1, y + 1)
 		) then
 			return false
 		end
@@ -200,10 +200,10 @@ function Grid:applyPiece(piece)
 		self:applyBigPiece(piece)
 		return
 	end
-	offsets = piece:getBlockOffsets()
+	local offsets = piece:getBlockOffsets()
 	for index, offset in pairs(offsets) do
-		x = piece.position.x + offset.x
-		y = piece.position.y + offset.y
+		local x = piece.position.x + offset.x
+		local y = piece.position.y + offset.y
 		if y + 1 > 0 and y < self.height then
 			self.grid[y+1][x+1] = {
 				skin = piece.skin,
@@ -214,14 +214,14 @@ function Grid:applyPiece(piece)
 end
 
 function Grid:applyBigPiece(piece)
-	offsets = piece:getBlockOffsets()
+	local offsets = piece:getBlockOffsets()
 	for index, offset in pairs(offsets) do
-		x = piece.position.x + offset.x
-		y = piece.position.y + offset.y
+		local x = piece.position.x + offset.x * 2
+		local y = piece.position.y + offset.y * 2
 		for a = 1, 2 do
 			for b = 1, 2 do
-				if y*2+a > 0 and y*2 < self.height then
-					self.grid[y*2+a][x*2+b] = {
+				if y+a > 0 and y < self.height then
+					self.grid[y+a][x+b] = {
 						skin = piece.skin,
 						colour = piece.colour
 					}
@@ -233,10 +233,10 @@ end
 
 function Grid:checkForBravo(cleared_row_count)
 	for i = 0, self.height - 1 - cleared_row_count do
-				for j = 0, self.width - 1 do
-						if self:isOccupied(j, i) then return false end
-				end
+		for j = 0, self.width - 1 do
+				if self:isOccupied(j, i) then return false end
 		end
+	end
 	return true
 end
 

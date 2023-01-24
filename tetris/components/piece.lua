@@ -2,7 +2,7 @@ local Object = require 'libs.classic'
 
 local Piece = Object:extend()
 
-function Piece:new(shape, rotation, position, block_offsets, gravity, lock_delay, skin, colour, big)
+function Piece:new(shape, rotation, position, block_offsets, gravity, lock_delay, skin, colour, big, half_block)
 	self.shape = shape
 	self.rotation = rotation
 	self.position = position
@@ -14,14 +14,16 @@ function Piece:new(shape, rotation, position, block_offsets, gravity, lock_delay
 	self.ghost = false
 	self.locked = false
 	self.big = big
+	self.half_block = half_block
 end
 
 -- Functions that return a new piece to test in rotation systems.
 
-function Piece:withOffset(offset)
+function Piece:withOffset(offset, force_scale)
+	local offset_scale = force_scale or self.big and 2 or 1
 	return Piece(
 		self.shape, self.rotation,
-		{x = self.position.x + offset.x, y = self.position.y + offset.y},
+		{x = self.position.x + offset.x * offset_scale, y = self.position.y + offset.y * offset_scale},
 		self.block_offsets, self.gravity, self.lock_delay, self.skin, self.colour, self.big
 	)
 end
@@ -54,7 +56,7 @@ function Piece:occupiesSquare(x, y)
 end
 
 function Piece:isMoveBlocked(grid, offset)
-	local moved_piece = self:withOffset(offset)
+	local moved_piece = self:withOffset(offset, 1)
 	return not grid:canPlacePiece(moved_piece)
 end
 
@@ -64,9 +66,10 @@ end
 
 -- Procedures to actually do stuff to pieces.
 
-function Piece:setOffset(offset)
-	self.position.x = self.position.x + offset.x
-	self.position.y = self.position.y + offset.y
+function Piece:setOffset(offset, force_scale)
+	local offset_scale = force_scale or self.big and 2 or 1
+	self.position.x = self.position.x + offset.x * offset_scale
+	self.position.y = self.position.y + offset.y * offset_scale
 	return self
 end
 
@@ -81,9 +84,9 @@ end
 function Piece:moveInGrid(step, squares, grid, instant)
 	local moved = false
 	for x = 1, squares do
-		if grid:canPlacePiece(self:withOffset(step)) then
+		if grid:canPlacePiece(self:withOffset(step, 1)) then
 			moved = true
-			self:setOffset(step)
+			self:setOffset(step, 1)
 			if instant then
 				self:dropToBottom(grid)
 			end
@@ -118,7 +121,6 @@ function Piece:lockIfBottomed(grid)
 end
 
 function Piece:addGravity(gravity, grid, classic_lock)
-	gravity = gravity / (self.big and 2 or 1)
 	local new_gravity = self.gravity + gravity
 	if self:isDropBlocked(grid) then
 		if classic_lock then
@@ -169,9 +171,11 @@ function Piece:draw(opacity, brightness, grid, partial_das)
 		local x = self.position.x + offset.x
 		local y = self.position.y + offset.y
 		if self.big then
+			x = x + offset.x
+			y = y + offset.y
 			drawSizeIndependentImage(
 				blocks[self.skin][self.colour],
-				64+x*32+partial_das*2, 16+y*32+gravity_offset*2,
+				64+x*16+partial_das*2, 16+y*16+gravity_offset,
 				0, 32, 32
 			)
 		else

@@ -689,7 +689,7 @@ function GameMode:initializeNextPiece(
 		self.drop_locked, self.hard_drop_locked, self.big_mode,
 		(
 			self.frames == 0 or (ruleset.are and self:getARE() ~= 0)
-		) and self.irs or false
+		) and self.irs or false, self.half_block_mode
 	)
 	if config.gamesettings.buffer_lock == 3 then
 		if self.buffer_hard_drop then
