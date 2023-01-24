@@ -102,7 +102,7 @@ jobs:
     - name: "Pre-release"
       uses: softprops/action-gh-release@v1
       id: create_release
-      if: ${{ github.event_name == 'push' }}
+      if: ${{ github.event_name == 'push' }} && startsWith(github.ref, 'refs/heads/')
       with:
         prerelease: true
         generate_release_notes: true
@@ -110,7 +110,7 @@ jobs:
         files: dist/cambridge_*
     - name: "Release"
       uses: softprops/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/v*')
+      if: startsWith(github.ref, 'refs/tags/v')
       with:
         generate_release_notes: true
         files: dist/cambridge_*
