@@ -64,9 +64,10 @@ end
 local menu_DAS_hold = {["up"] = 0, ["down"] = 0, ["left"] = 0, ["right"] = 0}
 local menu_DAS_frames = {["up"] = 0, ["down"] = 0, ["left"] = 0, ["right"] = 0}
 local menu_ARR = {[0] = 8, 6, 5, 4, 3, 2, 2, 2, 1}
-function ModeSelectScene:menuDASInput(input, input_string, das, forced_arr)
+function ModeSelectScene:menuDASInput(input, input_string, das, arr_mul)
 	local result = false
-	local arr = forced_arr or self:getMenuARR(menu_DAS_hold[input_string])
+	arr_mul = arr_mul or 1
+	local arr = self:getMenuARR(menu_DAS_hold[input_string]) * arr_mul
 	if input then
 		menu_DAS_frames[input_string] = menu_DAS_frames[input_string] + 1
 		menu_DAS_hold[input_string] = menu_DAS_hold[input_string] + 1
@@ -127,10 +128,10 @@ function ModeSelectScene:update()
 	if self:menuDASInput(self.das_down, "down", 12) then
 		self:changeMode(1)
 	end
-	if self:menuDASInput(self.das_left, "left", 15, 15) then
+	if self:menuDASInput(self.das_left, "left", 15, 4) then
 		self:changeRuleset(-1)
 	end
-	if self:menuDASInput(self.das_right, "right", 15, 15) then
+	if self:menuDASInput(self.das_right, "right", 15, 4) then
 		self:changeRuleset(1)
 	end
 	DiscordRPC:update({
