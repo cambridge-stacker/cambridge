@@ -143,7 +143,7 @@ function ReplayScene:render()
 		love.graphics.printf("REPLAY", 0, 0, 635, "right")
 	end
 	if self.replay_speed > 1 then
-		love.graphics.printf(self.replay_speed.."X", 0, 15, 635, "right")
+		love.graphics.printf(self.replay_speed.."X", 0, 20, 635, "right")
 	end
 end
 
