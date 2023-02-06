@@ -158,7 +158,7 @@ function ReplayScene:onInputPress(e)
 		loadSave()
 		love.math.setRandomSeed(os.time())
 		-- quite dependent on async replay loading
-		if self.rerecord then loadReplayList() end
+		if self.rerecord then loaded_replays = false end
 		scene = (
 			(e.input == "retry") and
 			ReplayScene(

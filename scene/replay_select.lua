@@ -12,6 +12,9 @@ function ReplaySelectScene:new()
 	-- fully reload custom modules
 	initModules(true)
 	
+	if not loaded_replays then
+		loadReplayList()
+	end
 	self.display_error = false
 	if #replays == 0 then
 		self.display_warning = true
@@ -54,12 +57,27 @@ function ReplaySelectScene:update()
 	
 	if not loaded_replays then
 		self.state_string = love.thread.getChannel('load_state'):peek()
-		replays = popFromChannel('replays') or replays
-		replay_tree = popFromChannel('replay_tree')
-		dict_ref = popFromChannel('dict_ref')
+		local replay = popFromChannel('replay')
 		local load = love.thread.getChannel( 'loaded_replays' ):pop()
+		while replay do
+			local mode_name = replay.mode
+			replays[#replays+1] = replay
+			if dict_ref[mode_name] ~= nil and mode_name ~= "znil" then
+				table.insert(replay_tree[dict_ref[mode_name] ], #replays)
+			end
+			table.insert(replay_tree[1], #replays)
+			replay = popFromChannel('replay')
+		end
 		if load then
 			loaded_replays = true
+			local function padnum(d) return ("%03d%s"):format(#d, d) end
+			table.sort(replay_tree, function(a,b)
+			return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
+			for key, submenu in pairs(replay_tree) do
+				table.sort(submenu, function(a, b)
+					return replays[a]["timestamp"] > replays[b]["timestamp"]
+				end)
+			end
 			scene = ReplaySelectScene()
 		end
 		return -- It's there to avoid input response when loading.

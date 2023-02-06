@@ -71,7 +71,7 @@ function GameScene:onInputPress(e)
 		highscore_hash = self.game.hash .. "-" .. self.ruleset.hash
 		submitHighscore(highscore_hash, highscore_entry)
 		self.game:onExit()
-		loadReplayList()
+		loaded_replays = false
 		scene = e.input == "retry" and GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs) or
 				config.visualsettings.mode_select_type == 1 and ModeSelectScene() or RevModeSelectScene()
 	elseif e.input == "frame_step" and TAS_mode then

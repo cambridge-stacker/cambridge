@@ -39,8 +39,6 @@ function love.load()
 
 	generateSoundTable()
 
-	loadReplayList()
-
 	-- this is executed after the sound table is generated. why is that is unknown.
 	if config.secret then playSE("welcome") end
 end
@@ -129,6 +127,7 @@ function loadReplayList()
 	replay_tree = {{name = "All"}}
 	dict_ref = {}
 	loaded_replays = false
+	collectgarbage("collect")
 
 	--proper disposal to avoid some memory problems
 	if io_thread then
@@ -140,11 +139,11 @@ function loadReplayList()
 	end
 
 	io_thread = love.thread.newThread( replay_load_code )
-	local mode_names = {}
 	for key, value in pairs(recursionStringValueExtract(game_modes, "is_directory")) do
-		table.insert(mode_names, value.name)
+		dict_ref[value.name] = key + 1
+		replay_tree[key + 1] = {name = value.name}
 	end
-	io_thread:start(mode_names)
+	io_thread:start()
 end
 
 ---@return any
@@ -950,6 +949,7 @@ function love.run()
 			for name, a,b,c,d,e,f in love.event.poll() do
 				if name == "quit" then
 					if not love.quit or not love.quit() then
+						if io_thread then io_thread:release() end
 						return a or 0
 					end
 				end
