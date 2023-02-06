@@ -84,8 +84,8 @@ function strTrueValues(tbl)
 end
 
 ---@param min integer
----@param sec integer
----@param hth integer
+---@param sec integer|nil
+---@param hth integer|nil
 function frameTime(min, sec, hth)
 	-- returns a time in frames from a time in minutes-seconds-hundredths format
 	if min == nil then min = 0 end
