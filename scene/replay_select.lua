@@ -8,11 +8,14 @@ local binser = require 'libs.binser'
 local current_submenu = 0
 local current_replay = 1
 
+local loading_replays
+
 function ReplaySelectScene:new()
 	-- fully reload custom modules
 	initModules(true)
 	
-	if not loaded_replays then
+	if not loaded_replays and not loading_replays then
+		loading_replays = true
 		loadReplayList()
 	end
 	self.display_error = false
@@ -70,6 +73,7 @@ function ReplaySelectScene:update()
 		end
 		if load then
 			loaded_replays = true
+			loading_replays = false
 			local function padnum(d) return ("%03d%s"):format(#d, d) end
 			table.sort(replay_tree, function(a,b)
 			return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
