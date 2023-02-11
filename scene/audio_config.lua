@@ -8,12 +8,12 @@ ConfigScene.options = {
 	-- this serves as reference to what the options' values mean i guess?
 	-- Option types: slider, options
 	-- Format if type is options:	{name in config, displayed name, type, description, options}
-	-- Format if otherwise:			{name in config, displayed name, type, description, min, max, increase by, string format, sound effect name}
-	{"sfx_volume", "SFX Volume", "slider", nil, 0, 1, 5, "%02d%%", "cursor"},
-	{"bgm_volume", "BGM Volume", "slider", nil, 0, 1, 5, "%02d%%", "cursor"},
-	{"sound_sources", "SFX sources per file", "slider", "High values may result in high memory consumption, "..
+	-- Format if otherwise:			{name in config, displayed name, type, description, min, max, increase by, string format, sound effect name, rounding type}
+	{"sfx_volume", "SFX Volume", "slider", nil, 0, 100, 5, "%02d%%", "cursor"},
+	{"bgm_volume", "BGM Volume", "slider", nil, 0, 100, 5, "%02d%%", "cursor"},
+	{"sound_sources", "Simult. SFX sources", "slider", "High values may result in high memory consumption, "..
 	"though it allows multiples of the same sound effect to be played at once."..
-	"\n(There's some exceptions, e.g. SFX added through modes/rulesets)", 1, 30, 1, "%0d", nil, "cursor"}
+	"\n(There's some exceptions, e.g. SFX added through modes/rulesets)", 1, 30, 1, "%0d", "cursor", "floor"}
 }
 local optioncount = #ConfigScene.options
 

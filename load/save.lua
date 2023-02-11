@@ -96,7 +96,14 @@ function initConfig()
 	if not config.audiosettings then config.audiosettings = {} end
 	for _, option in ipairs(AudioConfigScene.options) do
 		if not config.audiosettings[option[1]] then
-			config.audiosettings[option[1]] = 1
+			if option[3] ~= "options" then
+				config.audiosettings[option[1]] = (option[6] - option[5]) / 2 + option[5]
+			else
+				config.audiosettings[option[1]] = 1
+			end
+			if option[10] and option[10] == "floor" then
+				config.audiosettings[option[1]] = math.floor(config.audiosettings[option[1]])
+			end
 		end
 	end
 	
