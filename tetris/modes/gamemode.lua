@@ -894,7 +894,7 @@ function GameMode:drawNextQueue(ruleset)
 	else
 		colourscheme = ruleset.colourscheme
 	end
-	function drawPiece(piece, skin, offsets, pos_x, pos_y)
+	local function drawPiece(piece, skin, offsets, pos_x, pos_y)
 		for index, offset in pairs(offsets) do
 			local x = offset.x + ruleset:getDrawOffset(piece, rotation).x + ruleset.spawn_positions[piece].x
 			local y = offset.y + ruleset:getDrawOffset(piece, rotation).y + 4.7

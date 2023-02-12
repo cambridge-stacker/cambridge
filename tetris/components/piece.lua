@@ -118,7 +118,7 @@ end
 ---@param rot integer
 ---@return Piece
 function Piece:setRelativeRotation(rot)
-	new_rot = self.rotation + rot
+	local new_rot = self.rotation + rot
 	while new_rot < 0 do new_rot = new_rot + 4 end
 	while new_rot >= 4 do new_rot = new_rot - 4 end
 	self.rotation = new_rot

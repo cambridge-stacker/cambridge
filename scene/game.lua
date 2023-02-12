@@ -67,8 +67,8 @@ function GameScene:onInputPress(e)
 		e.input == "menu_back" or
 		e.input == "retry"
 	) then
-		highscore_entry = self.game:getHighscoreData()
-		highscore_hash = self.game.hash .. "-" .. self.ruleset.hash
+		local highscore_entry = self.game:getHighscoreData()
+		local highscore_hash = self.game.hash .. "-" .. self.ruleset.hash
 		submitHighscore(highscore_hash, highscore_entry)
 		self.game:onExit()
 		loaded_replays = false
