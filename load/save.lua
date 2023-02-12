@@ -106,7 +106,9 @@ function initConfig()
 			end
 		end
 	end
-	
+
+	config.sound_sources = config.audiosettings.sound_sources
+
 	if not config.input then
 		scene = TutorialKeybinder()
 	else
