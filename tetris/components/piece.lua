@@ -1,7 +1,30 @@
 local Object = require 'libs.classic'
 
+---@class Piece
+---@field shape string
+---@field rotation integer
+---@field position {x:integer, y:integer}
+---@field block_offsets table
+---@field gravity number
+---@field lock_delay number
+---@field skin string
+---@field colour string
+---@field ghost boolean
+---@field locked boolean
+---@field big boolean
+---@field half_block boolean
 local Piece = Object:extend()
 
+---@param shape string
+---@param rotation integer
+---@param position {x:integer, y:integer}
+---@param block_offsets table
+---@param gravity number
+---@param lock_delay number
+---@param skin string
+---@param colour string
+---@param big boolean
+---@param half_block boolean
 function Piece:new(shape, rotation, position, block_offsets, gravity, lock_delay, skin, colour, big, half_block)
 	self.shape = shape
 	self.rotation = rotation
@@ -19,6 +42,10 @@ end
 
 -- Functions that return a new piece to test in rotation systems.
 
+---@param offset {x:integer, y:integer}
+---@param force_scale integer
+---@return Piece
+---@nodiscard
 function Piece:withOffset(offset, force_scale)
 	local offset_scale = force_scale or self.big and 2 or 1
 	return Piece(
@@ -28,6 +55,7 @@ function Piece:withOffset(offset, force_scale)
 	)
 end
 
+---@nodiscard
 function Piece:withRelativeRotation(rot)
 	local new_rot = self.rotation + rot
 	while new_rot < 0 do new_rot = new_rot + 4 end
@@ -40,10 +68,16 @@ end
 
 -- Functions that return predicates relative to a grid.
 
+---@nodiscard
+---@return table
 function Piece:getBlockOffsets()
 	return self.block_offsets[self.shape][self.rotation + 1]
 end
 
+---@nodiscard
+---@param x integer
+---@param y integer
+---@return boolean
 function Piece:occupiesSquare(x, y)
 	local offsets = self:getBlockOffsets()
 	for index, offset in pairs(offsets) do
@@ -55,17 +89,25 @@ function Piece:occupiesSquare(x, y)
 	return false
 end
 
+---@nodiscard
+---@param grid Grid
+---@return boolean
 function Piece:isMoveBlocked(grid, offset)
 	local moved_piece = self:withOffset(offset, 1)
 	return not grid:canPlacePiece(moved_piece)
 end
 
+---@nodiscard
+---@return boolean
 function Piece:isDropBlocked(grid)
 	return self:isMoveBlocked(grid, { x=0, y=1 })
 end
 
 -- Procedures to actually do stuff to pieces.
 
+---@param offset {x:integer, y:integer}
+---@param force_scale integer
+---@return Piece
 function Piece:setOffset(offset, force_scale)
 	local offset_scale = force_scale or self.big and 2 or 1
 	self.position.x = self.position.x + offset.x * offset_scale
@@ -73,6 +115,8 @@ function Piece:setOffset(offset, force_scale)
 	return self
 end
 
+---@param rot integer
+---@return Piece
 function Piece:setRelativeRotation(rot)
 	new_rot = self.rotation + rot
 	while new_rot < 0 do new_rot = new_rot + 4 end
@@ -81,6 +125,10 @@ function Piece:setRelativeRotation(rot)
 	return self
 end
 
+---@param step {x:integer, y:integer}
+---@param squares integer
+---@param instant boolean|nil
+---@return Piece
 function Piece:moveInGrid(step, squares, grid, instant)
 	local moved = false
 	for x = 1, squares do
@@ -98,10 +146,14 @@ function Piece:moveInGrid(step, squares, grid, instant)
 	return self
 end
 
+---@param dropped_squares integer
+---@param grid Grid
 function Piece:dropSquares(dropped_squares, grid)
 	self:moveInGrid({ x = 0, y = 1 }, dropped_squares, grid)
 end
 
+---@param grid Grid
+---@return Piece
 function Piece:dropToBottom(grid)
 	local piece_y = self.position.y
 	self:dropSquares(math.huge, grid)
@@ -113,6 +165,8 @@ function Piece:dropToBottom(grid)
 	return self
 end
 
+---@param grid Grid
+---@return Piece
 function Piece:lockIfBottomed(grid)
 	if self:isDropBlocked(grid) then
 		self.locked = true
@@ -120,6 +174,10 @@ function Piece:lockIfBottomed(grid)
 	return self
 end
 
+---@param gravity number
+---@param grid Grid
+---@param classic_lock boolean|nil
+---@return Piece
 function Piece:addGravity(gravity, grid, classic_lock)
 	local new_gravity = self.gravity + gravity
 	if self:isDropBlocked(grid) then
@@ -156,6 +214,10 @@ end
 
 -- Procedures for drawing.
 
+---@param opacity number|nil Must be in range of 0 to 1
+---@param brightness number|nil Must be in range of 0 to 1
+---@param grid Grid
+---@param partial_das number|nil
 function Piece:draw(opacity, brightness, grid, partial_das)
 	if opacity == nil then opacity = 1 end
 	if brightness == nil then brightness = 1 end

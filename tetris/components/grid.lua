@@ -1,5 +1,6 @@
 local Object = require 'libs.classic'
 
+---@class Grid
 local Grid = Object:extend()
 
 local empty = { skin = "", colour = "" }
@@ -30,6 +31,7 @@ function Grid:clear()
 	end
 end
 
+---@nodiscard
 function Grid:getCell(x, y)
 	if x < 1 or x > self.width or y > self.height then return oob
 	elseif y < 1 then return empty
@@ -37,10 +39,12 @@ function Grid:getCell(x, y)
 	end
 end
 
+---@nodiscard
 function Grid:isOccupied(x, y)
 	return self:getCell(x+1, y+1) ~= empty
 end
 
+---@nodiscard
 function Grid:isRowFull(row)
 	for index, square in pairs(self.grid[row]) do
 		if square == empty then return false end
@@ -48,6 +52,7 @@ function Grid:isRowFull(row)
 	return true
 end
 
+---@nodiscard
 function Grid:canPlacePiece(piece)
 	if piece.big then
 		return self:canPlaceBigPiece(piece)
@@ -64,6 +69,7 @@ function Grid:canPlacePiece(piece)
 	return true
 end
 
+---@nodiscard
 function Grid:canPlaceBigPiece(piece)
 	local offsets = piece:getBlockOffsets()
 	for index, offset in pairs(offsets) do
@@ -81,6 +87,7 @@ function Grid:canPlaceBigPiece(piece)
 	return true
 end
 
+---@nodiscard
 function Grid:canPlacePieceInVisibleGrid(piece)
 	if piece.big then
 		return self:canPlaceBigPiece(piece)
@@ -231,6 +238,7 @@ function Grid:applyBigPiece(piece)
 	end
 end
 
+---@nodiscard
 function Grid:checkForBravo(cleared_row_count)
 	for i = 0, self.height - 1 - cleared_row_count do
 		for j = 0, self.width - 1 do
@@ -240,6 +248,7 @@ function Grid:checkForBravo(cleared_row_count)
 	return true
 end
 
+---@nodiscard
 function Grid:checkStackHeight()
 	for i = 0, self.height - 1 do
 		for j = 0, self.width - 1 do
@@ -249,6 +258,7 @@ function Grid:checkStackHeight()
 	return 0
 end
 
+---@nodiscard
 function Grid:checkSecretGrade()
 	local sgrade = 0
 	for i=23,5,-1 do
@@ -468,6 +478,10 @@ function Grid:drawOutline()
 	end
 end
 
+---@param opacity_function fun(age:number)
+---@param garbage_opacity_function fun(age:number)
+---@param lock_flash boolean
+---@param brightness number
 function Grid:drawInvisible(opacity_function, garbage_opacity_function, lock_flash, brightness)
 	lock_flash = lock_flash == nil and true or lock_flash
 	brightness = brightness == nil and 0.5 or brightness
@@ -507,6 +521,7 @@ function Grid:drawInvisible(opacity_function, garbage_opacity_function, lock_fla
 	end
 end
 
+---@param colour_function fun(game, block:{skin:string, colour:string}, x:number, y:number, age:number): number, number, number, number, number
 function Grid:drawCustom(colour_function, gamestate)
     --[[
         colour_function: (game, block, x, y, age) -> (R, G, B, A, outlineA)

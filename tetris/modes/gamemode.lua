@@ -18,6 +18,8 @@ GameMode.hash = ""
 GameMode.tagline = ""
 GameMode.rollOpacityFunction = function(age) return 0 end
 
+---@param secret_inputs table
+---@param properties table
 function GameMode:new(secret_inputs, properties, sha_tbl)
 	self.replay_inputs = {}
 	self.random_low, self.random_high = love.math.getRandomSeed()
@@ -103,6 +105,7 @@ function GameMode:getDasLimit() return 15 end
 function GameMode:getDasCutDelay() return 0 end
 function GameMode:getGravity() return 1/64 end
 
+---@nodiscard
 function GameMode:getNextPiece(ruleset)
 	local shape = self.used_randomizer:nextPiece()
 	return {
@@ -112,6 +115,7 @@ function GameMode:getNextPiece(ruleset)
 	}
 end
 
+---@nodiscard
 function GameMode:getSkin()
 	return "2tie"
 end
@@ -929,10 +933,12 @@ function GameMode:setHoldOpacity()
 	love.graphics.setColor(colour, colour, colour, 1)
 end
 
+---@nodiscard
 function GameMode:getBackground()
 	return 0
 end
 
+---@nodiscard
 function GameMode:getHighscoreData()
 	return {}
 end
