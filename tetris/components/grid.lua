@@ -87,18 +87,37 @@ function Grid:canPlaceBigPiece(piece)
 	return true
 end
 
+
+---@nodiscard
+function Grid:canPlaceBigPieceInVisibleGrid(piece)
+	local offsets = piece:getBlockOffsets()
+	for index, offset in pairs(offsets) do
+		local x = piece.position.x + offset.x * 2
+		local y = piece.position.y + offset.y * 2
+		if (
+		   y < 3
+		or self:isOccupied(x + 0, y + 0)
+		or self:isOccupied(x + 1, y + 0)
+		or self:isOccupied(x + 0, y + 1)
+		or self:isOccupied(x + 1, y + 1)
+		) then
+			return false
+		end
+	end
+	return true
+end
+
 ---@nodiscard
 function Grid:canPlacePieceInVisibleGrid(piece)
 	if piece.big then
-		return self:canPlaceBigPiece(piece)
-		-- forget canPlaceBigPieceInVisibleGrid for now
+		return self:canPlaceBigPieceInVisibleGrid(piece)
 	end
 
 	local offsets = piece:getBlockOffsets()
 	for index, offset in pairs(offsets) do
 		local x = piece.position.x + offset.x
 		local y = piece.position.y + offset.y
-		if y < 4 or self:isOccupied(x, y) ~= empty then
+		if y < 4 or self:isOccupied(x, y) then
 			return false
 		end
 	end
@@ -186,6 +205,7 @@ end
 function Grid:clearSpecificRow(row)
 	for col = 1, self.width do
 		self.grid[row][col] = empty
+		self.grid_age[row][col] = 0
 	end
 end
 
@@ -194,12 +214,9 @@ function Grid:clearBlock(x, y)
 end
 
 function Grid:clearBottomRows(num)
-	local old_isRowFull = self.isRowFull
-    self.isRowFull = function(self, row)
-		return row >= self.height + 1 - num
+	for i = self.height, self.height - num + 1, -1 do
+		self:clearSpecificRow(i)
 	end
-    self:clearClearedRows()
-    self.isRowFull = old_isRowFull
 end
 
 function Grid:applyPiece(piece)
@@ -485,6 +502,7 @@ end
 function Grid:drawInvisible(opacity_function, garbage_opacity_function, lock_flash, brightness)
 	lock_flash = lock_flash == nil and true or lock_flash
 	brightness = brightness == nil and 0.5 or brightness
+	local opacity
 	for y = 5, self.height do
 		for x = 1, self.width do
 			if self.grid[y][x] ~= empty then

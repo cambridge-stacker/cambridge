@@ -213,7 +213,7 @@ function ModeSelectScene:render()
 			mode_path_name = mode_path_name..(value.name or "modes").." > "
 		end
 		love.graphics.printf(
-			"Path: "..mode_path_name:sub(1, #mode_path_name-3),
+			"Path: "..mode_path_name:sub(1, -3),
 			 40, 220 - self.menu_mode_y, 200, "left")
 	end
 	local ruleset_path_name = ""
@@ -222,7 +222,7 @@ function ModeSelectScene:render()
 			ruleset_path_name = ruleset_path_name..(value.name or "rulesets").." > "
 		end
 		love.graphics.printf(
-			"Path: "..ruleset_path_name:sub(1, #ruleset_path_name-3),
+			"Path: "..ruleset_path_name:sub(1, -3),
 			 360 - self.menu_ruleset_x, 420, 60 + (#ruleset_path_name * 9), "left")
 	end
 	love.graphics.setFont(font_3x5_2)
