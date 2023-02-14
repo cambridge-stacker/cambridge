@@ -378,7 +378,8 @@ function love.errorhandler(msg)
 	if love.audio then love.audio.stop() end
 
 	love.graphics.reset()
-	local font = love.graphics.setNewFont(14)
+	local font = love.graphics.newFont(14)
+	love.graphics.setFont(font)
 
 	love.graphics.setColor(1, 1, 1)
 
@@ -549,7 +550,7 @@ function love.draw()
 		bottom_right_corner_y_offset = bottom_right_corner_y_offset + 113
 		local stats = love.graphics.getStats()
 		love.graphics.printf(
-			string.format("GPU stats:\nDraw calls: %d\nTexture Memory: %dKB\nImages loaded: %d\nFonts loaded: %d\nBatched draw calls: %d", stats.drawcalls + 1, stats.texturememory / 1024, stats.images, stats.fonts, stats.drawcallsbatched),
+			string.format("GPU stats:\nDraw calls: %d\nTexture Memory: %dKB\n"..(stats.textures and "Textures" or "Images").." loaded: %d\nFonts loaded: %d\nBatched draw calls: %d", stats.drawcalls + 1, stats.texturememory / 1024, (stats.images or stats.textures), stats.fonts, stats.drawcallsbatched),
 			0, 480 - bottom_right_corner_y_offset, 635, "right"
 		)
 	end
