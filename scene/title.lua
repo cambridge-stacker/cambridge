@@ -99,8 +99,10 @@ function TitleScene:render()
 			love.graphics.printf("Press Enter or "..(config.input.keys or {menu_decide = "null"}).menu_decide, 80, 360, 480, "center")
 		end
 		love.graphics.setFont(font_3x5_2)
-		if not (self.love2d_major == 11 and self.love2d_minor == 3) then
+		if not (self.love2d_major == 11 and self.love2d_minor == 3) and not (self.love2d_major == 12 and self.love2d_minor == 0) then
 			love.graphics.printf({{1, 0, 0, 1}, ("LOVE %d.%d is a potentially unstable version for Cambridge in other OS such as macOS or Linux at the moment! Stick to 11.3 for now."):format(self.love2d_major, self.love2d_minor)}, 50, 60, 540, "center")
+		elseif (self.love2d_major == 12 and self.love2d_minor == 0) then
+			love.graphics.printf({{1, 1, 0, 1}, "Currently LOVE 12.0 is in development. Expect there be more bugs. Cambridge currently doesn't utilise the new features at the moment."}, 50, 60, 540, "center")
 		end
 		love.graphics.printf("This particular fork has a lot of changes, so expect that there'd be a lot of bugs!\nReport bugs found here to Tetro48, in detail.", 120, 280, 400, "center")
 	end
