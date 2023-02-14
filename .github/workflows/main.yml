@@ -53,6 +53,8 @@ jobs:
           cat squashfs-root/bin/love cambridge.love > squashfs-root/bin/cambridge
           chmod +x squashfs-root/bin/cambridge
           cp res/img/cambridge_icon.png squashfs-root/
+          sudo add-apt-repository universe
+          sudo apt install libfuse2
           ./appimagetool-x86_64.AppImage squashfs-root cambridge_linux_experimental.AppImage
       - name: Upload Windows 32-bit artifact
         uses: actions/upload-artifact@v3
