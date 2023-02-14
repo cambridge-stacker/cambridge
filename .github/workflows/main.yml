@@ -50,6 +50,7 @@ jobs:
           sed -i 's/Icon=love/Icon=cambridge_icon/g' squashfs-root/love.desktop
           sed -i 's/Name=LÖVE/Name=Cambridge/g' squashfs-root/love.desktop
           sed -i 's/Comment=The unquestionably awesome 2D game engine/Comment=The Open Source Arcade Block Stacker!/g' squashfs-root/love.desktop
+          sed -i 's/#FUSE_PATH="$APPDIR\/my_game"/FUSE_PATH="$APPDIR\/bin\/cambridge"/g' squashfs-root/AppRun
           mv squashfs-root/love.desktop squashfs-root/cambridge.desktop
           cat squashfs-root/bin/love cambridge.love > squashfs-root/bin/cambridge
           chmod +x squashfs-root/bin/cambridge
@@ -86,7 +87,7 @@ jobs:
           name: cambridge_linux_experimental
           path: |
             cambridge_linux_experimental.AppImage
-            libs/discord-rpc*
+            libs/discord-rpc.so
             SOURCES.md
             LICENSE.md
       - name: "Cleanup"
