@@ -14,6 +14,8 @@ function ReplaySelectScene:new()
 	-- fully reload custom modules
 	initModules(true)
 	
+	self.replay_count = #(love.filesystem.getDirectoryItems("replays"))
+	self.replays_loaded = 0
 	if not loaded_replays and not loading_replays then
 		loading_replays = true
 		loadReplayList()
@@ -63,6 +65,7 @@ function ReplaySelectScene:update()
 		local replay = popFromChannel('replay')
 		local load = love.thread.getChannel( 'loaded_replays' ):pop()
 		while replay do
+			self.replays_loaded = self.replays_loaded + 1
 			local mode_name = replay.mode
 			replays[#replays+1] = replay
 			if dict_ref[mode_name] ~= nil and mode_name ~= "znil" then
@@ -145,6 +148,10 @@ function ReplaySelectScene:render()
 		love.graphics.printf(
 			"Thread's current job:\n"..nilCheck(self.state_string, "nil"),
 			0, 250, 640, "center"
+		)
+		love.graphics.printf(
+			("Loaded %d/%d replays"):format(self.replays_loaded, self.replay_count),
+			0, 350, 640, "center"
 		)
 		return
 	elseif self.menu_state.submenu > 0 then
