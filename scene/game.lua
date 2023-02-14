@@ -59,6 +59,8 @@ function GameScene:render()
 	self.game:draw(self.paused)
 end
 
+local movement_directions = {"left", "right", "down", "up"}
+
 function GameScene:onInputPress(e)
 	if (
 		self.game.game_over or self.game.completed
@@ -93,12 +95,33 @@ function GameScene:onInputPress(e)
 		end
 	elseif e.input and string.sub(e.input, 1, 5) ~= "menu_" and e.input ~= "frame_step" then
 		self.inputs[e.input] = true
+		if config.gamesettings["diagonal_input"] == 3 then
+			if (e.input == "left" or e.input == "right" or e.input == "down" or e.input == "up") then
+				for key, value in pairs(movement_directions) do
+					if value ~= e.input then
+						self.inputs[value] = false
+					end
+				end
+				self.first_input = self.first_input or e.input
+			end
+		end
 	end
 end
 
 function GameScene:onInputRelease(e)
 	if e.input and string.sub(e.input, 1, 5) ~= "menu_" then
 		self.inputs[e.input] = false
+		if config.gamesettings["diagonal_input"] == 3 then
+			if (e.input == "left" or e.input == "right" or e.input == "down" or e.input == "up") then
+				
+				if self.first_input ~= nil and self.first_input ~= e.input then
+					self.inputs[self.first_input] = true
+				end
+				if self.first_input == e.input then
+					self.first_input = nil
+				end
+			end
+		end
 	end
 end
 
