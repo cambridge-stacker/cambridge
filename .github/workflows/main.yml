@@ -45,7 +45,7 @@ jobs:
           cp libs/discord-rpc_x86.dll dist/win32/libs/
       - name: Unpack and fuse LOVE 12.0 AppImage and then re-package
         run: |
-          love-12.0-x86_64-dev_ci.AppImage --appimage-extract
+          ./love-12.0-x86_64-dev_ci.AppImage --appimage-extract
           sed -i 's/Exec=love/Exec=cambridge/g' squashfs-root/love.desktop
           sed -i 's/Icon=love/Icon=cambridge_icon/g' squashfs-root/love.desktop
           sed -i 's/Name=LÖVE/Name=Cambridge/g' squashfs-root/love.desktop
@@ -53,7 +53,7 @@ jobs:
           cat squashfs-root/bin/love cambridge.love > squashfs-root/bin/cambridge
           chmod +x squashfs-root/bin/cambridge
           cp res/img/cambridge_icon.png squashfs-root/
-          appimagetool-x86_64.AppImage squashfs-root cambridge_linux_experimental.AppImage
+          ./appimagetool-x86_64.AppImage squashfs-root cambridge_linux_experimental.AppImage
       - name: Upload Windows 32-bit artifact
         uses: actions/upload-artifact@v3
         with:
