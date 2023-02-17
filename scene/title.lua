@@ -3,7 +3,7 @@ local TitleScene = Scene:extend()
 TitleScene.title = "Title"
 TitleScene.restart_message = false
 
-local enter_pressed = false
+local enter_pressed = not (config and config.input)
 local menu_frames = 0
 
 local main_menu_screens = {
