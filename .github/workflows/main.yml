@@ -55,6 +55,8 @@ jobs:
           cat squashfs-root/bin/love cambridge.love > squashfs-root/bin/cambridge
           chmod +x squashfs-root/bin/cambridge
           cp res/img/cambridge_icon.png squashfs-root/
+          mkdir squashfs-root/libs
+          cp libs/discord-rpc.so squashfs-root/libs
           sudo add-apt-repository universe
           sudo apt install libfuse2
           ./appimagetool-x86_64.AppImage squashfs-root cambridge_linux_experimental.AppImage
@@ -87,7 +89,6 @@ jobs:
           name: cambridge_linux_experimental
           path: |
             cambridge_linux_experimental.AppImage
-            libs/discord-rpc.so
             SOURCES.md
             LICENSE.md
       - name: "Cleanup"
