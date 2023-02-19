@@ -202,6 +202,7 @@ function KeyConfigScene:onInputPress(e)
 			if self.key_rebinding then
 				if e.scancode == "tab" then
 					self:rebindKey(nil) --this is done by purpose
+					self.key_rebinding = false
 				else
 					if self:rebindKey(e.scancode) then
 						playSE("mode_decide")
