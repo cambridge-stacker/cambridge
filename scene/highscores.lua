@@ -66,6 +66,12 @@ function HighscoreScene:new()
 	self.menu_list_y = 20
 	self.auto_menu_offset = 0
 
+	DiscordRPC:update({
+		details = "In menus",
+		state = "Peeking their own highscores",
+		largeImageKey = "ingame-000"
+	})
+
     --It's here to avoid some seems-to-be bug with the scene's built-in mouse controls.
     left_clicked_before = true
 end
