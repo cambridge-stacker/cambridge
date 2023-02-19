@@ -388,6 +388,8 @@ function ReplaySelectScene:onInputPress(e)
 	elseif e.type == "mouse" and loaded_replays then
 		if e.button == 1 then
 			if self.display_error or self.display_warning then
+				current_submenu = 0
+				current_mode = self.menu_state.replay
 				scene = TitleScene()
 				return
 			end
