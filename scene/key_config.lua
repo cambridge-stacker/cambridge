@@ -21,6 +21,10 @@ local configurable_inputs = {
 	"pause",
 	"mode_exit",
 	"frame_step",
+	"generic_1",
+	"generic_2",
+	"generic_3",
+	"generic_4",
 }
 
 local input_naming = {
@@ -40,6 +44,10 @@ local input_naming = {
 	pause = "Pause",
 	mode_exit = "Exit Mode",
 	frame_step = "Frame Step",
+	generic_1 = "Generic 1",
+	generic_2 = "Generic 2",
+	generic_3 = "Generic 3",
+	generic_4 = "Generic 4",
 }
 
 --A list of inputs that shouldn't have the same keybinds with the other.
@@ -120,10 +128,10 @@ function KeyConfigScene:render()
 		if i == self.input_state then
 			love.graphics.setColor(1, 1, 0, 1)
 		end
-		love.graphics.printf(input_naming[input], 40, 50 + i * 20, 200, "left")
+		love.graphics.printf(input_naming[input], 40, 50 + i * 18, 200, "left")
 		love.graphics.setColor(1, 1, 1, 1)
 		if self.set_inputs[input] then
-			love.graphics.printf(self.set_inputs[input], 240, 50 + i * 20, 300, "left")
+			love.graphics.printf(self.set_inputs[input], 240, 50 + i * 18, 300, "left")
 		end
 	end
 	if self.input_state > #configurable_inputs then
