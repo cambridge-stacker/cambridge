@@ -222,56 +222,7 @@ function KeyConfigScene:onInputPress(e)
 	self.safety_frames = 2
 	if e.type == "key" then
 		-- function keys, and tab are reserved and can't be remapped
-		if e.scancode == "escape" and self.input_state <= #configurable_inputs then
-            self.transition_time = -1
-            self:rebindKey(e.scancode)
-            if self.input_state == 1 then
-                self.nested_scene = config.visualsettings.mode_select_type == 2 and RevModeSelectScene() or ModeSelectScene()
-                playSE("main_decide")
-            end
-            if self.input_state == 2 then
-                self.transitioned = false
-                self.nested_scene = TitleScene()
-            end
-            if self.input_state > 2 and self.input_state ~= 11 and self.input_state ~= 13 then
-                local input_copy = copy(e)
-                input_copy.input = configurable_inputs[self.input_state]
-                self.nested_scene:onInputPress(input_copy)
-            elseif self.input_state == 11 then
-                self.nested_scene = GameScene(require("tetris.modes.marathon_a3"), require("tetris.rulesets.standard"), {})
-            elseif self.input_state == 13 then
-                self.nested_scene = config.visualsettings.mode_select_type == 2 and RevModeSelectScene() or ModeSelectScene()
-            end
-			self.input_state = self.input_state + 1
-		-- elseif self.reconfiguration then
-		-- 	if self.key_rebinding then
-		-- 		if e.scancode == "tab" then
-		-- 			self:rebindKey(nil) --this is done by purpose
-		-- 		else
-		-- 			if self:rebindKey(e.scancode) then
-		-- 				playSE("mode_decide")
-		-- 				self.key_rebinding = false
-		-- 			else
-		-- 				playSE("erase", "single")
-		-- 			end
-		-- 		end
-        --         config.input.keys = self.new_input
-		-- 		saveConfig()
-		-- 	else
-		-- 		if e.scancode == "up" then
-		-- 			playSE("cursor")
-		-- 			self.input_state = Mod1(self.input_state - 1, #configurable_inputs)
-		-- 		elseif e.scancode == "down" then
-		-- 			playSE("cursor")
-		-- 			self.input_state = Mod1(self.input_state + 1, #configurable_inputs)
-		-- 		elseif e.scancode == "return" then
-		-- 			playSE("main_decide")
-		-- 			self.set_inputs[configurable_inputs[self.input_state]] = "<press a key>"
-		-- 			self.key_rebinding = true
-		-- 		end
-		-- 		self.failed_input_assignment = nil
-		-- 	end
-		elseif self.input_state > #configurable_inputs then
+		if self.input_state > #configurable_inputs then
 			if e.scancode == "return" then
 				-- save new input, then load next scene
 				local had_config = config.input ~= nil

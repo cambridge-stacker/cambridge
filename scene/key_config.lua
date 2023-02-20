@@ -186,27 +186,7 @@ function KeyConfigScene:onInputPress(e)
 	self.safety_frames = 2
 	if e.type == "key" then
 		-- function keys, and tab are reserved and can't be remapped
-		if e.scancode == "escape"  then
-			self.esc_pressed = true
-			if self.key_rebinding or not self.reconfiguration then
-				if self:rebindKey(e.scancode) then
-					playSE("mode_decide")
-					if self.key_rebinding then
-						self.key_rebinding = false
-					else
-						self.input_state = self.input_state + 1
-					end
-				else
-					playSE("erase", "single")
-				end
-				config.input.keys = self.new_input
-				saveConfig()
-				return
-			end
-			if self.input_state > #configurable_inputs or self.reconfiguration then
-				scene = InputConfigScene()
-			end
-		elseif self.reconfiguration then
+		if self.reconfiguration then
 			if self.key_rebinding then
 				if e.scancode == "tab" then
 					self:rebindKey(nil) --this is done by purpose
@@ -222,6 +202,9 @@ function KeyConfigScene:onInputPress(e)
                 config.input.keys = self.new_input
 				saveConfig()
 			else
+				if e.scancode == "escape" then
+					scene = InputConfigScene()
+				end
 				if e.scancode == "up" then
 					playSE("cursor")
 					self.input_state = Mod1(self.input_state - 1, #configurable_inputs)
