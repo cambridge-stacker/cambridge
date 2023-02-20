@@ -21,6 +21,11 @@ jobs:
         luaVersion: ${{ matrix.luaVersion }}
 
   assembly:
+    if: |
+      always() &&
+      ${{ github.event_name == 'push' }} &&
+      !contains(needs.*.result, 'failure') &&
+      !contains(needs.*.result, 'cancelled')
     needs: syntax-check
     runs-on: ubuntu-latest
     steps:
