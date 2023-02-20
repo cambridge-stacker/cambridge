@@ -2,6 +2,7 @@ local ReplaySelectScene = Scene:extend()
 
 ReplaySelectScene.title = "Replays"
 
+ReplaySelectScene.replays_loaded = 0
 local sha2 = require "libs.sha2"
 local binser = require 'libs.binser'
 
@@ -15,9 +16,9 @@ function ReplaySelectScene:new()
 	initModules(true)
 	
 	self.replay_count = #(love.filesystem.getDirectoryItems("replays"))
-	self.replays_loaded = 0
 	if not loaded_replays and not loading_replays then
 		loading_replays = true
+		self.replays_loaded = 0
 		loadReplayList()
 	end
 	self.display_error = false
