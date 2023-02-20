@@ -15,6 +15,7 @@ sound_paths = {
 	cursor = "res/se/cursor.wav",
 	cursor_lr = "res/se/cursor_lr.wav",
 	main_decide = "res/se/main_decide.wav",
+	menu_cancel = "res/se/menu_cancel.wav",
 	mode_decide = "res/se/mode_decide.wav",
 	lock = "res/se/lock.wav",
 	hold = "res/se/hold.wav",
