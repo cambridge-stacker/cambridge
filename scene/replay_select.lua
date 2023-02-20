@@ -395,6 +395,7 @@ function ReplaySelectScene:onInputPress(e)
 	elseif e.type == "mouse" and loaded_replays then
 		if e.button == 1 then
 			if e.y < 80 and e.x > 0 and e.y > 40 and e.x < 50 then
+				playSE("menu_cancel")
 				current_submenu = 0
 				current_replay = self.menu_state.replay
 				if self.menu_state.submenu ~= 0 then
@@ -454,6 +455,7 @@ function ReplaySelectScene:onInputPress(e)
 		self.das_up = nil
 		self.das_down = nil
 	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
+		playSE("menu_cancel")
 		if self.menu_state.submenu ~= 0 then
 			self.menu_state.submenu = 0
 			self.menu_state.replay = 1

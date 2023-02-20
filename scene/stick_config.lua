@@ -204,6 +204,7 @@ function StickConfigScene:onInputPress(e)
                 config.input.joysticks[self.joystick_name] = self.new_input
 				saveConfig()
 			end
+			playSE("menu_cancel")
 			scene = InputConfigScene()
 		elseif self.input_state > #configurable_inputs then
 			if e.scancode == "return" then

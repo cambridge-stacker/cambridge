@@ -203,6 +203,7 @@ function KeyConfigScene:onInputPress(e)
 				saveConfig()
 			else
 				if e.scancode == "escape" then
+					playSE("menu_cancel")
 					scene = InputConfigScene()
 				end
 				if e.scancode == "up" then

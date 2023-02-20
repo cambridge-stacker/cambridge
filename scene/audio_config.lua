@@ -148,6 +148,7 @@ function ConfigScene:onInputPress(e)
 		self:changeValue(option[7])
         playSE(option[9] or "cursor_lr")
 	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
+		playSE("menu_cancel")
 		loadSave()
 		scene = SettingsScene()
 	end

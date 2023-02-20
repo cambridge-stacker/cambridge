@@ -100,6 +100,7 @@ function ConfigScene:onInputPress(e)
 		local option = ConfigScene.options[self.highlight]
 		config.gamesettings[option[1]] = Mod1(config.gamesettings[option[1]]+1, #option[3])
 	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
+		playSE("menu_cancel")
 		loadSave()
 		scene = SettingsScene()
 	end

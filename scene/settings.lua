@@ -69,7 +69,7 @@ end
 function SettingsScene:onInputPress(e)
 	if e.type == "mouse" then
 		if e.x > 20 and e.y > 40 and e.x < 70 and e.y < 70 then
-			playSE("main_decide")
+			playSE("menu_cancel")
 			saveConfig()
 			scene = TitleScene()
 		end
@@ -91,6 +91,7 @@ function SettingsScene:onInputPress(e)
 		self:changeOption(1)
 		playSE("cursor")
 	elseif e.input == "menu_back" or e.scancode == "backspace" or e.scancode == "delete" then
+		playSE("menu_cancel")
 		scene = TitleScene()
 	end
 end

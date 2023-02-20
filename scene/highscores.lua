@@ -106,7 +106,6 @@ function HighscoreScene:update()
             end
         end
         if mouse_x > 20 and mouse_y > 40 and mouse_x < 70 and mouse_y < 70 then
-            playSE("main_decide")
             self:back()
         end
     end
@@ -229,6 +228,7 @@ function HighscoreScene:onInputPress(e)
 end
 
 function HighscoreScene:back()
+	playSE("menu_cancel")
     if self.hash then
         self.hash = nil
         self.hash_highscore = nil

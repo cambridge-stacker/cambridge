@@ -365,6 +365,7 @@ function ModeSelectScene:onInputPress(e)
 			self.start_frames = 0
 			return
 		end
+		playSE("menu_cancel")
 		if #self.game_mode_selections > 1 then
 			self:menuGoBack("mode")
 			self.menu_state.mode = 1
@@ -381,7 +382,7 @@ function ModeSelectScene:onInputPress(e)
 	elseif e.type == "mouse" then
 		if e.y < 80 then
 			if e.x > 0 and e.y > 40 and e.x < 50 then
-				playSE("main_decide")
+				playSE("menu_cancel")
 				if #self.game_mode_selections > 1 then
 					self:menuGoBack("mode")
 					self.menu_state.mode = 1

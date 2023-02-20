@@ -94,6 +94,7 @@ function TuningScene:onInputPress(e)
 		local sld = self[self.options[self.highlight][3]]
 		sld.value = math.max(sld.min, math.min(sld.max, (sld:getValue() + 1) / (sld.max - sld.min)))
 	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
+		playSE("menu_cancel")
 		loadSave()
 		scene = SettingsScene()
 	end

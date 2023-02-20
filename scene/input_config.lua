@@ -57,7 +57,7 @@ end
 function ConfigScene:onInputPress(e)
 	if e.type == "mouse" then
 		if e.x > 20 and e.y > 40 and e.x < 70 and e.y < 70 and config.input then
-			playSE("main_decide")
+			playSE("menu_cancel")
 			saveConfig()
 			scene = SettingsScene()
 		end
@@ -81,6 +81,7 @@ function ConfigScene:onInputPress(e)
 	elseif config.input and (
 		e.input == "menu_back" or e.scancode == "backspace" or e.scancode == "delete"
 	) then
+		playSE("menu_cancel")
 		scene = SettingsScene()
 	end
 end
