@@ -140,6 +140,12 @@ function ReplaySelectScene:render()
 	--love.graphics.draw(misc_graphics["select_mode"], 20, 40)
 
 	love.graphics.setFont(font_3x5_4)
+	if loaded_replays then
+		local b = CursorHighlight(0, 35, 40, 30)
+		love.graphics.setColor(1, 1, b, 1)
+		love.graphics.printf("<-", 0, 35, 40, "center")
+		love.graphics.setColor(1, 1, 1, 1)
+	end
 	if not loaded_replays then
 		love.graphics.setFont(font_3x5_3)
 		love.graphics.printf(
@@ -156,11 +162,11 @@ function ReplaySelectScene:render()
 		)
 		return
 	elseif self.menu_state.submenu > 0 then
-		love.graphics.print("SELECT REPLAY", 20, 35)
+		love.graphics.print("SELECT REPLAY", 40, 35)
 		love.graphics.setFont(font_3x5_3)
 		love.graphics.printf("MODE: "..replay_tree[self.menu_state.submenu].name, 300, 35, 320, "right")
 	else
-		love.graphics.print("SELECT MODE TO REPLAY", 20, 35)
+		love.graphics.print("SELECT MODE TO REPLAY", 40, 35)
 	end
 
 	if self.display_warning then
@@ -388,9 +394,18 @@ function ReplaySelectScene:onInputPress(e)
 		scene = TitleScene()
 	elseif e.type == "mouse" and loaded_replays then
 		if e.button == 1 then
-			if self.display_error or self.display_warning then
+			if e.y < 80 and e.x > 0 and e.y > 40 and e.x < 50 then
 				current_submenu = 0
-				current_mode = self.menu_state.replay
+				current_replay = self.menu_state.replay
+				if self.menu_state.submenu ~= 0 then
+					self.menu_state.submenu = 0
+					self.menu_state.replay = 1
+					return
+				end
+				scene = TitleScene()
+				return
+			end
+			if self.display_error or self.display_warning then
 				scene = TitleScene()
 				return
 			end
@@ -444,6 +459,8 @@ function ReplaySelectScene:onInputPress(e)
 			self.menu_state.replay = 1
 			return
 		end
+		current_submenu = 0
+		current_replay = self.menu_state.replay
 		scene = TitleScene()
 	end
 end
