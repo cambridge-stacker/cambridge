@@ -20,13 +20,13 @@ You do not need LÖVE on Windows, as it comes bundled with the program.
 
 #### Stable release
 
-To get the stable release, simply download either `cambridge-win32.zip` (32-bit) or `cambridge-windows.zip` (64-bit) in the [latest release](https://github.com/MillaBasset/cambridge/releases/latest).
+To get the stable release, simply download either `cambridge-win32.zip` (32-bit) or `cambridge-windows.zip` (64-bit) in the [latest release](../../releases/latest).
 
 All assets needed are bundled with the executable.
 
 #### Bleeding edge
 
-If you want the bleeding edge version, download [this](https://github.com/MillaBasset/cambridge/archive/master.zip). Extract the ZIP to a folder of your choosing.
+If you want the bleeding edge version, download [this](../../archive/master.zip). Extract the ZIP to a folder of your choosing.
 
 If you're on Windows, you can double-click `start.bat` to run the game. If that doesn't work, open a Command Prompt where you extracted Cambridge and run:
 
@@ -40,7 +40,7 @@ Then, check the mod pack section at the bottom of this page.
 
 #### Flooding edge
 
-If you want the `flooding edge` version, download [this](https://github.com/Tetro48/cambridge/archive/master.zip) or get the latest artifacts from Github Actions.
+If you want the `flooding edge` version, either download [the source](../../archive/master.zip) or go to [releases page](../../releases) or get the [latest artifacts from Github Actions](../../actions).
 
 Note: It might have weird bugs that isn't addressed by [Tetro48](https://github.com/Tetro48/); it has a lot of changes.
 e.g.
