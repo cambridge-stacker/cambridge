@@ -9,7 +9,6 @@ local Grid = require 'tetris.components.grid'
 local Randomizer = require 'tetris.randomizers.randomizer'
 local BagRandomizer = require 'tetris.randomizers.bag'
 local binser = require 'libs.binser'
-local sha256_table = {}
 
 local GameMode = Object:extend()
 
