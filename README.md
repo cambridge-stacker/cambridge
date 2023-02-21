@@ -5,7 +5,7 @@ Cambridge
 
 Welcome to Cambridge, the next open-source falling-block game engine!
 
-The project is written and maintained exclusively by [Milla](https://github.com/MillaBasset), [joezeng](https://github.com/joezeng) and [Oshisaure](https://github.com/oshisaure)!  
+The project is written and maintained exclusively by [Milla](https://github.com/MillaBasset), [joezeng](https://github.com/joezeng) and [Oshisaure](https://github.com/oshisaure)!
 
 The Discord server has been reopened! https://discord.gg/AADZUmgsph
 
@@ -16,11 +16,11 @@ Playing the game
 
 ### Windows
 
-You do not need LÖVE on Windows, as it comes bundled with the program.  
+You do not need LÖVE on Windows, as it comes bundled with the program.
 
 #### Stable release
 
-To get the stable release, simply download either `cambridge-win32.zip` (32-bit) or `cambridge-windows.zip` (64-bit) in the [latest release](https://github.com/MillaBasset/cambridge/releases/latest).  
+To get the stable release, simply download either `cambridge-win32.zip` (32-bit) or `cambridge-windows.zip` (64-bit) in the [latest release](https://github.com/MillaBasset/cambridge/releases/latest).
 
 All assets needed are bundled with the executable.
 
@@ -28,11 +28,11 @@ All assets needed are bundled with the executable.
 
 If you want the bleeding edge version, download [this](https://github.com/MillaBasset/cambridge/archive/master.zip). Extract the ZIP to a folder of your choosing.
 
-Assuming you're on a 64-bit system, you can double-click `start_win64.bat` to run the game. If that doesn't work, open a Command Prompt where you extracted Cambridge and run:
+If you're on Windows, you can double-click `start.bat` to run the game. If that doesn't work, open a Command Prompt where you extracted Cambridge and run:
 
 	dist\windows\love.exe .
 
-If you're on a 32-bit system, you'll want to double-click `start_win32.bat`. If that doesn't work, run this instead:
+If that doesn't work, run this instead, still using Command Prompt where you extracted Cambridge:
 
 	dist\win32\love.exe .
 
