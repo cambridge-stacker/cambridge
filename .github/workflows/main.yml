@@ -9,12 +9,7 @@ on:
     types: [opened, reopened]
 jobs:
   assembly:
-    if: |
-      always() &&
-      ${{ github.event_name == 'push' }} &&
-      !contains(needs.*.result, 'failure') &&
-      !contains(needs.*.result, 'cancelled')
-    needs: syntax-check
+    if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
