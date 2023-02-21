@@ -139,6 +139,7 @@ jobs:
         (cd ./cambridge_windows_x64 && zip -r9 ../cambridge_windows_x64.zip .)
         (cd ./cambridge_windows_x86 && zip -r9 ../cambridge_windows_x86.zip .)
         (cd ./cambridge_linux_experimental && zip -r9 ../cambridge_linux_experimental.zip .)
+        (cd ./cambridge_windows_aarch64_experimental && zip -r9 ../cambridge_windows_aarch64_experimental.zip .)
       working-directory: dist/
     - name: "Pre-release"
       uses: softprops/action-gh-release@v1
