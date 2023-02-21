@@ -8,18 +8,6 @@ on:
   pull_request:
     types: [opened, reopened]
 jobs:
-  syntax-check:
-    strategy:
-      matrix:
-        luaVersion: ["5.1", "5.4", "luajit-2.1.0-beta3"]
-
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
-    - uses: leafo/gh-actions-lua@v9
-      with:
-        luaVersion: ${{ matrix.luaVersion }}
-
   assembly:
     if: |
       always() &&
@@ -35,7 +23,7 @@ jobs:
           if [[ "$GITHUB_REF" =~ ^refs/tags/* ]]; then
             echo "version = \"${GITHUB_REF#refs/tags/}\"" > load/version.lua
           else
-            echo "version = \"build-${GITHUB_RUN_NUMBER}\"" > load/version.lua
+            echo "version = \"${GITHUB_REPOSITORY_OWNER}/build-${GITHUB_RUN_NUMBER}\"" > load/version.lua
           fi
       - name: Assemble
         run: |
