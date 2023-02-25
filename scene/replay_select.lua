@@ -354,9 +354,17 @@ function ReplaySelectScene:startReplay()
 			mode = value
 			break
 		end
+		if value.hash == replays[pointer]["mode_hash"] then
+			mode = value
+			break
+		end
 	end
 	for key, value in pairs(recursionStringValueExtract(rulesets, "is_directory")) do
 		if value.name == replays[pointer]["ruleset"] then
+			rules = value
+			break
+		end
+		if value.hash == replays[pointer]["ruleset_hash"] then
 			rules = value
 			break
 		end
