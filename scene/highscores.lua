@@ -79,7 +79,7 @@ function HighscoreScene:render()
     if self.hash_highscore ~= nil then
         self.menu_list_y = interpolateListPos(self.menu_list_y / 20, self.list_pointer) * 20
         love.graphics.printf("num", 20, 100, 100)
-		if #self.hash_highscore > 17 then
+		if #self.hash_highscore > 18 then
 			if self.list_pointer == #self.hash_highscore - 17 then
 				love.graphics.printf("^^", 5, 450, 15)
 			else
