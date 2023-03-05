@@ -110,6 +110,8 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         path: dist/
+    - name: Get formatted git log body
+      run: echo "GIT_LOG=## Automatic Release\n$(git log --pretty=format:[%B]\(%H\) $(git tag --sort=creatordate | tail -n 1)..HEAD)" >> $GITHUB_ENV
     - uses: rickstaa/action-create-tag@v1
       if: startsWith(github.ref, 'refs/heads/')
       with:
@@ -128,7 +130,7 @@ jobs:
       if: startsWith(github.ref, 'refs/heads/')
       with:
         prerelease: true
-        generate_release_notes: true
+        body: ${{ env.GIT_LOG }}
         tag_name: "build-${{ github.run_number }}"
         files: dist/cambridge_*
     - name: "Release"
