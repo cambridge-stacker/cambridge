@@ -98,8 +98,6 @@ jobs:
           rm -rf dist/win32/libs
           rm -f cambridge_linux_experimental.AppImage
           rm -rf squashfs-root/
-      - name: Get formatted git log body
-        run: printf "GIT_LOG=## Automatic Release\n$(git log --pretty=format:[%B]\(%H\) $(git describe --tags --abbrev=0)..HEAD)" >> $GITHUB_ENV
       
   release-upload:
     runs-on: ubuntu-latest
@@ -108,10 +106,14 @@ jobs:
       contents: write
     steps:
     - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
     - name: "Grab Artifacts"
       uses: actions/download-artifact@v3
       with:
         path: dist/
+    - name: Get formatted git log body
+      run: printf "GIT_LOG=## Automatic Release\n$(git log --pretty=format:[%B]\(%H\) $(git describe --tags --abbrev=0)..HEAD)" >> $GITHUB_ENV
     - uses: rickstaa/action-create-tag@v1
       if: startsWith(github.ref, 'refs/heads/')
       with:
