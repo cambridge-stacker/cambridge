@@ -13,7 +13,7 @@ ConfigScene.options = {
 	{"world_reverse", "A Button Rotation", {"Left", "Auto", "Right"}},
 	{"spawn_positions", "Spawn Positions", {"Per ruleset", "In field", "Out of field"}},
 	{"save_replay", "Save Replays", {"On", "Off"}},
-	{"diagonal_input", "Movement Type", {"8-way", "4-way Abs.", "4-way LICP"}},
+	{"diagonal_input", "Movement Type", {"Unfiltered", "4-way Abs.", "4-way LICP"}},
 	{"das_last_key", "DAS Last Key", {"Off", "On"}},
 	{"buffer_lock", "Buffer Drop Type", {"Off", "Hold", "Tap"}},
 	{"synchroes_allowed", "Synchroes", {"Per ruleset", "On", "Off"}},
