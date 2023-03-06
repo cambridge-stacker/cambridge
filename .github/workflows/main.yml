@@ -113,7 +113,7 @@ jobs:
       with:
         path: dist/
     - name: Get formatted git log body
-      run: printf "GIT_LOG=## Automatic Release\n$(git log --pretty=format:[%B]\(%H\) $(git describe --tags --abbrev=0)..HEAD)" >> $GITHUB_ENV
+      run: printf "GIT_LOG=## Automatic Release\n$(git log --pretty=format:\[%B\]\(%H\) $(git describe --tags --abbrev=0)..HEAD)" >> $GITHUB_ENV
     - uses: rickstaa/action-create-tag@v1
       if: startsWith(github.ref, 'refs/heads/')
       with:
