@@ -114,7 +114,7 @@ jobs:
         path: dist/
     - name: Get formatted git log body
       run: |
-        EOF=$(openssl rand -hex 8)
+        EOF="$(dd if=/dev/urandom bs=15 count=1 status=none | base64)"
         echo "GIT_LOG<<${EOF}" >> $GITHUB_ENV
         printf "## Automatic Release\n$(git log --pretty=format:\[%B\]\(%H\) $(git describe --tags --abbrev=0)..HEAD)" >> $GITHUB_ENV
         echo "${EOF}" >> $GITHUB_ENV
