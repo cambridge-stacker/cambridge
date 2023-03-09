@@ -116,7 +116,7 @@ jobs:
       run: |
         EOF="$(dd if=/dev/urandom bs=15 count=1 status=none | base64)"
         echo "GIT_LOG<<${EOF}" >> $GITHUB_ENV
-        printf "## Automatic Release\n$(git log --pretty=format:\[%B\]\(%H\) $(git describe --tags --abbrev=0)..HEAD)\n" >> $GITHUB_ENV
+        printf "## Automatic Release\n$(git log --pretty=format:'- [%B](../../commit/%H)' $(git describe --tags --abbrev=0)..HEAD)\n" >> $GITHUB_ENV
         echo "${EOF}" >> $GITHUB_ENV
     - uses: rickstaa/action-create-tag@v1
       if: startsWith(github.ref, 'refs/heads/')
