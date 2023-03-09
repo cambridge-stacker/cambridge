@@ -2,7 +2,7 @@ local ReplaySelectScene = Scene:extend()
 
 ReplaySelectScene.title = "Replays"
 
-ReplaySelectScene.replays_loaded = 0
+local replays_loaded = 0
 local sha2 = require "libs.sha2"
 local binser = require 'libs.binser'
 
@@ -18,7 +18,7 @@ function ReplaySelectScene:new()
 	self.replay_count = #(love.filesystem.getDirectoryItems("replays"))
 	if not loaded_replays and not loading_replays then
 		loading_replays = true
-		self.replays_loaded = 0
+		replays_loaded = 0
 		loadReplayList()
 	end
 	self.display_error = false
@@ -66,7 +66,7 @@ function ReplaySelectScene:update()
 		local replay = popFromChannel('replay')
 		local load = love.thread.getChannel( 'loaded_replays' ):pop()
 		while replay do
-			self.replays_loaded = self.replays_loaded + 1
+			replays_loaded = replays_loaded + 1
 			local mode_name = replay.mode
 			replays[#replays+1] = replay
 			if dict_ref[mode_name] ~= nil and mode_name ~= "znil" then
@@ -157,7 +157,7 @@ function ReplaySelectScene:render()
 			0, 250, 640, "center"
 		)
 		love.graphics.printf(
-			("Loaded %d/%d replays"):format(self.replays_loaded, self.replay_count),
+			("Loaded %d/%d replays"):format(replays_loaded, self.replay_count),
 			0, 350, 640, "center"
 		)
 		return
@@ -404,6 +404,10 @@ function ReplaySelectScene:onInputPress(e)
 		if e.button == 1 then
 			if e.y < 80 and e.x > 0 and e.y > 40 and e.x < 50 then
 				playSE("menu_cancel")
+				if self.chosen_replay then
+					self.chosen_replay = false
+					return
+				end
 				current_submenu = 0
 				current_replay = self.menu_state.replay
 				if self.menu_state.submenu ~= 0 then
@@ -424,6 +428,7 @@ function ReplaySelectScene:onInputPress(e)
 			end
 		end
 		if e.button == 2 and self.chosen_replay then
+			playSE("menu_cancel")
 			self.chosen_replay = false
 		end
 	elseif not loaded_replays then
