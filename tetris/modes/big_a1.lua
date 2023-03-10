@@ -1,4 +1,3 @@
-local GameMode = require 'tetris.modes.gamemode'
 local MarathonA1Game = require 'tetris.modes.marathon_a1'
 
 local BigA1Game = MarathonA1Game:extend()
