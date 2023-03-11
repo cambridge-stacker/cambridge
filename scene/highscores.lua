@@ -54,6 +54,21 @@ function HighscoreScene:selectHash()
     self.hash = self.hash_table[self.hash_id]
     self.hash_highscore = highscores[self.hash]
 end
+--Takes cares of both normal numbers and bigints.
+local function toFormattedValue(value)
+	
+	if type(value) == "table" and value.digits and value.sign then
+		local num = ""
+		if value.sign == "-" then
+			num = "-"
+		end
+		for _, digit in pairs(value.digits) do
+			num = num .. math.floor(digit) -- lazy way of getting rid of .0$
+		end
+		return num
+	end
+	return tostring(value)
+end
 function HighscoreScene:render()
 	drawSizeIndependentImage(
 		backgrounds[0],
@@ -99,7 +114,11 @@ function HighscoreScene:render()
                     love.graphics.printf(name, -20 + idx * 100, 100, 100)
                 end
 				love.graphics.setColor(1, 1, 1, FadeoutAtEdges((-self.menu_list_y - 170) + 20 * key, 170, 20))
-                love.graphics.printf(tostring(value), -20 + idx * 100, 120 + 20 * key - self.menu_list_y, 100)
+				local formatted_string = toFormattedValue(value)
+				if love.graphics.getFont():getWidth(formatted_string) > 100 then
+					formatted_string = formatted_string:sub(1, 6-math.floor(math.log10(#formatted_string))).."...".."("..#formatted_string..")"
+				end
+                love.graphics.printf(formatted_string, -20 + idx * 100, 120 + 20 * key - self.menu_list_y, 100)
                 idx = idx + 1
             end
 			love.graphics.setColor(1, 1, 1, FadeoutAtEdges((-self.menu_list_y - 170) + 20 * key, 170, 20))
