@@ -159,8 +159,7 @@ function ReplayScene:onInputPress(e)
 		self.game:onExit()
 		loadSave()
 		love.math.setRandomSeed(os.time())
-		-- quite dependent on async replay loading
-		if self.rerecord then loaded_replays = false end
+		if self.rerecord then sortReplays() end
 		scene = (
 			(e.input == "retry") and
 			ReplayScene(

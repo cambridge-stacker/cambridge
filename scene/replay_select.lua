@@ -58,6 +58,27 @@ local function demandFromChannel(channel_name)
 		return load_from
 	end
 end
+
+function insertReplay(replay)
+	local mode_name = replay.mode
+	replays[#replays+1] = replay
+	if dict_ref[mode_name] ~= nil and mode_name ~= "znil" then
+		table.insert(replay_tree[dict_ref[mode_name] ], #replays)
+	end
+	table.insert(replay_tree[1], #replays)
+end
+function sortReplays()
+	if not replay_tree then return end
+	local function padnum(d) return ("%03d%s"):format(#d, d) end
+	table.sort(replay_tree, function(a,b)
+	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
+	for key, submenu in pairs(replay_tree) do
+		table.sort(submenu, function(a, b)
+			return replays[a]["timestamp"] > replays[b]["timestamp"]
+		end)
+	end
+end
+
 function ReplaySelectScene:update()
 	switchBGM(nil) -- experimental
 	

@@ -181,20 +181,6 @@ function GameMode:saveReplay()
 	if love.filesystem.getInfo("replays") == nil then
 		love.filesystem.createDirectory("replays")
 	end
-	-- local replay_files = love.filesystem.getDirectoryItems("replays")
-	-- -- Select replay filename that doesn't collide with an existing one
-	-- local replay_number = 0
-	-- local collision = true
-	-- while collision do
-	-- 	collision = false
-	-- 	replay_number = replay_number + 1
-	-- 	for key, file in pairs(replay_files) do
-	-- 		if file == replay_number..".crp" then
-	-- 			collision = true
-	-- 			break
-	-- 		end
-	-- 	end
-	-- end
 	local init_name
 	if config.gamesettings.replay_name == 2 then
 		init_name = string.format("replays/%s.crp", os.date("%Y-%m-%d_%H-%M-%S"))
@@ -212,6 +198,9 @@ function GameMode:saveReplay()
 		end
 	end
 	love.filesystem.write(replay_name, binser.serialize(replay))
+	if loaded_replays then
+		insertReplay(replay)
+	end
 end
 
 function GameMode:addReplayInput(inputs)

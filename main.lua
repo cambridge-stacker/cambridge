@@ -132,9 +132,7 @@ function loadReplayList()
 	--proper disposal to avoid some memory problems
 	if io_thread then
 		io_thread:release()
-		love.thread.getChannel( 'replays' ):clear()
-		love.thread.getChannel( 'replay_tree' ):clear()
-		love.thread.getChannel( 'dict_ref' ):clear()
+		love.thread.getChannel( 'replay' ):clear()
 		love.thread.getChannel( 'loaded_replays' ):clear()
 	end
 
@@ -608,6 +606,7 @@ function love.filedropped(file)
 		love.filesystem.write(final_directory..filename, data)
 	end
 	file:close()
+	loaded_replays = false
 end
 
 ---@param key string
