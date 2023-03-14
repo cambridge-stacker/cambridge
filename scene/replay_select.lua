@@ -212,6 +212,10 @@ function ReplaySelectScene:render()
 			end
 		end
 	elseif self.chosen_replay then
+		love.graphics.setFont(font_3x5_2)
+		love.graphics.setColor(1, 1, 0)
+		love.graphics.printf("Scrolling a list of replays is disabled.", 0, 10, 640, "center")
+		love.graphics.setColor(1, 1, 1)
 		local pointer = replay_tree[self.menu_state.submenu][self.menu_state.replay]
 		local replay = replays[pointer]
 		if replay then
@@ -433,7 +437,7 @@ function ReplaySelectScene:onInputPress(e)
 		end
 	elseif not loaded_replays then
 		--does nothing.
-	elseif e.type == "wheel" then
+	elseif e.type == "wheel" and not self.chosen_replay then
 		if e.y ~= 0 then
 			self:changeOption(-e.y)
 		end
