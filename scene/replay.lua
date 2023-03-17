@@ -66,20 +66,22 @@ function ReplayScene:update()
 		config.sfx_volume = 0	--This is to stop blasting your ears every time you load a state.
 		frames_left = savestate_frames
 	end
-	if love.window.hasFocus() and (not self.paused or frame_steps > 0) and (TAS_mode or not self.rerecord) then
+	if love.window.hasFocus() and (not self.paused or frame_steps > 0) then
 		if frame_steps > 0 then
 			self.game.ineligible = self.rerecord or self.game.ineligible
 			frame_steps = frame_steps - 1
 		end
 		while frames_left > 0 do
 			frames_left = frames_left - 1
-			self.inputs = self.replay["inputs"][self.replay_index]["inputs"]
-			self.replay["inputs"][self.replay_index]["frames"] = self.replay["inputs"][self.replay_index]["frames"] - 1
-			self.relative_frames = self.relative_frames + 1
-			self.frames = self.frames + 1
-			if self.replay["inputs"][self.replay_index]["frames"] == 0 and self.replay_index < #self.replay["inputs"] then
-				self.replay_index = self.replay_index + 1
-				self.relative_frames = 1
+			if not self.rerecord then
+				self.inputs = self.replay["inputs"][self.replay_index]["inputs"]
+				self.replay["inputs"][self.replay_index]["frames"] = self.replay["inputs"][self.replay_index]["frames"] - 1
+				self.relative_frames = self.relative_frames + 1
+				self.frames = self.frames + 1
+				if self.replay["inputs"][self.replay_index]["frames"] == 0 and self.replay_index < #self.replay["inputs"] then
+					self.replay_index = self.replay_index + 1
+					self.relative_frames = 1
+				end
 			end
 			local input_copy = {}
 			for input, value in pairs(self.inputs) do
@@ -88,14 +90,6 @@ function ReplayScene:update()
 			self.game:update(input_copy, self.ruleset)
 			self.game.grid:update()
 		end
-	elseif self.rerecord and not self.paused then
-		local input_copy = {}
-		for input, value in pairs(self.inputs) do
-			input_copy[input] = value
-		end
-		self.frames = self.frames + 1
-		self.game:update(input_copy, self.ruleset)
-		self.game.grid:update()
 	end
 	if state_loaded then
 		state_loaded = false
