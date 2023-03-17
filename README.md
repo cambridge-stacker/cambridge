@@ -38,16 +38,6 @@ If that doesn't work, run this instead, still using Command Prompt where you ext
 
 Then, check the mod pack section at the bottom of this page.
 
-#### Flooding edge
-
-If you want the `flooding edge` version, either download [the source](../../archive/master.zip) or go to [releases page](../../releases) or get the [latest artifacts from Github Actions](../../actions).
-
-Note: It might have weird bugs that isn't addressed by [Tetro48](https://github.com/Tetro48/); it has a lot of changes.
-e.g.
-Mouse controls, cursor type, visual settings, separate audio settings, replay tree, replay speed, tool-assisted speedrun mode, input re-work, replay tunings (although that'd be helpful), file drag-n-drop, and many many more.
-
-Any bugs found here that does not also apply to vanilla version must only be reported on this fork. Do not make issues related to this fork on [the fork's origin](https://github.com/MillaBasset/cambridge).
-
 ### macOS, Linux
 
 If you haven't already, install `love` with your favourite package manager (Homebrew on macOS, your system's default on Linux). **Make sure you're using LÖVE 11.3, because it won't work with earlier or later versions!**
@@ -71,6 +61,15 @@ Then, navigate to the root directory that you just cloned, and type:
 	love .
 
 It should run automatically!
+
+
+## Notes for Flooding edge
+
+This fork might have weird bugs that isn't addressed by [Tetro48](https://github.com/Tetro48/); it has a lot of changes.
+e.g.
+Mouse controls, cursor type, visual settings, separate audio settings, dedicated highscores viewer, replay tree, replay speed, tool-assisted speedrun mode, input re-work, replay tunings (although that'd be helpful), file drag-n-drop, and many many more.
+
+Any bugs found here that does not also apply to vanilla version must only be reported on this fork. Do not make issues related to this fork on [the fork's origin](https://github.com/MillaBasset/cambridge).
 
 ## Installing modpacks
 
