@@ -59,7 +59,29 @@ local function demandFromChannel(channel_name)
 	end
 end
 
+local function toFormattedValue(value)
+	if type(value) == "table" and value.digits and value.sign then
+		local num = ""
+		if value.sign == "-" then
+			num = "-"
+		end
+		for _, digit in pairs(value.digits) do
+			num = num .. math.floor(digit) -- lazy way of getting rid of .0$
+		end
+		return num
+	end
+	return value
+end
+
 function insertReplay(replay)
+	for key, value in pairs(replay) do
+		replay[key] = toFormattedValue(value)
+	end
+	if replay.highscore_data then 
+		for key, value in pairs(replay.highscore_data) do
+			replay.highscore_data[key] = toFormattedValue(value)
+		end
+	end
 	local mode_name = replay.mode
 	replays[#replays+1] = replay
 	if dict_ref[mode_name] ~= nil and mode_name ~= "znil" then
@@ -288,6 +310,7 @@ function ReplaySelectScene:render()
 				for key, value in pairs(replay["highscore_data"]) do
 					idx = idx + 0.8
 					love.graphics.printf(key..": "..value, 0, 200 + idx * 20, 640, "center")
+					idx = idx + self.highscores_idx_offset[key]
 				end
 				idx = idx - 1
 			else
@@ -407,6 +430,16 @@ function ReplaySelectScene:startReplay()
 		self.das_up = nil
 		self.das_left = nil
 		self.das_right = nil
+		self.highscores_idx_offset = {}
+		for key, value in pairs(replays[pointer]["highscore_data"]) do
+			local idx = 0
+			local _, ftext = love.graphics.getFont():getWrap(key..": "..value, 640)
+			for _ in pairs(ftext) do
+				idx = idx + 0.8
+			end
+			idx = idx - 0.8
+			self.highscores_idx_offset[key] = idx
+		end
 		return
 	end
 
