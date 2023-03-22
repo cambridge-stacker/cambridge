@@ -67,6 +67,7 @@ function GameScene:onInputPress(e)
 	) and (
 		e.input == "menu_decide" or
 		e.input == "menu_back" or
+		e.input == "mode_exit" or
 		e.input == "retry"
 	) then
 		local highscore_entry = self.game:getHighscoreData()
