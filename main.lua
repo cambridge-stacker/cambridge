@@ -604,9 +604,16 @@ function love.filedropped(file)
 	if do_write == 2 then
 		love.filesystem.createDirectory(final_directory)
 		love.filesystem.write(final_directory..filename, data)
+		if final_directory ~= "replays/" then
+			loaded_replays = false
+		else
+			local binser = require "libs.binser"
+			local replay = binser.deserialize(data)
+			insertReplay(replay)
+			sortReplays()
+		end
 	end
 	file:close()
-	loaded_replays = false
 end
 
 ---@param key string
