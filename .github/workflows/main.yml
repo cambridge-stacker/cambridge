@@ -4,7 +4,7 @@ on:
     branches:
       - '*'
     tags-ignore:
-      build-*
+      - '*build-*'
 jobs:
   assembly:
     if: ${{ github.event_name == 'push' }}
@@ -121,7 +121,7 @@ jobs:
     - uses: rickstaa/action-create-tag@v1
       if: startsWith(github.ref, 'refs/heads/')
       with:
-        tag: "build-${{ github.run_number }}"
+        tag: "${{ github.repository_owner }}_build-${{ github.run_number }}"
     - name: Re-package the artifacts
       run: |
         (cd ./cambridge_other && zip -r9 ../cambridge_other.zip .)
@@ -137,7 +137,8 @@ jobs:
       with:
         prerelease: true
         body: ${{ env.GIT_LOG }}
-        tag_name: "build-${{ github.run_number }}"
+        tag_name: "${{ github.repository_owner }}_build-${{ github.run_number }}"
+        name: "Build ${{ github.run_number }}"
         files: dist/cambridge_*
     - name: "Release"
       uses: softprops/action-gh-release@v1
