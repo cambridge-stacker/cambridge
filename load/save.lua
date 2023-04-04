@@ -27,9 +27,11 @@ end
 local function updateInputConfig()
 	if config.input.keys ~= nil then
 		if config.input.keys.menu_decide == nil then
+			local new_key_inputs = {}
 			for key, value in pairs(config.input.keys) do
-				config.input.keys[value] = key
+				new_key_inputs[value] = key
 			end
+			config.input.keys = new_key_inputs
 		end
 	end
 	if config.input.joysticks ~= nil then
@@ -41,20 +43,21 @@ local function updateInputConfig()
 				input_table[joy_name] = input_table[joy_name] or {}
 				input_table[joy_name][key] = substring
 			end
-			config.input.joysticks.menu_decide = nil
+			config.input.joysticks = input_table
 		else
 			for name, joystick in pairs(config.input.joysticks) do
+				local input_table = {}
 				for k2, v2 in pairs(joystick.buttons) do
 					for k3, v3 in pairs(v2) do
 						local input_str = "buttons-"..k3
-						config.input.joysticks[name][v3] = input_str
+						input_table[v3] = input_str
 					end
 				end
 				for k2, v2 in pairs(joystick.axes) do
 					for k3, v3 in pairs(v2) do
 						for k4, v4 in pairs(v3) do
 							local input_str = "axes-"..k3.."-"..k4
-							config.input.joysticks[name][v4] = input_str
+							input_table[v4] = input_str
 						end
 					end
 				end
@@ -62,10 +65,11 @@ local function updateInputConfig()
 					for k3, v3 in pairs(v2) do
 						for k4, v4 in pairs(v3) do
 							local input_str = "hat-"..k3.."-"..k4
-							config.input.joysticks[name][v4] = input_str
+							input_table[v4] = input_str
 						end
 					end
 				end
+				config.input.joysticks[name] = input_table
 			end
 		end
 	end
