@@ -24,9 +24,6 @@ function HighscoreScene:new()
 		state = "Peeking their own highscores",
 		largeImageKey = "ingame-000"
 	})
-
-    --It's here to avoid some seems-to-be bug with the scene's built-in mouse controls.
-    left_clicked_before = true
 end
 function HighscoreScene:update()
 	if self.auto_menu_offset ~= 0 then
