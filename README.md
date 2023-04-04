@@ -20,7 +20,7 @@ You do not need LÖVE on Windows, as it comes bundled with the program.
 
 #### Stable release
 
-To get the stable release, simply download either `cambridge-win32.zip` (32-bit) or `cambridge-windows.zip` (64-bit) in the [latest release](../../releases/latest).
+To get the stable release, simply download either `cambridge_windows_x86.zip` (32-bit, x86) or `cambridge_windows_x64.zip` (64-bit, x86-64) in the [latest release](../../releases/latest).
 
 All assets needed are bundled with the executable.
 
