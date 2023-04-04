@@ -108,4 +108,6 @@ end
 
 function SRS:canPieceRotate() return true end
 
+function SRS:get180RotationValue() return 2 end
+
 return SRS
