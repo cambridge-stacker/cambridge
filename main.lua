@@ -338,6 +338,11 @@ function love.errorhandler(msg)
 	local substring = msg:sub(msg:find(':') +1)
 	local line_error = tonumber(substring:sub(1, substring:find(':') - 1), 10)
 
+	if love.filesystem.isFused() then
+		local source_dir = love.filesystem.getSourceBaseDirectory()
+		love.filesystem.mount(source_dir, "")
+	end
+
 	local str_data = love.filesystem.read("string", errored_filename)
 
 	local lua_file_content = {}
