@@ -144,13 +144,6 @@ function loadReplayList()
 	io_thread:start()
 end
 
----@return any
-function nilCheck(input, default)
-	if input == nil then
-		return default
-	end
-	return input
-end
 
 function popFromChannel(channel_name)
 	local load_from = love.thread.getChannel(channel_name):pop()

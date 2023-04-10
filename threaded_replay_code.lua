@@ -1,11 +1,4 @@
 replay_load_code = [[
-	
-	function nilCheck(input, default)
-		if input == nil then
-			return default
-		end
-		return input
-	end
 	function setState(string)
 		print(string)
 		love.thread.getChannel( 'load_state' ):clear()

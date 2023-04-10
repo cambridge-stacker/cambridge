@@ -44,14 +44,6 @@ function ReplaySelectScene:new()
 	})
 end
 
-
-function ReplaySelectScene.nilCheck(input, default)
-	if input == nil then
-		return default
-	end
-	return input
-end
-
 local function demandFromChannel(channel_name)
 	local load_from = love.thread.getChannel(channel_name):demand()
 	if load_from then
@@ -196,7 +188,7 @@ function ReplaySelectScene:render()
 			80, 200, 480, "center"
 		)
 		love.graphics.printf(
-			"Thread's current job:\n"..nilCheck(self.state_string, "nil"),
+			"Thread's current job:\n"..(self.state_string or "nil"),
 			0, 250, 640, "center"
 		)
 		love.graphics.printf(
