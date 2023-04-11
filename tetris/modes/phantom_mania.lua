@@ -28,7 +28,6 @@ function PhantomManiaGame:new()
 	self.combo = 1
 	self.tetrises = 0
 	self.section_tetrises = {[0] = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-	self.section_req = true
 	self.randomizer = History6RollsRandomizer()
 end
 
@@ -120,11 +119,6 @@ function PhantomManiaGame:onLineClear(cleared_row_count)
 				self.level = 999
 			end
 			self.clear = true
-			for i = 0, 9 do
-				if self.section_tetrises[i] < (i == 9 and 1 or 2) then
-					self.section_req = false
-				end
-			end
 		else
 			self.level = new_level
 		end
@@ -175,6 +169,10 @@ local function getLetterGrade(level, clear)
 	end
 end
 
+function PhantomManiaGame:qualifiesForGM()
+    return true
+end
+
 function PhantomManiaGame:drawScoringInfo()
 	PhantomManiaGame.super.drawScoringInfo(self)
 
@@ -195,7 +193,7 @@ function PhantomManiaGame:drawScoringInfo()
 	if getLetterGrade(self.level, self.clear) ~= "" then
 		if self.roll_frames > 1982 then love.graphics.setColor(1, 0.5, 0, 1)
 		elseif self.level == 999 and self.clear then love.graphics.setColor(0, 1, 0, 1) end
-		if self.level == 999 and self.section_req and self.tetrises >= 31 then
+		if self.level == 999 and self:qualifiesForGM() then
 			love.graphics.printf("GM", text_x, 140, 90, "left")
 		else
 			love.graphics.printf(getLetterGrade(self.level, self.clear), text_x, 140, 90, "left")
