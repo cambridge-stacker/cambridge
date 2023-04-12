@@ -148,8 +148,12 @@ local function toFormattedValue(value)
 		if value.sign == "-" then
 			num = "-"
 		end
-		for _, digit in pairs(value.digits) do
-			num = num .. math.floor(digit) -- lazy way of getting rid of .0$
+		for id, digit in pairs(value.digits) do
+			if not value.dense or id == 1 then
+				num = num .. math.floor(digit) -- lazy way of getting rid of .0$
+			else
+                num = num .. string.format("%07d", digit)
+			end
 		end
 		return num
 	end
