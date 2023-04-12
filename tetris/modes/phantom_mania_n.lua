@@ -13,4 +13,14 @@ function PhantomManiaNGame:new()
 	self.enable_hold = true
 end
 
+function PhantomManiaNGame:qualifiesForGM()
+    if self.tetrises < 31 then return false end
+    for i = 0, 9 do
+        if self.section_tetrises[i] < (i == 9 and 1 or 2) then
+            return false
+        end
+    end
+    return true
+end
+
 return PhantomManiaNGame
