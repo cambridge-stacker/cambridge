@@ -44,8 +44,8 @@ function ReplaySelectScene:new()
 	})
 end
 
-local function demandFromChannel(channel_name)
-	local load_from = love.thread.getChannel(channel_name):demand()
+local function popFromChannel(channel_name)
+	local load_from = love.thread.getChannel(channel_name):pop()
 	if load_from then
 		return load_from
 	end

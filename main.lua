@@ -144,14 +144,6 @@ function loadReplayList()
 	io_thread:start()
 end
 
-
-function popFromChannel(channel_name)
-	local load_from = love.thread.getChannel(channel_name):pop()
-	if load_from then
-		return load_from
-	end
-end
-
 is_cursor_visible = true
 mouse_idle = 0
 TAS_mode = false
