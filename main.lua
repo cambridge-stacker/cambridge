@@ -606,6 +606,23 @@ function love.filedropped(file)
 	file:close()
 end
 
+function love.directorydropped(dir)
+	local msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "Do you want to insert a directory ("..dir..") as a mod pack?", {"No", "Yes"}, "info")
+	if msgbox_choice <= 1 then
+		return
+	end
+	local success = love.filesystem.mount(dir, "directory_dropped")
+	if not success then
+		error("Unsuccessful mount on "..dir.."!")
+	end
+	local directory_items = love.filesystem.getDirectoryItems("directory_dropped")
+	for key, value in pairs(directory_items) do
+		print(key, value)
+	end
+	copyFilesRecursively("directory_dropped", "", true)
+	love.filesystem.unmount(dir)
+end
+
 ---@param key string
 ---@param scancode string
 function love.keypressed(key, scancode)

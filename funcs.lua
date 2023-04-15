@@ -71,6 +71,35 @@ function rainbowString(string)
 	return tbl
 end
 
+---@param directory_from string
+---@param directory_to string
+---@param override_warning boolean
+function copyFilesRecursively(directory_from, directory_to, override_warning)
+	local directory_items = love.filesystem.getDirectoryItems(directory_from)
+	if not love.filesystem.getInfo(directory_to, "directory") then
+		love.filesystem.createDirectory(directory_to)
+	end
+	for key, value in pairs(directory_items) do
+		local destination_from = directory_from.."/"..value
+		local destination_to = directory_to.."/"..value
+		if love.filesystem.getInfo(destination_from, "directory") then
+			copyFilesRecursively(destination_from, destination_to)
+		end
+		if love.filesystem.getInfo(destination_from, "file") then
+			print(value, directory_to)
+			local msgbox_choice = 2
+			if love.filesystem.getInfo(destination_to, "file") and override_warning then
+				msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "This file ("..value..") already exists! Do you want to override it?", {"No", "Yes"}, "info")
+
+			end
+			if msgbox_choice == 2 then
+				local file = love.filesystem.read(destination_from)
+				love.filesystem.write(destination_to, file)
+			end
+		end
+	end
+end
+
 ---@param tbl table
 function strTrueValues(tbl)
 	-- returns a concatenation of all the keys in tbl with value true, separated with spaces
