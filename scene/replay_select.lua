@@ -20,6 +20,13 @@ function ReplaySelectScene:new()
 		loading_replays = true
 		replays_loaded = 0
 		loadReplayList()
+		self.state_string = ""
+		DiscordRPC:update({
+			details = "In menus",
+			state = "Loading replays...",
+			largeImageKey = "ingame-000"
+		})
+		return
 	end
 	self.display_error = false
 	if #replays == 0 then
@@ -36,7 +43,6 @@ function ReplaySelectScene:new()
 	self.das = 0
 	self.height_offset = 0
 	self.auto_menu_offset = 0
-	self.state_string = ""
 	DiscordRPC:update({
 		details = "In menus",
 		state = "Choosing a replay",
@@ -169,7 +175,6 @@ function ReplaySelectScene:render()
 		640, 480
 	)
 	
-	self.height_offset = interpolateListPos(self.height_offset / 20, self.menu_state.replay) * 20
 
 	-- Same graphic as mode select
 	--love.graphics.draw(misc_graphics["select_mode"], 20, 40)
@@ -232,6 +237,7 @@ function ReplaySelectScene:render()
 		return
 	end
 
+	self.height_offset = interpolateListPos(self.height_offset / 20, self.menu_state.replay) * 20
 	if not self.chosen_replay then
 		love.graphics.setColor(1, 1, 1, 0.5)
 		love.graphics.rectangle("fill", 3, 258 + (self.menu_state.replay * 20) - self.height_offset, 634, 22)
