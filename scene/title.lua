@@ -45,6 +45,20 @@ function TitleScene:new()
 	self.frames = 0
 	self.snow_bg_opacity = 0
 	self.y_offset = 0
+	self.press_enter_text = "Press Enter"
+	self.joystick_names = {}
+	self.joystick_menu_decide_binds = {}
+	if config and config.input then
+		if config.input.keys then
+			if not (
+				config.input.keys.menu_decide == nil or
+				config.input.keys.menu_decide == "return" or
+				config.input.keys.menu_decide == "kpenter"
+			) then
+				self.press_enter_text = self.press_enter_text.." or [" .. config.input.keys.menu_decide .. "] key"
+			end
+		end
+	end
 	self.text = ""
 	self.text_flag = false
 	if config.visualsettings.mode_select_type == 1 then
@@ -96,7 +110,7 @@ function TitleScene:render()
 		love.graphics.setFont(font_3x5_3)
 		love.graphics.printf("Welcome To Cambridge: Flooding Edge!", 80, 240, 480, "center")
 		if love.timer.getTime() % 2 <= 1 then
-			love.graphics.printf("Press Enter or "..(config.input.keys or {menu_decide = "null"}).menu_decide, 80, 360, 480, "center")
+			love.graphics.printf(self.press_enter_text, 80, 360, 480, "center")
 		end
 		love.graphics.setFont(font_3x5_2)
 		if not (self.love2d_major == 11 and self.love2d_minor == 3) and not (self.love2d_major == 12 and self.love2d_minor == 0) then
