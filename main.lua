@@ -64,12 +64,16 @@ function recursivelyLoadRequireFileTable(table, directory, blacklisted_string)
 	end
 end
 
+local modules_last_time_modified = {}
+
 ---@param reload boolean|nil
 function initModules(reload)
 	--module reload.
 	if reload then
 		for key, value in pairs(package.loaded) do
-			if string.sub(key, 1, 7) == "tetris." then
+			local module_file_path = string.gsub(key, '%.', "/") .. ".lua"
+			local file_info = love.filesystem.getInfo(module_file_path)
+			if string.sub(key, 1, 7) == "tetris." and file_info.modtime > modules_last_time_modified[key] then
 				package.loaded[key] = nil
 			end
 		end
@@ -97,6 +101,14 @@ function initModules(reload)
 	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
 	table.sort(rulesets, function(a,b)
 	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
+	
+	for key, value in pairs(package.loaded) do
+		if string.sub(key, 1, 7) == "tetris." then
+			local module_file_path = key:gsub('%.', "/") .. ".lua"
+			local file_info = love.filesystem.getInfo(module_file_path)
+			modules_last_time_modified[key] = file_info.modtime
+		end
+	end
 end
 
 --#region Tetro48's code
