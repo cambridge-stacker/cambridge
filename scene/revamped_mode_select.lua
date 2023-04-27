@@ -373,7 +373,7 @@ function ModeSelectScene:menuGoForward(type)
 	end
 end
 function ModeSelectScene:onInputPress(e)
-	if e.input and (self.display_warning or #self.game_mode_folder == 0 or #self.ruleset_folder == 0) then
+	if (e.input or e.scancode) and (self.display_warning or #self.game_mode_folder == 0 or #self.ruleset_folder == 0) then
 		if self.display_warning then
 			scene = TitleScene()
 		elseif #self.game_mode_folder == 0 then
