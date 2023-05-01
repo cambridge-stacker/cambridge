@@ -618,6 +618,7 @@ function love.filedropped(file)
 	file:close()
 end
 
+---@param dir string
 function love.directorydropped(dir)
 	local msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "Do you want to insert a directory ("..dir..") as a mod pack?", {"No", "Yes"}, "info")
 	if msgbox_choice <= 1 then
@@ -627,16 +628,12 @@ function love.directorydropped(dir)
 	if not success then
 		error("Unsuccessful mount on "..dir.."!")
 	end
-	local directory_items = love.filesystem.getDirectoryItems("directory_dropped")
-	for key, value in pairs(directory_items) do
-		print(key, value)
-	end
 	copyFilesRecursively("directory_dropped", "", true)
 	love.filesystem.unmount(dir)
 end
 
----@param key string
----@param scancode string
+---@param key string|nil
+---@param scancode string|nil
 function love.keypressed(key, scancode)
 	-- global hotkeys
 	if scancode == "f11" then
@@ -689,6 +686,8 @@ function love.keypressed(key, scancode)
 			result_inputs = multipleInputs(config.input.keys, scancode)
 			for _, input in pairs(result_inputs) do
 				scene:onInputPress({input=input, type="key", key=key, scancode=scancode})
+				key = nil
+				scancode = nil
 			end
 		end
 		if #result_inputs == 0 then
@@ -697,8 +696,8 @@ function love.keypressed(key, scancode)
 	end
 end
 
----@param key string
----@param scancode string
+---@param key string|nil
+---@param scancode string|nil
 function love.keyreleased(key, scancode)
 	-- escape is reserved for menu_back
 	if scancode == "escape" then
@@ -713,6 +712,8 @@ function love.keyreleased(key, scancode)
 			result_inputs = multipleInputs(config.input.keys, scancode)
 			for _, input in pairs(result_inputs) do
 				scene:onInputRelease({input=input, type="key", key=key, scancode=scancode})
+				key = nil
+				scancode = nil
 			end
 		end
 		if #result_inputs == 0 then
