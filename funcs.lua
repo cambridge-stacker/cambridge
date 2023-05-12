@@ -83,14 +83,12 @@ function copyFilesRecursively(directory_from, directory_to, override_warning)
 		local destination_from = directory_from.."/"..value
 		local destination_to = directory_to.."/"..value
 		if love.filesystem.getInfo(destination_from, "directory") then
-			copyFilesRecursively(destination_from, destination_to)
+			copyFilesRecursively(destination_from, destination_to, override_warning)
 		end
 		if love.filesystem.getInfo(destination_from, "file") then
-			print(value, directory_to)
 			local msgbox_choice = 2
 			if love.filesystem.getInfo(destination_to, "file") and override_warning then
-				msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "This file ("..value..") already exists! Do you want to override it?", {"No", "Yes"}, "info")
-
+				msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "This file ("..value..") already exists! Do you want to override it?", {"No", "Yes"}, "info", false)
 			end
 			if msgbox_choice == 2 then
 				local file = love.filesystem.read(destination_from)
