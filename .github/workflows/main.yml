@@ -3,8 +3,6 @@ on:
   push:
     tags:
       - '*'
-    tags-ignore:
-      - '*build-*'
 jobs:
   assembly:
     if: ${{ github.event_name == 'push' }}
