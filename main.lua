@@ -628,7 +628,7 @@ function love.directorydropped(dir)
 	if not success then
 		error("Unsuccessful mount on "..dir.."!")
 	end
-	copyFilesRecursively("directory_dropped", "", true)
+	copyDirectoryRecursively("directory_dropped", "", true)
 	love.filesystem.unmount(dir)
 end
 

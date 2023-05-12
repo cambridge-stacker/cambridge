@@ -74,7 +74,7 @@ end
 ---@param directory_from string
 ---@param directory_to string
 ---@param override_warning boolean
-function copyFilesRecursively(directory_from, directory_to, override_warning)
+function copyDirectoryRecursively(directory_from, directory_to, override_warning)
 	local directory_items = love.filesystem.getDirectoryItems(directory_from)
 	if not love.filesystem.getInfo(directory_to, "directory") then
 		love.filesystem.createDirectory(directory_to)
@@ -83,7 +83,7 @@ function copyFilesRecursively(directory_from, directory_to, override_warning)
 		local destination_from = directory_from.."/"..value
 		local destination_to = directory_to.."/"..value
 		if love.filesystem.getInfo(destination_from, "directory") then
-			copyFilesRecursively(destination_from, destination_to, override_warning)
+			copyDirectoryRecursively(destination_from, destination_to, override_warning)
 		end
 		if love.filesystem.getInfo(destination_from, "file") then
 			local msgbox_choice = 2
