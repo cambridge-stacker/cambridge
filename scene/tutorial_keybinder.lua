@@ -112,13 +112,6 @@ function KeyConfigScene:new()
     self.transitioned = true
 
 	if not config.input then config.input = {} end
-	-- if config.input.keys then
-	-- 	-- self.reconfiguration = true
-	-- 	self.new_input = config.input.keys
-	-- 	for input_name, key in pairs(config.input.keys) do
-	-- 		self.set_inputs[input_name] = self:formatKey(key)
-	-- 	end
-	-- end
 
 	self.safety_frames = 0
 
@@ -160,31 +153,6 @@ function KeyConfigScene:render()
     
     love.graphics.printf(self.visual_input_state > #configurable_inputs and "You've now configured." or self.failed_input_assignment_time > 0 and "Inaccessible key." or input_description[configurable_inputs[self.visual_input_state]], 
     80, 200, 480, "center", 0, 1, math.min(1, math.abs(self.transition_time)))
-
-	-- for i, input in ipairs(configurable_inputs) do
-	-- 	if i == self.input_state then
-	-- 		love.graphics.setColor(1, 1, 0, 1)
-	-- 	end
-	-- 	love.graphics.printf(input_naming[input], 40, 50 + i * 20, 200, "left")
-	-- 	love.graphics.setColor(1, 1, 1, 1)
-	-- 	if self.set_inputs[input] then
-	-- 		love.graphics.printf(self.set_inputs[input], 240, 50 + i * 20, 300, "left")
-	-- 	end
-	-- end
-	-- if self.input_state > #configurable_inputs then
-	-- 	love.graphics.print("press enter to confirm, delete/backspace to retry" .. (config.input and ", escape to cancel" or ""))
-	-- 	return
-	-- elseif self.failed_input_assignment then
-	-- 	love.graphics.printf(string.format("%s is already assigned to %s.", self.failed_input_assignment, input_naming[self.new_input[self.failed_input_assignment]]), 0, 0, 640, "left")
-	-- elseif self.reconfiguration then
-	-- 	if self.key_rebinding then
-	-- 		love.graphics.printf("Press key input for " .. input_naming[configurable_inputs[self.input_state]] .. ", tab to erase.", 0, 0, 640, "left")
-	-- 	end
-	-- 	love.graphics.printf("Press escape to exit while not rebinding. Auto-saves after you rebound a key.", 0, 20, 640, "left")
-	-- else
-	-- 	love.graphics.printf("Press key input for " .. input_naming[configurable_inputs[self.input_state]] .. ", tab to skip.", 0, 0, 640, "left")
-	-- end
-	-- love.graphics.printf("function keys (F1, F2, etc.), and tab can't be changed", 0, 40, 640, "left")
 end
 
 function KeyConfigScene:formatKey(key)
@@ -224,24 +192,15 @@ function KeyConfigScene:onInputPress(e)
 		-- function keys, and tab are reserved and can't be remapped
 		if self.input_state > #configurable_inputs then
 			if e.scancode == "return" then
-				-- save new input, then load next scene
-				local had_config = config.input ~= nil
                 if not config.input then config.input = {} end
                 config.input.keys = self.new_input
 				saveConfig()
 				scene = config.visualsettings.mode_select_type == 2 and RevModeSelectScene() or ModeSelectScene()
-			elseif e.scancode == "delete" or e.scancode == "backspace" then
-				-- retry
-				self.input_state = 1
-				self.set_inputs = newSetInputs()
-				self.new_input = {}
 			end
 		elseif e.scancode == "tab" then
             self.failed_input_assignment_time = 120
             playSE("erase", "single")
             return
-			-- self.set_inputs[configurable_inputs[self.input_state]] = "skipped"
-			-- self.input_state = self.input_state + 1
 		-- all other keys can be configured
 		elseif self:rebindKey(e.scancode) then
             self.transition_time = -1
