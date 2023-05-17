@@ -137,8 +137,13 @@ function StickConfigScene:render()
 		640, 480
 	)
 
-	love.graphics.setFont(font_3x5_3)
 	if self.joystick_name == "" then
+		local b = CursorHighlight(20, 40, 50, 30)
+		love.graphics.setColor(1, 1, b, 1)
+		love.graphics.setFont(font_3x5_4)
+		love.graphics.printf("<-", 20, 40, 50, "center")
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.setFont(font_3x5_3)
 		love.graphics.printf("Interact with a joystick to map inputs.", 160, 240, 320, "center")
 		return
 	end
@@ -153,18 +158,17 @@ function StickConfigScene:render()
 			love.graphics.printf(self.set_inputs[input], 240, 50 + i * 18, 300, "left")
 		end
 	end
+	local string_press_joystick = "Press joystick input for " .. input_naming[configurable_inputs[self.input_state]]
 	if self.input_state > #configurable_inputs then
-		love.graphics.print("press enter to confirm, delete/backspace to retry" .. (config.input and ", escape to cancel" or ""))
+		love.graphics.print("Press enter to confirm, delete/backspace to retry" .. (config.input and ", escape to cancel" or ""))
 		return
-	elseif self.failed_input_assignment then
-		love.graphics.printf(string.format("%s is already assigned to %s.", self.failed_input_assignment, input_naming[self.new_input[self.failed_input_assignment]]), 0, 0, 640, "left")
 	elseif self.reconfiguration then
 		if self.rebinding then
-			love.graphics.printf("Press joystick input for " .. input_naming[configurable_inputs[self.input_state]] .. ", tab to erase.", 0, 0, 640, "left")
+			love.graphics.printf(string_press_joystick .. ", tab to erase.", 0, 0, 640, "left")
 		end
 		love.graphics.printf("Press escape to exit and save while not rebinding.", 0, 20, 640, "left")
 	else
-		love.graphics.printf("Press joystick input for " .. input_naming[configurable_inputs[self.input_state]] .. ", tab to skip.", 0, 0, 640, "left")
+		love.graphics.printf(string_press_joystick .. ", tab to skip.", 0, 0, 640, "left")
 	end
 	love.graphics.printf("Current joystick name: "..self.joystick_name, 0, 40, 640, "left")
 
@@ -193,6 +197,12 @@ local function addJoystick(input, name)
 end
 
 function StickConfigScene:onInputPress(e)
+	if e.type == "mouse" then
+		if e.x > 20 and e.y > 40 and e.x < 70 and e.y < 70 and self.joystick_name == "" then
+			playSE("menu_cancel")
+			scene = InputConfigScene()
+		end
+	end
 	if self.safety_frames > 0 then
 		return
 	end
@@ -238,7 +248,6 @@ function StickConfigScene:onInputPress(e)
 					self.set_inputs[configurable_inputs[self.input_state]] = "<provide joystick input>"
 					self.rebinding = true
 				end
-				self.failed_input_assignment = nil
 			end
 		elseif e.scancode == "tab" then
 			self.set_inputs[configurable_inputs[self.input_state]] = "skipped"

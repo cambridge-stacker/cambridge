@@ -134,20 +134,19 @@ function KeyConfigScene:render()
 			love.graphics.printf(self.set_inputs[input], 240, 50 + i * 18, 300, "left")
 		end
 	end
+	local string_press_key = "Press key input for " .. input_naming[configurable_inputs[self.input_state]]
 	if self.input_state > #configurable_inputs then
-		love.graphics.print("press enter to confirm, delete/backspace to retry" .. (config.input and ", escape to cancel" or ""))
+		love.graphics.print("Press enter to confirm, delete/backspace to retry" .. (config.input and ", escape to cancel" or ""))
 		return
-	elseif self.failed_input_assignment then
-		love.graphics.printf(string.format("%s is already assigned to %s.", self.failed_input_assignment, input_naming[self.new_input[self.failed_input_assignment]]), 0, 0, 640, "left")
 	elseif self.reconfiguration then
 		if self.key_rebinding then
-			love.graphics.printf("Press key input for " .. input_naming[configurable_inputs[self.input_state]] .. ", tab to erase.", 0, 0, 640, "left")
+			love.graphics.printf(string_press_key .. ", tab to erase.", 0, 0, 640, "left")
 		end
 		love.graphics.printf("Press escape to exit while not rebinding. Auto-saves after you rebound a key.", 0, 20, 640, "left")
 	else
-		love.graphics.printf("Press key input for " .. input_naming[configurable_inputs[self.input_state]] .. ", tab to skip.", 0, 0, 640, "left")
+		love.graphics.printf(string_press_key .. ", tab to skip.", 0, 0, 640, "left")
 	end
-	love.graphics.printf("function keys (F1, F2, etc.), and tab can't be changed", 0, 40, 640, "left")
+	love.graphics.printf("Function keys (F1, F2, etc.), and tab can't be changed", 0, 40, 640, "left")
 end
 
 function KeyConfigScene:formatKey(key)
@@ -217,7 +216,6 @@ function KeyConfigScene:onInputPress(e)
 					self.set_inputs[configurable_inputs[self.input_state]] = "<press a key>"
 					self.key_rebinding = true
 				end
-				self.failed_input_assignment = nil
 			end
 		elseif self.input_state > #configurable_inputs then
 			if e.scancode == "return" then
