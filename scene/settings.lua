@@ -7,7 +7,8 @@ local menu_screens = {
     GameConfigScene,
     VisualConfigScene,
 	AudioConfigScene,
-    TuningScene
+    TuningScene,
+	ResourcePackScene,
 }
 
 local settingsidle = {
