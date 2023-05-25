@@ -68,6 +68,7 @@ end
 
 local initial_resources
 local previous_resources
+local previous_selected_packs
 
 function loadResourcePacks()
 	previous_resources = {
@@ -83,6 +84,7 @@ function loadResourcePacks()
 			misc_graphics_paths = deepcopy(misc_graphics_paths),
 			sound_paths = deepcopy(sound_paths),
 		}
+		previous_selected_packs = copy(config.resource_packs_applied)
 	else
 		backgrounds_paths = deepcopy(initial_resources.backgrounds_paths)
 		blocks_paths = deepcopy(initial_resources.blocks_paths)
@@ -173,11 +175,12 @@ function loadResourcePacks()
 	end
 	if type(config.resource_packs_applied) == "table" then
 		for k, v in pairs(config.resource_packs_applied) do
-			if resource_pack_indexes[v] then
+			if resource_pack_indexes[v] and not (previous_selected_packs and previous_selected_packs[k] == v) then
 				love.filesystem.unmount("resourcepacks/"..v)
 			end
 		end
 	end
+	previous_selected_packs = copy(config.resource_packs_applied)
 end
 
 local modules_last_time_modified = {}
