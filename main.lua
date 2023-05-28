@@ -131,6 +131,13 @@ function loadResourcePacks()
 	end
 	local function makeDiffTable(left, right)
 		local diff_table = {}
+		for key, value in pairs(left) do
+			if type(value) == "table" then
+				diff_table[key] = makeDiffTable(right[key], value)
+			elseif value ~= right[key] then
+				diff_table[key] = value
+			end
+		end
 		for key, value in pairs(right) do
 			if type(value) == "table" then
 				diff_table[key] = makeDiffTable(left[key], value)
