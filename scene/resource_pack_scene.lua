@@ -9,7 +9,6 @@ function ResourcePackScene:new()
     ---@type {[...]:string}
     local resource_packs = love.filesystem.getDirectoryItems("resourcepacks")
     for key, value in pairs(resource_packs) do
-        print(value, value:sub(-4), value:sub(-4) == ".zip")
         if value:sub(-4) == ".zip" and love.filesystem.getInfo("resourcepacks/"..value, "file") then
             self.valid_resource_packs[#self.valid_resource_packs+1] = value
             self.resource_pack_index[value] = #self.valid_resource_packs
@@ -33,8 +32,6 @@ function ResourcePackScene:refreshPackSelection()
             self.unselected_resource_packs[#self.unselected_resource_packs+1] = value
         end
     end
-    local indexes = table.keys(config.resource_packs_applied)
-
 end
 
 function ResourcePackScene:update()
@@ -71,12 +68,17 @@ function ResourcePackScene:onInputPress(e)
     if dividend < 1 then
         dividend = 1
     end
+    local old_selection_index = self.selection_index
     if e.input == "up" then
         self.selection_index = Mod1(self.selection_index - 1, dividend)
-    end
-    if e.input == "down" then
+    elseif e.input == "down" then
         self.selection_index = Mod1(self.selection_index + 1, dividend)
-        
+    end
+    if love.keyboard.isScancodeDown("lshift", "rshift") and old_selection_index ~= self.selection_index and self.selection_type == 0 then
+        local temp_value = config.resource_packs_applied[#self.selected_resource_packs - self.selection_index + 1]
+        config.resource_packs_applied[#self.selected_resource_packs - self.selection_index + 1] = config.resource_packs_applied[#self.selected_resource_packs - old_selection_index + 1]
+        config.resource_packs_applied[#self.selected_resource_packs - old_selection_index + 1] = temp_value
+        self:refreshPackSelection()
     end
     if e.scancode == "tab" then
         self.selection_type = 1 - self.selection_type
