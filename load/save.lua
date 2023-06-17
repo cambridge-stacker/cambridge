@@ -80,6 +80,7 @@ function initConfig()
 	if not config.das then config.das = 10 end
 	if not config.arr then config.arr = 2 end
 	if not config.dcd then config.dcd = 0 end
+	if not config.master_volume then config.master_volume = 1 end
 	if not config.sfx_volume then config.sfx_volume = 0.5 end
 	if not config.bgm_volume then config.bgm_volume = 0.5 end
 	

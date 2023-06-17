@@ -9,8 +9,9 @@ ConfigScene.options = {
 	-- Option types: slider, options
 	-- Format if type is options:	{name in config, displayed name, type, description, options}
 	-- Format if otherwise:			{name in config, displayed name, type, description, min, max, increase by, string format, sound effect name, rounding type}
-	{"sfx_volume", "SFX Volume", "slider", nil, 0, 100, 5, "%02d%%", "cursor"},
-	{"bgm_volume", "BGM Volume", "slider", nil, 0, 100, 5, "%02d%%", "cursor"},
+	{"master_volume", "Master Volume", "slider", "This will affect all sound sources. ALL OF IT.", 0, 100, 5, "%d%%", "cursor"},
+	{"sfx_volume", "SFX Volume", "slider", nil, 0, 100, 5, "%d%%", "cursor"},
+	{"bgm_volume", "BGM Volume", "slider", nil, 0, 100, 5, "%d%%", "cursor"},
 	{"sound_sources", "Simult. SFX sources", "slider", "High values may result in high memory consumption, "..
 	"though it allows multiples of the same sound effect to be played at once."..
 	"\n(There's some exceptions, e.g. SFX added through modes/rulesets)", 1, 30, 1, "%0d", "cursor", "floor"}
@@ -25,8 +26,9 @@ function ConfigScene:new()
 	config.audiosettings.sfx_volume = config.sfx_volume * 100
 	config.audiosettings.bgm_volume = config.bgm_volume * 100
 	self.sliders = {
-		sfx_volume = newSlider(320, 155, 480, config.sfx_volume*100, 0, 100, function(v) config.sfx_volume = v/100 config.audiosettings.sfx_volume = v end, {width=20, knob="circle", track="roundrect"}),
-		bgm_volume = newSlider(320, 210, 480, config.bgm_volume*100, 0, 100, function(v) config.bgm_volume = v/100 config.audiosettings.bgm_volume = v end, {width=20, knob="circle", track="roundrect"}),
+		master_volume = newSlider(320, 155, 480, config.master_volume*100, 0, 100, function(v) love.audio.setVolume(v/100) config.audiosettings.master_volume = v end, {width=20, knob="circle", track="roundrect"}),
+		sfx_volume = newSlider(320, 210, 480, config.sfx_volume*100, 0, 100, function(v) config.sfx_volume = v/100 config.audiosettings.sfx_volume = v end, {width=20, knob="circle", track="roundrect"}),
+		bgm_volume = newSlider(320, 265, 480, config.bgm_volume*100, 0, 100, function(v) config.bgm_volume = v/100 config.audiosettings.bgm_volume = v end, {width=20, knob="circle", track="roundrect"}),
 	}
 	
 	--#region Init option positions and sliders
@@ -150,6 +152,7 @@ function ConfigScene:onInputPress(e)
 	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
 		playSE("menu_cancel")
 		loadSave()
+		love.audio.setVolume(config.master_volume)
 		scene = SettingsScene()
 	end
 end
