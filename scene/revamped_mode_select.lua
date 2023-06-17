@@ -206,7 +206,7 @@ function ModeSelectScene:render()
 	and not self.game_mode_folder[self.menu_state.mode].is_directory then
 		love.graphics.printf(
 			"Tagline: "..(self.game_mode_folder[mode_selected].tagline or "Missing."),
-			 300, 40, 320, "left")
+			 280, 40, 360, "left")
 	end
     if mode_highscore ~= nil then
         for key, slot in pairs(mode_highscore) do
