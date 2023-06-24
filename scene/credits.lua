@@ -40,7 +40,7 @@ function CreditsScene:new()
             "sinefuse - stackfuse"
         },
         {
-            title = "Flooding edge Maintainer",
+            title = "Flooding Edge Maintainer",
             "Tetro48"
         },
         {
@@ -156,40 +156,6 @@ function CreditsScene:render()
             love.graphics.printf(value, text_x, block.y + 30 + key * 18 - offset, 320, align)
         end
     end
-    -- love.graphics.print("Game Developers", 320, 550 - offset)
-    -- love.graphics.print("Project Heads", 320, 640 - offset)
-    -- love.graphics.print("Notable Game Developers", 320, 750 - offset)
-    -- love.graphics.print("Flooding edge Maintainer", 320, 1000 - offset)
-    -- love.graphics.print("Special Thanks", 320, 1070 - offset)
-
-    -- love.graphics.print("Oshisaure\nJoe Zeng", 320, 590 - offset)
-    -- love.graphics.print("Mizu\nMarkGamed\nHailey", 320, 680 - offset)
-    -- love.graphics.print(
-    --     "2Tie - TGMsim\nAxel Fox - Multimino\nDr Ocelot - Tetra Legends\n" ..
-    --     "Electra - ZTrix\nFelicity/nightmareci/kdex - Shiromino\n" ..
-    --     "Mine - Tetra Online\nMrZ - Techmino\n" ..
-    --     "Phoenix Flare - Master of Blocks\nRayRay26 - Spirit Drop\n" ..
-    --     "Rin - Puzzle Trial\nsinefuse - stackfuse",
-    --     320, 790 - offset
-    -- )
-    -- love.graphics.print("Tetro48", 320, 1040 - offset)
-    -- love.graphics.print(
-    --     "321MrHaatz\nAdventium\nAgentBasey\nArchina\nAurora\n" ..
-    --     "Caithness\nCheez\ncolour_thief\nCommando\nCublex\n" ..
-    --     "CylinderKnot\neightsixfivezero\nEricICX\nGesomaru\n" ..
-    --     "gizmo4487\nJBroms\nKirby703\nKitaru\n" ..
-    --     "M1ssing0\nMattMayuga\nMyPasswordIsWeak\n" ..
-    --     "Nikki Karissa\nnim\noffwo\nOliver\nPineapple\npokemonfan1937\n" ..
-    --     "Pyra Neoxi\nRDST64\nRocketLanterns\nRustyFoxxo\n" ..
-    --     "saphie\nShelleloch\nSimon\nstratus\nSuper302\n" ..
-    --     "switchpalacecorner\nterpyderp\nTetrian22\nTetro48\nThatCookie\n" ..
-    --     "TimmSkiller\nTrixciel\nuser74003\nZaptorZap\nZircean\n" ..
-    --     "All other contributors and friends!\nThe Absolute PLUS Discord\n" ..
-    --     "Tetra Legends Discord\nTetra Online Discord\nMultimino Discord\n" ..
-    --     "Hard Drop Discord\nRusty's Systemspace\nCambridge Discord\n" ..
-    --     "And to you, the player!",
-    --     320, 1110 - offset
-    -- )
 end
 
 function CreditsScene:onInputPress(e)
