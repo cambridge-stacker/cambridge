@@ -43,7 +43,7 @@ end
 -- Functions that return a new piece to test in rotation systems.
 
 ---@param offset {x:integer, y:integer}
----@param force_scale integer
+---@param force_scale integer|nil
 ---@return Piece
 ---@nodiscard
 function Piece:withOffset(offset, force_scale)
@@ -106,7 +106,7 @@ end
 -- Procedures to actually do stuff to pieces.
 
 ---@param offset {x:integer, y:integer}
----@param force_scale integer
+---@param force_scale integer|nil
 ---@return Piece
 function Piece:setOffset(offset, force_scale)
 	local offset_scale = force_scale or self.big and 2 or 1
