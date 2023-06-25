@@ -42,7 +42,6 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	self.paused = false
 	self.game.pause_count = replay["pause_count"]
 	self.game.pause_time = replay["pause_time"]
-	self.replay = deepcopy(replay)
 	self.replay_index = 1
 	self.replay_speed = 1
 	self.frames = 0

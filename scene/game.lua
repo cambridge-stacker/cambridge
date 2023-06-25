@@ -30,6 +30,7 @@ function GameScene:new(game_mode, ruleset, inputs)
 	self.paused = false
 	self.game.pause_count = 0
 	self.game.pause_time = 0
+	self.game.pause_timestamps = {}
 	DiscordRPC:update({
 		details = self.game.rpc_details,
 		state = self.game.name,
@@ -101,6 +102,7 @@ function GameScene:onInputPress(e)
 		self.paused = not self.paused
 		if self.paused then
 			pauseBGM()
+			table.insert(self.game.pause_timestamps, self.game.frames)
 			self.game.pause_count = self.game.pause_count + 1
 		else
 			resumeBGM()
