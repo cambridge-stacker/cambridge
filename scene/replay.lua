@@ -40,6 +40,9 @@ function ReplayScene:new(replay, game_mode, ruleset)
 		hold=false,
 	}
 	self.paused = false
+	self.game.pause_count = replay["pause_count"]
+	self.game.pause_time = replay["pause_time"]
+	self.replay = deepcopy(replay)
 	self.replay_index = 1
 	self.replay_speed = 1
 	self.frames = 0
@@ -66,7 +69,7 @@ function ReplayScene:update()
 		config.sfx_volume = 0	--This is to stop blasting your ears every time you load a state.
 		frames_left = savestate_frames
 	end
-	if love.window.hasFocus() and (not self.paused or frame_steps > 0) then
+	if not self.paused or frame_steps > 0 then
 		if frame_steps > 0 then
 			self.game.ineligible = self.rerecord or self.game.ineligible
 			frame_steps = frame_steps - 1
@@ -138,6 +141,17 @@ function ReplayScene:render()
 	end
 	if self.replay_speed > 1 then
 		love.graphics.printf(self.replay_speed.."X", 0, 20, 635, "right")
+	end
+	love.graphics.setFont(font_3x5_2)
+	if self.game.pause_time and self.game.pause_count then
+		if self.game.pause_time > 0 or self.game.pause_count > 0 then
+			love.graphics.printf(string.format(
+				"%d PAUSE%s (%s)",
+				self.game.pause_count,
+				self.game.pause_count == 1 and "" or "S",
+				formatTime(self.game.pause_time)
+			), 0, 40, 635, "right")
+		end
 	end
 end
 

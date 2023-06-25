@@ -178,6 +178,8 @@ function GameMode:saveReplay()
 	replay["auto_repeat_rate"] = config.arr
 	replay["das_cut_delay"] = config.dcd
 	replay["timestamp"] = os.time()
+	replay["pause_count"] = self.pause_count
+	replay["pause_time"] = self.pause_time
 	if love.filesystem.getInfo("replays") == nil then
 		love.filesystem.createDirectory("replays")
 	end

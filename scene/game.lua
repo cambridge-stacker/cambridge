@@ -28,6 +28,8 @@ function GameScene:new(game_mode, ruleset, inputs)
 		hold=false,
 	}
 	self.paused = false
+	self.game.pause_count = 0
+	self.game.pause_time = 0
 	DiscordRPC:update({
 		details = self.game.rpc_details,
 		state = self.game.name,
@@ -36,7 +38,9 @@ function GameScene:new(game_mode, ruleset, inputs)
 end
 
 function GameScene:update()
-	if love.window.hasFocus() and (not self.paused or frame_steps > 0) then
+	if self.paused and frame_steps == 0 then
+		self.game.pause_time = self.game.pause_time + 1
+	else
 		if frame_steps > 0 then
 			self.game.ineligible = true
 			frame_steps = frame_steps - 1
@@ -57,6 +61,16 @@ end
 
 function GameScene:render()
 	self.game:draw(self.paused)
+	if self.game.pause_time > 0 or self.game.pause_count > 0 then
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.setFont(font_3x5_2)
+		love.graphics.printf(string.format(
+			"%d PAUSE%s (%s)",
+			self.game.pause_count,
+			self.game.pause_count == 1 and "" or "S",
+			formatTime(self.game.pause_time)
+		), 0, 0, 635, "right")
+	end
 end
 
 local movement_directions = {"left", "right", "down", "up"}
@@ -85,8 +99,12 @@ function GameScene:onInputPress(e)
 		scene = GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs)
 	elseif e.input == "pause" and not (self.game.game_over or self.game.completed) then
 		self.paused = not self.paused
-		if self.paused then pauseBGM()
-		else resumeBGM() end
+		if self.paused then
+			pauseBGM()
+			self.game.pause_count = self.game.pause_count + 1
+		else
+			resumeBGM()
+		end
 	elseif e.input == "mode_exit" then
 		self.game:onExit()
 		if config.visualsettings.mode_select_type == 1 then
