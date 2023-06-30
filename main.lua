@@ -680,20 +680,48 @@ local function multipleInputs(input_table, input)
 	return result_inputs
 end
 
+local function toFormattedValue(value)
+	
+	if type(value) == "table" and value.digits and value.sign then
+		local num = ""
+		if value.sign == "-" then
+			num = "-"
+		end
+		for id, digit in pairs(value.digits) do
+			if not value.dense or id == 1 then
+				num = num .. math.floor(digit) -- lazy way of getting rid of .0$
+			else
+				num = num .. string.format("%07d", digit)
+			end
+		end
+		return num
+	end
+	return value
+end
+
+---@param str string
+local function stringLengthLimit(str, len)
+	local new_str = ""
+	if #str > len then
+		for i = 1, math.ceil(#str / len) do
+			new_str = new_str .. str:sub((i-1)*len+1, i*len+1).."\n"
+		end
+	else
+		return str
+	end
+	return new_str
+end
+
 ---@param file love.File
 function love.filedropped(file)
 	file:open("r")
 	local data = file:read()
 	local raw_file_directory = file:getFilename()
-	if raw_file_directory:sub(-4) ~= ".lua" and raw_file_directory:sub(-4) ~= ".crp" then
-		love.window.showMessageBox(love.window.getTitle(), "This file is not a Lua nor replay file.", "warning")
-		file:close()
-		return
-	end
 	local char_pos = raw_file_directory:gsub("\\", "/"):reverse():find("/")
 	local filename = raw_file_directory:sub(-char_pos+1)
 	local final_directory
 	local msgbox_choice = 0
+	local binser = require "libs.binser"
 	if raw_file_directory:sub(-4) == ".lua" then
 		msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "Where do you put "..filename.."?", { "Cancel", "Rulesets", "Modes"}, "info")
 		if msgbox_choice == 0 or msgbox_choice == 1 then
@@ -705,12 +733,52 @@ function love.filedropped(file)
 			directory_string = "modes/"
 		end
 		final_directory = "tetris/"..directory_string
-	else
-		msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "Do you want to insert replay "..filename.."?", {"No", "Yes"})
+	elseif raw_file_directory:sub(-4) == ".crp" then
+		msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "What option do you select for "..filename.."?", {"Insert", "View"}, "info")
 		if msgbox_choice < 2 then
+			msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "Do you want to insert replay "..filename.."?", {"No", "Yes"})
+			if msgbox_choice < 2 then
+				file:close()
+				return
+			end
+			final_directory = "replays/"
+		else
+			local replay_data = binser.d(data)[1]
+			local info_string = "Replay file view:\n"
+			love.graphics.setFont(font_3x5_4)
+			info_string = info_string .. "Mode: " .. replay_data["mode"] .. " (" .. (replay_data["mode_hash"] or "???") .. ")\n"
+			info_string = info_string .. "Ruleset: " .. replay_data["ruleset"] .. " (" .. (replay_data["ruleset_hash"] or "???") .. ")\n"
+			love.graphics.setFont(font_3x5_3)
+			info_string = info_string .. os.date("Timestamp: %c\n", replay_data["timestamp"])
+			if replay_data.cambridge_version then
+				if replay_data.cambridge_version ~= version then
+					info_string = info_string .. "Warning! The versions don't match!\nStuff may break, so, start at your own risk.\n"
+				end
+				info_string = info_string .. "Cambridge version for this replay: "..replay_data.cambridge_version.."\n"
+			end
+			if replay_data.pause_count and replay_data.pause_time then
+				info_string = info_string .. ("Pause count: %d\nTime Paused: %s\n"):format(replay_data.pause_count, formatTime(replay_data.pause_time))
+			end
+			if replay_data.sha256_table then
+				info_string = info_string .. ("SHA256 replay checksums:\nMode: %s\nRuleset: %s\n"):format(replay_data.sha256_table.mode, replay_data.sha256_table.ruleset)
+			end
+			if replay_data.highscore_data then
+				love.graphics.setFont(font_3x5_2)
+				info_string = info_string .. "In-replay highscore data:\n\n"
+				for key, value in pairs(replay_data["highscore_data"]) do
+					info_string = info_string .. stringLengthLimit((key..": ".. toFormattedValue(value)), 75) .. "\n"
+				end
+			else
+				love.graphics.setFont(font_3x5_3)
+				info_string = info_string .. "Legacy replay\nLevel: "..replay_data["level"]
+			end
+			love.window.showMessageBox(love.window.getTitle(), info_string, "info")
 			return
 		end
-		final_directory = "replays/"
+	else
+		file:close()
+		love.window.showMessageBox(love.window.getTitle(), "This file ("..filename..") is not a Lua nor replay file.", "warning")
+		return
 	end
 	local do_write = 2
 	if love.filesystem.getInfo(final_directory..filename) then
@@ -722,9 +790,8 @@ function love.filedropped(file)
 		love.filesystem.write(final_directory..filename, data)
 		if final_directory ~= "replays/" then
 			loaded_replays = false
-		else
-			local binser = require "libs.binser"
-			local replay = binser.deserialize(data)
+		elseif loaded_replays then
+			local replay = binser.deserialize(data)[1]
 			insertReplay(replay)
 			sortReplays()
 		end
