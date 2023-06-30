@@ -19,7 +19,7 @@ GameMode.rollOpacityFunction = function(age) return 0 end
 
 ---@param secret_inputs table
 ---@param properties table
-function GameMode:new(secret_inputs, properties, sha_tbl)
+function GameMode:new(secret_inputs, properties)
 	self.replay_inputs = {}
 	self.random_low, self.random_high = love.math.getRandomSeed()
 	self.random_state = love.math.getRandomState()
@@ -203,6 +203,7 @@ function GameMode:saveReplay()
 	love.filesystem.write(replay_name, binser.serialize(replay))
 	if loaded_replays then
 		insertReplay(replay)
+		sortReplays()
 	end
 end
 
