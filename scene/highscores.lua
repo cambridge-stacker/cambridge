@@ -31,6 +31,11 @@ function HighscoreScene:update()
 		if self.auto_menu_offset > 0 then self.auto_menu_offset = self.auto_menu_offset - 1 end
 		if self.auto_menu_offset < 0 then self.auto_menu_offset = self.auto_menu_offset + 1 end
 	end
+	if self.das_up or self.das_down or self.das_left or self.das_right then
+		self.das = self.das + 1
+	else
+		self.das = 0
+	end
 	if self.das >= 15 then
 		local change = 0
 		if self.das_up then
@@ -192,6 +197,7 @@ end
 function HighscoreScene:back()
 	playSE("menu_cancel")
     if self.hash then
+		self.menu_hash_y = 20
         self.hash = nil
         self.hash_highscore = nil
     else
