@@ -85,7 +85,14 @@ function insertReplay(replay)
 	if dict_ref[mode_name] ~= nil and mode_name ~= "znil" then
 		table.insert(replay_tree[dict_ref[mode_name] ], #replays)
 	end
-	table.insert(replay_tree[1], #replays)
+	local branch_index = 0
+	for index, value in ipairs(replay_tree) do
+		if value.name == "All" then
+			branch_index = index
+			break
+		end
+	end
+	table.insert(replay_tree[branch_index], #replays)
 end
 function sortReplays()
 	if not replay_tree then return end
