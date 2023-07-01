@@ -40,11 +40,22 @@ backgrounds_paths = {
 	game_config = "res/backgrounds/options-game",
 }
 
-local i = 0
+local previous_bg_index = 0
+local bg_index = 0
 local bgpath = "res/backgrounds/%d"
-while love.filesystem.getInfo(bgpath:format(i*100)) do
-	backgrounds_paths[i] = bgpath:format(i*100)
-	i = i + 1
+while true do
+	local formatted_bgpath = bgpath:format(bg_index*100)
+	for key, value in pairs(image_formats) do
+		if love.filesystem.getInfo(formatted_bgpath.."."..value) then
+			backgrounds_paths[bg_index] = formatted_bgpath
+			bg_index = bg_index + 1
+			break
+		end
+	end
+	if previous_bg_index == bg_index then
+		break
+	end
+	previous_bg_index = bg_index
 end
 
 loadImageTable(backgrounds, backgrounds_paths)
