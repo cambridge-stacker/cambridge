@@ -32,26 +32,6 @@ local function loadImageTable(image_table, path_table)
 end
 backgrounds = {}
 backgrounds_paths = {
-	[0] = "res/backgrounds/0",
-	"res/backgrounds/100",
-	"res/backgrounds/200",
-	"res/backgrounds/300",
-	"res/backgrounds/400",
-	"res/backgrounds/500",
-	"res/backgrounds/600",
-	"res/backgrounds/700",
-	"res/backgrounds/800",
-	"res/backgrounds/900",
-	"res/backgrounds/1000",
-	"res/backgrounds/1100",
-	"res/backgrounds/1200",
-	"res/backgrounds/1300",
-	"res/backgrounds/1400",
-	"res/backgrounds/1500",
-	"res/backgrounds/1600",
-	"res/backgrounds/1700",
-	"res/backgrounds/1800",
-	"res/backgrounds/1900",
 	title = "res/backgrounds/title",
 	title_no_icon = "res/backgrounds/title-no-icon",
 	title_night = "res/backgrounds/title-night",
@@ -59,6 +39,14 @@ backgrounds_paths = {
 	input_config = "res/backgrounds/options-input",
 	game_config = "res/backgrounds/options-game",
 }
+
+local i = 0
+local bgpath = "res/backgrounds/%d"
+while love.filesystem.getInfo(bgpath:format(i*100)) do
+	backgrounds_paths[i] = bgpath:format(i*100)
+	i = i + 1
+end
+
 loadImageTable(backgrounds, backgrounds_paths)
 
 -- in order, the colors are:
