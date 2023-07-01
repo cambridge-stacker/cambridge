@@ -979,9 +979,11 @@ function GameMode:drawSectionTimesWithSplits(current_section, section_limit)
 end
 
 function GameMode:drawBackground()
+	local id = self:getBackground()
+	if type(id) == "number" then id = clamp(id, 0, #backgrounds) end
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.draw(
-		backgrounds[self:getBackground()],
+		backgrounds[id],
 		0, 0, 0,
 		0.5, 0.5
 	)

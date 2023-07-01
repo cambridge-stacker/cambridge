@@ -1,24 +1,4 @@
 backgrounds = {
-	[0] = love.graphics.newImage("res/backgrounds/0.png"),
-	love.graphics.newImage("res/backgrounds/100.png"),
-	love.graphics.newImage("res/backgrounds/200.png"),
-	love.graphics.newImage("res/backgrounds/300.png"),
-	love.graphics.newImage("res/backgrounds/400.png"),
-	love.graphics.newImage("res/backgrounds/500.png"),
-	love.graphics.newImage("res/backgrounds/600.png"),
-	love.graphics.newImage("res/backgrounds/700.png"),
-	love.graphics.newImage("res/backgrounds/800.png"),
-	love.graphics.newImage("res/backgrounds/900.png"),
-	love.graphics.newImage("res/backgrounds/1000.png"),
-	love.graphics.newImage("res/backgrounds/1100.png"),
-	love.graphics.newImage("res/backgrounds/1200.png"),
-	love.graphics.newImage("res/backgrounds/1300.png"),
-	love.graphics.newImage("res/backgrounds/1400.png"),
-	love.graphics.newImage("res/backgrounds/1500.png"),
-	love.graphics.newImage("res/backgrounds/1600.png"),
-	love.graphics.newImage("res/backgrounds/1700.png"),
-	love.graphics.newImage("res/backgrounds/1800.png"),
-	love.graphics.newImage("res/backgrounds/1900.png"),
 	title = love.graphics.newImage("res/backgrounds/title.png"),
 	title_no_icon = love.graphics.newImage("res/backgrounds/title-no-icon.jpg"),
 	title_night = love.graphics.newImage("res/backgrounds/title-night.jpg"),
@@ -26,6 +6,13 @@ backgrounds = {
 	input_config = love.graphics.newImage("res/backgrounds/options-input.png"),
 	game_config = love.graphics.newImage("res/backgrounds/options-game.png"),
 }
+
+local i = 0
+local bgpath = "res/backgrounds/%d.png"
+while love.filesystem.getInfo(bgpath:format(i*100)) do
+	backgrounds[i] = love.graphics.newImage(bgpath:format(i*100))
+	i = i + 1
+end
 
 -- in order, the colors are:
 -- red, orange, yellow, green, cyan, blue
