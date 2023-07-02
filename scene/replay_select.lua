@@ -83,7 +83,7 @@ function ReplaySelectScene:render()
 	-- Same graphic as mode select
 	--love.graphics.draw(misc_graphics["select_mode"], 20, 40)
 
-	love.graphics.setFont(font_3x5_4)
+	love.graphics.setFont(font_8x11)
 	love.graphics.print("SELECT REPLAY", 20, 35)
 
 	if self.display_warning then
