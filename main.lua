@@ -293,6 +293,8 @@ function love.resize(w, h)
 	GLOBAL_CANVAS = love.graphics.newCanvas(w, h)
 end
 
+-- higher values of TARGET_FPS will make the game run "faster"
+-- since the game is mostly designed for 60 FPS
 local TARGET_FPS = 60
 local FRAME_DURATION = 1.0 / TARGET_FPS
 
