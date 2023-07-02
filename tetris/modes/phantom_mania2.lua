@@ -41,6 +41,7 @@ function PhantomMania2Game:new()
 
 	self.coolregret_message = ""
 	self.coolregret_timer = 0
+	self.coolregrets = { [0] = 0 }
 end
 
 function PhantomMania2Game:getARE()
@@ -219,11 +220,14 @@ function PhantomMania2Game:updateSectionTimes(old_level, new_level)
 		self.section_start_time = self.frames
 		if section_time <= cool_cutoffs[section] then
 			self.grade = self.grade + 2
+			table.insert(self.coolregrets, 2)
 			self.coolregret_message = "COOL!!"
 			self.coolregret_timer = 300
 		elseif section_time <= regret_cutoffs[section] then
 			self.grade = self.grade + 1
+			table.insert(self.coolregrets, 1)
 		else
+			table.insert(self.coolregrets, 0)
 			self.coolregret_message = "REGRET!!"
 			self.coolregret_timer = 300
 		end
@@ -289,6 +293,16 @@ function PhantomMania2Game:setHoldOpacity()
 	else
 		local colour = self.held and 0.6 or 1
 		love.graphics.setColor(colour, colour, colour, 1)
+	end
+end
+
+function PhantomMania2Game:sectionColourFunction(section)
+	if self.coolregrets[section] == 2 then
+		return { 0, 1, 0, 1 }
+	elseif self.coolregrets[section] == 0 then
+		return { 1, 0, 0, 1 }
+	else
+		return { 1, 1, 1, 1 }
 	end
 end
 
