@@ -114,4 +114,4 @@ Other Notable Games
 - [Puzzle Trial](https://kagamine-rin.itch.io/puzzle-trial) by Rin
 - [stackfuse](https://github.com/sinefuse/stackfuse) by sinefuse
 
-![Cambridge Logo](https://cdn.discordapp.com/attachments/625496179433668635/763363717730664458/Icon_2.png)
+![Cambridge Logo](https://cdn.discordapp.com/attachments/827186653772644452/1077674343544393820/Icon_2.png)

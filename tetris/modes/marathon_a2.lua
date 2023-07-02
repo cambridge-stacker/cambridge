@@ -254,10 +254,13 @@ local grade_conversion = {
 }
 
 function MarathonA2Game:whilePieceActive()
-	self.grade_point_decay_counter = self.grade_point_decay_counter + 1
-	if self.grade_point_decay_counter >= grade_point_decays[self.grade + 1] then
-		self.grade_point_decay_counter = 0
-		self.grade_points = math.max(0, self.grade_points - 1)
+	if self.clear then return
+	else
+		self.grade_point_decay_counter = self.grade_point_decay_counter + 1
+		if self.grade_point_decay_counter >= grade_point_decays[self.grade + 1] then
+			self.grade_point_decay_counter = 0
+			self.grade_points = math.max(0, self.grade_points - 1)
+		end
 	end
 end
 

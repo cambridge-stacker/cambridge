@@ -1118,10 +1118,12 @@ end
 ---@param w integer
 ---@param h integer
 function love.resize(w, h)
-		GLOBAL_CANVAS:release()
-		GLOBAL_CANVAS = love.graphics.newCanvas(w, h)
+	GLOBAL_CANVAS:release()
+	GLOBAL_CANVAS = love.graphics.newCanvas(w, h)
 end
 
+-- higher values of TARGET_FPS will make the game run "faster"
+-- since the game is mostly designed for 60 FPS
 local TARGET_FPS = 60
 local FRAME_DURATION = 1.0 / TARGET_FPS
 
@@ -1142,6 +1144,7 @@ function getTargetFPS()
 	return TARGET_FPS
 end
 
+-- custom run function; optimizes game by syncing draw/update calls
 function love.run()
 	if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
 

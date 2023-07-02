@@ -13,7 +13,6 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	config.gamesettings = replay["gamesettings"]
 	if replay["delayed_auto_shift"] then config.das = replay["delayed_auto_shift"] end
 	if replay["auto_repeat_rate"] then config.arr = replay["auto_repeat_rate"] end
-
 	if replay["das_cut_delay"] then config.dcd = replay["das_cut_delay"] end
 	love.math.setRandomSeed(replay["random_low"], replay["random_high"])
 	love.math.setRandomState(replay["random_state"])

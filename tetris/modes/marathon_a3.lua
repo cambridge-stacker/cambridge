@@ -26,7 +26,9 @@ function MarathonA3Game:new()
 	self.roll_points = 0
 	self.grade_point_decay_counter = 0
 	self.section_cool_grade = 0
-	self.section_status = { [0] = "none" }
+	--self.section_status = { [0] = "none" }
+	self.section_cools = { [0] = 0 }
+	self.section_regrets = { [0] = 0 }
 	self.section_start_time = 0
 	self.secondary_section_times = { [0] = 0 }
 	self.section_times = { [0] = 0 }
@@ -201,15 +203,23 @@ function MarathonA3Game:updateSectionTimes(old_level, new_level)
 		self.speed_level = self.section_cool and self.speed_level + 100 or self.speed_level
 
 		if section_time > regret_cutoffs[section] then
-			self.section_cool_grade = self.section_cool_grade - 1
-			table.insert(self.section_status, "regret")
+			if self.grade > 0 then
+				--this happens after the points are added, intentionally
+				local currentgrade = self:getAggregateGrade()
+				while self:getAggregateGrade() >= currentgrade do
+					self.grade = self.grade - 1
+				end
+				self.grade_points = 0
+			end
+			table.insert(self.section_regrets, 1)
 			self.coolregret_message = "REGRET!!"
 			self.coolregret_timer = 300
-		elseif self.section_cool then
-			self.section_cool_grade = self.section_cool_grade + 1
-			table.insert(self.section_status, "cool")
 		else
-			table.insert(self.section_status, "none")
+			table.insert(self.section_regrets, 0)
+		end
+		
+		if self.section_cool then
+			self.section_cool_grade = self.section_cool_grade + 1
 		end
 
 		self.section_cool = false
@@ -223,6 +233,9 @@ function MarathonA3Game:updateSectionTimes(old_level, new_level)
 			self.section_cool = true
 			self.coolregret_message = "COOL!!"
 			self.coolregret_timer = 300
+			table.insert(self.section_cools, 1)
+		else
+			table.insert(self.section_cools, 0)
 		end
 	end
 end
@@ -402,9 +415,11 @@ MarathonA3Game.mRollOpacityFunction = function(age)
 end
 
 function MarathonA3Game:sectionColourFunction(section)
-	if self.section_status[section] == "cool" then
+	if self.section_cools[section] == 1 and self.section_regrets[section] == 1 then
+		return { 1, 1, 0, 1 }
+	elseif self.section_cools[section] == 1 then
 		return { 0, 1, 0, 1 }
-	elseif self.section_status[section] == "regret" then
+	elseif self.section_regrets[section] == 1 then
 		return { 1, 0, 0, 1 }
 	else
 		return { 1, 1, 1, 1 }
