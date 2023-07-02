@@ -197,7 +197,7 @@ end
 function HighscoreScene:back()
 	playSE("menu_cancel")
     if self.hash then
-		self.menu_hash_y = 20
+		self.menu_list_y = 20
         self.hash = nil
         self.hash_highscore = nil
     else
