@@ -298,6 +298,7 @@ end
 local TARGET_FPS = 60
 local FRAME_DURATION = 1.0 / TARGET_FPS
 
+-- custom run function; optimizes game by syncing draw/update calls
 function love.run()
 	if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
 
