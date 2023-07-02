@@ -500,7 +500,10 @@ function ReplaySelectScene:onInputPress(e)
 			self.chosen_replay = false
 		end
 	elseif not loaded_replays then
-		--does nothing.
+		if e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
+			playSE("menu_cancel")
+			scene = TitleScene()
+		end
 	elseif e.type == "wheel" and not self.chosen_replay then
 		if e.y ~= 0 then
 			self:changeOption(-e.y)
