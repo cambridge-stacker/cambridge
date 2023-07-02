@@ -1,5 +1,4 @@
 function love.load()
-	math.randomseed(os.time())
 	highscores = {}
 	love.graphics.setDefaultFilter("linear", "nearest")
 	require "load.rpc"
@@ -23,6 +22,11 @@ function love.load()
 		
 	-- used for screenshots
 	GLOBAL_CANVAS = love.graphics.newCanvas()
+
+	-- aliasing to prevent people using math.random by accident
+	math.random = love.math.random
+	math.randomseed = love.math.setRandomSeed
+	math.randomseed(os.time())
 
 	-- init config
 	initConfig()
@@ -285,8 +289,8 @@ function love.focus(f)
 end
 
 function love.resize(w, h)
-		GLOBAL_CANVAS:release()
-		GLOBAL_CANVAS = love.graphics.newCanvas(w, h)
+	GLOBAL_CANVAS:release()
+	GLOBAL_CANVAS = love.graphics.newCanvas(w, h)
 end
 
 local TARGET_FPS = 60
