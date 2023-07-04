@@ -745,10 +745,8 @@ function love.filedropped(file)
 		else
 			local replay_data = binser.d(data)[1]
 			local info_string = "Replay file view:\n"
-			love.graphics.setFont(font_3x5_4)
 			info_string = info_string .. "Mode: " .. replay_data["mode"] .. " (" .. (replay_data["mode_hash"] or "???") .. ")\n"
 			info_string = info_string .. "Ruleset: " .. replay_data["ruleset"] .. " (" .. (replay_data["ruleset_hash"] or "???") .. ")\n"
-			love.graphics.setFont(font_3x5_3)
 			info_string = info_string .. os.date("Timestamp: %c\n", replay_data["timestamp"])
 			if replay_data.cambridge_version then
 				if replay_data.cambridge_version ~= version then
@@ -763,13 +761,11 @@ function love.filedropped(file)
 				info_string = info_string .. ("SHA256 replay checksums:\nMode: %s\nRuleset: %s\n"):format(replay_data.sha256_table.mode, replay_data.sha256_table.ruleset)
 			end
 			if replay_data.highscore_data then
-				love.graphics.setFont(font_3x5_2)
 				info_string = info_string .. "In-replay highscore data:\n\n"
 				for key, value in pairs(replay_data["highscore_data"]) do
 					info_string = info_string .. stringLengthLimit((key..": ".. toFormattedValue(value)), 75) .. "\n"
 				end
 			else
-				love.graphics.setFont(font_3x5_3)
 				info_string = info_string .. "Legacy replay\nLevel: "..replay_data["level"]
 			end
 			love.window.showMessageBox(love.window.getTitle(), info_string, "info")
