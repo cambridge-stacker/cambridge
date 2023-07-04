@@ -470,7 +470,7 @@ function ReplaySelectScene:onInputPress(e)
 		scene = TitleScene()
 	elseif e.type == "mouse" and loaded_replays then
 		if e.button == 1 then
-			if e.y < 72 and e.x > 0 and e.y > 32 and e.x < 50 then
+			if e.y < 62 and e.x > 0 and e.y > 32 and e.x < 50 then
 				playSE("menu_cancel")
 				if self.chosen_replay then
 					self.chosen_replay = false
