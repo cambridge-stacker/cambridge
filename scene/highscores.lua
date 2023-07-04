@@ -88,12 +88,13 @@ function HighscoreScene:render()
 	love.graphics.printf("<-", 20, 40, 50, "center")
 	love.graphics.setColor(1, 1, 1, 1)
 
+    love.graphics.setFont(font_8x11)
 	if self.hash ~= nil then
-		love.graphics.print("HIGHSCORE", 80, 40)
+		love.graphics.print("HIGHSCORE", 80, 43)
 		love.graphics.setFont(font_3x5_3)
-		love.graphics.printf("HASH: "..self.hash, 300, 40, 320, "right")
+		love.graphics.printf("HASH: "..self.hash, 300, 43, 320, "right")
 	else
-		love.graphics.print("SELECT HIGHSCORE HASH", 80, 40)
+		love.graphics.print("SELECT HIGHSCORE HASH", 80, 43)
 	end
 
     love.graphics.setFont(font_3x5_2)

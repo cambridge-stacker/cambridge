@@ -40,11 +40,11 @@ function ConfigScene:render()
 		640, 480
 	)
 
-	love.graphics.setFont(font_3x5_4)
-	love.graphics.print("GAME SETTINGS", 80, 40)
+    love.graphics.setFont(font_8x11)
+	love.graphics.print("GAME SETTINGS", 80, 43)
 	local b = CursorHighlight(20, 40, 50, 30)
 	love.graphics.setColor(1, 1, b, 1)
-	love.graphics.printf("<-", 20, 40, 50, "center")
+	love.graphics.printf("<-", font_3x5_4, 20, 40, 50, "center")
 	love.graphics.setColor(1, 1, 1, 1)
 
 	love.graphics.setColor(1, 1, 1, 0.5)
