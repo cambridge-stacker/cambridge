@@ -352,9 +352,13 @@ function Marathon2020Game:updateSectionTimes(old_level, new_level)
 		table.insert(self.section_times, section_time)
 		self.section_start_time = self.frames
 
-		if self.secondary_section_times[section] < cool_cutoffs[self.delay_level] and
-		  (section == 1 or self.secondary_section_times[section] <= self.secondary_section_times[section - 1] + 120) then
+		if (
+			self.secondary_section_times[section] < cool_cutoffs[self.delay_level] and
+		  	section == 1 or self.secondary_section_times[section] <= self.secondary_section_times[section - 1] + 120
+		) then
 			sectionCool(section)
+		else
+			table.insert(self.section_status, "none")
 		end
 
 		if section > 5 then

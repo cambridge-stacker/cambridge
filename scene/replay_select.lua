@@ -186,11 +186,11 @@ function ReplaySelectScene:render()
 	-- Same graphic as mode select
 	--love.graphics.draw(misc_graphics["select_mode"], 20, 40)
 
-	love.graphics.setFont(font_3x5_4)
+	love.graphics.setFont(font_8x11)
 	if loaded_replays then
-		local b = CursorHighlight(0, 35, 40, 30)
+		local b = CursorHighlight(0, 32, 40, 30)
 		love.graphics.setColor(1, 1, b, 1)
-		love.graphics.printf("<-", 0, 35, 40, "center")
+		love.graphics.printf("<-", font_3x5_4, 0, 32, 40, "center")
 		love.graphics.setColor(1, 1, 1, 1)
 	end
 	if not loaded_replays then
@@ -470,7 +470,7 @@ function ReplaySelectScene:onInputPress(e)
 		scene = TitleScene()
 	elseif e.type == "mouse" and loaded_replays then
 		if e.button == 1 then
-			if e.y < 80 and e.x > 0 and e.y > 40 and e.x < 50 then
+			if e.y < 72 and e.x > 0 and e.y > 32 and e.x < 50 then
 				playSE("menu_cancel")
 				if self.chosen_replay then
 					self.chosen_replay = false
