@@ -8,6 +8,8 @@ SRS.hash = "Standard"
 SRS.softdrop_lock = false
 SRS.harddrop_lock = true
 
+SRS.enable_IRS_wallkicks = true
+
 SRS.MANIPULATIONS_MAX = 15
 
 SRS.wallkicks_line = {
@@ -107,5 +109,7 @@ function SRS:onPieceRotate(piece, grid)
 end
 
 function SRS:canPieceRotate() return true end
+
+function SRS:get180RotationValue() return 2 end
 
 return SRS
