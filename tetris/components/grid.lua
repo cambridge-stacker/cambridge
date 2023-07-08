@@ -255,11 +255,14 @@ function Grid:applyBigPiece(piece)
 	end
 end
 
+-- places where you see this take an argument used the old, buggy method
 ---@nodiscard
-function Grid:checkForBravo(cleared_row_count)
-	for i = 0, self.height - 1 - cleared_row_count do
-		for j = 0, self.width - 1 do
+function Grid:checkForBravo()
+	for i = 0, self.height - 1 do
+		if not self:isRowFull(i+1) then
+			for j = 0, self.width - 1 do
 				if self:isOccupied(j, i) then return false end
+			end
 		end
 	end
 	return true

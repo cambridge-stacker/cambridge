@@ -353,8 +353,8 @@ function Marathon2020Game:updateSectionTimes(old_level, new_level)
 		self.section_start_time = self.frames
 
 		if (
-			self.secondary_section_times[section] < cool_cutoffs[self.delay_level] and
-		  	section == 1 or self.secondary_section_times[section] <= self.secondary_section_times[section - 1] + 120
+			(self.secondary_section_times[section] < cool_cutoffs[self.delay_level]) and
+		  	(section == 1 or self.secondary_section_times[section] <= self.secondary_section_times[section - 1] + 120)
 		) then
 			sectionCool(section)
 		else
