@@ -283,7 +283,7 @@ function Marathon2020Game:sectionPassed(old_level, new_level)
 		)
 	else
 		return (
-			(new_level < 2001 and math.floor(old_level / 100) < math.floor(new_level / 100)) or
+			(new_level < 2000 and math.floor(old_level / 100) < math.floor(new_level / 100)) or
 			(new_level >= 2020)
 		)
 	end
