@@ -143,7 +143,7 @@ end
 function Survival2020Game:onPieceEnter()
 	if not self.clear and (
 		(self.level < 1900 and self.level % 100 ~= 99) or
-		self.level == 2019
+		(1900 <= self.level and self.level < 2019)
 	) then
 		self.level = self.level + 1
 	end
@@ -249,7 +249,7 @@ function Survival2020Game:drawScoringInfo()
 end
 
 function Survival2020Game:getBackground()
-	return math.floor(self.level / 100)
+	return math.min(19, math.floor(self.level / 100))
 end
 
 function Survival2020Game:getHighscoreData()
