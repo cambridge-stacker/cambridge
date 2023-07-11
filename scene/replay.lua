@@ -36,6 +36,7 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	self.game.pause_time = replay["pause_time"]
 	self.replay = deepcopy(replay)
 	self.replay_index = 1
+	self.replay_speed = 1
 	DiscordRPC:update({
 		details = "Viewing a replay",
 		state = self.game.name,
@@ -44,18 +45,22 @@ function ReplayScene:new(replay, game_mode, ruleset)
 end
 
 function ReplayScene:update()
+	local frames_left = self.replay_speed
 	if not self.paused then
-		self.inputs = self.replay["inputs"][self.replay_index]["inputs"]
-		self.replay["inputs"][self.replay_index]["frames"] = self.replay["inputs"][self.replay_index]["frames"] - 1
-		if self.replay["inputs"][self.replay_index]["frames"] == 0 and self.replay_index < table.getn(self.replay["inputs"]) then
-			self.replay_index = self.replay_index + 1
+		while frames_left > 0 do
+			frames_left = frames_left - 1
+			self.inputs = self.replay["inputs"][self.replay_index]["inputs"]
+			self.replay["inputs"][self.replay_index]["frames"] = self.replay["inputs"][self.replay_index]["frames"] - 1
+			if self.replay["inputs"][self.replay_index]["frames"] == 0 and self.replay_index < table.getn(self.replay["inputs"]) then
+				self.replay_index = self.replay_index + 1
+			end
+			local input_copy = {}
+			for input, value in pairs(self.inputs) do
+				input_copy[input] = value
+			end
+			self.game:update(input_copy, self.ruleset)
+			self.game.grid:update()
 		end
-		local input_copy = {}
-		for input, value in pairs(self.inputs) do
-			input_copy[input] = value
-		end
-		self.game:update(input_copy, self.ruleset)
-		self.game.grid:update()
 		DiscordRPC:update({
 			details = "Viewing a replay",
 			state = self.game.name,
@@ -69,6 +74,11 @@ function ReplayScene:render()
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_3)
 	love.graphics.printf("REPLAY", 0, 0, 635, "right")
+	local pauses_y_coordinate = 23
+	if self.replay_speed > 1 then
+		pauses_y_coordinate = pauses_y_coordinate + 20
+		love.graphics.printf(self.replay_speed.."X", 0, 20, 635, "right")
+	end
 	love.graphics.setFont(font_3x5_2)
 	if self.game.pause_time and self.game.pause_count then
 		if self.game.pause_time > 0 or self.game.pause_count > 0 then
@@ -77,10 +87,10 @@ function ReplayScene:render()
 				self.game.pause_count,
 				self.game.pause_count == 1 and "" or "S",
 				formatTime(self.game.pause_time)
-			), 0, 23, 635, "right")
+			), 0, pauses_y_coordinate, 635, "right")
 		end
 	else
-		love.graphics.printf("?? PAUSES (--:--.--)", 0, 23, 635, "right")
+		love.graphics.printf("?? PAUSES (--:--.--)", 0, pauses_y_coordinate, 635, "right")
 	end
 end
 
@@ -104,6 +114,16 @@ function ReplayScene:onInputPress(e)
 		self.paused = not self.paused
 		if self.paused then pauseBGM()
 		else resumeBGM() end
+	elseif e.input == "left" then
+		self.replay_speed = self.replay_speed - 1
+		if self.replay_speed < 1 then
+			self.replay_speed = 1
+		end
+	elseif e.input == "right" then
+		self.replay_speed = self.replay_speed + 1
+		if self.replay_speed > 99 then
+			self.replay_speed = 99
+		end
 	end
 end
 
