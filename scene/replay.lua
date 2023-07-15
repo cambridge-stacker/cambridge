@@ -11,7 +11,6 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	if replay["das_cut_delay"] then config.dcd = replay["das_cut_delay"] end
 	love.math.setRandomSeed(replay["random_low"], replay["random_high"])
 	love.math.setRandomState(replay["random_state"])
-	self.game_mode = game_mode
 	self.retry_replay = replay
 	self.retry_mode = game_mode
 	self.retry_ruleset = ruleset
