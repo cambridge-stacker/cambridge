@@ -716,16 +716,17 @@ end
 function love.filedropped(file)
 	file:open("r")
 	local data = file:read()
+	file:close()
 	local raw_file_directory = file:getFilename()
 	local char_pos = raw_file_directory:gsub("\\", "/"):reverse():find("/")
 	local filename = raw_file_directory:sub(-char_pos+1)
 	local final_directory
 	local msgbox_choice = 0
 	local binser = require "libs.binser"
+	local confirmation_buttons = {"No", "Yes", enterbutton = 2}
 	if raw_file_directory:sub(-4) == ".lua" then
 		msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "Where do you put "..filename.."?", { "Cancel", "Rulesets", "Modes"}, "info")
 		if msgbox_choice == 0 or msgbox_choice == 1 then
-			file:close()
 			return
 		end
 		local directory_string = "rulesets/"
@@ -734,15 +735,13 @@ function love.filedropped(file)
 		end
 		final_directory = "tetris/"..directory_string
 	elseif raw_file_directory:sub(-4) == ".crp" then
-		msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "What option do you select for "..filename.."?", {"Insert", "View"}, "info")
-		if msgbox_choice < 2 then
-			msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "Do you want to insert replay "..filename.."?", {"No", "Yes"})
-			if msgbox_choice < 2 then
-				file:close()
-				return
-			end
+		msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "What option do you select for "..filename.."?", {"Insert", "View", escapebutton = 0}, "info")
+		if msgbox_choice == 0 then
+			return
+		end
+		if msgbox_choice == 1 then
 			final_directory = "replays/"
-		else
+		elseif msgbox_choice == 2 then
 			local replay_data = binser.d(data)[1]
 			local info_string = "Replay file view:\n"
 			info_string = info_string .. "Mode: " .. replay_data["mode"] .. " (" .. (replay_data["mode_hash"] or "???") .. ")\n"
@@ -772,13 +771,12 @@ function love.filedropped(file)
 			return
 		end
 	else
-		file:close()
 		love.window.showMessageBox(love.window.getTitle(), "This file ("..filename..") is not a Lua nor replay file.", "warning")
 		return
 	end
 	local do_write = 2
 	if love.filesystem.getInfo(final_directory..filename) then
-		do_write = love.window.showMessageBox(love.window.getTitle(), "This file ("..filename..") already exists! Do you want to override it?", {"No", "Yes"}, "warning")
+		do_write = love.window.showMessageBox(love.window.getTitle(), "This file ("..filename..") already exists! Do you want to override it?", confirmation_buttons, "warning")
 	end
 
 	if do_write == 2 then
@@ -792,7 +790,6 @@ function love.filedropped(file)
 			sortReplays()
 		end
 	end
-	file:close()
 end
 
 ---@param dir string
