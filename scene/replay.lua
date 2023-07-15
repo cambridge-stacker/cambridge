@@ -11,6 +11,7 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	if replay["das_cut_delay"] then config.dcd = replay["das_cut_delay"] end
 	love.math.setRandomSeed(replay["random_low"], replay["random_high"])
 	love.math.setRandomState(replay["random_state"])
+	self.game_mode = game_mode
 	self.retry_replay = replay
 	self.retry_mode = game_mode
 	self.retry_ruleset = ruleset
@@ -37,6 +38,7 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	self.replay = deepcopy(replay)
 	self.replay_index = 1
 	self.replay_speed = 1
+	self.show_invisible = false
 	DiscordRPC:update({
 		details = "Viewing a replay",
 		state = self.game.name,
@@ -92,6 +94,12 @@ function ReplayScene:render()
 	else
 		love.graphics.printf("?? PAUSES (--:--.--)", 0, pauses_y_coordinate, 635, "right")
 	end
+	if self.show_invisible then 
+		self.game.grid:draw()
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.setFont(font_3x5_3)
+		love.graphics.printf("SHOW INVIS", 64, 60, 160, "center")
+	end
 end
 
 function ReplayScene:onInputPress(e)
@@ -124,6 +132,8 @@ function ReplayScene:onInputPress(e)
 		if self.replay_speed > 99 then
 			self.replay_speed = 99
 		end
+	elseif e.input == "hold" then
+		self.show_invisible = not self.show_invisible
 	end
 end
 
