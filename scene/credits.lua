@@ -16,9 +16,7 @@ function CreditsScene:new()
 end
 
 function CreditsScene:update()
-    if love.window.hasFocus() then
-        self.frames = self.frames + 1
-    end
+    self.frames = self.frames + 1
     if self.frames >= 2100 * self.scroll_speed then
         playSE("mode_decide")
         scene = TitleScene()
