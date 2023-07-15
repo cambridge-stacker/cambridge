@@ -280,14 +280,6 @@ function love.wheelmoved(x, y)
 	scene:onInputPress({input=nil, type="wheel", x=x, y=y})
 end
 
-function love.focus(f)
-	if f then
-		resumeBGM(true)
-	else
-		pauseBGM(true)
-	end
-end
-
 function love.resize(w, h)
 	GLOBAL_CANVAS:release()
 	GLOBAL_CANVAS = love.graphics.newCanvas(w, h)
