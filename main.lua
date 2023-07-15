@@ -1103,14 +1103,6 @@ function love.wheelmoved(x, y)
 	scene:onInputPress({input=nil, type="wheel", x=x, y=y})
 end
 
-function love.focus(f)
-	if f then
-		resumeBGM(true)
-	else
-		pauseBGM(true)
-	end
-end
-
 ---@param w integer
 ---@param h integer
 function love.resize(w, h)

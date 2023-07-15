@@ -45,6 +45,7 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	self.replay_speed = 1
 	self.frames = 0
 	self.relative_frames = 0
+	self.show_invisible = false
 	DiscordRPC:update({
 		details = "Viewing a replay",
 		state = self.game.name,
@@ -137,7 +138,9 @@ function ReplayScene:render()
 	else
 		love.graphics.printf("REPLAY", 0, 0, 635, "right")
 	end
+	local pauses_y_coordinate = 23
 	if self.replay_speed > 1 then
+		pauses_y_coordinate = pauses_y_coordinate + 20
 		love.graphics.printf(self.replay_speed.."X", 0, 20, 635, "right")
 	end
 	love.graphics.setFont(font_3x5_2)
@@ -148,8 +151,16 @@ function ReplayScene:render()
 				self.game.pause_count,
 				self.game.pause_count == 1 and "" or "S",
 				formatTime(self.game.pause_time)
-			), 0, 40, 635, "right")
+			), 0, pauses_y_coordinate, 635, "right")
 		end
+	else
+		love.graphics.printf("?? PAUSES (--:--.--)", 0, pauses_y_coordinate, 635, "right")
+	end
+	if self.show_invisible then 
+		self.game.grid:draw()
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.setFont(font_3x5_3)
+		love.graphics.printf("SHOW INVIS", 64, pauses_y_coordinate + 20, 160, "center")
 	end
 end
 
@@ -192,7 +203,7 @@ function ReplayScene:onInputPress(e)
 				self.first_input = self.first_input or e.input
 			end
 		end
-	elseif e.input == "hold" then
+	elseif e.input == "generic_1" then
 		self.rerecord = true
 		savestate_frames = self.frames
 		self:replayCutoff()
@@ -200,6 +211,8 @@ function ReplayScene:onInputPress(e)
 		self.game.save_replay = config.gamesettings.save_replay == 1
 		self.game.replay_inputs = self.retry_replay.inputs
 		self.paused = true
+	elseif e.input == "hold" then
+		self.show_invisible = not self.show_invisible
 	elseif e.input == "left" then
 		self.replay_speed = self.replay_speed - 1
 		if self.replay_speed < 1 then
