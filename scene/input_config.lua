@@ -21,7 +21,7 @@ function ConfigScene:update() end
 function ConfigScene:render()
     love.graphics.setColor(1, 1, 1, 1)
     love.graphics.draw(
-		backgrounds["input_config"],
+		fetchBackgroundAndLoop("options_input"),
 		0, 0, 0,
 		0.5, 0.5
     )

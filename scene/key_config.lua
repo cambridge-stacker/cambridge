@@ -46,7 +46,7 @@ end
 function KeyConfigScene:render()
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.draw(
-		backgrounds["input_config"],
+		fetchBackgroundAndLoop("input_config"),
 		0, 0, 0,
 		0.5, 0.5
 	)
