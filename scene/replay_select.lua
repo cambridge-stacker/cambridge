@@ -284,9 +284,9 @@ function ReplaySelectScene:render()
 				end
 			end
 			if replay.pause_count and replay.pause_time then
-				idx = idx + 2.5
+				idx = idx + 1.5
 				love.graphics.setFont(font_3x5_2)
-				love.graphics.printf(("Pause count: %d\nTime Paused: %s"):format(replay.pause_count, formatTime(replay.pause_time)), 0, 140 + idx * 20, 640, "center")
+				love.graphics.printf(("Pause count: %d, Time Paused: %s"):format(replay.pause_count, formatTime(replay.pause_time)), 0, 160 + idx * 20, 640, "center")
 			end
 			if replay.sha256_table then
 				if config.visualsettings.debug_level > 2 then
