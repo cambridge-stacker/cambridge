@@ -1,4 +1,7 @@
-named_backgrounds = {"title", "title_no_icon", "title_night", "snow", "options_input", "options_game"}
+named_backgrounds = {
+	"title", "title_no_icon", "title_night",
+	"snow", "options_input", "options_game"
+}
 current_playing_bgs = {}
 extended_bgs = {}
 image_formats = {".png", ".jpg"}
@@ -7,21 +10,21 @@ dir = love.filesystem.getDirectoryItems(bgpath)
 
 local backgrounds = {}
 
-function loadExtendedBgs()
+local function loadExtendedBgs()
 	extended_bgs = require("res.backgrounds.extend_section_bg")
 end
 
---error handling for if there is no extend_section_bg
+-- error handling for if there is no extend_section_bg
 if pcall(loadExtendedBgs) then end
 
---helper method to populate backgrounds
-function createBackgroundIfExists(name, file_name)
+-- helper method to populate backgrounds
+local function createBackgroundIfExists(name, file_name)
 	local format_index = 1
 
 	-- see if background is an extension of another background
-	if extended_bgs[file_name] ~= null then
+	if extended_bgs[file_name] ~= nil then
 		copy_bg = extended_bgs[file_name]
-		copy_bg = copy_bg/100
+		copy_bg = copy_bg / 100
 		backgrounds[name] = backgrounds[copy_bg]
 		return true
 	end
@@ -39,12 +42,15 @@ function createBackgroundIfExists(name, file_name)
 	end
 
 	-- try creating video background
-	if love.filesystem.getInfo(bgpath .. file_name ..".ogv") then
+	if love.filesystem.getInfo(bgpath .. file_name .. ".ogv") then
 		for num, existing_file in pairs(dir) do
 			if existing_file == (file_name..".ogv") then
 				local tempBgPath = bgpath .. file_name .. ".ogv"
-				backgrounds[name] = love.graphics.newVideo(tempBgPath, {["audio"] = false})
-				-- you can set audio to true, but the video will not loop properly if audio extends beyond video frames
+				backgrounds[name] = love.graphics.newVideo(
+					tempBgPath, {["audio"] = false}
+				)
+				-- you can set audio to true, but the video will not loop
+				-- properly if audio extends beyond video frames
 				return true
 			end
 		end
@@ -52,7 +58,7 @@ function createBackgroundIfExists(name, file_name)
 	return false
 end
 
-function StopOtherBgs(bg)
+local function stopOtherBgs(bg)
 	if #current_playing_bgs == 0 and bg:typeOf("Video") then
 		current_playing_bgs[#current_playing_bgs+1] = bg
 	end
@@ -75,21 +81,24 @@ function fetchBackgroundAndLoop(id)
 		bg:play()
 	end
 
-	StopOtherBgs(bg)
+	stopOtherBgs(bg)
 
 	return bg
 end
 
---create section backgrounds
+-- create section backgrounds
 local section = 0
 while (createBackgroundIfExists(section, section*100)) do
 	section = section + 1
 end
 
---create named backgrounds
+-- create named backgrounds
 local nbgIndex = 1
 while nbgIndex <= #named_backgrounds do
-	createBackgroundIfExists(named_backgrounds[nbgIndex], string.gsub(named_backgrounds[nbgIndex], "_", "-"))
+	createBackgroundIfExists(
+		named_backgrounds[nbgIndex],
+		string.gsub(named_backgrounds[nbgIndex], "_", "-")
+	)
 	nbgIndex = nbgIndex + 1
 end
 
