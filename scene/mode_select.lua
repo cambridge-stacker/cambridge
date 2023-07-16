@@ -59,7 +59,7 @@ end
 
 function ModeSelectScene:render()
 	love.graphics.draw(
-		backgrounds[0],
+		fetchBackgroundAndLoop(0),
 		0, 0, 0,
 		0.5, 0.5
 	)

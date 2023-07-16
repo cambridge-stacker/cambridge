@@ -31,7 +31,7 @@ function CreditsScene:render()
 
     love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.draw(
-		backgrounds[19],
+		fetchBackgroundAndLoop(id),
 		0, 0, 0,
 		0.5, 0.5
     )

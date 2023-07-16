@@ -35,7 +35,7 @@ end
 function TuningScene:render()
     love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.draw(
-		backgrounds["game_config"],
+		fetchBackgroundAndLoop("options_game"),
 		0, 0, 0,
 		0.5, 0.5
     )

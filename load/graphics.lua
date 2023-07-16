@@ -1,17 +1,96 @@
-backgrounds = {
-	title = love.graphics.newImage("res/backgrounds/title.png"),
-	title_no_icon = love.graphics.newImage("res/backgrounds/title-no-icon.jpg"),
-	title_night = love.graphics.newImage("res/backgrounds/title-night.jpg"),
-	snow = love.graphics.newImage("res/backgrounds/snow.png"),
-	input_config = love.graphics.newImage("res/backgrounds/options-input.png"),
-	game_config = love.graphics.newImage("res/backgrounds/options-game.png"),
-}
+named_backgrounds = {"title", "title_no_icon", "title_night", "snow", "options_input", "options_game"}
+current_playing_bgs = {}
+extended_bgs = {}
+image_formats = {".png", ".jpg"}
+bgpath = "res/backgrounds/"
+dir = love.filesystem.getDirectoryItems(bgpath)
 
-local i = 0
-local bgpath = "res/backgrounds/%d.png"
-while love.filesystem.getInfo(bgpath:format(i*100)) do
-	backgrounds[i] = love.graphics.newImage(bgpath:format(i*100))
-	i = i + 1
+local backgrounds = {}
+
+function loadExtendedBgs()
+	extended_bgs = require("res.backgrounds.extend_section_bg")
+end
+
+--error handling for if there is no extend_section_bg
+if pcall(loadExtendedBgs) then end
+
+--helper method to populate backgrounds
+function createBackgroundIfExists(name, file_name)
+	local format_index = 1
+
+	-- see if background is an extension of another background
+	if extended_bgs[file_name] ~= null then
+		copy_bg = extended_bgs[file_name]
+		copy_bg = copy_bg/100
+		backgrounds[name] = backgrounds[copy_bg]
+		return true
+	end
+
+	-- try creating image backgrounds
+	while format_index <= #image_formats do
+		for num, existing_file in pairs(dir) do
+			if existing_file == (file_name..image_formats[format_index]) then
+				local tempBgPath = bgpath .. file_name .. image_formats[format_index]
+				backgrounds[name] = love.graphics.newImage(tempBgPath)
+				return true
+			end
+		end
+		format_index = format_index + 1
+	end
+
+	-- try creating video background
+	if love.filesystem.getInfo(bgpath .. file_name ..".ogv") then
+		for num, existing_file in pairs(dir) do
+			if existing_file == (file_name..".ogv") then
+				local tempBgPath = bgpath .. file_name .. ".ogv"
+				backgrounds[name] = love.graphics.newVideo(tempBgPath, {["audio"] = false})
+				-- you can set audio to true, but the video will not loop properly if audio extends beyond video frames
+				return true
+			end
+		end
+	end
+	return false
+end
+
+function StopOtherBgs(bg)
+	if #current_playing_bgs == 0 and bg:typeOf("Video") then
+		current_playing_bgs[#current_playing_bgs+1] = bg
+	end
+
+	if #current_playing_bgs >= 1 then
+		while current_playing_bgs[1] ~= bg and #current_playing_bgs >= 1 do
+			current_playing_bgs[1]:pause()
+			current_playing_bgs[1]:rewind()
+			table.remove(current_playing_bgs, 1)
+		end
+	end
+
+end
+
+function fetchBackgroundAndLoop(id)
+	bg = backgrounds[id]
+
+	if bg:typeOf("Video") and not bg:isPlaying() then
+		bg:rewind()
+		bg:play()
+	end
+
+	StopOtherBgs(bg)
+
+	return bg
+end
+
+--create section backgrounds
+local section = 0
+while (createBackgroundIfExists(section, section*100)) do
+	section = section + 1
+end
+
+--create named backgrounds
+local nbgIndex = 1
+while nbgIndex <= #named_backgrounds do
+	createBackgroundIfExists(named_backgrounds[nbgIndex], string.gsub(named_backgrounds[nbgIndex], "_", "-"))
+	nbgIndex = nbgIndex + 1
 end
 
 -- in order, the colors are:
