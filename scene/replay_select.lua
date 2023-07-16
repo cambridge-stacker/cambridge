@@ -14,8 +14,12 @@ function ReplaySelectScene:new()
 	replay_file_list = love.filesystem.getDirectoryItems("replays")
 	for i=1,#replay_file_list do
 		local data = love.filesystem.read("replays/"..replay_file_list[i])
-		local new_replay = binser.deserialize(data)[1]
-		replays[#replays + 1] = new_replay
+		local success, new_replay = pcall(
+			function() return binser.deserialize(data)[1] end
+		)
+		if success then
+			replays[#replays + 1] = new_replay
+		end
 	end
 	table.sort(replays, function(a, b)
 		return a["timestamp"] > b["timestamp"]
