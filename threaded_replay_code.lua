@@ -29,7 +29,9 @@ replay_load_code = [[
 	setState("Loading replay contents")
 	for i=1, #replay_file_list do
 		local data = love.filesystem.read("replays/"..replay_file_list[i])
-		local new_replay = binser.deserialize(data)[1]
+		local success, new_replay = pcall(
+			function() return binser.deserialize(data)[1] end
+		)
 		if new_replay == nil then
 			love.filesystem.remove("replays/"..replay_file_list[i])
 			print ("The replay at replays/"..replay_file_list[i].." is corrupted or has no data, thus, deleted.")
