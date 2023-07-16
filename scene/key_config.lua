@@ -45,7 +45,7 @@ end
 
 function KeyConfigScene:render()
 	love.graphics.setColor(1, 1, 1, 1)
-	drawBackground("input_config")
+	drawBackground("options_input")
 
 	love.graphics.setFont(font_3x5_2)
 	for i, input in ipairs(configurable_inputs) do
