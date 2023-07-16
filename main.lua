@@ -68,7 +68,7 @@ end
 
 local initial_resources
 local previous_resources
-local previous_selected_packs
+local previous_selected_packs = {}
 
 function loadResourcePacks()
 	previous_resources = {
@@ -84,12 +84,14 @@ function loadResourcePacks()
 			misc_graphics_paths = deepcopy(misc_graphics_paths),
 			sound_paths = deepcopy(sound_paths),
 		}
-		previous_selected_packs = copy(config.resource_packs_applied)
 	else
 		backgrounds_paths = deepcopy(initial_resources.backgrounds_paths)
 		blocks_paths = deepcopy(initial_resources.blocks_paths)
 		misc_graphics_paths = deepcopy(initial_resources.misc_graphics_paths)
 		sound_paths = deepcopy(initial_resources.sound_paths)
+	end
+	if table.equalvalues(previous_selected_packs, config.resource_packs_applied) then
+		return
 	end
 	local valid_resource_packs = {}
 	local resource_pack_indexes = {}
