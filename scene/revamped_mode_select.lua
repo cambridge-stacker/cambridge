@@ -160,11 +160,7 @@ local function toFormattedValue(value)
 	return tostring(value)
 end
 function ModeSelectScene:render()
-	drawSizeIndependentImage(
-		backgrounds[0],
-		0, 0, 0,
-		640, 480
-	)
+	drawBackground(0)
 
 	love.graphics.setFont(font_3x5_4)
 	local b = CursorHighlight(0, 40, 50, 30)
