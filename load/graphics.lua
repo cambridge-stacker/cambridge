@@ -8,7 +8,7 @@ image_formats = {".png", ".jpg"}
 bgpath = "res/backgrounds/"
 dir = love.filesystem.getDirectoryItems(bgpath)
 
-local backgrounds = {}
+backgrounds = {}
 
 local function loadExtendedBgs()
 	extended_bgs = require("res.backgrounds.extend_section_bg")
