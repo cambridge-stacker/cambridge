@@ -58,11 +58,7 @@ function ModeSelectScene:update()
 end
 
 function ModeSelectScene:render()
-	love.graphics.draw(
-		fetchBackgroundAndLoop(0),
-		0, 0, 0,
-		0.5, 0.5
-	)
+	drawBackground(0)
 
 	love.graphics.draw(misc_graphics["select_mode"], 20, 40)
 

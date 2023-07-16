@@ -73,11 +73,7 @@ local block_offsets = {
 function TitleScene:render()
 	love.graphics.setFont(font_3x5_4)
 	love.graphics.setColor(1, 1, 1, 1 - self.snow_bg_opacity)
-	love.graphics.draw(
-		fetchBackgroundAndLoop("title_no_icon"), -- title, title_night
-		0, 0, 0,
-		0.5, 0.5
-	)
+	drawBackground("title_no_icon"), -- title, title_night
 
 	-- 490, 192
 	for _, b in ipairs(block_offsets) do
@@ -99,11 +95,7 @@ function TitleScene:render()
 
 	love.graphics.setFont(font_3x5_2)
 	love.graphics.setColor(1, 1, 1, self.snow_bg_opacity)
-	love.graphics.draw(
-		fetchBackgroundAndLoop("snow"),
-		0, 0, 0,
-		0.5, 0.5
-	)
+	drawBackground("snow")
 
 	love.graphics.draw(
 		misc_graphics["santa"],

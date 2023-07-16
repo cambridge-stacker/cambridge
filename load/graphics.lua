@@ -198,3 +198,16 @@ misc_graphics = {
 	santa = love.graphics.newImage("res/img/santa.png"),
 	icon = love.graphics.newImage("res/img/cambridge_transparent.png")
 }
+
+-- utility function to allow any size background to be used
+-- this will stretch the background to 4:3 aspect ratio
+function drawBackground(id)
+	local bg_object = fetchBackgroundAndLoop(id)
+	local width = bg_object:getWidth()
+	local height = bg_object:getHeight()
+	love.graphics.draw(
+		bg_object,
+		0, 0, 0,
+		640 / width, 480 / height
+	)
+end

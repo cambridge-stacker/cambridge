@@ -30,11 +30,7 @@ function CreditsScene:render()
     local offset = self.frames / self.scroll_speed
 
     love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.draw(
-		fetchBackgroundAndLoop(id),
-		0, 0, 0,
-		0.5, 0.5
-    )
+	drawBackground(19)
 
     love.graphics.setFont(font_3x5_4)
     love.graphics.print("Cambridge Credits", 320, 500 - offset)

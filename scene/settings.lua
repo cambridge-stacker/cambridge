@@ -29,11 +29,7 @@ function SettingsScene:update() end
 
 function SettingsScene:render()
     love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.draw(
-		fetchBackgroundAndLoop("options_game"),
-		0, 0, 0,
-		0.5, 0.5
-    )
+    drawBackground("options_game")
 
     love.graphics.setFont(font_3x5_4)
     love.graphics.print("SETTINGS", 80, 40)

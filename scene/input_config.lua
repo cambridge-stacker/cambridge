@@ -20,11 +20,7 @@ function ConfigScene:update() end
 
 function ConfigScene:render()
     love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.draw(
-		fetchBackgroundAndLoop("options_input"),
-		0, 0, 0,
-		0.5, 0.5
-    )
+    drawBackground("options_input")
 
     love.graphics.setFont(font_3x5_4)
     love.graphics.print("INPUT CONFIG", 80, 40)
