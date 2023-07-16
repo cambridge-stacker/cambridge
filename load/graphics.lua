@@ -1,32 +1,70 @@
 named_backgrounds = {"title", "title_no_icon", "title_night", "snow", "options_input", "options_game"}
-backgrounds_played_recently = {}
+current_playing_bgs = {}
+extended_bgs = {}
 image_formats = {".png", ".jpg"}
-local bgpath = "res/backgrounds/"
+bgpath = "res/backgrounds/"
+dir = love.filesystem.getDirectoryItems(bgpath)
 
-backgrounds = {}
+local backgrounds = {}
+
+function loadExtendedBgs()
+	extended_bgs = require("res.backgrounds.extend_section_bg")
+end
+
+--error handling for if there is no extend_section_bg
+if pcall(loadExtendedBgs) then end
 
 --helper method to populate backgrounds
 function createBackgroundIfExists(name, file_name)
 	local format_index = 1
 
-	--try creating image backgrounds
+	-- see if background is an extension of another background
+	if extended_bgs[file_name] ~= null then
+		copy_bg = extended_bgs[file_name]
+		copy_bg = copy_bg/100
+		backgrounds[name] = backgrounds[copy_bg]
+		return true
+	end
+
+	-- try creating image backgrounds
 	while format_index <= #image_formats do
-		if love.filesystem.getInfo(bgpath.. file_name ..image_formats[format_index]) then
-			local tempBgPath = bgpath .. file_name .. image_formats[format_index]
-			backgrounds[name] = love.graphics.newImage(tempBgPath)
-			return true
+		for num, existing_file in pairs(dir) do
+			if existing_file == (file_name..image_formats[format_index]) then
+				local tempBgPath = bgpath .. file_name .. image_formats[format_index]
+				backgrounds[name] = love.graphics.newImage(tempBgPath)
+				return true
+			end
 		end
 		format_index = format_index + 1
 	end
 
+	-- try creating video background
 	if love.filesystem.getInfo(bgpath .. file_name ..".ogv") then
-		local tempBgPath = bgpath .. file_name .. ".ogv"
-		backgrounds[name] = love.graphics.newVideo(tempBgPath, {["audio"] = false})
-		-- you can set audio to true, but the video will not loop properly if audio extends beyond video frames
-		return true
+		for num, existing_file in pairs(dir) do
+			if existing_file == (file_name..".ogv") then
+				local tempBgPath = bgpath .. file_name .. ".ogv"
+				backgrounds[name] = love.graphics.newVideo(tempBgPath, {["audio"] = false})
+				-- you can set audio to true, but the video will not loop properly if audio extends beyond video frames
+				return true
+			end
+		end
+	end
+	return false
+end
+
+function StopOtherBgs(bg)
+	if #current_playing_bgs == 0 and bg:typeOf("Video") then
+		current_playing_bgs[#current_playing_bgs+1] = bg
 	end
 
-	return false
+	if #current_playing_bgs >= 1 then
+		while current_playing_bgs[1] ~= bg and #current_playing_bgs >= 1 do
+			current_playing_bgs[1]:pause()
+			current_playing_bgs[1]:rewind()
+			table.remove(current_playing_bgs, 1)
+		end
+	end
+
 end
 
 function fetchBackgroundAndLoop(id)
@@ -35,27 +73,9 @@ function fetchBackgroundAndLoop(id)
 	if bg:typeOf("Video") and not bg:isPlaying() then
 		bg:rewind()
 		bg:play()
-		if (not backgrounds_played_recently[1] == bg) or backgrounds_played_recently[1] == nil then
-			table.insert(backgrounds_played_recently, 1, bg)
-			print(id)
-		end
 	end
 
-	--if background is not loaded, rewind it and pause it
-	if #backgrounds_played_recently >= 1 then
-		if backgrounds_played_recently[1] == bg and #backgrounds_played_recently >= 2 then
-			print("!")
-			backgrounds_played_recently[2]:pause()
-			backgrounds_played_recently[2]:rewind()
-			table.remove(backgrounds_played_recently, 2)
-			print("Unloaded video #2")
-		elseif not backgrounds_played_recently[1] == bg then
-			backgrounds_played_recently[1]:pause()
-			backgrounds_played_recently[1]:rewind()
-			table.remove(backgrounds_played_recently, 1)
-			print("Unloaded most recently played")
-		end
-	end
+	StopOtherBgs(bg)
 
 	return bg
 end
