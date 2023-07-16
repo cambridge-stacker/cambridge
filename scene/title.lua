@@ -73,7 +73,7 @@ local block_offsets = {
 function TitleScene:render()
 	love.graphics.setFont(font_3x5_4)
 	love.graphics.setColor(1, 1, 1, 1 - self.snow_bg_opacity)
-	drawBackground("title_no_icon"), -- title, title_night
+	drawBackground("title_no_icon") -- title, title_night
 
 	-- 490, 192
 	for _, b in ipairs(block_offsets) do
