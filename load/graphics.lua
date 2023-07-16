@@ -36,15 +36,21 @@ backgrounds_paths = {
 	title_no_icon = "res/backgrounds/title-no-icon",
 	title_night = "res/backgrounds/title-night",
 	snow = "res/backgrounds/snow",
-	input_config = "res/backgrounds/options-input",
-	game_config = "res/backgrounds/options-game",
+	options_input = "res/backgrounds/options-input",
+	options_game = "res/backgrounds/options-game",
 }
+named_backgrounds = {
+	"title", "title_no_icon", "title_night",
+	"snow", "options_input", "options_game"
+}
+current_playing_bgs = {}
+extended_bgs = {}
 
 local previous_bg_index = 0
 local bg_index = 0
-local bgpath = "res/backgrounds/%d"
+local bgpath = "res/backgrounds/%s"
 while true do
-	local formatted_bgpath = bgpath:format(bg_index*100)
+	local formatted_bgpath = bgpath:format(tostring(bg_index*100))
 	for key, value in pairs(image_formats) do
 		if love.filesystem.getInfo(formatted_bgpath.."."..value) then
 			backgrounds_paths[bg_index] = formatted_bgpath
@@ -57,8 +63,90 @@ while true do
 	end
 	previous_bg_index = bg_index
 end
+local backgrounds = {}
+
+local function loadExtendedBgs()
+	extended_bgs = require("res.backgrounds.extend_section_bg")
+end
+
+-- error handling for if there is no extend_section_bg
+if pcall(loadExtendedBgs) then end
+
+-- helper method to populate backgrounds
+local function createBackgroundIfExists(name, file_name)
+	local formatted_bgpath = bgpath:format(tostring(file_name))
+
+	-- see if background is an extension of another background
+	if extended_bgs[file_name] ~= nil then
+		copy_bg = extended_bgs[file_name]
+		copy_bg = copy_bg / 100
+		backgrounds[name] = backgrounds[copy_bg]
+		return true
+	end
+
+	--loadImageTable already deals with loading images.
+	if backgrounds[name] ~= nil then
+		return true
+	end
+	-- try creating video background
+	if love.filesystem.getInfo(formatted_bgpath .. ".ogv") then
+		local tempBgPath = formatted_bgpath .. ".ogv"
+		backgrounds[name] = love.graphics.newVideo(
+			tempBgPath, {["audio"] = false}
+		)
+		-- you can set audio to true, but the video will not loop
+		-- properly if audio extends beyond video frames
+		return true
+	end
+	return false
+end
+
+local function stopOtherBgs(bg)
+	if #current_playing_bgs == 0 and bg:typeOf("Video") then
+		current_playing_bgs[#current_playing_bgs+1] = bg
+	end
+
+	if #current_playing_bgs >= 1 then
+		while current_playing_bgs[1] ~= bg and #current_playing_bgs >= 1 do
+			current_playing_bgs[1]:pause()
+			current_playing_bgs[1]:rewind()
+			table.remove(current_playing_bgs, 1)
+		end
+	end
+
+end
+
+function fetchBackgroundAndLoop(id)
+	local bg = backgrounds[id]
+
+	if bg:typeOf("Video") and not bg:isPlaying() then
+		bg:rewind()
+		bg:play()
+	end
+
+	stopOtherBgs(bg)
+
+	return bg
+end
 
 loadImageTable(backgrounds, backgrounds_paths)
+
+-- create section backgrounds
+local section = 0
+while (createBackgroundIfExists(section, section*100)) do
+	section = section + 1
+end
+
+-- create named backgrounds
+local nbgIndex = 1
+while nbgIndex <= #named_backgrounds do
+	createBackgroundIfExists(
+		named_backgrounds[nbgIndex],
+		string.gsub(named_backgrounds[nbgIndex], "_", "-")
+	)
+	nbgIndex = nbgIndex + 1
+end
+
 
 -- in order, the colors are:
 -- red, orange, yellow, green, cyan, blue
@@ -160,3 +248,10 @@ misc_graphics_paths = {
 	icon = "res/img/cambridge_transparent"
 }
 loadImageTable(misc_graphics, misc_graphics_paths)
+
+-- utility function to allow any size background to be used
+-- this will stretch the background to 4:3 aspect ratio
+function drawBackground(id)
+	local bg_object = fetchBackgroundAndLoop(id)
+	drawSizeIndependentImage(bg_object, 0, 0, 0, 640, 480)
+end

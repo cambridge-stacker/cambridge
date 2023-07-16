@@ -176,12 +176,7 @@ function ReplaySelectScene:update()
 end
 
 function ReplaySelectScene:render()
-	drawSizeIndependentImage(
-		backgrounds[0],
-		0, 0, 0,
-		640, 480
-	)
-	
+	drawBackground(0)
 
 	-- Same graphic as mode select
 	--love.graphics.draw(misc_graphics["select_mode"], 20, 40)

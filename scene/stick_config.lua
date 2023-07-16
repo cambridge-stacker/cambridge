@@ -131,11 +131,7 @@ end
 
 function StickConfigScene:render()
 	love.graphics.setColor(1, 1, 1, 1)
-	drawSizeIndependentImage(
-		backgrounds["input_config"],
-		0, 0, 0,
-		640, 480
-	)
+	drawBackground("options_input")
 
 	if self.joystick_name == "" then
 		local b = CursorHighlight(20, 40, 50, 30)

@@ -117,11 +117,7 @@ end
 
 function KeyConfigScene:render()
 	love.graphics.setColor(1, 1, 1, 1)
-	drawSizeIndependentImage(
-		backgrounds["input_config"],
-		0, 0, 0,
-		640, 480
-	)
+	drawBackground("input_config")
 
 	love.graphics.setFont(font_3x5_2)
 	for i, input in ipairs(configurable_inputs) do

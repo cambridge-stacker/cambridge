@@ -34,11 +34,7 @@ end
 
 function ConfigScene:render()
 	love.graphics.setColor(1, 1, 1, 1)
-	drawSizeIndependentImage(
-		backgrounds["game_config"],
-		0, 0, 0,
-		640, 480
-	)
+	drawBackground("options_game")
 
     love.graphics.setFont(font_8x11)
 	love.graphics.print("GAME SETTINGS", 80, 43)

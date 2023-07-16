@@ -35,11 +35,7 @@ end
 
 function TuningScene:render()
     love.graphics.setColor(1, 1, 1, 1)
-	drawSizeIndependentImage(
-		backgrounds["game_config"],
-		0, 0, 0,
-		640, 480
-    )
+	drawBackground("options_game")
 
     love.graphics.setColor(1, 1, 1, 0.5)
     love.graphics.rectangle("fill", 75, 98 + self.highlight * 75, 400, 33)
