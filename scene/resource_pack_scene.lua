@@ -54,7 +54,7 @@ function ResourcePackScene:update()
 end
 
 function ResourcePackScene:render()
-    drawSizeIndependentImage(backgrounds["input_config"], 0, 0, 0, 640, 480)
+    drawBackground("options_input")
     local alpha = 1
     if self.selection_type ~= 1 then
         alpha = 0.5

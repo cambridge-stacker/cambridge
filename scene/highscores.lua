@@ -76,11 +76,7 @@ local function toFormattedValue(value)
 	return tostring(value)
 end
 function HighscoreScene:render()
-	drawSizeIndependentImage(
-		backgrounds[0],
-		0, 0, 0,
-		640, 480
-	)
+	drawBackground(0)
 
     love.graphics.setFont(font_3x5_4)
 	local highlight = CursorHighlight(20, 40, 50, 30)
