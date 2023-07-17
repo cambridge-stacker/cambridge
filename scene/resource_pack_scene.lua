@@ -123,6 +123,7 @@ end
 function ResourcePackScene:onInputPress(e)
     if e.type == "mouse" then
         if e.x > 80 and e.y > 400 and e.x < 240 and e.y < 430 then
+            playSE("main_decide")
             love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/resourcepacks/")
         end
         if e.x > 400 and e.y > 400 and e.x < 560 and e.y < 430 then
