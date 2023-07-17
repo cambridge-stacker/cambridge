@@ -1,1 +1,1 @@
-version = "dev-source (upstream v0.3.4)"
+version = "dev-source (^0.3.4)"
