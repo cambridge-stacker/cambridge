@@ -74,13 +74,13 @@ function ResourcePackScene:render()
     love.graphics.setColor(1,1,1,1)
     love.graphics.printf("Select Resource Packs", 0, 10, 640, "center")
     love.graphics.setColor(1,1,1,FadeoutAtEdges(
-        -(self.left_menu_height + 200),
+        -(self.left_menu_height + 160),
         160,
         40))
     love.graphics.printf("Available", 100, 40 - self.left_menu_height, 160, "center")
     love.graphics.printf("_________", 100, 44 - self.left_menu_height, 160, "center")
     love.graphics.setColor(1,1,1,FadeoutAtEdges(
-        -(self.right_menu_height + 200),
+        -(self.right_menu_height + 160),
         160,
         40))
     love.graphics.printf("Selected", 400, 40 - self.right_menu_height, 160, "center")
