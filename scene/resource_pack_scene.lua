@@ -115,8 +115,11 @@ function ResourcePackScene:render()
     love.graphics.rectangle("line", 400, 400, 160, 30)
     love.graphics.setLineWidth(1)
 
-    love.graphics.setColor(1,1,1,1)
+    local b = CursorHighlight(80, 400, 160, 30)
+    love.graphics.setColor(1,1,b,1)
     love.graphics.printf("Open Pack Folder", 80, 405, 160, "center")
+    b = CursorHighlight(400, 400, 160, 30)
+    love.graphics.setColor(1,1,b,1)
     love.graphics.printf("Done", 400, 405, 160, "center")
 end
 
