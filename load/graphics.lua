@@ -63,7 +63,6 @@ while true do
 	end
 	previous_bg_index = bg_index
 end
-local backgrounds = {}
 
 local function loadExtendedBgs()
 	extended_bgs = require("res.backgrounds.extend_section_bg")
