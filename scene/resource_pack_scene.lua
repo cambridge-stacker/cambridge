@@ -29,7 +29,7 @@ function ResourcePackScene:refreshPackSelection()
     self.selected_resource_packs = {}
     self.unselected_resource_packs = {}
     for key, value in pairs(config.resource_packs_applied) do
-        self.selected_resource_packs[#config.resource_packs_applied - key + 1] = value
+        self.selected_resource_packs[#self.selected_resource_packs+1] = value
     end
     for key, value in pairs(self.valid_resource_packs) do
         if not table.contains(config.resource_packs_applied, value) then
@@ -142,11 +142,11 @@ function ResourcePackScene:onInputPress(e)
     if e.input == "menu_decide" then
         
         if self.selection_type == 1 then
-            table.insert(config.resource_packs_applied, self.unselected_resource_packs[self.left_selection_index])
+            table.insert(config.resource_packs_applied, 1, self.unselected_resource_packs[self.left_selection_index])
             self.left_selection_index = math.max(self.left_selection_index - 1, 1)
             self:refreshPackSelection()
         elseif self.selection_type == 2 then
-            table.remove(config.resource_packs_applied, #self.selected_resource_packs - self.right_selection_index + 1)
+            table.remove(config.resource_packs_applied, self.right_selection_index)
             self.right_selection_index = math.max(self.right_selection_index - 1, 1)
             self:refreshPackSelection()
         elseif self.selection_type == 3 then
@@ -200,8 +200,8 @@ function ResourcePackScene:onInputPress(e)
         end
     end
     if self.hold_swap and old_right_selection_index ~= self.right_selection_index then
-        local old_index = #self.selected_resource_packs - old_right_selection_index + 1
-        local new_index = #self.selected_resource_packs - self.right_selection_index + 1
+        local old_index = old_right_selection_index
+        local new_index = self.right_selection_index
         local temp_value = config.resource_packs_applied[new_index]
         config.resource_packs_applied[new_index] = config.resource_packs_applied[old_index]
         config.resource_packs_applied[old_index] = temp_value

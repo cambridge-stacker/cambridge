@@ -34,10 +34,12 @@ function love.load()
 
 	love.window.setFullscreen(config["fullscreen"])
 
+
+	-- loads resource packs, and mounts zip files
+	loadResourcePacks()
+
 	-- import custom modules
 	initModules()
-
-	loadResourcePacks()
 
 	generateSoundTable()
 
@@ -66,89 +68,34 @@ function recursivelyLoadRequireFileTable(table, directory, blacklisted_string)
 	end
 end
 
-local initial_resources
-local previous_resources
 local previous_selected_packs = {}
 
 function loadResourcePacks()
-	previous_resources = {
-		backgrounds_paths = deepcopy(backgrounds_paths),
-		blocks_paths = deepcopy(blocks_paths),
-		misc_graphics_paths = deepcopy(misc_graphics_paths),
-		sound_paths = deepcopy(sound_paths),
-	}
-	if not initial_resources then
-		initial_resources = {
-			backgrounds_paths = deepcopy(backgrounds_paths),
-			blocks_paths = deepcopy(blocks_paths),
-			misc_graphics_paths = deepcopy(misc_graphics_paths),
-			sound_paths = deepcopy(sound_paths),
-		}
-	else
-		backgrounds_paths = deepcopy(initial_resources.backgrounds_paths)
-		blocks_paths = deepcopy(initial_resources.blocks_paths)
-		misc_graphics_paths = deepcopy(initial_resources.misc_graphics_paths)
-		sound_paths = deepcopy(initial_resources.sound_paths)
-	end
 	if table.equalvalues(previous_selected_packs, config.resource_packs_applied) then
 		return
 	end
-	local valid_resource_packs = {}
 	local resource_pack_indexes = {}
     local resource_packs = love.filesystem.getDirectoryItems("resourcepacks")
     for key, value in pairs(resource_packs) do
         if value:sub(-4) == ".zip" and love.filesystem.getInfo("resourcepacks/"..value, "file") then
-            valid_resource_packs[key] = value
 			resource_pack_indexes[value] = key
         end
     end
+	for k, v in pairs(previous_selected_packs) do
+		if not config.resource_packs_applied[k] then
+			love.filesystem.unmount("resourcepacks/"..v)
+		end
+	end
 	if type(config.resource_packs_applied) == "table" then
 		for k, v in pairs(config.resource_packs_applied) do
-			if resource_pack_indexes[v] then
-				love.filesystem.mount("resourcepacks/"..v, "packs/", true)
-			else
+			if resource_pack_indexes[v] and not previous_selected_packs[k] then
+				love.filesystem.mount("resourcepacks/"..v, "res/")
+			elseif not previous_selected_packs[k] then
 				table.remove(config.resource_packs_applied, k)
 			end
 		end
 	end
-	local image_formats = {"png", "jpg", "bmp", "tga"}
-	local function prefixPathsIfExistsRecursively(paths, prefix, is_images)
-		for key, value in pairs(paths) do
-			if type(value) == "table" then
-				prefixPathsIfExistsRecursively(paths[key], prefix, is_images)
-			end
-			if is_images then
-				for _, v2 in pairs(image_formats) do
-					if type(value) == "string" and love.filesystem.getInfo(prefix..value.."."..v2, "file") then
-						paths[key] = prefix..value
-						break
-					end
-				end
-			else
-				if type(value) == "string" and love.filesystem.getInfo(prefix..value, "file") then
-					paths[key] = prefix..value
-				end
-			end
-		end
-	end
-	local function makeDiffTable(left, right)
-		local diff_table = {}
-		for key, value in pairs(left) do
-			if type(value) == "table" then
-				diff_table[key] = makeDiffTable(right[key], value)
-			elseif value ~= right[key] then
-				diff_table[key] = value
-			end
-		end
-		for key, value in pairs(right) do
-			if type(value) == "table" then
-				diff_table[key] = makeDiffTable(left[key], value)
-			elseif value ~= left[key] then
-				diff_table[key] = value
-			end
-		end
-		return diff_table
-	end
+	
 	local image_formats = {"png", "jpg", "bmp", "tga"}
 	local function loadImageTableRecursively(image_table, path_table)
 		for k,v in pairs(path_table) do
@@ -168,27 +115,20 @@ function loadResourcePacks()
 			end
 		end
 	end
-	prefixPathsIfExistsRecursively(backgrounds_paths, "packs/", true)
-	prefixPathsIfExistsRecursively(blocks_paths, "packs/", true)
-	prefixPathsIfExistsRecursively(misc_graphics_paths, "packs/", true)
-	prefixPathsIfExistsRecursively(sound_paths, "packs/")
-	local bg_diff = makeDiffTable(previous_resources.backgrounds_paths, backgrounds_paths)
-	local blocks_diff = makeDiffTable(previous_resources.blocks_paths, blocks_paths)
-	local misc_graphics_diff = makeDiffTable(previous_resources.misc_graphics_paths, misc_graphics_paths)
-	loadImageTableRecursively(backgrounds, bg_diff)
-	loadImageTableRecursively(blocks, blocks_diff)
-	loadImageTableRecursively(misc_graphics, misc_graphics_diff)
-	if not table.equalvalues(previous_resources.sound_paths, sound_paths) then
-		buffer_sounds = {}
-		generateSoundTable()
-	end
-	if type(config.resource_packs_applied) == "table" then
-		for k, v in pairs(config.resource_packs_applied) do
-			if resource_pack_indexes[v] and not (previous_selected_packs and previous_selected_packs[k] == v) then
-				love.filesystem.unmount("resourcepacks/"..v)
-			end
-		end
-	end
+	
+	love.graphics.setCanvas()
+	love.graphics.clear()
+	love.graphics.setFont(font_3x5_4)
+	love.graphics.printf("Loading resource packs...", 0, 160, 640, "center")
+	love.graphics.setColor(0, 0, 0, 0.5)
+	love.graphics.present()
+
+	loadImageTableRecursively(backgrounds, backgrounds_paths)
+	loadImageTableRecursively(blocks, blocks_paths)
+	loadImageTableRecursively(misc_graphics, misc_graphics_paths)
+	generateSoundTable()
+
+
 	previous_selected_packs = copy(config.resource_packs_applied)
 end
 
