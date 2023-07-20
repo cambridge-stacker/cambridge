@@ -88,6 +88,7 @@ function GameScene:onInputPress(e)
 		local highscore_entry = self.game:getHighscoreData()
 		local highscore_hash = self.game.hash .. "-" .. self.ruleset.hash
 		submitHighscore(highscore_hash, highscore_entry)
+		switchBGM(nil)
 		self.game:onExit()
 		sortReplays()
 		scene = e.input == "retry" and GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs) or
@@ -108,6 +109,7 @@ function GameScene:onInputPress(e)
 			resumeBGM()
 		end
 	elseif e.input == "mode_exit" then
+		switchBGM(nil)
 		self.game:onExit()
 		if config.visualsettings.mode_select_type == 1 then
 			scene = ModeSelectScene()

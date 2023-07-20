@@ -55,7 +55,7 @@ end
 
 function ConfigScene:update()
 	--#region Mouse
-	local x, y = getScaledPos(love.mouse.getPosition())
+	local x, y = getScaledDimensions(love.mouse.getPosition())
 	for i, slider in pairs(self.sliders) do
 		slider:update(x, y)
 	end
@@ -67,7 +67,7 @@ function ConfigScene:render()
 
     love.graphics.setFont(font_8x11)
 	love.graphics.print("AUDIO SETTINGS", 80, 43)
-	local b = CursorHighlight(20, 40, 50, 30)
+	local b = cursorHighlight(20, 40, 50, 30)
 	love.graphics.setColor(1, 1, b, 1)
 	love.graphics.printf("<-", font_3x5_4, 20, 40, 50, "center")
 	love.graphics.setColor(1, 1, 1, 1)
@@ -101,7 +101,7 @@ end
 
 function ConfigScene:renderOptions(idx, option)
 	for j, setting in ipairs(option[5]) do
-		local b = CursorHighlight(100 + 110 * j, self.option_pos_y[idx], 100, 20)
+		local b = cursorHighlight(100 + 110 * j, self.option_pos_y[idx], 100, 20)
 		love.graphics.setColor(1, 1, b, config.audiosettings[option[1]] == j and 1 or 0.5)
 		love.graphics.printf(setting, 100 + 110 * j, self.option_pos_y[idx], 100, "center")
 	end
@@ -112,7 +112,7 @@ function ConfigScene:changeValue(by)
 	if option[3] == "slider" then
 		local sld = self.sliders[option[1]]
 		sld.value = math.max(0, math.min(sld.max, (sld:getValue() + by - sld.min))) / (sld.max - sld.min)
-		local x, y = getScaledPos(love.mouse.getPosition())
+		local x, y = getScaledDimensions(love.mouse.getPosition())
 		sld:update(x, y)
 	end
 	if option[3] == "options" then

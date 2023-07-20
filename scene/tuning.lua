@@ -27,7 +27,7 @@ function TuningScene:new()
 end
 
 function TuningScene:update()
-	local x, y = getScaledPos(love.mouse.getPosition())
+	local x, y = getScaledDimensions(love.mouse.getPosition())
     self.dasSlider:update(x,y)
 	self.arrSlider:update(x,y)
 	self.dcdSlider:update(x,y)
@@ -44,7 +44,7 @@ function TuningScene:render()
     
     love.graphics.setFont(font_8x11)
     love.graphics.print("TUNING SETTINGS", 80, 43)
-	local b = CursorHighlight(20, 40, 50, 30)
+	local b = cursorHighlight(20, 40, 50, 30)
 	love.graphics.setColor(1, 1, b, 1)
 	love.graphics.printf("<-", font_3x5_4, 20, 40, 50, "center")
 	love.graphics.setColor(1, 1, 1, 1)

@@ -20,84 +20,6 @@ function deepcopy(t)
 	return target
 end
 
----@param image love.Image
----@param origin_x integer
----@param origin_y integer
----@param draw_width integer
----@param draw_height integer
-function drawSizeIndependentImage(image, origin_x, origin_y, r, draw_width, draw_height, ...)
-	local width, height = image:getDimensions()
-	local width_scale_factor = width / draw_width
-	local height_scale_factor = height / draw_height
-	love.graphics.draw(image, origin_x, origin_y, r, 1/width_scale_factor, 1/height_scale_factor, ...)
-end
-
----@param h number
----@param s number
----@param v number
-function HSVToRGB(h, s, v)
-    if s <= 0 then return v,v,v end
-    h = h*6
-    local c = v*s
-    local x = (1-math.abs((h%2)-1))*c
-    local m,r,g,b = (v-c), 0, 0, 0
-    if h < 1 then
-        r, g, b = c, x, 0
-    elseif h < 2 then
-        r, g, b = x, c, 0
-    elseif h < 3 then
-        r, g, b = 0, c, x
-    elseif h < 4 then
-        r, g, b = 0, x, c
-    elseif h < 5 then
-        r, g, b = x, 0, c
-    else
-        r, g, b = c, 0, x
-    end
-    return r+m, g+m, b+m
-end
-
----@param string string
-function rainbowString(string)
-	local tbl = {}
-	local char = ''
-    for i = 1, #string do
-        char = string.char(string:byte(i)) or ' '
-		local r, g, b = HSVToRGB(((love.timer.getTime() / 4) + i / #string) % 1, 1, 1)
-		-- print(r, g, b, a, (love.timer.getTime() + i / 20) % 1)
-		table.insert(tbl, {r, g, b, 1})
-		table.insert(tbl, char)
-    end
-	return tbl
-end
-
----@param directory_from string
----@param directory_to string
----@param override_warning boolean
-function copyDirectoryRecursively(directory_from, directory_to, override_warning)
-	local directory_items = love.filesystem.getDirectoryItems(directory_from)
-	if not love.filesystem.getInfo(directory_to, "directory") then
-		love.filesystem.createDirectory(directory_to)
-	end
-	for key, value in pairs(directory_items) do
-		local destination_from = directory_from.."/"..value
-		local destination_to = directory_to.."/"..value
-		if love.filesystem.getInfo(destination_from, "directory") then
-			copyDirectoryRecursively(destination_from, destination_to, override_warning)
-		end
-		if love.filesystem.getInfo(destination_from, "file") then
-			local msgbox_choice = 2
-			if love.filesystem.getInfo(destination_to, "file") and override_warning then
-				msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "This file ("..value..") already exists! Do you want to override it?", {"No", "Yes"}, "info", false)
-			end
-			if msgbox_choice == 2 then
-				local file = love.filesystem.read(destination_from)
-				love.filesystem.write(destination_to, file)
-			end
-		end
-	end
-end
-
 ---@param tbl table
 function strTrueValues(tbl)
 	-- returns a concatenation of all the keys in tbl with value true, separated with spaces
@@ -243,3 +165,148 @@ function clamp(x, min, max)
 	end
 	return x < min and min or (x > max and max or x)
 end
+
+--#region Tetro48's code
+
+---@param image love.Image
+---@param origin_x integer
+---@param origin_y integer
+---@param draw_width integer
+---@param draw_height integer
+function drawSizeIndependentImage(image, origin_x, origin_y, r, draw_width, draw_height, ...)
+	local width, height = image:getDimensions()
+	local width_scale_factor = width / draw_width
+	local height_scale_factor = height / draw_height
+	love.graphics.draw(image, origin_x, origin_y, r, 1/width_scale_factor, 1/height_scale_factor, ...)
+end
+
+---@param h number
+---@param s number
+---@param v number
+function HSVToRGB(h, s, v)
+    if s <= 0 then return v,v,v end
+    h = h*6
+    local c = v*s
+    local x = (1-math.abs((h%2)-1))*c
+    local m,r,g,b = (v-c), 0, 0, 0
+    if h < 1 then
+        r, g, b = c, x, 0
+    elseif h < 2 then
+        r, g, b = x, c, 0
+    elseif h < 3 then
+        r, g, b = 0, c, x
+    elseif h < 4 then
+        r, g, b = 0, x, c
+    elseif h < 5 then
+        r, g, b = x, 0, c
+    else
+        r, g, b = c, 0, x
+    end
+    return r+m, g+m, b+m
+end
+
+---@param string string
+function rainbowString(string)
+	local tbl = {}
+	local char = ''
+    for i = 1, #string do
+        char = string.char(string:byte(i)) or ' '
+		local r, g, b = HSVToRGB(((love.timer.getTime() / 4) + i / #string) % 1, 1, 1)
+		-- print(r, g, b, a, (love.timer.getTime() + i / 20) % 1)
+		table.insert(tbl, {r, g, b, 1})
+		table.insert(tbl, char)
+    end
+	return tbl
+end
+
+---@param directory_from string
+---@param directory_to string
+---@param override_warning boolean
+function copyDirectoryRecursively(directory_from, directory_to, override_warning)
+	local directory_items = love.filesystem.getDirectoryItems(directory_from)
+	if not love.filesystem.getInfo(directory_to, "directory") then
+		love.filesystem.createDirectory(directory_to)
+	end
+	for key, value in pairs(directory_items) do
+		local destination_from = directory_from.."/"..value
+		local destination_to = directory_to.."/"..value
+		if love.filesystem.getInfo(destination_from, "directory") then
+			copyDirectoryRecursively(destination_from, destination_to, override_warning)
+		end
+		if love.filesystem.getInfo(destination_from, "file") then
+			local msgbox_choice = 2
+			if love.filesystem.getInfo(destination_to, "file") and override_warning then
+				msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "This file ("..value..") already exists! Do you want to override it?", {"No", "Yes"}, "info", false)
+			end
+			if msgbox_choice == 2 then
+				local file = love.filesystem.read(destination_from)
+				love.filesystem.write(destination_to, file)
+			end
+		end
+	end
+end
+
+-- For when you need to convert given coordinate to where it'd be in scaled 640x480 equivalent.
+---@param x number
+---@param y number
+function getScaledDimensions(x, y, screen_x, screen_y)
+	if screen_x == nil or screen_y == nil then
+		screen_x, screen_y = love.graphics.getDimensions()
+	end
+	local scale_factor = math.min(screen_x / 640, screen_y / 480)
+	return (x - (screen_x - scale_factor * 640) / 2)/scale_factor, (y - (screen_y - scale_factor * 480) / 2)/scale_factor
+end
+
+---@param x number
+---@param y number
+---@param w number
+---@param h number
+---@return integer
+function cursorHighlight(x,y,w,h)
+	local mouse_x, mouse_y = getScaledDimensions(love.mouse.getPosition())
+	if mouse_idle > 2 or config.visualsettings.cursor_highlight ~= 1 then
+		return 1
+	end
+	if mouse_x > x and mouse_x < x+w and mouse_y > y and mouse_y < y+h then
+		setSystemCursorType("hand")
+		return 0
+	else
+		return 1
+	end
+end
+
+--Interpolates in a smooth fashion.
+---@param input number
+---@param destination number
+---@return number
+function interpolateNumber(input, destination)
+	if config.visualsettings["smooth_scroll"] == 2 then
+		return destination
+	end
+	if destination > input then
+		input = input + (destination - input) / 4
+		if input > destination - 0.02 then
+			input = destination
+		end
+	elseif destination < input then
+		input = input + (destination - input) / 4
+		if input < destination + 0.02 then
+			input = destination
+		end
+	end
+	return input
+end
+
+---@param input number
+---@param edge_distance number
+---@param edge_width number
+---@return number
+function fadeoutAtEdges(input, edge_distance, edge_width)
+	input = math.abs(input)
+	if input > edge_distance then
+		return 1 - (input - edge_distance) / edge_width
+	end
+	return 1
+end
+
+--#endregion

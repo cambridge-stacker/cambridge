@@ -79,7 +79,7 @@ function HighscoreScene:render()
 	drawBackground(0)
 
     love.graphics.setFont(font_3x5_4)
-	local highlight = CursorHighlight(20, 40, 50, 30)
+	local highlight = cursorHighlight(20, 40, 50, 30)
 	love.graphics.setColor(1, 1, highlight, 1)
 	love.graphics.printf("<-", 20, 40, 50, "center")
 	love.graphics.setColor(1, 1, 1, 1)
@@ -95,7 +95,7 @@ function HighscoreScene:render()
 
     love.graphics.setFont(font_3x5_2)
     if self.hash_highscore ~= nil then
-        self.menu_list_y = interpolateListPos(self.menu_list_y / 20, self.list_pointer) * 20
+        self.menu_list_y = interpolateNumber(self.menu_list_y / 20, self.list_pointer) * 20
         love.graphics.printf("num", 20, 100, 100)
 		if #self.hash_highscore > 18 then
 			if self.list_pointer == #self.hash_highscore - 17 then
@@ -116,7 +116,7 @@ function HighscoreScene:render()
                     love.graphics.setColor(1, 1, 1, 1)
                     love.graphics.printf(name, -20 + idx * 100, 100, 100)
                 end
-				love.graphics.setColor(1, 1, 1, FadeoutAtEdges((-self.menu_list_y - 170) + 20 * key, 170, 20))
+				love.graphics.setColor(1, 1, 1, fadeoutAtEdges((-self.menu_list_y - 170) + 20 * key, 170, 20))
 				local formatted_string = toFormattedValue(value)
 				if love.graphics.getFont():getWidth(formatted_string) > 100 then
 					formatted_string = formatted_string:sub(1, 6-math.floor(math.log10(#formatted_string))).."...".."("..#formatted_string..")"
@@ -124,17 +124,17 @@ function HighscoreScene:render()
                 love.graphics.printf(formatted_string, -20 + idx * 100, 120 + 20 * key - self.menu_list_y, 100)
                 idx = idx + 1
             end
-			love.graphics.setColor(1, 1, 1, FadeoutAtEdges((-self.menu_list_y - 170) + 20 * key, 170, 20))
+			love.graphics.setColor(1, 1, 1, fadeoutAtEdges((-self.menu_list_y - 170) + 20 * key, 170, 20))
             love.graphics.printf(tostring(key), 20, 120 + 20 * key - self.menu_list_y, 100)
         end
     else
         love.graphics.setColor(1, 1, 1, 0.5)
         love.graphics.rectangle("fill", 3, 258 + (self.hash_id * 20) - self.menu_hash_y, 634, 22)
-        self.menu_hash_y = interpolateListPos(self.menu_hash_y / 20, self.hash_id) * 20
+        self.menu_hash_y = interpolateNumber(self.menu_hash_y / 20, self.hash_id) * 20
         for idx, value in ipairs(self.hash_table) do
 			if(idx >= self.menu_hash_y/20-10 and idx <= self.menu_hash_y/20+10) then
-				local b = CursorHighlight(0, (260 - self.menu_hash_y) + 20 * idx, 640, 20)
-				love.graphics.setColor(1, 1, b, FadeoutAtEdges((-self.menu_hash_y) + 20 * idx, 180, 20))
+				local b = cursorHighlight(0, (260 - self.menu_hash_y) + 20 * idx, 640, 20)
+				love.graphics.setColor(1, 1, b, fadeoutAtEdges((-self.menu_hash_y) + 20 * idx, 180, 20))
 				love.graphics.printf(value, 6, (260 - self.menu_hash_y) + 20 * idx, 640, "left")	
 			end
         end

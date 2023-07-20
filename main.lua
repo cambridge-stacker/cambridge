@@ -226,54 +226,6 @@ function setSystemCursorType(type)
 	system_cursor_type = type
 end
 
--- For when you need to convert given coordinate to where it'd be in scaled 640x480 equivalent.
----@param x number
----@param y number
-function getScaledPos(x, y)
-	local screen_x, screen_y = love.graphics.getDimensions()
-	local scale_factor = math.min(screen_x / 640, screen_y / 480)
-	return (x - (screen_x - scale_factor * 640) / 2)/scale_factor, (y - (screen_y - scale_factor * 480) / 2)/scale_factor
-end
-
-
----@param x number
----@param y number
----@param w number
----@param h number
----@return integer
-function CursorHighlight(x,y,w,h)
-	local mouse_x, mouse_y = getScaledPos(love.mouse.getPosition())
-	if mouse_idle > 2 or config.visualsettings.cursor_highlight ~= 1 then
-		return 1
-	end
-	if mouse_x > x and mouse_x < x+w and mouse_y > y and mouse_y < y+h then
-		setSystemCursorType("hand")
-		return 0
-	else
-		return 1
-	end
-end
---Interpolates in a smooth fashion.
----@param input number
----@param from number
----@return number
-function interpolateListPos(input, from)
-	if config.visualsettings["smooth_scroll"] == 2 then
-		return from
-	end
-	if from > input then
-		input = input + (from - input) / 4
-		if input > from - 0.02 then
-			input = from
-		end
-	elseif from < input then
-		input = input + (from - input) / 4
-		if input < from + 0.02 then
-			input = from
-		end
-	end
-	return input
-end
 ---@param x number
 ---@param y number
 ---@param a number
@@ -360,8 +312,8 @@ local function drawScreenshotPreviews()
 		local image_x, image_y = value.image:getDimensions()
 		local local_scale_factor = math.min(image_x / 640, image_y / 480)
 		value.time = value.time + math.max(value.time < 300 and 4 or 1, value.time / 10 - 30)
-		value.y_position = interpolateListPos(value.y_position, accumulated_y)
-		local scaled_width, scaled_zero = getScaledPos(love.graphics.getWidth(), 0)
+		value.y_position = interpolateNumber(value.y_position, accumulated_y)
+		local scaled_width, scaled_zero = getScaledDimensions(love.graphics.getWidth(), 0)
 		local x = (scaled_width) - ((image_x / 4) / local_scale_factor) + math.max(0, value.time - 300)
 		local rect_x, rect_y, rect_w, rect_h = x - 1, scaled_zero + value.y_position - 1, ((image_x / 4) / local_scale_factor) + 2, ((image_y / 4) / local_scale_factor) + 2
 		love.graphics.setColor(0, 0, 0)
@@ -584,7 +536,7 @@ function love.draw()
 	else
 		love.mouse.setVisible(config.visualsettings.cursor_type == 1)
 		if config.visualsettings.cursor_type ~= 1 then
-			local lx, ly = getScaledPos(love.mouse.getPosition())
+			local lx, ly = getScaledDimensions(love.mouse.getPosition())
 			drawT48Cursor(lx, ly, 9 - mouse_idle * 4)
 		end
 	end

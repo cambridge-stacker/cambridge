@@ -117,7 +117,7 @@ function ModeSelectScene:render()
 	drawBackground(0)
 
 	love.graphics.setFont(font_3x5_4)
-	local b = CursorHighlight(0, 40, 50, 30)
+	local b = cursorHighlight(0, 40, 50, 30)
 	love.graphics.setColor(1, 1, b, 1)
 	love.graphics.printf("<-", 0, 40, 50, "center")
 	love.graphics.setColor(1, 1, 1, 1)
@@ -160,8 +160,8 @@ function ModeSelectScene:render()
 		love.graphics.setColor(1, 1, 1, 0.25)
 	end
 
-	self.menu_mode_height = interpolateListPos(self.menu_mode_height / 20, mode_selected) * 20
-	self.menu_ruleset_height = interpolateListPos(self.menu_ruleset_height / 20, ruleset_selected) * 20
+	self.menu_mode_height = interpolateNumber(self.menu_mode_height / 20, mode_selected) * 20
+	self.menu_ruleset_height = interpolateNumber(self.menu_ruleset_height / 20, ruleset_selected) * 20
 
 
 	love.graphics.rectangle("fill", 20, 258 + (mode_selected * 20) - self.menu_mode_height, 240, 22)
@@ -208,7 +208,7 @@ function ModeSelectScene:render()
 			if mode.is_directory then
 				b = 0.4
 			end
-			local highlight = CursorHighlight(
+			local highlight = cursorHighlight(
 				0,
 				(260 - self.menu_mode_height) + 20 * idx,
 				320,
@@ -219,7 +219,7 @@ function ModeSelectScene:render()
 			if idx == self.menu_state.mode and self.starting then
 				b = self.start_frames % 10 > 4 and 0 or 1
 			end
-			love.graphics.setColor(1,1,b,FadeoutAtEdges(
+			love.graphics.setColor(1,1,b,fadeoutAtEdges(
 				-self.menu_mode_height + 20 * idx - fade_offset,
 				render_list_size * 10 - 20,
 				20))
@@ -234,7 +234,7 @@ function ModeSelectScene:render()
 			if ruleset.is_directory then
 				b = 0.4
 			end
-			local highlight = CursorHighlight(
+			local highlight = cursorHighlight(
 				320,
 				(260 - self.menu_ruleset_height) + 20 * idx,
 				320,
@@ -242,7 +242,7 @@ function ModeSelectScene:render()
 			if highlight < 0.5 then
 				b = highlight
 			end
-			love.graphics.setColor(1, 1, b, FadeoutAtEdges(
+			love.graphics.setColor(1, 1, b, fadeoutAtEdges(
 				-self.menu_ruleset_height + 20 * idx - fade_offset,
 				render_list_size * 10 - 20,
 				20)
@@ -254,15 +254,7 @@ function ModeSelectScene:render()
 
 	love.graphics.setColor(1, 1, 1, 1)
 end
-function FadeoutAtEdges(input, edge_distance, edge_width)
-	if input < 0 then
-		input = input * -1
-	end
-	if input > edge_distance then
-		return 1 - (input - edge_distance) / edge_width
-	end
-	return 1
-end
+
 function ModeSelectScene:indirectStartMode()
 	if self.game_mode_folder[self.menu_state.mode].is_directory then
 		playSE("main_decide")

@@ -66,20 +66,20 @@ function ResourcePackScene:render()
     if self.selection_type == 2 then
         alpha = 1
     end
-    self.left_menu_height = interpolateListPos(self.left_menu_height, math.max(self.left_menu_height_shift, 0))
-    self.right_menu_height = interpolateListPos(self.right_menu_height, math.max(self.right_menu_height_shift, 0))
+    self.left_menu_height = interpolateNumber(self.left_menu_height, math.max(self.left_menu_height_shift, 0))
+    self.right_menu_height = interpolateNumber(self.right_menu_height, math.max(self.right_menu_height_shift, 0))
     love.graphics.setColor(1,1,1,alpha)
     love.graphics.rectangle("line", 355, 55 - self.right_menu_height + 40 * self.right_selection_index, 250, 40)
     alpha = 0.5
     love.graphics.setColor(1,1,1,1)
     love.graphics.printf("Select Resource Packs", 0, 10, 640, "center")
-    love.graphics.setColor(1,1,1,FadeoutAtEdges(
+    love.graphics.setColor(1,1,1,fadeoutAtEdges(
         -(self.left_menu_height + 160),
         160,
         40))
     love.graphics.printf("Available", 100, 40 - self.left_menu_height, 160, "center")
     love.graphics.printf("_________", 100, 44 - self.left_menu_height, 160, "center")
-    love.graphics.setColor(1,1,1,FadeoutAtEdges(
+    love.graphics.setColor(1,1,1,fadeoutAtEdges(
         -(self.right_menu_height + 160),
         160,
         40))
@@ -88,14 +88,14 @@ function ResourcePackScene:render()
     -- love.graphics.setCanvas(self.left_canvas)
     for key, value in pairs(self.unselected_resource_packs) do
         
-        love.graphics.setColor(1,1,1,FadeoutAtEdges(
+        love.graphics.setColor(1,1,1,fadeoutAtEdges(
             -(self.left_menu_height + 160) + 40 * key,
             120,
             40))
         love.graphics.printf(value, 60, 60 - self.left_menu_height + 40 * key, 240, "left")
     end
     for key, value in pairs(self.selected_resource_packs) do
-        love.graphics.setColor(1,1,1,FadeoutAtEdges(
+        love.graphics.setColor(1,1,1,fadeoutAtEdges(
             -(self.right_menu_height + 160) + 40 * key,
             120,
             40))
@@ -115,10 +115,10 @@ function ResourcePackScene:render()
     love.graphics.rectangle("line", 400, 400, 160, 30)
     love.graphics.setLineWidth(1)
 
-    local b = CursorHighlight(80, 400, 160, 30)
+    local b = cursorHighlight(80, 400, 160, 30)
     love.graphics.setColor(1,1,b,1)
     love.graphics.printf("Open Pack Folder", 80, 405, 160, "center")
-    b = CursorHighlight(400, 400, 160, 30)
+    b = cursorHighlight(400, 400, 160, 30)
     love.graphics.setColor(1,1,b,1)
     love.graphics.printf("Done", 400, 405, 160, "center")
 end

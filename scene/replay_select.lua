@@ -183,7 +183,7 @@ function ReplaySelectScene:render()
 
 	love.graphics.setFont(font_8x11)
 	if loaded_replays then
-		local b = CursorHighlight(0, 32, 40, 30)
+		local b = cursorHighlight(0, 32, 40, 30)
 		love.graphics.setColor(1, 1, b, 1)
 		love.graphics.printf("<-", font_3x5_4, 0, 32, 40, "center")
 		love.graphics.setColor(1, 1, 1, 1)
@@ -239,7 +239,7 @@ function ReplaySelectScene:render()
 		return
 	end
 
-	self.height_offset = interpolateListPos(self.height_offset / 20, self.menu_state.replay) * 20
+	self.height_offset = interpolateNumber(self.height_offset / 20, self.menu_state.replay) * 20
 	if not self.chosen_replay then
 		love.graphics.setColor(1, 1, 1, 0.5)
 		love.graphics.rectangle("fill", 3, 258 + (self.menu_state.replay * 20) - self.height_offset, 634, 22)
@@ -249,8 +249,8 @@ function ReplaySelectScene:render()
 	if self.menu_state.submenu == 0 then
 		for idx, branch in ipairs(replay_tree) do
 			if(idx >= self.height_offset/20-10 and idx <= self.height_offset/20+10) then
-				local b = CursorHighlight(0, (260 - self.height_offset) + 20 * idx, 640, 20)
-				love.graphics.setColor(1,1,b,FadeoutAtEdges((-self.height_offset) + 20 * idx, 180, 20))
+				local b = cursorHighlight(0, (260 - self.height_offset) + 20 * idx, 640, 20)
+				love.graphics.setColor(1,1,b,fadeoutAtEdges((-self.height_offset) + 20 * idx, 180, 20))
 				love.graphics.printf(branch.name, 6, (260 - self.height_offset) + 20 * idx, 640, "left")	
 			end
 		end
@@ -352,7 +352,7 @@ function ReplaySelectScene:render()
 				if #display_string > 78 then
 					display_string = display_string:sub(1, 75) .. "..."
 				end
-				local b, g = CursorHighlight(0, (260 - self.height_offset) + 20 * idx, 640, 20), 1
+				local b, g = cursorHighlight(0, (260 - self.height_offset) + 20 * idx, 640, 20), 1
 				if not replay["highscore_data"] then
 					g = 0.5
 					b = 0.8
@@ -361,7 +361,7 @@ function ReplaySelectScene:render()
 					g = 0
 					b = 0
 				end
-				love.graphics.setColor(1,g,b,FadeoutAtEdges((-self.height_offset) + 20 * idx, 180, 20))
+				love.graphics.setColor(1,g,b,fadeoutAtEdges((-self.height_offset) + 20 * idx, 180, 20))
 				love.graphics.printf(display_string, 6, (260 - self.height_offset) + 20 * idx, 640, "left")
 			end
 		end

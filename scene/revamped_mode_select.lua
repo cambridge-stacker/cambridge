@@ -3,7 +3,7 @@ local ModeSelectScene = Scene:extend()
 ModeSelectScene.title = "Mode list"
 
 --Interpolates in a smooth fashion unless the visual setting for scrolling is nil or off.
-local function interpolateListPos(input, from, speed)
+local function interpolateNumber(input, from, speed)
 	if config.visualsettings["smooth_scroll"] == 2 or config.visualsettings["smooth_scroll"] == nil then
 		return from
 	end
@@ -163,7 +163,7 @@ function ModeSelectScene:render()
 	drawBackground(0)
 
 	love.graphics.setFont(font_3x5_4)
-	local b = CursorHighlight(0, 40, 50, 30)
+	local b = cursorHighlight(0, 40, 50, 30)
 	love.graphics.setColor(1, 1, b, 1)
 	love.graphics.printf("<-", 0, 40, 50, "center")
 	love.graphics.setColor(1, 1, 1, 1)
@@ -187,8 +187,8 @@ function ModeSelectScene:render()
 
 	local mode_selected, ruleset_selected = self.menu_state.mode, self.menu_state.ruleset
 
-	self.menu_mode_y = interpolateListPos(self.menu_mode_y / 20, mode_selected) * 20
-	self.menu_ruleset_x = interpolateListPos(self.menu_ruleset_x / 120, ruleset_selected) * 120
+	self.menu_mode_y = interpolateNumber(self.menu_mode_y / 20, mode_selected) * 20
+	self.menu_ruleset_x = interpolateNumber(self.menu_ruleset_x / 120, ruleset_selected) * 120
 
     love.graphics.setColor(1, 1, 1, 0.5)
 	love.graphics.rectangle("fill", 20, 258 + (mode_selected * 20) - self.menu_mode_y, 240, 22)
@@ -258,7 +258,7 @@ function ModeSelectScene:render()
 			if mode.is_directory then
 				b = 0.4
 			end
-			local highlight = CursorHighlight(
+			local highlight = cursorHighlight(
 				0,
 				(260 - self.menu_mode_y) + 20 * idx,
 				320,
@@ -269,7 +269,7 @@ function ModeSelectScene:render()
 			if idx == self.menu_state.mode and self.starting then
 				b = self.start_frames % 10 > 4 and 0 or 1
 			end
-			love.graphics.setColor(1, 1, b, FadeoutAtEdges(
+			love.graphics.setColor(1, 1, b, fadeoutAtEdges(
 				-self.menu_mode_y + 20 * idx + 20,
 				160,
 				20))
@@ -284,13 +284,13 @@ function ModeSelectScene:render()
 			if ruleset.is_directory then
 				b = 0.4
 			end
-			local highlight = CursorHighlight(
+			local highlight = cursorHighlight(
 				260 - self.menu_ruleset_x + 120 * idx, 440,
 				120, 20)
 			if highlight < 0.5 then
 				b = highlight
 			end
-			love.graphics.setColor(1, 1, b, FadeoutAtEdges(
+			love.graphics.setColor(1, 1, b, fadeoutAtEdges(
 				-self.menu_ruleset_x + 120 * idx,
 				240,
 				120)
@@ -301,15 +301,6 @@ function ModeSelectScene:render()
 	end
 end
 
-function FadeoutAtEdges(input, edge_distance, edge_width)
-	if input < 0 then
-		input = input * -1
-	end
-	if input > edge_distance then
-		return 1 - (input - edge_distance) / edge_width
-	end
-	return 1
-end
 function ModeSelectScene:indirectStartMode()
 	if self.ruleset_folder[self.menu_state.ruleset].is_directory then
 		playSE("main_decide")
