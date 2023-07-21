@@ -7,6 +7,9 @@ function ResourcePackScene:new()
     self.old_scene = scene
     self.valid_resource_packs = {}
     self.resource_pack_index = {}
+    if not love.filesystem.getInfo("resourcepacks", "directory") then
+        love.filesystem.createDirectory("resourcepacks")
+    end
     ---@type {[...]:string}
     local resource_packs = love.filesystem.getDirectoryItems("resourcepacks")
     for key, value in pairs(resource_packs) do
