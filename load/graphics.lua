@@ -4,7 +4,7 @@ named_backgrounds = {
 }
 current_playing_bgs = {}
 extended_bgs = {}
-image_formats = {".png", ".jpg"}
+image_formats = {".jpg", ".png"}
 bgpath = "res/backgrounds/"
 dir = love.filesystem.getDirectoryItems(bgpath)
 
