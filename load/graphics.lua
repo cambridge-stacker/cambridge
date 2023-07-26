@@ -49,6 +49,7 @@ extended_bgs = {}
 local previous_bg_index = 0
 local bg_index = 0
 local bgpath = "res/backgrounds/%s"
+-- A point of merge conflict
 while true do
 	local formatted_bgpath = bgpath:format(tostring(bg_index*100))
 	for key, value in pairs(image_formats) do
