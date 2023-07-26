@@ -263,16 +263,25 @@ end
 ---@param h number
 ---@return integer
 function cursorHighlight(x,y,w,h)
-	local mouse_x, mouse_y = getScaledDimensions(love.mouse.getPosition())
 	if mouse_idle > 2 or config.visualsettings.cursor_highlight ~= 1 then
 		return 1
 	end
-	if mouse_x > x and mouse_x < x+w and mouse_y > y and mouse_y < y+h then
+	if cursorHoverArea(x,y,w,h) then
 		setSystemCursorType("hand")
 		return 0
 	else
 		return 1
 	end
+end
+
+---@param x number
+---@param y number
+---@param w number
+---@param h number
+---@return boolean
+function cursorHoverArea(x,y,w,h)
+	local mouse_x, mouse_y = getScaledDimensions(love.mouse.getPosition())
+	return (mouse_x > x and mouse_x < x+w and mouse_y > y and mouse_y < y+h)
 end
 
 --Interpolates in a smooth fashion.
