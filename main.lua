@@ -71,7 +71,7 @@ end
 local previous_selected_packs = {}
 
 function loadResourcePacks()
-	if table.equalvalues(previous_selected_packs, config.resource_packs_applied) then
+	if config.resource_packs_applied and table.equalvalues(previous_selected_packs, config.resource_packs_applied) then
 		return
 	end
 	local resource_pack_indexes = {}

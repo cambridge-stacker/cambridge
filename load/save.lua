@@ -87,6 +87,8 @@ function initConfig()
 	if config.fullscreen == nil then config.fullscreen = false end
 	if config.secret == nil then config.secret = false end
 
+	if config.resource_packs_applied == nil then config.resource_packs_applied = {} end
+	
 	if not config.gamesettings then config.gamesettings = {} end
 	for _, option in ipairs(GameConfigScene.options) do
 		if not config.gamesettings[option[1]] then
