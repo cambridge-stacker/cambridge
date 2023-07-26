@@ -100,6 +100,7 @@ function loadResourcePacks()
 	local function loadImageTableRecursively(image_table, path_table)
 		for k,v in pairs(path_table) do
 			if type(v) == "table" then
+				image_table[k] = image_table[k] or {}
 				loadImageTableRecursively(image_table[k], v)
 			else
 				for _, v2 in pairs(image_formats) do
@@ -123,6 +124,9 @@ function loadResourcePacks()
 	love.graphics.setColor(0, 0, 0, 0.5)
 	love.graphics.present()
 
+	backgrounds = {}
+	blocks = {}
+	misc_graphics = {}
 	loadImageTableRecursively(backgrounds, backgrounds_paths)
 	loadImageTableRecursively(blocks, blocks_paths)
 	loadImageTableRecursively(misc_graphics, misc_graphics_paths)
@@ -184,6 +188,7 @@ function loadResourcePacks()
 	--#endregion
 	generateSoundTable()
 
+	collectgarbage("collect")
 
 	previous_selected_packs = copy(config.resource_packs_applied)
 end
