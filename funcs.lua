@@ -306,6 +306,7 @@ function interpolateNumber(input, destination)
 	return input
 end
 
+
 ---@param input number
 ---@param edge_distance number
 ---@param edge_width number
@@ -317,5 +318,9 @@ function fadeoutAtEdges(input, edge_distance, edge_width)
 	end
 	return 1
 end
+
+--alias functions
+interpolatePos = interpolateNumber
+getScaledPos = getScaledDimensions
 
 --#endregion
