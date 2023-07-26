@@ -126,6 +126,62 @@ function loadResourcePacks()
 	loadImageTableRecursively(backgrounds, backgrounds_paths)
 	loadImageTableRecursively(blocks, blocks_paths)
 	loadImageTableRecursively(misc_graphics, misc_graphics_paths)
+
+	--#region Backgrounds stuff. Warning: Code duplication
+
+	local bgpath = "res/backgrounds/%s"
+	local function loadExtendedBgs()
+		extended_bgs = require("res.backgrounds.extend_section_bg")
+	end
+
+	-- error handling for if there is no extend_section_bg
+	if pcall(loadExtendedBgs) then end
+
+	-- helper method to populate backgrounds
+	local function createBackgroundIfExists(name, file_name)
+		local formatted_bgpath = bgpath:format(tostring(file_name))
+
+		-- see if background is an extension of another background
+		if extended_bgs[file_name] ~= nil then
+			copy_bg = extended_bgs[file_name]
+			copy_bg = copy_bg / 100
+			backgrounds[name] = backgrounds[copy_bg]
+			return true
+		end
+
+		--loadImageTable already deals with loading images.
+		if backgrounds[name] ~= nil then
+			return true
+		end
+		-- try creating video background
+		if love.filesystem.getInfo(formatted_bgpath .. ".ogv") then
+			local tempBgPath = formatted_bgpath .. ".ogv"
+			backgrounds[name] = love.graphics.newVideo(
+				tempBgPath, {["audio"] = false}
+			)
+			-- you can set audio to true, but the video will not loop
+			-- properly if audio extends beyond video frames
+			return true
+		end
+		return false
+	end
+
+	-- create section backgrounds
+	local section = 0
+	while (createBackgroundIfExists(section, section*100)) do
+		section = section + 1
+	end
+	
+	-- create named backgrounds
+	local nbgIndex = 1
+	while nbgIndex <= #named_backgrounds do
+		createBackgroundIfExists(
+			named_backgrounds[nbgIndex],
+			string.gsub(named_backgrounds[nbgIndex], "_", "-")
+		)
+		nbgIndex = nbgIndex + 1
+	end
+	--#endregion
 	generateSoundTable()
 
 
