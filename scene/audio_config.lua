@@ -95,7 +95,9 @@ function ConfigScene:render()
 end
 
 function ConfigScene:renderSlider(idx, option)
+	love.graphics.setColor(1, 1, 1, 0.75)
 	self.sliders[option[1]]:draw()
+	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.printf(string.format(option[8],self.sliders[option[1]]:getValue()), 160, self.option_pos_y[idx], 320, "center")
 end
 
