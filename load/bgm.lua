@@ -6,6 +6,7 @@ bgm = {
 }
 
 local current_bgm = nil
+local pitch = 1
 local bgm_locked = false
 
 function switchBGM(sound, subsound)
@@ -84,5 +85,13 @@ end
 function resumeBGM()
 	if current_bgm ~= nil then
 		current_bgm:play()
+		current_bgm:setPitch(pitch)
+	end
+end
+
+function pitchBGM(new_pitch)
+	pitch = new_pitch
+	if current_bgm ~= nil then
+		current_bgm:setPitch(pitch)
 	end
 end

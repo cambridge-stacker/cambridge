@@ -47,8 +47,6 @@ function ReplaySelectScene:new()
 end
 
 function ReplaySelectScene:update()
-	switchBGM(nil) -- experimental
-	
 	if self.das_up or self.das_down or self.das_left or self.das_right then
 		self.das = self.das + 1
 	else

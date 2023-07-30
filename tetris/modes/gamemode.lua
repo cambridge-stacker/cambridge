@@ -400,6 +400,7 @@ end
 
 function GameMode:onGameOver()
 	switchBGM(nil)
+	pitchBGM(1)
 	local alpha = 0
 	local animation_length = 120
 	if self.game_over_frames < animation_length then
