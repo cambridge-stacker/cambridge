@@ -49,25 +49,19 @@ local function updateInputConfig()
 			for name, joystick in pairs(config.input.joysticks) do
 				local input_table = {}
 				for k2, v2 in pairs(joystick.buttons) do
-					for k3, v3 in pairs(v2) do
-						local input_str = "buttons-"..k3
-						input_table[v3] = input_str
-					end
+					local input_str = "buttons-"..k2
+					input_table[v2] = input_str
 				end
 				for k2, v2 in pairs(joystick.axes) do
 					for k3, v3 in pairs(v2) do
-						for k4, v4 in pairs(v3) do
-							local input_str = "axes-"..k3.."-"..k4
-							input_table[v4] = input_str
-						end
+						local input_str = "axes-"..k2.."-"..k3
+						input_table[v3] = input_str
 					end
 				end
 				for k2, v2 in pairs(joystick.hats) do
 					for k3, v3 in pairs(v2) do
-						for k4, v4 in pairs(v3) do
-							local input_str = "hat-"..k3.."-"..k4
-							input_table[v4] = input_str
-						end
+						local input_str = "hat-"..k2.."-"..k3
+						input_table[v3] = input_str
 					end
 				end
 				config.input.joysticks[name] = input_table
@@ -88,7 +82,7 @@ function initConfig()
 	if config.secret == nil then config.secret = false end
 
 	if config.resource_packs_applied == nil then config.resource_packs_applied = {} end
-	
+
 	if not config.gamesettings then config.gamesettings = {} end
 	for _, option in ipairs(GameConfigScene.options) do
 		if not config.gamesettings[option[1]] then
