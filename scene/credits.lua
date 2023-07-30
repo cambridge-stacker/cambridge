@@ -6,6 +6,7 @@ function CreditsScene:new()
     self.frames = 0
     -- higher = faster
     self.scroll_speed = 1
+    setBGMPitch(1)
     switchBGM("credit_roll", "gm3")
 
     DiscordRPC:update({
@@ -100,7 +101,7 @@ function CreditsScene:new()
             "Rusty's Systemspace",
             "Cambridge Discord",
             "And to you, the player!"
-        }
+        },
     }
     local y_calculation = 550
     for key, value in pairs(self.credit_blocks) do
@@ -108,13 +109,21 @@ function CreditsScene:new()
         y_calculation = y_calculation + (#value * 18) + 80
     end
     self.final_y = y_calculation + 120
+    if bgm.credit_roll and bgm.credit_roll.gm3 then
+        self.music_duration = bgm.credit_roll.gm3:getDuration("seconds") * 60 - 120
+    else
+        self.music_duration = 4000
+    end
+    self.hold_speed = math.max(2, math.floor(self.music_duration / 600))
 end
 
 function CreditsScene:update()
-    self.frames = self.frames + self.scroll_speed
-    if self.frames >= self.final_y + 150 then
+    local time_fragment = (self.final_y / self.music_duration)
+    self.frames = self.frames + (time_fragment * self.scroll_speed)
+    if self.frames >= self.final_y + (time_fragment * 120) then
         playSE("mode_decide")
         scene = TitleScene()
+        setBGMPitch(1)
         switchBGM(nil)
     elseif self.frames >= self.final_y then
         fadeoutBGM(2)
@@ -155,15 +164,17 @@ end
 function CreditsScene:onInputPress(e)
     if e.type == "mouse" and e.button == 1 then
         scene = TitleScene()
+        setBGMPitch(1)
         switchBGM(nil)
     end
     if e.scancode == "space" then
-        self.scroll_speed = 4
-        setBGMPitch(4)
+        self.scroll_speed = self.hold_speed
+        setBGMPitch(self.hold_speed)
     end
     if e.input == "menu_decide" or e.scancode == "return" or
        e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
         scene = TitleScene()
+        setBGMPitch(1)
         switchBGM(nil)
 	end
 end
