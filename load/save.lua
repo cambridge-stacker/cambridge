@@ -33,8 +33,8 @@ local function updateInputConfig()
 			end
 			config.input.keys = new_key_inputs
 		end
+		config.input.keys.mode_exit = config.input.keys.menu_back or "escape"
 	end
-	config.input.keys.mode_exit = config.input.keys.menu_back or "escape"
 	if config.input.joysticks ~= nil then
 		if config.input.joysticks.menu_decide ~= nil then
 			local input_table = {}
