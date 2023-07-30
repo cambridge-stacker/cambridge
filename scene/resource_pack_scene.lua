@@ -187,12 +187,16 @@ function ResourcePackScene:render()
 			local color_highlight = cursorHighlight(360, 60-box_offset, 20, 40)
 			love.graphics.setColor(1-color_highlight/2, 1-color_highlight/2, color_highlight/2, 1)
 			love.graphics.polygon("fill", 380,60-box_offset, 360,75-box_offset, 380,90-box_offset)
-			color_highlight = cursorHighlight(410, 60-box_offset, 40, 40)
-			love.graphics.setColor(1-color_highlight/2, 1-color_highlight/2, color_highlight/2, 1)
-			love.graphics.polygon("fill", 410,85-box_offset, 450,85-box_offset, 430,65-box_offset)
-			color_highlight = cursorHighlight(470, 60-box_offset, 40, 40)
-			love.graphics.setColor(1-color_highlight/2, 1-color_highlight/2, color_highlight/2, 1)
-			love.graphics.polygon("fill", 470,65-box_offset, 510,65-box_offset, 490,85-box_offset)
+			if resource_pack_index > 1 then
+				color_highlight = cursorHighlight(410, 60-box_offset, 40, 40)
+				love.graphics.setColor(1-color_highlight/2, 1-color_highlight/2, color_highlight/2, 1)
+				love.graphics.polygon("fill", 410,85-box_offset, 450,85-box_offset, 430,65-box_offset)
+			end
+			if resource_pack_index < self.selected_resource_packs_count then
+				color_highlight = cursorHighlight(470, 60-box_offset, 40, 40)
+				love.graphics.setColor(1-color_highlight/2, 1-color_highlight/2, color_highlight/2, 1)
+				love.graphics.polygon("fill", 470,65-box_offset, 510,65-box_offset, 490,85-box_offset)
+			end
 		end
 	end
 	if self.selection_type == 3 then
@@ -271,10 +275,10 @@ function ResourcePackScene:onInputPress(e)
 					table.remove(config.resource_packs_applied, resource_pack_index)
 					self:refreshPackSelection()
 				end
-				if cursorHoverArea(410, 60-box_offset, 40, 40) then
+				if cursorHoverArea(410, 60-box_offset, 40, 40) and resource_pack_index > 1 then
 					self:swapSelectedPack(resource_pack_index, resource_pack_index - 1)
 				end
-				if cursorHoverArea(470, 60-box_offset, 40, 40) then
+				if cursorHoverArea(470, 60-box_offset, 40, 40) and resource_pack_index < self.selected_resource_packs_count then
 					self:swapSelectedPack(resource_pack_index, resource_pack_index + 1)
 				end
 			end
