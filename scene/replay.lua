@@ -10,7 +10,7 @@ local savestate_frames = nil
 local state_loaded = false
 
 function ReplayScene:new(replay, game_mode, ruleset)
-	setBGMPitch(1)
+	pitchBGM(1)
 	config.gamesettings = replay["gamesettings"]
 	if replay["delayed_auto_shift"] then config.das = replay["delayed_auto_shift"] end
 	if replay["auto_repeat_rate"] then config.arr = replay["auto_repeat_rate"] end
@@ -174,11 +174,12 @@ function ReplayScene:onInputPress(e)
 		e.input == "mode_exit" or
 		e.input == "retry"
  	) then
+		switchBGM(nil)
+		pitchBGM(1)
 		self.game:onExit()
 		loadSave()
 		love.math.setRandomSeed(os.time())
 		if self.rerecord then sortReplays() end
-		setBGMPitch(1)
 		scene = (
 			(e.input == "retry") and
 			ReplayScene(
@@ -213,7 +214,7 @@ function ReplayScene:onInputPress(e)
 		self.game.save_replay = config.gamesettings.save_replay == 1
 		self.game.replay_inputs = self.retry_replay.inputs
 		self.paused = true
-		setBGMPitch(1)
+		pitchBGM(1)
 	elseif e.input == "hold" then
 		self.show_invisible = not self.show_invisible
 	elseif e.input == "left" then
@@ -221,13 +222,13 @@ function ReplayScene:onInputPress(e)
 		if self.replay_speed < 1 then
 			self.replay_speed = 1
 		end
-		setBGMPitch(self.replay_speed)
+		pitchBGM(self.replay_speed)
 	elseif e.input == "right" then
 		self.replay_speed = self.replay_speed + 1
 		if self.replay_speed > 99 then
 			self.replay_speed = 99
 		end
-		setBGMPitch(self.replay_speed)
+		pitchBGM(self.replay_speed)
 	end
 end
 

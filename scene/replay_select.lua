@@ -107,8 +107,6 @@ function sortReplays()
 end
 
 function ReplaySelectScene:update()
-	switchBGM(nil) -- experimental
-	
 	if not loaded_replays then
 		self.state_string = love.thread.getChannel('load_state'):peek()
 		local replay = popFromChannel('replay')

@@ -97,6 +97,7 @@ function GameScene:onInputPress(e)
 		frame_steps = frame_steps + 1
 	elseif e.input == "retry" then
 		switchBGM(nil)
+		pitchBGM(1)
 		self.game:onExit()
 		scene = GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs)
 	elseif e.input == "pause" and not (self.game.game_over or self.game.completed) then

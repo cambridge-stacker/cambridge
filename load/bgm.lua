@@ -37,8 +37,8 @@ end
 
 
 local current_bgm = nil
+local pitch = 1
 local bgm_locked = false
-local bgm_pitch = 1
 
 function switchBGM(sound, subsound)
 	if bgm_locked then
@@ -73,13 +73,6 @@ end
 function switchBGMLoop(sound, subsound)
 	switchBGM(sound, subsound)
 	if current_bgm then current_bgm:setLooping(true) end
-end
-
-function setBGMPitch(pitch)
-	bgm_pitch = pitch
-	if current_bgm ~= nil then
-		current_bgm:setPitch(pitch)
-	end
 end
 
 function lockBGM()
@@ -129,7 +122,14 @@ end
 
 function resumeBGM()
 	if current_bgm ~= nil then
-		current_bgm:setPitch(bgm_pitch)
 		current_bgm:play()
+		current_bgm:setPitch(pitch)
+	end
+end
+
+function pitchBGM(new_pitch)
+	pitch = new_pitch
+	if current_bgm ~= nil then
+		current_bgm:setPitch(pitch)
 	end
 end

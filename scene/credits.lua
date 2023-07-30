@@ -6,7 +6,7 @@ function CreditsScene:new()
     self.frames = 0
     -- higher = faster
     self.scroll_speed = 1
-    setBGMPitch(1)
+    pitchBGM(1)
     switchBGM("credit_roll", "gm3")
 
     DiscordRPC:update({
@@ -123,7 +123,7 @@ function CreditsScene:update()
     if self.frames >= self.final_y + (time_fragment * 120) then
         playSE("mode_decide")
         scene = TitleScene()
-        setBGMPitch(1)
+        pitchBGM(1)
         switchBGM(nil)
     elseif self.frames >= self.final_y then
         fadeoutBGM(2)
@@ -164,17 +164,17 @@ end
 function CreditsScene:onInputPress(e)
     if e.type == "mouse" and e.button == 1 then
         scene = TitleScene()
-        setBGMPitch(1)
+        pitchBGM(1)
         switchBGM(nil)
     end
     if e.scancode == "space" then
         self.scroll_speed = self.hold_speed
-        setBGMPitch(self.hold_speed)
+        pitchBGM(self.hold_speed)
     end
     if e.input == "menu_decide" or e.scancode == "return" or
        e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
         scene = TitleScene()
-        setBGMPitch(1)
+        pitchBGM(1)
         switchBGM(nil)
 	end
 end
@@ -182,7 +182,7 @@ end
 function CreditsScene:onInputRelease(e)
     if e.scancode == "space" then
         self.scroll_speed = 1
-        setBGMPitch(1)
+        pitchBGM(1)
     end
 end
 
