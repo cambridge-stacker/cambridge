@@ -177,6 +177,7 @@ function ReplayScene:onInputPress(e)
 		loadSave()
 		love.math.setRandomSeed(os.time())
 		if self.rerecord then sortReplays() end
+		setBGMPitch(1)
 		scene = (
 			(e.input == "retry") and
 			ReplayScene(
@@ -211,6 +212,7 @@ function ReplayScene:onInputPress(e)
 		self.game.save_replay = config.gamesettings.save_replay == 1
 		self.game.replay_inputs = self.retry_replay.inputs
 		self.paused = true
+		setBGMPitch(1)
 	elseif e.input == "hold" then
 		self.show_invisible = not self.show_invisible
 	elseif e.input == "left" then
@@ -218,11 +220,13 @@ function ReplayScene:onInputPress(e)
 		if self.replay_speed < 1 then
 			self.replay_speed = 1
 		end
+		setBGMPitch(self.replay_speed)
 	elseif e.input == "right" then
 		self.replay_speed = self.replay_speed + 1
 		if self.replay_speed > 99 then
 			self.replay_speed = 99
 		end
+		setBGMPitch(self.replay_speed)
 	end
 end
 

@@ -159,6 +159,7 @@ function CreditsScene:onInputPress(e)
     end
     if e.scancode == "space" then
         self.scroll_speed = 4
+        setBGMPitch(4)
     end
     if e.input == "menu_decide" or e.scancode == "return" or
        e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
@@ -170,6 +171,7 @@ end
 function CreditsScene:onInputRelease(e)
     if e.scancode == "space" then
         self.scroll_speed = 1
+        setBGMPitch(1)
     end
 end
 
