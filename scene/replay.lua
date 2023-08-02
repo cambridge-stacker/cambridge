@@ -158,10 +158,18 @@ function ReplayScene:render()
 		love.graphics.printf("?? PAUSES (--:--.--)", 0, pauses_y_coordinate, 635, "right")
 	end
 	if self.show_invisible then 
-		self.game.grid:draw()
 		love.graphics.setColor(1, 1, 1, 1)
-		love.graphics.setFont(font_3x5_3)
-		love.graphics.printf("SHOW INVIS", 64, pauses_y_coordinate + 20, 160, "center")
+		if self.game.grid and self.game.grid.draw then
+			self.game.grid:draw()
+			love.graphics.setFont(font_3x5_3)
+			love.graphics.printf("SHOW INVIS", 64, 60, 160, "center")
+		elseif not self.game.grid.draw then
+			love.graphics.setFont(font_3x5_2)
+			love.graphics.printf("GRID IS UNDRAWABLE", 64, 60, 160, "center")
+		else
+			love.graphics.setFont(font_3x5_2)
+			love.graphics.printf("GRID IS NOT FOUND", 64, 60, 160, "center")
+		end
 	end
 end
 
