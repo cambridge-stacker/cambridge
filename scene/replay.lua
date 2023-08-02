@@ -161,6 +161,7 @@ function ReplayScene:render()
 		love.graphics.setColor(1, 1, 1, 1)
 		if self.game.grid and self.game.grid.draw then
 			self.game.grid:draw()
+			love.graphics.setColor(1, 1, 1, 1)
 			love.graphics.setFont(font_3x5_3)
 			love.graphics.printf("SHOW INVIS", 64, 60, 160, "center")
 		elseif not self.game.grid.draw then
