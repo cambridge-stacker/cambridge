@@ -265,16 +265,20 @@ function ReplaySelectScene:render()
 			love.graphics.printf("Mode: " .. replay["mode"], 0, 120, 640, "center")
 			love.graphics.setFont(font_3x5_3)
 			love.graphics.printf(os.date("Timestamp: %c", replay["timestamp"]), 0, 160, 640, "center")
+			if replay.toolassisted then
+				love.graphics.setFont(font_3x5_2)
+				love.graphics.setColor(1, 1, 0, 1)
+				love.graphics.printf("This replay either used built-in TAS or has ineligible flag set", 0, 100, 640, "center")
+				love.graphics.setColor(1, 1, 1, 1)
+			end
 			if replay.cambridge_version then
 				idx = idx + 1.5
-				love.graphics.setFont(font_3x5_2)
-				love.graphics.printf("Cambridge version for this replay: "..replay.cambridge_version, 0, 190, 640, "center")
+				local version_text_color = {1, 1, 1, 1}
 				if replay.cambridge_version ~= version then
-					love.graphics.setFont(font_3x5_2)
-					love.graphics.setColor(1, 0, 0)
-					love.graphics.printf("Warning! The versions don't match!\nStuff may break, so, start at your own risk.", 0, 90, 640, "center")
-					love.graphics.setColor(1, 1, 1)
+					version_text_color = {1, 0, 0, 1}
 				end
+				love.graphics.setFont(font_3x5_2)
+				love.graphics.printf({"Cambridge version for this replay: ", version_text_color, replay.cambridge_version}, 0, 190, 640, "center")
 			end
 			if replay.pause_count and replay.pause_time then
 				idx = idx + 1.5
@@ -308,9 +312,14 @@ function ReplaySelectScene:render()
 				end
 			end
 			if replay.highscore_data then
-				love.graphics.setFont(font_3x5_2)
-				love.graphics.printf("In-replay highscore data:", 0, 190 + idx * 20, 640, "center")
-				for key, value in pairs(replay["highscore_data"]) do
+				if next(replay.highscore_data) == nil then
+					love.graphics.setFont(font_3x5_3)
+					love.graphics.printf("Level: ".. replay["level"], 0, 190 + idx * 20, 640, "center")
+				else
+					love.graphics.setFont(font_3x5_2)
+					love.graphics.printf("In-replay highscore data:", 0, 190 + idx * 20, 640, "center")
+				end
+				for key, value in pairs(replay.highscore_data) do
 					idx = idx + 0.8
 					love.graphics.printf(key..": "..value, 0, 200 + idx * 20, 640, "center")
 					idx = idx + self.highscores_idx_offset[key]
@@ -321,7 +330,8 @@ function ReplaySelectScene:render()
 				love.graphics.printf("Legacy replay\nLevel: "..replay["level"], 0, 190, 640, "center")
 			end
 			love.graphics.setFont(font_3x5_2)
-			love.graphics.printf("Enter or LMB or ".. config.input.keys.menu_decide ..": Start\nDel or Backspace or RMB or "..config.input.keys.menu_back..": Return", 0, 250 + idx * 20, 640, "center")
+			love.graphics.printf("Enter or LMB or ".. config.input.keys.menu_decide ..": Start\nDel or Backspace or RMB or " ..
+						config.input.keys.menu_back..": Return", 0, 250 + idx * 20, 640, "center")
 		end
 	else
 		if #replay_tree[self.menu_state.submenu] == 0 then
