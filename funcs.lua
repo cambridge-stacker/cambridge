@@ -173,11 +173,13 @@ end
 ---@param origin_y integer
 ---@param draw_width integer
 ---@param draw_height integer
-function drawSizeIndependentImage(image, origin_x, origin_y, r, draw_width, draw_height, ...)
+function drawSizeIndependentImage(image, origin_x, origin_y, r, draw_width, draw_height, offset_x, offset_y, ...)
+	offset_x = offset_x or 0
+	offset_y = offset_y or 0
 	local width, height = image:getDimensions()
 	local width_scale_factor = width / draw_width
 	local height_scale_factor = height / draw_height
-	love.graphics.draw(image, origin_x, origin_y, r, 1/width_scale_factor, 1/height_scale_factor, ...)
+	love.graphics.draw(image, origin_x, origin_y, r, 1/width_scale_factor, 1/height_scale_factor, offset_x*width_scale_factor, offset_y*height_scale_factor, ...)
 end
 
 ---@param h number
@@ -219,28 +221,28 @@ function rainbowString(string)
 	return tbl
 end
 
----@param directory_from string
----@param directory_to string
+---@param source_directory string
+---@param destination_directory string
 ---@param override_warning boolean
-function copyDirectoryRecursively(directory_from, directory_to, override_warning)
-	local directory_items = love.filesystem.getDirectoryItems(directory_from)
-	if not love.filesystem.getInfo(directory_to, "directory") then
-		love.filesystem.createDirectory(directory_to)
+function copyDirectoryRecursively(source_directory, destination_directory, override_warning)
+	local directory_items = love.filesystem.getDirectoryItems(source_directory)
+	if not love.filesystem.getInfo(destination_directory, "directory") then
+		love.filesystem.createDirectory(destination_directory)
 	end
-	for key, value in pairs(directory_items) do
-		local destination_from = directory_from.."/"..value
-		local destination_to = directory_to.."/"..value
-		if love.filesystem.getInfo(destination_from, "directory") then
-			copyDirectoryRecursively(destination_from, destination_to, override_warning)
+	for _, path in pairs(directory_items) do
+		local source_path = source_directory.."/"..path
+		local destination_path = destination_directory.."/"..path
+		if love.filesystem.getInfo(source_path, "directory") then
+			copyDirectoryRecursively(source_path, destination_path, override_warning)
 		end
-		if love.filesystem.getInfo(destination_from, "file") then
+		if love.filesystem.getInfo(source_path, "file") then
 			local msgbox_choice = 2
-			if love.filesystem.getInfo(destination_to, "file") and override_warning then
-				msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "This file ("..value..") already exists! Do you want to override it?", {"No", "Yes"}, "info", false)
+			if love.filesystem.getInfo(destination_path, "file") and override_warning then
+				msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "This file ("..path..") already exists! Do you want to override it?", {"No", "Yes", }, "info", false)
 			end
 			if msgbox_choice == 2 then
-				local file = love.filesystem.read(destination_from)
-				love.filesystem.write(destination_to, file)
+				local file = love.filesystem.read(source_path)
+				love.filesystem.write(destination_path, file)
 			end
 		end
 	end
@@ -254,7 +256,8 @@ function getScaledDimensions(x, y, screen_x, screen_y)
 		screen_x, screen_y = love.graphics.getDimensions()
 	end
 	local scale_factor = math.min(screen_x / 640, screen_y / 480)
-	return (x - (screen_x - scale_factor * 640) / 2)/scale_factor, (y - (screen_y - scale_factor * 480) / 2)/scale_factor
+	return	(x - (screen_x - scale_factor * 640) / 2) / scale_factor,
+			(y - (screen_y - scale_factor * 480) / 2) / scale_factor
 end
 
 ---@param x number
@@ -284,7 +287,7 @@ function cursorHoverArea(x,y,w,h)
 	return (mouse_x > x and mouse_x < x+w and mouse_y > y and mouse_y < y+h)
 end
 
---Interpolates in a smooth fashion.
+---Interpolates in a smooth fashion if Smooth Scrolling option is enabled in visual settings. 
 ---@param input number
 ---@param destination number
 ---@return number
