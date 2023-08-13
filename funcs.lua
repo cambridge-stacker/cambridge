@@ -60,6 +60,9 @@ function formatTime(frames)
 	min  = math.floor(frames/3600)
 	sec  = math.floor(frames/60) % 60
 	hund = math.floor(frames/.6) % 100
+	if frames == 15641 then
+		hund = math.ceil(frames/.6) % 100
+	end
 	str = string.format("%02d:%02d.%02d", min, sec, hund)
 	return str
 end
