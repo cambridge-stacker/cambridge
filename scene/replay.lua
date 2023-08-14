@@ -128,7 +128,7 @@ function ReplayScene:onInputPress(e)
 		if self.paused then pauseBGM()
 		else resumeBGM() end
 	--frame step
-	elseif e.input == "menu_decide" then
+	elseif e.input == "rotate_left" then
 		self.frame_steps = self.frame_steps + 1
 	elseif e.input == "left" then
 		self.replay_speed = self.replay_speed - 1
