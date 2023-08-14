@@ -276,7 +276,6 @@ end
 is_cursor_visible = true
 mouse_idle = 0
 TAS_mode = false
-frame_steps = 0
 loaded_replays = false
 local prev_cur_pos_x, prev_cur_pos_y = 0, 0
 local system_cursor_type = "arrow"

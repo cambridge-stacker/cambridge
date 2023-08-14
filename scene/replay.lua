@@ -47,6 +47,7 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	self.frames = 0
 	self.relative_frames = 0
 	self.show_invisible = false
+	self.frame_steps = 0
 	DiscordRPC:update({
 		details = "Viewing a replay",
 		state = self.game.name,
@@ -69,10 +70,10 @@ function ReplayScene:update()
 		config.sfx_volume = 0	--This is to stop blasting your ears every time you load a state.
 		frames_left = savestate_frames
 	end
-	if not self.paused or frame_steps > 0 then
-		if frame_steps > 0 then
+	if not self.paused or self.frame_steps > 0 then
+		if self.frame_steps > 0 then
 			self.game.ineligible = self.rerecord or self.game.ineligible
-			frame_steps = frame_steps - 1
+			self.frame_steps = self.frame_steps - 1
 		end
 		while frames_left > 0 do
 			frames_left = frames_left - 1
@@ -198,7 +199,7 @@ function ReplayScene:onInputPress(e)
 	 	)
 		savestate_frames = nil
 	elseif e.input == "frame_step" and (TAS_mode or not self.rerecord) then
-		frame_steps = frame_steps + 1
+		self.frame_steps = self.frame_steps + 1
 	elseif e.input == "pause" and not (self.game.game_over or self.game.completed) then
 		self.paused = not self.paused
 		if self.paused then pauseBGM()

@@ -1119,7 +1119,7 @@ function GameMode:draw(paused)
 		)
 	end
 
-	if paused or frame_steps > 0 then
+	if paused then
 		self:drawIfPaused()
 	end
 

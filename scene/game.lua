@@ -31,6 +31,7 @@ function GameScene:new(game_mode, ruleset, inputs)
 	self.game.pause_count = 0
 	self.game.pause_time = 0
 	self.game.pause_timestamps = {}
+	self.frame_steps = 0
 	DiscordRPC:update({
 		details = self.game.rpc_details,
 		state = self.game.name,
@@ -39,12 +40,12 @@ function GameScene:new(game_mode, ruleset, inputs)
 end
 
 function GameScene:update()
-	if self.paused and frame_steps == 0 then
+	if self.paused and self.frame_steps == 0 then
 		self.game.pause_time = self.game.pause_time + 1
 	else
-		if frame_steps > 0 then
+		if self.frame_steps > 0 then
 			self.game.ineligible = true
-			frame_steps = frame_steps - 1
+			self.frame_steps = self.frame_steps - 1
 		end
 		local inputs = {}
 		for input, value in pairs(self.inputs) do
@@ -94,7 +95,7 @@ function GameScene:onInputPress(e)
 		scene = e.input == "retry" and GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs) or
 				config.visualsettings.mode_select_type == 1 and ModeSelectScene() or RevModeSelectScene()
 	elseif e.input == "frame_step" and TAS_mode then
-		frame_steps = frame_steps + 1
+		self.frame_steps = self.frame_steps + 1
 	elseif e.input == "retry" then
 		switchBGM(nil)
 		pitchBGM(1)
