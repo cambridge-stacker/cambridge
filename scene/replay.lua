@@ -38,6 +38,7 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	self.replay_index = 1
 	self.replay_speed = 1
 	self.show_invisible = false
+	self.frame_steps = 0
 	DiscordRPC:update({
 		details = "Viewing a replay",
 		state = self.game.name,
@@ -47,7 +48,10 @@ end
 
 function ReplayScene:update()
 	local frames_left = self.replay_speed
-	if not self.paused then
+	if not self.paused or self.frame_steps > 0 then
+		if self.frame_steps > 0 then
+			self.frame_steps = self.frame_steps - 1
+		end
 		while frames_left > 0 do
 			frames_left = frames_left - 1
 			self.inputs = self.replay["inputs"][self.replay_index]["inputs"]
@@ -123,6 +127,9 @@ function ReplayScene:onInputPress(e)
 		self.paused = not self.paused
 		if self.paused then pauseBGM()
 		else resumeBGM() end
+	--frame step
+	elseif e.input == "rotate_left" then
+		self.frame_steps = self.frame_steps + 1
 	elseif e.input == "left" then
 		self.replay_speed = self.replay_speed - 1
 		if self.replay_speed < 1 then
