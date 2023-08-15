@@ -298,11 +298,11 @@ function ResourcePackScene:onInputPress(e)
 		self.hold_swap = true
 	end
 	if e.input == "menu_decide" then
-		if self.selection_type == 1 then
+		if self.selection_type == 1 and self.unselected_resource_packs_count > 0 then
 			table.insert(config.resource_packs_applied, 1, self.unselected_resource_packs[self.left_selection_index])
 			self.left_selection_index = math.max(self.left_selection_index - 1, 1)
 			self:refreshPackSelection()
-		elseif self.selection_type == 2 then
+		elseif self.selection_type == 2 and self.selected_resource_packs_count > 0 then
 			table.remove(config.resource_packs_applied, self.right_selection_index)
 			self.right_selection_index = math.max(self.right_selection_index - 1, 1)
 			self:refreshPackSelection()
