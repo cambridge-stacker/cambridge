@@ -330,8 +330,8 @@ function ReplaySelectScene:render()
 				love.graphics.printf("Legacy replay\nLevel: "..replay["level"], 0, 190, 640, "center")
 			end
 			love.graphics.setFont(font_3x5_2)
-			love.graphics.printf("Enter or LMB or ".. config.input.keys.menu_decide ..": Start\nDel or Backspace or RMB or " ..
-						config.input.keys.menu_back..": Return", 0, 250 + idx * 20, 640, "center")
+			love.graphics.printf("Enter or LMB or ".. (config.input.keys.menu_decide or "???") ..": Start\nDel or Backspace or RMB or " ..
+						(config.input.keys.menu_back or "???")..": Return", 0, 250 + idx * 20, 640, "center")
 		end
 	else
 		if #replay_tree[self.menu_state.submenu] == 0 then
