@@ -244,7 +244,7 @@ function ResourcePackScene:onInputPress(e)
 			love.system.openURL("file://" .. love.filesystem.getSaveDirectory() .. "/resourcepacks/")
 		end
 		if cursorHoverArea(400, 400, 160, 30) then
-			if table.equalvalues(self.prev_resource_packs_applied, config.resource_packs_applied) then
+			if equals(self.prev_resource_packs_applied, config.resource_packs_applied) then
 				playSE("menu_cancel")
 			else
 				playSE("mode_decide")
@@ -365,7 +365,7 @@ function ResourcePackScene:onInputPress(e)
 		self.selection_type = Mod1(self.selection_type + 1, 4)
 	end
 	if e.scancode == "escape" or e.input == "menu_back" or (self.selection_type == 4 and e.input == "menu_decide") then
-		if table.equalvalues(self.prev_resource_packs_applied, config.resource_packs_applied) then
+		if equals(self.prev_resource_packs_applied, config.resource_packs_applied) then
 			playSE("menu_cancel")
 		else
 			playSE("mode_decide")

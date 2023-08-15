@@ -71,7 +71,7 @@ end
 local previous_selected_packs = {}
 
 function loadResourcePacks()
-	if not config.resource_packs_applied or table.equalvalues(previous_selected_packs, config.resource_packs_applied) then
+	if not config.resource_packs_applied or equals(previous_selected_packs, config.resource_packs_applied) then
 		return
 	end
 	local resource_pack_indexes = {}
@@ -82,22 +82,15 @@ function loadResourcePacks()
         end
     end
 	for k, v in pairs(previous_selected_packs) do
-		if not table.contains(config.resource_packs_applied, v) then
+		if not config.resource_packs_applied[k] then
 			love.filesystem.unmount("resourcepacks/"..v)
 		end
 	end
 	if type(config.resource_packs_applied) == "table" then
 		for k, v in pairs(config.resource_packs_applied) do
-			local previously_selected_pack
-			for _, v2 in pairs(previous_selected_packs) do
-				if v == v2 then
-					previously_selected_pack = v
-					break
-				end
-			end
-			if resource_pack_indexes[v] and not previously_selected_pack then
+			if resource_pack_indexes[v] and not previous_selected_packs[k] then
 				love.filesystem.mount("resourcepacks/"..v, "res/")
-			elseif not previously_selected_pack then
+			elseif not previous_selected_packs[k] then
 				table.remove(config.resource_packs_applied, k)
 			end
 		end
