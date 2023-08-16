@@ -24,15 +24,41 @@ function loadFromFile(filename)
 	return save_data[1]
 end
 
-local function updateInputConfig()
-	if config.input.keys ~= nil then
-		if config.input.keys.menu_decide == nil then
-			local new_key_inputs = {}
-			for key, value in pairs(config.input.keys) do
-				new_key_inputs[value] = key
-			end
-			config.input.keys = new_key_inputs
+local configurable_inputs = {
+	"menu_decide",
+	"menu_back",
+	"rotate_left",
+	"rotate_left2",
+	"rotate_right",
+	"rotate_right2",
+	"rotate_180",
+	"hold",
+	"retry",
+	"mode_exit",
+	"frame_step",
+	"generic_1",
+	"generic_2",
+	"generic_3",
+	"generic_4",
+}
+
+local function inputUpdaterConditions(input_table)
+	if type(input_table) ~= "table" then return false end
+	for key, value in pairs(input_table) do
+		if table.contains(configurable_inputs, key) then
+			return false
 		end
+	end
+	return true
+end
+
+local function updateInputConfig()
+	if inputUpdaterConditions(config.input.keys) then
+		local new_key_inputs = {}
+		for key, value in pairs(config.input.keys) do
+			new_key_inputs[value] = key
+		end
+		config.input.keys = new_key_inputs
 		config.input.keys.mode_exit = config.input.keys.menu_back or "escape"
 	end
 	if config.input.joysticks ~= nil then
@@ -47,24 +73,26 @@ local function updateInputConfig()
 			config.input.joysticks = input_table
 		else
 			for name, joystick in pairs(config.input.joysticks) do
-				local input_table = {}
-				for k2, v2 in pairs(joystick.buttons) do
-					local input_str = "buttons-"..k2
-					input_table[v2] = input_str
-				end
-				for k2, v2 in pairs(joystick.axes) do
-					for k3, v3 in pairs(v2) do
-						local input_str = "axes-"..k2.."-"..k3
-						input_table[v3] = input_str
+				if inputUpdaterConditions(joystick.buttons) and inputUpdaterConditions(joystick.axes) and inputUpdaterConditions(joystick.hats) then
+					local input_table = {}
+					for k2, v2 in pairs(joystick.buttons) do
+						local input_str = "buttons-"..k2
+						input_table[v2] = input_str
 					end
-				end
-				for k2, v2 in pairs(joystick.hats) do
-					for k3, v3 in pairs(v2) do
-						local input_str = "hat-"..k2.."-"..k3
-						input_table[v3] = input_str
+					for k2, v2 in pairs(joystick.axes) do
+						for k3, v3 in pairs(v2) do
+							local input_str = "axes-"..k2.."-"..k3
+							input_table[v3] = input_str
+						end
 					end
+					for k2, v2 in pairs(joystick.hats) do
+						for k3, v3 in pairs(v2) do
+							local input_str = "hat-"..k2.."-"..k3
+							input_table[v3] = input_str
+						end
+					end
+					config.input.joysticks[name] = input_table
 				end
-				config.input.joysticks[name] = input_table
 			end
 		end
 	end
@@ -118,18 +146,18 @@ function initConfig()
 			if config.input.joysticks == nil then
 				config.input.joysticks = {}
 			end
-			if config.input.keys.menu_decide == nil or config.input.joysticks.menu_decide ~= nil then
+			if inputUpdaterConditions(config.input.keys) or config.input.joysticks.menu_decide ~= nil then
 				updateInputConfig()
-			end
-			--if it still fails
-			if config.input.keys.menu_decide == nil then
-				config.input.keys = nil
-				scene = InputConfigScene()
 			end
 		end
 		if config.current_mode then current_mode = config.current_mode end
 		if config.current_ruleset then current_ruleset = config.current_ruleset end
 		scene = TitleScene()
+		--if updateInputConfig still fails
+		if inputUpdaterConditions(config.input.keys) then
+			config.input.keys = nil
+			scene = InputConfigScene()
+		end
 	end
 end
 
