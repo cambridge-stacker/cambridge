@@ -130,7 +130,7 @@ function KeyConfigScene:render()
 			love.graphics.printf(self.set_inputs[input], 240, 50 + i * 18, 300, "left")
 		end
 	end
-	local string_press_key = "Press key input for " .. input_naming[configurable_inputs[self.input_state]]
+	local string_press_key = "Press key input for " .. (input_naming[configurable_inputs[self.input_state]] or "???")
 	if self.input_state > #configurable_inputs then
 		love.graphics.print("Press enter to confirm, delete/backspace to retry" .. (config.input and ", escape to cancel" or ""))
 		return
