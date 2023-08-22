@@ -228,6 +228,9 @@ function GameMode:update(inputs, ruleset)
 	if self.game_over or self.completed then
 		if self.save_replay and self.game_over_frames == 0 then
 			self:saveReplay()
+
+			-- ensure replays are only saved once per game, incase self.game_over_frames == 0 for longer than one frame
+			self.save_replay = false
 		end
 		self.game_over_frames = self.game_over_frames + 1
 		return
