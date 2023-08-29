@@ -3,7 +3,7 @@ local CreditsScene = Scene:extend()
 CreditsScene.title = "Credits"
 
 function CreditsScene:new()
-    self.frames = 0
+    self.time = 0
     -- higher = faster
     self.scroll_speed = 1
     pitchBGM(1)
@@ -119,13 +119,13 @@ end
 
 function CreditsScene:update()
     local time_fragment = (self.final_y / self.music_duration)
-    self.frames = self.frames + (time_fragment * self.scroll_speed)
-    if self.frames >= self.final_y + (time_fragment * 120) then
+    self.time = self.time + (time_fragment * self.scroll_speed)
+    if self.time >= self.final_y + (time_fragment * 120) then
         playSE("mode_decide")
         scene = TitleScene()
         pitchBGM(1)
         switchBGM(nil)
-    elseif self.frames >= self.final_y then
+    elseif self.time >= self.final_y then
         fadeoutBGM(2)
     end
 end
@@ -135,7 +135,7 @@ local alignment_table = {"right", "center", "left"}
 local alignment_coordinates = {320, 160}
 
 function CreditsScene:render()
-    local offset = self.frames
+    local offset = self.time
 
     local credits_pos = config.visualsettings.credits_position
 
