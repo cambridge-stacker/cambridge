@@ -1,3 +1,9 @@
+
+-- Pre-load aliases
+random = love.math.random
+math.random = love.math.random
+math.randomseed = love.math.setRandomSeed
+
 function love.load()
 	love.graphics.setDefaultFilter("linear", "nearest")
 	require "load.fonts"
