@@ -27,6 +27,7 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	self.game.save_replay = false
 	self.ruleset = ruleset(self.game)
 	self.game:initialize(self.ruleset)
+	self.movement_queue = {}
 	self.inputs = {
 		left=false,
 		right=false,
@@ -176,6 +177,7 @@ function ReplayScene:render()
 end
 
 local movement_directions = {"left", "right", "down", "up"}
+local opposite_directions = {left = "right", right = "left", up = "down", down = "up"}
 
 function ReplayScene:onInputPress(e)
 	if (
@@ -206,14 +208,18 @@ function ReplayScene:onInputPress(e)
 		else resumeBGM() end
 	elseif e.input and string.sub(e.input, 1, 5) ~= "menu_" and self.rerecord and e.input ~= "frame_step" then
 		self.inputs[e.input] = true
-		if config.gamesettings["diagonal_input"] == 3 then
-			if (e.input == "left" or e.input == "right" or e.input == "down" or e.input == "up") then
-				for key, value in pairs(movement_directions) do
-					if value ~= e.input then
-						self.inputs[value] = false
-					end
-				end
-				self.first_input = self.first_input or e.input
+		if config.gamesettings["diagonal_input"] == 3 and opposite_directions[e.input] then
+			if self.inputs[self.movement_queue[1]] then
+				self.inputs[self.movement_queue[1]] = false
+			end
+			table.insert(self.movement_queue, 1, e.input)
+		end
+		if config.gamesettings["diagonal_input"] == 4 then
+			if self.inputs[opposite_directions[e.input]] then
+				self.inputs[opposite_directions[e.input]] = false
+			end
+			if opposite_directions[e.input] then
+				table.insert(self.movement_queue, 1, e.input)
 			end
 		end
 	elseif e.input == "generic_1" then
@@ -245,14 +251,28 @@ end
 function ReplayScene:onInputRelease(e)
 	if e.input and string.sub(e.input, 1, 5) ~= "menu_" and self.rerecord then
 		self.inputs[e.input] = false
-		if config.gamesettings["diagonal_input"] == 3 then
-			if (e.input == "left" or e.input == "right" or e.input == "down" or e.input == "up") then
-				
-				if self.first_input ~= nil and self.first_input ~= e.input then
-					self.inputs[self.first_input] = true
+		if config.gamesettings["diagonal_input"] == 3 and table.contains(movement_directions, e.input) then
+			for key, value in ipairs(self.movement_queue) do
+				if e.input == value then
+					table.remove(self.movement_queue, key)
+					local recent_input = self.movement_queue[1]
+					if recent_input then
+						self.inputs[recent_input] = true
+					end
+					break
 				end
-				if self.first_input == e.input then
-					self.first_input = nil
+			end
+		end
+		if config.gamesettings["diagonal_input"] == 4 and table.contains(movement_directions, e.input) then
+			for key, value in ipairs(self.movement_queue) do
+				if e.input == value then
+					table.remove(self.movement_queue, key)
+					for k2, v2 in ipairs(self.movement_queue) do
+						if opposite_directions[v2] == e.input then
+							self.inputs[opposite_directions[e.input]] = true
+						end
+					end
+					break
 				end
 			end
 		end
