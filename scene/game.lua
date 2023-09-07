@@ -142,7 +142,7 @@ end
 function GameScene:onInputRelease(e)
 	if e.input and string.sub(e.input, 1, 5) ~= "menu_" then
 		self.inputs[e.input] = false
-		if config.gamesettings["diagonal_input"] == 3 and table.contains(movement_directions, e.input) then
+		if config.gamesettings["diagonal_input"] == 3 and opposite_directions[e.input] then
 			for key, value in ipairs(self.movement_queue) do
 				if e.input == value then
 					table.remove(self.movement_queue, key)
@@ -153,8 +153,7 @@ function GameScene:onInputRelease(e)
 					break
 				end
 			end
-		end
-		if config.gamesettings["diagonal_input"] == 4 and table.contains(movement_directions, e.input) then
+		elseif config.gamesettings["diagonal_input"] == 4 and opposite_directions[e.input] then
 			for key, value in ipairs(self.movement_queue) do
 				if e.input == value then
 					table.remove(self.movement_queue, key)
