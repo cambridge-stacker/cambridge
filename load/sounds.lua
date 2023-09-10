@@ -58,8 +58,9 @@ function generateSoundTable()
 					buffer_sounds[k][k2] = {}
 					sounds_played[k] = sounds_played[k] or {}
 					sounds_played[k][k2] = 0
+					local sound_data = love.sound.newSoundData(v[k2])
 					for k3 = 1, config.sound_sources do
-						buffer_sounds[k][k2][k3] = love.audio.newSource(v[k2], "static")
+						buffer_sounds[k][k2][k3] = love.audio.newSource(sound_data)
 					end
 				end
 			end
@@ -67,8 +68,9 @@ function generateSoundTable()
 			if(love.filesystem.getInfo(v)) then
 				-- this file exists
 				buffer_sounds[k] = {}
+				local sound_data = love.sound.newSoundData(v)
 				for k2 = 1, config.sound_sources do
-					buffer_sounds[k][k2] = love.audio.newSource(v, "static")
+					buffer_sounds[k][k2] = love.audio.newSource(sound_data)
 				end
 				sounds_played[k] = 0
 			end

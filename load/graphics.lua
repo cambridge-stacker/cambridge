@@ -46,30 +46,7 @@ named_backgrounds = {
 current_playing_bgs = {}
 extended_bgs = {}
 
-local previous_bg_index = 0
-local bg_index = 0
 local bgpath = "res/backgrounds/%s"
-while true do
-	local formatted_bgpath = bgpath:format(tostring(bg_index*100))
-	for key, value in pairs(image_formats) do
-		if love.filesystem.getInfo(formatted_bgpath.."."..value) then
-			backgrounds_paths[bg_index] = formatted_bgpath
-			bg_index = bg_index + 1
-			break
-		end
-	end
-	if previous_bg_index == bg_index then
-		break
-	end
-	previous_bg_index = bg_index
-end
-
-local function loadExtendedBgs()
-	extended_bgs = require("res.backgrounds.extend_section_bg")
-end
-
--- error handling for if there is no extend_section_bg
-if pcall(loadExtendedBgs) then end
 
 -- helper method to populate backgrounds
 local function createBackgroundIfExists(name, file_name)
@@ -77,7 +54,7 @@ local function createBackgroundIfExists(name, file_name)
 
 	-- see if background is an extension of another background
 	if extended_bgs[file_name] ~= nil then
-		copy_bg = extended_bgs[file_name]
+		local copy_bg = extended_bgs[file_name]
 		copy_bg = copy_bg / 100
 		backgrounds[name] = backgrounds[copy_bg]
 		return true
@@ -127,25 +104,6 @@ function fetchBackgroundAndLoop(id)
 
 	return bg
 end
-
-loadImageTable(backgrounds, backgrounds_paths)
-
--- create section backgrounds
-local section = 0
-while (createBackgroundIfExists(section, section*100)) do
-	section = section + 1
-end
-
--- create named backgrounds
-local nbgIndex = 1
-while nbgIndex <= #named_backgrounds do
-	createBackgroundIfExists(
-		named_backgrounds[nbgIndex],
-		string.gsub(named_backgrounds[nbgIndex], "_", "-")
-	)
-	nbgIndex = nbgIndex + 1
-end
-
 
 -- in order, the colors are:
 -- red, orange, yellow, green, cyan, blue
@@ -208,7 +166,6 @@ blocks_paths = {
 	}
 }
 
-loadImageTable(blocks, blocks_paths)
 ColourSchemes = {
 	Arika = {
 		I = "R",
@@ -246,11 +203,111 @@ misc_graphics_paths = {
 	santa = "res/img/santa",
 	icon = "res/img/cambridge_transparent"
 }
-loadImageTable(misc_graphics, misc_graphics_paths)
 
 -- utility function to allow any size background to be used
 -- this will stretch the background to 4:3 aspect ratio
 function drawBackground(id)
 	local bg_object = fetchBackgroundAndLoop(id)
 	drawSizeIndependentImage(bg_object, 0, 0, 0, 640, 480)
+end
+
+
+local previous_selected_packs = {}
+local initial_load = true
+
+function loadResources()
+	if not initial_load and equals(previous_selected_packs, config.resource_packs_applied) then
+		return
+	end
+	local resource_pack_indexes = {}
+    local resource_packs = love.filesystem.getDirectoryItems("resourcepacks")
+    for key, value in pairs(resource_packs) do
+        if value:sub(-4) == ".zip" and love.filesystem.getInfo("resourcepacks/"..value, "file") then
+			resource_pack_indexes[value] = key
+        end
+    end
+	for k, v in pairs(previous_selected_packs) do
+		if not config.resource_packs_applied[k] then
+			love.filesystem.unmount("resourcepacks/"..v)
+		end
+	end
+	if type(config.resource_packs_applied) == "table" then
+		for k, v in pairs(config.resource_packs_applied) do
+			if resource_pack_indexes[v] and not previous_selected_packs[k] then
+				love.filesystem.mount("resourcepacks/"..v, "res/")
+			elseif not previous_selected_packs[k] then
+				table.remove(config.resource_packs_applied, k)
+			end
+		end
+	end
+	
+	if not initial_load or #config.resource_packs_applied > 0 then
+		love.graphics.setCanvas()
+		love.graphics.clear()
+		love.graphics.setFont(font_3x5_4)
+		love.graphics.printf("Loading resource packs...", 0, 160, 640, "center")
+		love.graphics.setColor(0, 0, 0, 0.5)
+		love.graphics.present()
+	end
+
+	backgrounds = {}
+	blocks = {}
+	misc_graphics = {}
+	backgrounds_paths = {
+		title = "res/backgrounds/title",
+		title_no_icon = "res/backgrounds/title-no-icon",
+		title_night = "res/backgrounds/title-night",
+		snow = "res/backgrounds/snow",
+		options_input = "res/backgrounds/options-input",
+		options_game = "res/backgrounds/options-game",
+	}
+	local previous_bg_index = 0
+	local bg_index = 0
+	while true do
+		local formatted_bgpath = bgpath:format(tostring(bg_index*100))
+		for key, value in pairs(image_formats) do
+			if love.filesystem.getInfo(formatted_bgpath.."."..value) then
+				backgrounds_paths[bg_index] = formatted_bgpath
+				bg_index = bg_index + 1
+				break
+			end
+		end
+		if previous_bg_index == bg_index then
+			break
+		end
+		previous_bg_index = bg_index
+	end
+	loadImageTable(backgrounds, backgrounds_paths)
+	loadImageTable(blocks, blocks_paths)
+	loadImageTable(misc_graphics, misc_graphics_paths)
+
+	--#region Backgrounds stuff. Warning: Code duplication
+	
+	local function loadExtendedBgs()
+		--Dynamic reloading, ey?
+		package.loaded["res.backgrounds.extend_section_bg"] = nil
+		extended_bgs = require("res.backgrounds.extend_section_bg")
+	end
+
+	-- error handling for if there is no extend_section_bg
+	if pcall(loadExtendedBgs) then end
+
+	-- create section backgrounds
+	local section = 0
+	while (createBackgroundIfExists(section, section*100)) do
+		section = section + 1
+	end
+	
+	-- create named backgrounds
+	for index, value in ipairs(named_backgrounds) do
+		createBackgroundIfExists(value, string.gsub(value, "_", "-"))
+	end
+	--#endregion
+	generateSoundTable()
+
+	collectgarbage("collect")
+
+	initial_load = false
+
+	previous_selected_packs = copy(config.resource_packs_applied)
 end

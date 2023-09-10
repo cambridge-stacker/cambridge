@@ -250,7 +250,7 @@ function ResourcePackScene:onInputPress(e)
 				playSE("mode_decide")
 			end
 			saveConfig()
-			loadResourcePacks()
+			loadResources()
 			scene = self.prev_scene
 		end
 		if cursorHoverArea(40, 60, 240, 320) then
@@ -371,7 +371,7 @@ function ResourcePackScene:onInputPress(e)
 			playSE("mode_decide")
 		end
 		saveConfig()
-		loadResourcePacks()
+		loadResources()
 		scene = self.prev_scene
 	end
 end

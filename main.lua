@@ -41,13 +41,11 @@ function love.load()
 	love.window.setFullscreen(config["fullscreen"])
 
 
-	-- loads resource packs, and mounts zip files
-	loadResourcePacks()
+	-- loads game graphics and sounds.
+	loadResources()
 
 	-- import custom modules
 	initModules()
-
-	generateSoundTable()
 
 	-- this is executed after the sound table is generated. why is that is unknown.
 	if config.secret then playSE("welcome") end
@@ -74,130 +72,6 @@ function recursivelyLoadRequireFileTable(table, directory, blacklisted_string)
 	end
 end
 
-local previous_selected_packs = {}
-
-function loadResourcePacks()
-	if not config.resource_packs_applied or equals(previous_selected_packs, config.resource_packs_applied) then
-		return
-	end
-	local resource_pack_indexes = {}
-    local resource_packs = love.filesystem.getDirectoryItems("resourcepacks")
-    for key, value in pairs(resource_packs) do
-        if value:sub(-4) == ".zip" and love.filesystem.getInfo("resourcepacks/"..value, "file") then
-			resource_pack_indexes[value] = key
-        end
-    end
-	for k, v in pairs(previous_selected_packs) do
-		if not config.resource_packs_applied[k] then
-			love.filesystem.unmount("resourcepacks/"..v)
-		end
-	end
-	if type(config.resource_packs_applied) == "table" then
-		for k, v in pairs(config.resource_packs_applied) do
-			if resource_pack_indexes[v] and not previous_selected_packs[k] then
-				love.filesystem.mount("resourcepacks/"..v, "res/")
-			elseif not previous_selected_packs[k] then
-				table.remove(config.resource_packs_applied, k)
-			end
-		end
-	end
-	
-	local image_formats = {"png", "jpg", "bmp", "tga"}
-	local function loadImageTableRecursively(image_table, path_table)
-		for k,v in pairs(path_table) do
-			if type(v) == "table" then
-				image_table[k] = image_table[k] or {}
-				loadImageTableRecursively(image_table[k], v)
-			else
-				for _, v2 in pairs(image_formats) do
-					if(love.filesystem.getInfo(v.."."..v2)) then
-						-- this file exists
-						image_table[k] = love.graphics.newImage(v.."."..v2)
-						break
-					end
-				end
-				if image_table[k] == nil then
-					error(("Image (%s) not found!"):format(v))
-				end
-			end
-		end
-	end
-	
-	love.graphics.setCanvas()
-	love.graphics.clear()
-	love.graphics.setFont(font_3x5_4)
-	love.graphics.printf("Loading resource packs...", 0, 160, 640, "center")
-	love.graphics.setColor(0, 0, 0, 0.5)
-	love.graphics.present()
-
-	backgrounds = {}
-	blocks = {}
-	misc_graphics = {}
-	loadImageTableRecursively(backgrounds, backgrounds_paths)
-	loadImageTableRecursively(blocks, blocks_paths)
-	loadImageTableRecursively(misc_graphics, misc_graphics_paths)
-
-	--#region Backgrounds stuff. Warning: Code duplication
-
-	local bgpath = "res/backgrounds/%s"
-	local function loadExtendedBgs()
-		extended_bgs = require("res.backgrounds.extend_section_bg")
-	end
-
-	-- error handling for if there is no extend_section_bg
-	if pcall(loadExtendedBgs) then end
-
-	-- helper method to populate backgrounds
-	local function createBackgroundIfExists(name, file_name)
-		local formatted_bgpath = bgpath:format(tostring(file_name))
-
-		-- see if background is an extension of another background
-		if extended_bgs[file_name] ~= nil then
-			copy_bg = extended_bgs[file_name]
-			copy_bg = copy_bg / 100
-			backgrounds[name] = backgrounds[copy_bg]
-			return true
-		end
-
-		--loadImageTable already deals with loading images.
-		if backgrounds[name] ~= nil then
-			return true
-		end
-		-- try creating video background
-		if love.filesystem.getInfo(formatted_bgpath .. ".ogv") then
-			local tempBgPath = formatted_bgpath .. ".ogv"
-			backgrounds[name] = love.graphics.newVideo(
-				tempBgPath, {["audio"] = false}
-			)
-			-- you can set audio to true, but the video will not loop
-			-- properly if audio extends beyond video frames
-			return true
-		end
-		return false
-	end
-
-	-- create section backgrounds
-	local section = 0
-	while (createBackgroundIfExists(section, section*100)) do
-		section = section + 1
-	end
-	
-	-- create named backgrounds
-	local nbgIndex = 1
-	while nbgIndex <= #named_backgrounds do
-		createBackgroundIfExists(
-			named_backgrounds[nbgIndex],
-			string.gsub(named_backgrounds[nbgIndex], "_", "-")
-		)
-		nbgIndex = nbgIndex + 1
-	end
-	--#endregion
-	generateSoundTable()
-
-	collectgarbage("collect")
-
-	previous_selected_packs = copy(config.resource_packs_applied)
-end
 
 ---@param reload boolean|nil
 function initModules(reload)
