@@ -220,12 +220,12 @@ function loadResources()
 		return
 	end
 	local resource_pack_indexes = {}
-    local resource_packs = love.filesystem.getDirectoryItems("resourcepacks")
-    for key, value in pairs(resource_packs) do
-        if value:sub(-4) == ".zip" and love.filesystem.getInfo("resourcepacks/"..value, "file") then
+	local resource_packs = love.filesystem.getDirectoryItems("resourcepacks")
+	for key, value in pairs(resource_packs) do
+		if value:sub(-4) == ".zip" and love.filesystem.getInfo("resourcepacks/"..value, "file") then
 			resource_pack_indexes[value] = key
-        end
-    end
+		end
+	end
 	for k, v in pairs(previous_selected_packs) do
 		if not config.resource_packs_applied[k] then
 			love.filesystem.unmount("resourcepacks/"..v)
