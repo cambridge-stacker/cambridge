@@ -44,12 +44,9 @@ local hardcoded_system_inputs = {
 	"screenshot", screenshot = "f12",
 }
 local input_naming = {
+	--System Inputs
 	menu_decide = "Menu Decide",
 	menu_back = "Menu Back",
-	left = "Move Left",
-	right = "Move Right",
-	up = "Hard/Sonic Drop",
-	down = "Soft/Sonic Drop",
 	menu_left = "Navigate Left",
 	menu_right = "Navigate Right",
 	menu_up = "Navigate Up",
@@ -60,6 +57,11 @@ local input_naming = {
 	load_state = "Load game state",
 	secret = "???",
 	fullscreen = "Toggle Fullscreen",
+	--Game Inputs
+	left = "Move Left",
+	right = "Move Right",
+	up = "Hard/Sonic Drop",
+	down = "Soft/Sonic Drop",
 	screenshot = "Screenshot",
 	rotate_left = "Rotate CCW 1",
 	rotate_left2 = "Rotate CCW 2",
