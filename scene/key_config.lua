@@ -132,7 +132,7 @@ function KeyConfigScene:new()
 
 	if not config.input then
 		config.input = {}
-		self.configurable_inputs = configurable_game_inputs
+		self.configurable_inputs = configurable_system_inputs
 	end
 	if config.input.keys then
 		self.reconfiguration = true
