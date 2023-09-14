@@ -27,6 +27,10 @@ end
 local configurable_inputs = {
 	"menu_decide",
 	"menu_back",
+	"menu_left",
+	"menu_right",
+	"menu_up",
+	"menu_down",
 	"rotate_left",
 	"rotate_left2",
 	"rotate_right",
@@ -148,6 +152,14 @@ function initConfig()
 			end
 			if inputUpdaterConditions(config.input.keys) or config.input.joysticks.menu_decide ~= nil then
 				updateInputConfig()
+			end
+			if not config.input.version then
+				config.input.version = 1
+				local keys = config.input.keys
+				keys.menu_left = keys.menu_left or keys.left
+				keys.menu_right = keys.menu_right or keys.right
+				keys.menu_up = keys.menu_up or keys.up
+				keys.menu_down = keys.menu_down or keys.down
 			end
 		end
 		if config.current_mode then current_mode = config.current_mode end
