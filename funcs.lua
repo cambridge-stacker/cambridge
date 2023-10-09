@@ -20,6 +20,34 @@ function deepcopy(t)
 	return target
 end
 
+-- returns infinite-layer deep copy of t, in a way that allows multiple reference
+---@return any
+function refdeepcopy(t, ref)
+	print(type(t))
+	if type(t) ~= "table" then return t end
+	ref = ref or {[t] = t}
+	if t == ref[t] then return ref[t] end
+	local target = {}
+	for k, v in next, t do
+		local new_key, new_value
+		if not ref[k] then
+			new_key = refdeepcopy(k)
+			ref[k] = new_key
+		else
+			new_key = ref[k]
+		end
+		if not ref[v] then
+			new_value = refdeepcopy(v)
+			ref[v] = new_value
+		else
+			new_value = ref[v]
+		end
+		target[new_key] = new_value
+	end
+	setmetatable(target, refdeepcopy(getmetatable(t)))
+	return target
+end
+
 ---@param tbl table
 function strTrueValues(tbl)
 	-- returns a concatenation of all the keys in tbl with value true, separated with spaces
