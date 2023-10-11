@@ -25,8 +25,8 @@ end
 function refdeepcopy(t, ref)
 	if type(t) ~= "table" then return t end
 	if ref and t == ref[t] then return ref[t] end
-	ref = ref or {[t] = t}
 	local target = {}
+	ref = ref or {[t] = target}
 	for k, v in next, t do
 		local new_key, new_value
 		if ref[k] == nil then
