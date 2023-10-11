@@ -7,16 +7,56 @@ require 'load.save'
 ConfigScene.options = {
 	-- this serves as reference to what the options' values mean i guess?
 	-- Format: {name in config, displayed name, options}
-	{"display_gamemode", "Display Info", {"On", "Off"}},
-	{"smooth_movement", "Smooth Piece Drop", {"On", "Off"}},
-	{"smooth_scroll", "Smooth Scrolling", {"On", "Off"}},
-	{"cursor_highlight", "Cursor Highlight", {"On", "Off"}},
-	{"cursor_type", "Cursor Type", {"Standard", "Tetro48's"}},
-	{"mode_entry", "Mode Entry", {"Instant", "Animated"}},
-	{"tagline_position", "Tagline placement", {"Top", "Bottom", "None"}},
-	{"mode_select_type", "Mode Select Type", {"Default", "Oshi's idea"}},
-	{"credits_position", "Credits Pos-ing", {"Right", "Center"}},
-	{"debug_level", "Debug Level", {"Off", "Min", "Max"}}
+	{
+		config_name = "display_gamemode",
+		display_name = "Display Info",
+		options = {"On", "Off"}
+	},
+	{
+		config_name = "smooth_movement",
+		display_name = "Smooth Piece Drop",
+		options = {"On", "Off"}
+	},
+	{
+		config_name = "smooth_scroll",
+		display_name = "Smooth Scrolling",
+		options = {"On", "Off"}
+	},
+	{
+		config_name = "cursor_highlight",
+		display_name = "Cursor Highlight",
+		options = {"On", "Off"}
+	},
+	{
+		config_name = "cursor_type",
+		display_name = "Cursor Type",
+		options = {"Standard", "Tetro48's"}
+	},
+	{
+		config_name = "mode_entry",
+		display_name = "Mode Entry",
+		options = {"Instant", "Animated"}
+	},
+	{
+		config_name = "tagline_position",
+		display_name = "Tagline placement",
+		options = {"Top", "Bottom", "None"}
+	},
+	{
+		config_name = "mode_select_type",
+		display_name = "Mode Select Type",
+		options = {"Default", "Oshi's idea"}
+	},
+	{
+		config_name = "credits_position",
+		display_name = "Credits Pos-ing",
+		options = {"Right", "Center"}
+	},
+	{
+		config_name = "debug_level",
+		display_name = "Debug Level",
+		options = {"Off", "Min", "Max"}
+	}
 }
 local optioncount = #ConfigScene.options
 
@@ -58,10 +98,10 @@ function ConfigScene:render()
 	love.graphics.setFont(font_3x5_2)
 	for i, option in ipairs(ConfigScene.options) do
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.printf(option[2], 40, 100 + i * 20, 150, "left")
-        for j, setting in ipairs(option[3]) do
+        love.graphics.printf(option.display_name, 40, 100 + i * 20, 150, "left")
+        for j, setting in ipairs(option.options) do
             local b = cursorHighlight(100 + 110 * j, 100 + i * 20,100,20)
-            love.graphics.setColor(1, 1, b, config.visualsettings[option[1]] == j and 1 or 0.5)
+            love.graphics.setColor(1, 1, b, config.visualsettings[option.config_name] == j and 1 or 0.5)
             love.graphics.printf(setting, 100 + 110 * j, 100 + i * 20, 100, "center")
         end
 	end
@@ -77,12 +117,12 @@ function ConfigScene:onInputPress(e)
 			scene = SettingsScene()
 		end
 		for i, option in ipairs(ConfigScene.options) do
-			for j, setting in ipairs(option[3]) do
+			for j, setting in ipairs(option.options) do
 				if e.x > 100 + 110 * j and e.x < 200 + 110 * j then
 					if e.y > 100 + i * 20 and e.y < 120 + i * 20 then
 						self.main_menu_state = math.floor((e.y - 280) / 20)
 						playSE("cursor_lr")
-						config.visualsettings[option[1]] = Mod1(j, #option[3])
+						config.visualsettings[option.config_name] = Mod1(j, #option.options)
 					end
 				end
 				-- local option = ConfigScene.options[self.highlight]
@@ -102,11 +142,11 @@ function ConfigScene:onInputPress(e)
 	elseif e.input == "left" or e.scancode == "left" then
         playSE("cursor_lr")
         local option = ConfigScene.options[self.highlight]
-        config.visualsettings[option[1]] = Mod1(config.visualsettings[option[1]]-1, #option[3])
+        config.visualsettings[option.config_name] = Mod1(config.visualsettings[option.config_name]-1, #option.options)
 	elseif e.input == "right" or e.scancode == "right" then
         playSE("cursor_lr")
         local option = ConfigScene.options[self.highlight]
-        config.visualsettings[option[1]] = Mod1(config.visualsettings[option[1]]+1, #option[3])
+        config.visualsettings[option.config_name] = Mod1(config.visualsettings[option.config_name]+1, #option.options)
 	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
 		playSE("menu_cancel")
 		loadSave()

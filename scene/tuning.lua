@@ -7,9 +7,21 @@ require 'libs.simple-slider'
 
 TuningScene.options = {
 	-- Serves as a reference for the options available in the menu. Format: {name in config, name as displayed if applicable, slider name}
-	{"das", "DAS", "dasSlider"},
-	{"arr", "ARR", "arrSlider"},
-	{"dcd", "DCD", "dcdSlider"},
+	{
+		config_name = "das",
+		display_name = "DAS",
+		slider = "dasSlider"
+	},
+	{
+		config_name = "arr",
+		display_name = "ARR",
+		slider = "arrSlider"
+	},
+	{
+		config_name = "dcd",
+		display_name = "DCD",
+		slider = "dcdSlider"
+	},
 }
 
 local optioncount = #TuningScene.options
@@ -83,11 +95,11 @@ function TuningScene:onInputPress(e)
 		self.highlight = Mod1(self.highlight+1, optioncount)
 	elseif e.input == "left" or e.scancode == "left" then
 		playSE("cursor")
-		local sld = self[self.options[self.highlight][3]]
+		local sld = self[self.options[self.highlight].slider]
 		sld.value = math.max(sld.min, math.min(sld.max, (sld:getValue() - 1) / (sld.max - sld.min)))
 	elseif e.input == "right" or e.scancode == "right" then
 		playSE("cursor")
-		local sld = self[self.options[self.highlight][3]]
+		local sld = self[self.options[self.highlight].slider]
 		sld.value = math.max(sld.min, math.min(sld.max, (sld:getValue() + 1) / (sld.max - sld.min)))
 	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
 		playSE("menu_cancel")

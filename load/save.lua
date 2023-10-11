@@ -117,26 +117,26 @@ function initConfig()
 
 	if not config.gamesettings then config.gamesettings = {} end
 	for _, option in ipairs(GameConfigScene.options) do
-		if not config.gamesettings[option[1]] then
-			config.gamesettings[option[1]] = 1
+		if not config.gamesettings[option.config_name] then
+			config.gamesettings[option.config_name] = 1
 		end
 	end
 	if not config.visualsettings then config.visualsettings = {} end
 	for _, option in ipairs(VisualConfigScene.options) do
-		if not config.visualsettings[option[1]] then
-			config.visualsettings[option[1]] = 1
+		if not config.visualsettings[option.config_name] then
+			config.visualsettings[option.config_name] = 1
 		end
 	end
 	if not config.audiosettings then config.audiosettings = {} end
 	for _, option in ipairs(AudioConfigScene.options) do
-		if not config.audiosettings[option[1]] then
-			if option[3] ~= "options" then
-				config.audiosettings[option[1]] = (option[6] - option[5]) / 2 + option[5]
+		if not config.audiosettings[option.config_name] then
+			if option.type ~= "options" then
+				config.audiosettings[option.config_name] = (option.max - option.min) / 2 + option.min
 			else
-				config.audiosettings[option[1]] = 1
+				config.audiosettings[option.config_name] = 1
 			end
-			if option[10] and option[10] == "floor" then
-				config.audiosettings[option[1]] = math.floor(config.audiosettings[option[1]])
+			if option.rounding_type and option.rounding_type == "floor" then
+				config.audiosettings[option.config_name] = math.floor(config.audiosettings[option.config_name])
 			end
 		end
 	end
