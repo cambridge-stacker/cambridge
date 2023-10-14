@@ -928,6 +928,14 @@ function love.mousereleased(x, y, button, istouch, presses)
 	scene:onInputRelease({input=nil, type="mouse", x=local_x, y=local_y, button=button, istouch=istouch, presses=presses})
 end
 
+function love.focus(f)
+	if f then
+		love.audio.setVolume(config.audiosettings.master_volume / 100)
+	else
+		love.audio.setVolume(config.audiosettings.master_volume / 1000)
+	end
+end
+
 ---@param x number
 ---@param y number
 function love.wheelmoved(x, y)
