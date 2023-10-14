@@ -424,9 +424,58 @@ function love.errorhandler(msg)
 	end
 
 end
+
+local tooltip_string
+local tooltip_width
+
+---Note: This has to run in drawing functions every frame.
+---@param str string
+function setTooltip(str)
+	tooltip_string = str
+	local font = love.graphics.getFont()
+	local _, wrapped_text = font:getWrap(tooltip_string, 640)
+	local max_width = 0
+	for key, value in pairs(wrapped_text) do
+		max_width = math.max(max_width, font:getWidth(value))
+	end
+	tooltip_width = math.min(640, max_width)
+end
+
+---Internal function.
+local function drawTooltip()
+	if tooltip_string == nil or tooltip_string == "" then
+		return
+	end
+	local font = love.graphics.getFont()
+	local cursor_x, cursor_y = love.mouse.getPosition()
+	local screen_width = love.graphics.getWidth()
+	if cursor_x > screen_width / 2 then
+		cursor_x = cursor_x - tooltip_width - 24
+		if cursor_x < -12 then
+			tooltip_width = tooltip_width - cursor_x
+			cursor_x = -12
+		end
+	end
+	if cursor_x + tooltip_width > screen_width - 16 then
+		tooltip_width = screen_width - cursor_x - 16
+	end
+	local _, wrapped_text = font:getWrap(tooltip_string, tooltip_width)
+	tooltip_width = 0
+	for key, value in pairs(wrapped_text) do
+		tooltip_width = math.max(tooltip_width, font:getWidth(value))
+	end
+	local box_height = font:getHeight() * #wrapped_text
+	love.graphics.setColor(0.5, 0.5, 0.5, 0.5)
+	love.graphics.rectangle("fill", cursor_x + 12, cursor_y + 2, tooltip_width + 6, box_height + 4)
+	love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.printf(tooltip_string, cursor_x + 14, cursor_y + 4, tooltip_width, "left")
+end
+
 --#endregion
 
 function love.draw()
+	tooltip_string = ""
+	tooltip_width = 0
 	local mean_delta = getMeanDelta()
 	love.graphics.setCanvas(GLOBAL_CANVAS)
 	love.graphics.clear()
@@ -483,6 +532,7 @@ function love.draw()
 	
 	love.graphics.pop()
 		
+	drawTooltip()
 	love.graphics.setCanvas()
 	love.graphics.setColor(1,1,1,1)
 	love.graphics.draw(GLOBAL_CANVAS)

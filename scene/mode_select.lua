@@ -202,17 +202,18 @@ function ModeSelectScene:render()
 		love.graphics.printf("Empty rulesets folder!", 360, 280 - self.menu_ruleset_height, 260, "left")
 	end
 	for idx, mode in ipairs(self.game_mode_folder) do
-		if(idx >= self.menu_mode_height / 20 - 10 and
-		   idx <= self.menu_mode_height / 20 + 10) then
+		if(idx > self.menu_mode_height / 20 - 10 and
+		   idx < self.menu_mode_height / 20 + 10) then
 			local b = 1
 			if mode.is_directory then
 				b = 0.4
 			end
-			local highlight = cursorHighlight(
-				0,
-				(260 - self.menu_mode_height) + 20 * idx,
-				320,
-				20)
+			local y = (260 - self.menu_mode_height) + 20 * idx
+			local highlight = cursorHighlight(0, y, 320, 20)
+			if cursorHoverArea(0, y, 320, 20) and not mode.is_directory and type(mode.tagline) == "string" then
+				setTooltip(((mode.hash and "ID: ".. mode.hash .. "\n" or "") ..
+				(mode.tagline and "Desc.: " .. mode.tagline .. "\n" or "")):sub(1, -2))
+			end
 			if highlight < 0.5 then
 				b = highlight
 			end
@@ -234,11 +235,12 @@ function ModeSelectScene:render()
 			if ruleset.is_directory then
 				b = 0.4
 			end
-			local highlight = cursorHighlight(
-				320,
-				(260 - self.menu_ruleset_height) + 20 * idx,
-				320,
-				20)
+			local y = (260 - self.menu_ruleset_height) + 20 * idx
+			local highlight = cursorHighlight(320, y, 320, 20)
+			if cursorHoverArea(320, y, 320, 20) and not ruleset.is_directory then
+				setTooltip(((ruleset.hash and "ID: ".. ruleset.hash .. "\n" or "") ..
+				(ruleset.tagline and "Desc.: " .. ruleset.tagline .. "\n" or "")):sub(1, -2))
+			end
 			if highlight < 0.5 then
 				b = highlight
 			end
