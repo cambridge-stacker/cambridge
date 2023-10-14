@@ -210,7 +210,7 @@ function ModeSelectScene:render()
 			end
 			local y = (260 - self.menu_mode_height) + 20 * idx
 			local highlight = cursorHighlight(0, y, 320, 20)
-			if cursorHoverArea(0, y, 320, 20) and not mode.is_directory and type(mode.tagline) == "string" then
+			if cursorHoverArea(0, y, 320, 20) and not mode.is_directory then
 				setTooltip(((mode.hash and "ID: ".. mode.hash .. "\n" or "") ..
 				(mode.tagline and "Desc.: " .. mode.tagline .. "\n" or "")):sub(1, -2))
 			end
@@ -229,8 +229,8 @@ function ModeSelectScene:render()
 		end
 	end
 	for idx, ruleset in ipairs(self.ruleset_folder) do
-		if(idx >= self.menu_ruleset_height / 20 - 10 and
-		   idx <= self.menu_ruleset_height / 20 + 10) then
+		if(idx > self.menu_ruleset_height / 20 - 10 and
+		   idx < self.menu_ruleset_height / 20 + 10) then
 			local b = 1
 			if ruleset.is_directory then
 				b = 0.4
