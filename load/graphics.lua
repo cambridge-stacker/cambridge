@@ -1,36 +1,47 @@
 local image_formats = {"png", "jpg", "bmp", "tga"}
 local function loadImageTable(image_table, path_table)
+	local is_packs_present = #config.resource_packs_applied > 0
 	for k,v in pairs(path_table) do
-		if(type(v) == "table") then
+		if type(v) == "table" then
 			-- list of subimages
 			for k2,v2 in pairs(v) do
+				local result_path = v2
 				for _, v3 in pairs(image_formats) do
-					local path = v2.."."..v3
-					if love.filesystem.getInfo(applied_packs_path..path) then
-						path = applied_packs_path..path
+					local local_path = v2.."."..v3
+					if love.filesystem.getInfo(local_path) then
+						result_path = local_path
+						if not is_packs_present then break end
 					end
-					if(love.filesystem.getInfo(path)) then
-						-- this file exists
-						image_table[k] = image_table[k] or {}
-						image_table[k][k2] = love.graphics.newImage(path)
+					if love.filesystem.getInfo(applied_packs_path..local_path) then
+						result_path = applied_packs_path..local_path
 						break
 					end
+				end
+				if love.filesystem.getInfo(result_path) then
+					-- this file exists
+					image_table[k] = image_table[k] or {}
+					image_table[k][k2] = love.graphics.newImage(result_path)
 				end
 				if image_table[k][k2] == nil then
 					error(("Image (%s) not found!"):format(v2))
 				end
 			end
 		else
+			local result_path = v
 			for _, v2 in pairs(image_formats) do
-				local path = v.."."..v2
-				if love.filesystem.getInfo(applied_packs_path..path) then
-					path = applied_packs_path..path
+				local local_path = v.."."..v2
+				if love.filesystem.getInfo(local_path) then
+					result_path = local_path
+					if not is_packs_present then break end
 				end
-				if(love.filesystem.getInfo(path)) then
-					-- this file exists
-					image_table[k] = love.graphics.newImage(path)
+				if love.filesystem.getInfo(applied_packs_path..local_path) then
+					result_path = applied_packs_path..local_path
 					break
 				end
+			end
+			if love.filesystem.getInfo(result_path) then
+				-- this file exists
+				image_table[k] = love.graphics.newImage(result_path)
 			end
 			if image_table[k] == nil then
 				error(("Image (%s) not found!"):format(v))
@@ -232,7 +243,7 @@ function loadResources()
 	for i = 1, 32 do
 		random_numbers[#random_numbers+1] = love.math.random(1, 127)
 	end
-	applied_packs_path = table.concat(random_numbers, "")
+	applied_packs_path = table.concat(random_numbers)
 	if not initial_load and equals(previous_selected_packs, config.resource_packs_applied) then
 		return
 	end
