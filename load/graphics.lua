@@ -5,10 +5,14 @@ local function loadImageTable(image_table, path_table)
 			-- list of subimages
 			for k2,v2 in pairs(v) do
 				for _, v3 in pairs(image_formats) do
-					if(love.filesystem.getInfo(v2.."."..v3)) then
+					local path = v2.."."..v3
+					if love.filesystem.getInfo(applied_packs_path..path) then
+						path = applied_packs_path..path
+					end
+					if(love.filesystem.getInfo(path)) then
 						-- this file exists
 						image_table[k] = image_table[k] or {}
-						image_table[k][k2] = love.graphics.newImage(v2.."."..v3)
+						image_table[k][k2] = love.graphics.newImage(path)
 						break
 					end
 				end
@@ -18,9 +22,13 @@ local function loadImageTable(image_table, path_table)
 			end
 		else
 			for _, v2 in pairs(image_formats) do
-				if(love.filesystem.getInfo(v.."."..v2)) then
+				local path = v.."."..v2
+				if love.filesystem.getInfo(applied_packs_path..path) then
+					path = applied_packs_path..path
+				end
+				if(love.filesystem.getInfo(path)) then
 					-- this file exists
-					image_table[k] = love.graphics.newImage(v.."."..v2)
+					image_table[k] = love.graphics.newImage(path)
 					break
 				end
 			end
@@ -30,6 +38,10 @@ local function loadImageTable(image_table, path_table)
 		end
 	end
 end
+
+--It's a pseudo-random string to avoid most folder collisions.
+applied_packs_path = ""
+
 backgrounds = {}
 backgrounds_paths = {
 	title = "res/backgrounds/title",
@@ -216,6 +228,11 @@ local previous_selected_packs = {}
 local initial_load = true
 
 function loadResources()
+	local random_numbers = {}
+	for i = 1, 32 do
+		random_numbers[#random_numbers+1] = love.math.random(1, 127)
+	end
+	applied_packs_path = table.concat(random_numbers, "")
 	if not initial_load and equals(previous_selected_packs, config.resource_packs_applied) then
 		return
 	end
@@ -227,14 +244,12 @@ function loadResources()
 		end
 	end
 	for k, v in pairs(previous_selected_packs) do
-		if not config.resource_packs_applied[k] then
-			love.filesystem.unmount("resourcepacks/"..v)
-		end
+		love.filesystem.unmount("resourcepacks/"..v)
 	end
 	if type(config.resource_packs_applied) == "table" then
 		for k, v in pairs(config.resource_packs_applied) do
-			if resource_pack_indexes[v] and not previous_selected_packs[k] then
-				love.filesystem.mount("resourcepacks/"..v, "res/")
+			if resource_pack_indexes[v] then
+				love.filesystem.mount("resourcepacks/"..v, applied_packs_path.."res/")
 			elseif not previous_selected_packs[k] then
 				table.remove(config.resource_packs_applied, k)
 			end

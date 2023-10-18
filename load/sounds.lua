@@ -52,23 +52,31 @@ function generateSoundTable()
 		if(type(v) == "table") then
 			-- list of subsounds
 			for k2,v2 in pairs(v) do
-				if(love.filesystem.getInfo(v[k2])) then
+				local path = v2
+				if love.filesystem.getInfo(applied_packs_path..path) then
+					path = applied_packs_path..path
+				end
+				if(love.filesystem.getInfo(path)) then
 					-- this file exists
 					buffer_sounds[k] = buffer_sounds[k] or {}
 					buffer_sounds[k][k2] = {}
 					sounds_played[k] = sounds_played[k] or {}
 					sounds_played[k][k2] = 0
-					local sound_data = love.sound.newSoundData(v[k2])
+					local sound_data = love.sound.newSoundData(path)
 					for k3 = 1, config.sound_sources do
 						buffer_sounds[k][k2][k3] = love.audio.newSource(sound_data)
 					end
 				end
 			end
 		else
-			if(love.filesystem.getInfo(v)) then
+			local path = v
+			if love.filesystem.getInfo(applied_packs_path..path) then
+				path = applied_packs_path..path
+			end
+			if(love.filesystem.getInfo(path)) then
 				-- this file exists
 				buffer_sounds[k] = {}
-				local sound_data = love.sound.newSoundData(v)
+				local sound_data = love.sound.newSoundData(path)
 				for k2 = 1, config.sound_sources do
 					buffer_sounds[k][k2] = love.audio.newSource(sound_data)
 				end
