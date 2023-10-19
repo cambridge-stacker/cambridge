@@ -93,6 +93,8 @@ function SRS:onPieceMove(piece, grid)
 		if piece.manipulations >= SRS.MANIPULATIONS_MAX then
 			piece.locked = true
 		end
+	else
+		piece.locked = false
 	end
 end
 
