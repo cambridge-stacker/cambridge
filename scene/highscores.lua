@@ -159,34 +159,34 @@ function HighscoreScene:onInputPress(e)
         if e.x > 20 and e.y > 40 and e.x < 70 and e.y < 70 then
             self:back()
         end
-	elseif (e.input == "menu_decide" or e.scancode == "return") and self.hash == nil then
+	elseif (e.input == "menu_decide") and self.hash == nil then
 		playSE("main_decide")
 		self:selectHash()
-	elseif e.input == "up" or e.scancode == "up" then
+	elseif e.input == "menu_up" then
 		self:changeOption(-1)
 		self.das_up = true
 		self.das_down = nil
 		self.das_left = nil
 		self.das_right = nil
-	elseif e.input == "down" or e.scancode == "down" then
+	elseif e.input == "menu_down" then
 		self:changeOption(1)
 		self.das_down = true
 		self.das_up = nil
 		self.das_left = nil
 		self.das_right = nil
-	elseif e.input == "left" or e.scancode == "left" then
+	elseif e.input == "menu_left" then
 		self:changeOption(-9)
 		self.das_left = true
 		self.das_right = nil
 		self.das_up = nil
 		self.das_down = nil
-	elseif e.input == "right" or e.scancode == "right" then
+	elseif e.input == "menu_right" then
 		self:changeOption(9)
 		self.das_right = true
 		self.das_left = nil
 		self.das_up = nil
 		self.das_down = nil
-	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
+	elseif e.input == "menu_back" then
         self:back()
 	end
 end
@@ -203,13 +203,13 @@ function HighscoreScene:back()
 end
 
 function HighscoreScene:onInputRelease(e)
-	if e.input == "up" or e.scancode == "up" then
+	if e.input == "menu_up" or e.scancode == "up" then
 		self.das_up = nil
-	elseif e.input == "down" or e.scancode == "down" then
+	elseif e.input == "menu_down" or e.scancode == "down" then
 		self.das_down = nil
-	elseif e.input == "right" or e.scancode == "right" then
+	elseif e.input == "menu_right" or e.scancode == "right" then
 		self.das_right = nil
-	elseif e.input == "left" or e.scancode == "left" then
+	elseif e.input == "menu_left" or e.scancode == "left" then
 		self.das_left = nil
 	end
 end

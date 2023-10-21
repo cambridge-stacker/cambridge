@@ -68,10 +68,10 @@ function ConfigScene:onInputPress(e)
 	if e.input == "menu_decide" or e.scancode == "return" then
 		playSE("main_decide")
 		scene = menu_screens[self.menu_state]()
-	elseif e.input == "up" or e.scancode == "up" then
+	elseif e.input == "menu_up" or e.scancode == "up" then
 		self:changeOption(-1)
 		playSE("cursor")
-	elseif e.input == "down" or e.scancode == "down" then
+	elseif e.input == "menu_down" or e.scancode == "down" then
 		self:changeOption(1)
 		playSE("cursor")
 	elseif config.input and (

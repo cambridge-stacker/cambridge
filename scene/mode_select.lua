@@ -322,7 +322,7 @@ function ModeSelectScene:onInputPress(e)
 		else
 			self:menuGoBack("ruleset")
 		end
-	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
+	elseif e.input == "menu_back" then
 		local has_started = self.starting
 		if self.starting then
 			self.starting = false
@@ -410,7 +410,7 @@ function ModeSelectScene:onInputPress(e)
 		if e.y ~= 0 then
 			self:changeOption(-e.y)
 		end
-	elseif e.input == "menu_decide" or e.scancode == "return" then
+	elseif e.input == "menu_decide" then
 		if self.menu_state.select == "mode" and self.game_mode_folder[self.menu_state.mode].is_directory then
 			playSE("main_decide")
 			self:menuGoForward("mode")
@@ -423,13 +423,13 @@ function ModeSelectScene:onInputPress(e)
 			return
 		end
 		self:indirectStartMode()
-	elseif e.input == "up" or e.scancode == "up" then
+	elseif e.input == "menu_up" then
 		self.das_up = true
 		self.das_down = nil
-	elseif e.input == "down" or e.scancode == "down" then
+	elseif e.input == "menu_down" then
 		self.das_down = true
 		self.das_up = nil
-	elseif e.input == "left" or e.input == "right" or e.scancode == "left" or e.scancode == "right" then
+	elseif e.input == "menu_left" or e.input == "menu_right" then
 		self:switchSelect()
 	elseif e.input then
 		self.secret_inputs[e.input] = true
@@ -437,9 +437,9 @@ function ModeSelectScene:onInputPress(e)
 end
 
 function ModeSelectScene:onInputRelease(e)
-	if e.input == "up" or e.scancode == "up" then
+	if e.input == "menu_up" then
 		self.das_up = nil
-	elseif e.input == "down" or e.scancode == "down" then
+	elseif e.input == "menu_down" or e.scancode == "down" then
 		self.das_down = nil
 	elseif e.input then
 		self.secret_inputs[e.input] = false

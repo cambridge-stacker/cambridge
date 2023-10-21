@@ -191,8 +191,8 @@ function ModeSelectScene:render()
 	self.menu_ruleset_x = interpolateNumber(self.menu_ruleset_x / 120, ruleset_selected) * 120
 
     love.graphics.setColor(1, 1, 1, 0.5)
-	love.graphics.rectangle("fill", 20, 258 + (mode_selected * 20) - self.menu_mode_y, 240, 22)
-	love.graphics.rectangle("fill", 260 + (ruleset_selected * 120) - self.menu_ruleset_x, 440, 120, 22)
+	love.graphics.rectangle("fill", 20, 259 + (mode_selected * 20) - self.menu_mode_y, 240, 22)
+	love.graphics.rectangle("fill", 260 + (ruleset_selected * 120) - self.menu_ruleset_x, 439, 120, 22)
     love.graphics.setColor(1, 1, 1, 1)
 
     local hash = ((self.game_mode_folder[mode_selected] or {}).hash or "not a value") .. "-" .. ((self.ruleset_folder[ruleset_selected] or {}).hash or "not a value")
@@ -368,7 +368,7 @@ function ModeSelectScene:onInputPress(e)
 		else
 			self:menuGoBack("ruleset")
 		end
-	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
+	elseif e.input == "menu_back" then
 		local has_started = self.starting
 		if self.starting then
 			self.starting = false
@@ -449,7 +449,7 @@ function ModeSelectScene:onInputPress(e)
         if e.y ~= 0 then
             self:changeMode(-e.y)
         end
-    elseif e.input == "menu_decide" or e.scancode == "return" then
+    elseif e.input == "menu_decide" then
         self:indirectStartMode()
     elseif e.input == "up" or e.scancode == "up" then
         self.das_up = true

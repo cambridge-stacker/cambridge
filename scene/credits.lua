@@ -162,17 +162,20 @@ function CreditsScene:render()
 end
 
 function CreditsScene:onInputPress(e)
-    if e.type == "mouse" and e.button == 1 then
-        scene = TitleScene()
-        pitchBGM(1)
-        switchBGM(nil)
+    if e.type == "mouse" then
+        if e.button == 1 then
+            self.scroll_speed = self.hold_speed
+            pitchBGM(self.hold_speed)
+        elseif e.button == 2 then
+            scene = TitleScene()
+            pitchBGM(1)
+            switchBGM(nil)
     end
     if e.scancode == "space" then
         self.scroll_speed = self.hold_speed
         pitchBGM(self.hold_speed)
     end
-    if e.input == "menu_decide" or e.scancode == "return" or
-       e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
+    if e.input == "menu_decide" or e.input == "menu_back" then
         scene = TitleScene()
         pitchBGM(1)
         switchBGM(nil)

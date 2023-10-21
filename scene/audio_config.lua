@@ -161,7 +161,7 @@ end
 
 function ConfigScene:onInputPress(e)
 	local option = self.options[self.highlight]
-	if e.input == "menu_decide" or e.scancode == "return" or (e.type == "mouse" and e.button == 1 and e.x > 20 and e.y > 40 and e.x < 70 and e.y < 70) then
+	if e.input == "menu_decide" or (e.type == "mouse" and e.button == 1 and e.x > 20 and e.y > 40 and e.x < 70 and e.y < 70) then
 		if config.sound_sources ~= config.audiosettings.sound_sources then
 			config.sound_sources = config.audiosettings.sound_sources
 			--why is this necessary???
@@ -172,19 +172,19 @@ function ConfigScene:onInputPress(e)
 		playSE("mode_decide")
 		saveConfig()
 		scene = SettingsScene()
-	elseif e.input == "up" or e.scancode == "up" then
+	elseif e.input == "menu_up" then
 		playSE("cursor")
 		self.highlight = Mod1(self.highlight-1, optioncount)
-	elseif e.input == "down" or e.scancode == "down" then
+	elseif e.input == "menu_down" then
 		playSE("cursor")
 		self.highlight = Mod1(self.highlight+1, optioncount)
-	elseif e.input == "left" or e.scancode == "left" then
+	elseif e.input == "menu_left" then
         self:changeValue(-option.increase_by)
         playSE(option.sound_effect_name or "cursor_lr")
-	elseif e.input == "right" or e.scancode == "right" then
+	elseif e.input == "menu_right" then
 		self:changeValue(option.increase_by)
         playSE(option.sound_effect_name or "cursor_lr")
-	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
+	elseif e.input == "menu_back" then
 		playSE("menu_cancel")
 		loadSave()
 		love.audio.setVolume(config.master_volume)
