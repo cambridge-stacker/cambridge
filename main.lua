@@ -20,6 +20,7 @@ function love.load()
 	require "load.save"
 	require "load.bigint"
 	require "load.version"
+	require "load.modpacks"
 	loadSave()
 	require "funcs"
 	require "scene"
@@ -100,6 +101,8 @@ function initModules(reload)
 	-- 	end
 	-- end
 
+	loadModpacks()
+
 	--sort mode/rule lists
 	local function padnum(d) return ("%03d%s"):format(#d, d) end
 	table.sort(game_modes, function(a,b)
@@ -146,9 +149,13 @@ function loadReplayList()
 	end
 
 	io_thread = love.thread.newThread( replay_load_code )
+	local prev_names = {}
 	for key, value in pairs(recursionStringValueExtract(game_modes, "is_directory")) do
-		dict_ref[value.name] = key + 1
-		replay_tree[key + 1] = {name = value.name}
+		if not table.contains(prev_names, value.name) then
+			dict_ref[value.name] = key + 1
+			replay_tree[key + 1] = {name = value.name}
+			table.insert(prev_names, value.name)
+		end
 	end
 	io_thread:start()
 end
