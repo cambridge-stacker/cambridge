@@ -439,7 +439,7 @@ end
 function ModeSelectScene:onInputRelease(e)
 	if e.input == "menu_up" then
 		self.das_up = nil
-	elseif e.input == "menu_down" or e.scancode == "down" then
+	elseif e.input == "menu_down" then
 		self.das_down = nil
 	elseif e.input then
 		self.secret_inputs[e.input] = false
