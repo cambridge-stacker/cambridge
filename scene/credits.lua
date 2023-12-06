@@ -159,6 +159,7 @@ function CreditsScene:render()
             love.graphics.printf(value, text_x, block.y + 30 + key * 18 - offset, 320, align)
         end
     end
+    love.graphics.print(("Credit time: %.2fs / %.2fs, %dx"):format((self.time / (self.final_y / self.music_duration)) / 60, (self.final_y + ((self.final_y / self.music_duration) * 120)) / (self.final_y / self.music_duration) / 60, self.scroll_speed), 0, 460)
 end
 
 function CreditsScene:onInputPress(e)
@@ -170,6 +171,7 @@ function CreditsScene:onInputPress(e)
             scene = TitleScene()
             pitchBGM(1)
             switchBGM(nil)
+        end
     end
     if e.scancode == "space" then
         self.scroll_speed = self.hold_speed
@@ -183,7 +185,7 @@ function CreditsScene:onInputPress(e)
 end
 
 function CreditsScene:onInputRelease(e)
-    if e.scancode == "space" then
+    if e.scancode == "space" or e.type == "mouse" and e.button == 1 then
         self.scroll_speed = 1
         pitchBGM(1)
     end
