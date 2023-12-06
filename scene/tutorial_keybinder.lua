@@ -220,6 +220,11 @@ function KeyConfigScene:onInputPress(e)
             elseif self.input_state == 11 then
                 self.nested_scene = GameScene(require("tetris.modes.marathon_a3"), require("tetris.rulesets.standard"), {})
             elseif self.input_state == 13 then
+				local keys = config.input.keys
+				keys.menu_left = keys.left
+				keys.menu_right = keys.right
+				keys.menu_up = keys.up
+				keys.menu_down = keys.down
                 self.nested_scene = config.visualsettings.mode_select_type == 2 and RevModeSelectScene() or ModeSelectScene()
             end
 			self.input_state = self.input_state + 1
