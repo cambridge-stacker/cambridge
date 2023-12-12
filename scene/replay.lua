@@ -233,13 +233,13 @@ function ReplayScene:onInputPress(e)
 		pitchBGM(1)
 	elseif e.input == "hold" then
 		self.show_invisible = not self.show_invisible
-	elseif e.input == "left" then
+	elseif e.input == "menu_left" then
 		self.replay_speed = self.replay_speed - 1
 		if self.replay_speed < 1 then
 			self.replay_speed = 1
 		end
 		pitchBGM(self.replay_speed)
-	elseif e.input == "right" then
+	elseif e.input == "menu_right" then
 		self.replay_speed = self.replay_speed + 1
 		if self.replay_speed > 99 then
 			self.replay_speed = 99

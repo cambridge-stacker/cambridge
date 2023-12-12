@@ -451,16 +451,16 @@ function ModeSelectScene:onInputPress(e)
         end
     elseif e.input == "menu_decide" then
         self:indirectStartMode()
-    elseif e.input == "up" or e.scancode == "up" then
+    elseif e.input == "menu_up" then
         self.das_up = true
         self.das_down = nil
-    elseif e.input == "down" or e.scancode == "down" then
+    elseif e.input == "menu_down" then
         self.das_down = true
         self.das_up = nil
-    elseif e.input == "left" or e.scancode == "left" then
+    elseif e.input == "menu_left" then
         self.das_left = true
         self.das_right = nil
-    elseif e.input == "right" or e.scancode == "right" then
+    elseif e.input == "menu_right" then
         self.das_right = true
         self.das_left = nil
     elseif e.input then
@@ -469,13 +469,13 @@ function ModeSelectScene:onInputPress(e)
 end
 
 function ModeSelectScene:onInputRelease(e)
-	if e.input == "up" or e.scancode == "up" then
+	if e.input == "menu_up" then
 		self.das_up = nil
-	elseif e.input == "down" or e.scancode == "down" then
+	elseif e.input == "menu_down" then
 		self.das_down = nil
-    elseif e.input == "left" or e.scancode == "left" then
+    elseif e.input == "menu_left" then
         self.das_left = nil
-    elseif e.input == "right" or e.scancode == "right" then
+    elseif e.input == "menu_right" then
         self.das_right = nil
 	elseif e.input then
 		self.secret_inputs[e.input] = false
