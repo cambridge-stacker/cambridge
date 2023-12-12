@@ -273,7 +273,7 @@ function ModeSelectScene:render()
 				-self.menu_mode_y + 20 * idx + 20,
 				160,
 				20))
-			love.graphics.printf(mode.name,
+			drawWrappingText(mode.name,
 			40, (260 - self.menu_mode_y) + 20 * idx, 200, "left")
 		end
 	end
@@ -295,7 +295,7 @@ function ModeSelectScene:render()
 				240,
 				120)
 			)
-			love.graphics.printf(ruleset.name,
+			drawWrappingText(ruleset.name,
 			260 - self.menu_ruleset_x + 120 * idx, 440, 120, "center")
 		end
 	end

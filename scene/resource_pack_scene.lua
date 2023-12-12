@@ -156,14 +156,14 @@ function ResourcePackScene:render()
 			-(self.left_menu_height + 140) + 40 * key,
 			140,
 			40))
-		love.graphics.printf(value, 40, 60 - self.left_menu_height + 40 * key, 240, "left")
+		drawWrappingText(value, 40, 60 - self.left_menu_height + 40 * key, 240, "left")
 	end
 	for key, value in pairs(self.selected_resource_packs) do
 		love.graphics.setColor(1, 1, 1, fadeoutAtEdges(
 			-(self.right_menu_height + 140) + 40 * key,
 			140,
 			40))
-		love.graphics.printf(value, 360, 60 - self.right_menu_height + 40 * key, 240, "left")
+		drawWrappingText(value, 360, 60 - self.right_menu_height + 40 * key, 240, "left")
 	end
 
 	local mouse_x, mouse_y = getScaledDimensions(love.mouse.getPosition())

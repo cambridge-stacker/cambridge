@@ -357,7 +357,7 @@ function ReplaySelectScene:render()
 				if replay["timer"] ~= nil then
 					display_string = display_string.." - Time: "..formatTime(replay["timer"])
 				end
-				if #display_string > 78 then
+				if #display_string > 78 and idx ~= self.menu_state.replay then
 					display_string = display_string:sub(1, 75) .. "..."
 				end
 				local b, g = cursorHighlight(0, (260 - self.height_offset) + 20 * idx, 640, 20), 1
@@ -370,7 +370,7 @@ function ReplaySelectScene:render()
 					b = 0
 				end
 				love.graphics.setColor(1,g,b,fadeoutAtEdges((-self.height_offset) + 20 * idx, 180, 20))
-				love.graphics.printf(display_string, 6, (260 - self.height_offset) + 20 * idx, 640, "left")
+				drawWrappingText(display_string, 6, (260 - self.height_offset) + 20 * idx, 628, "left")
 			end
 		end
 	end

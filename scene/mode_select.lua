@@ -223,7 +223,7 @@ function ModeSelectScene:render()
 				-self.menu_mode_height + 20 * idx - fade_offset,
 				render_list_size * 10 - 20,
 				20))
-			love.graphics.printf(mode.name,
+			drawWrappingText(mode.name,
 			40, (260 - self.menu_mode_height) + 20 * idx, 200, "left")
 		end
 	end
@@ -247,7 +247,7 @@ function ModeSelectScene:render()
 				render_list_size * 10 - 20,
 				20)
 			)
-			love.graphics.printf(ruleset.name,
+			drawWrappingText(ruleset.name,
 			360, (260 - self.menu_ruleset_height) + 20 * idx, 160, "left")
 		end
 	end

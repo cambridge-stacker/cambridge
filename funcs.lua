@@ -312,6 +312,55 @@ function interpolateNumber(input, destination)
 	return input
 end
 
+---note: if you input just a string here, it'll output an input. it ignores tables within input table
+---@param text table|string
+local function getStringFromTable(text)
+	if type(text) == "string" then
+		return text
+	end
+	local str_out = ""
+	for _, value in ipairs(text) do
+		if type(value) == "string" then
+			str_out = str_out .. value
+		end
+	end
+	return str_out
+end
+
+---Strings with newlines are not recommended
+---@param text string|table
+---@param x number
+---@param y number
+---@param limit number
+---@param align "center"|"left"|"right"|"justify"
+function drawWrappingText(text, x, y, limit, align, ...)
+	local cur_font = love.graphics.getFont()
+	local text_str = getStringFromTable(text)
+	local string_width = cur_font:getWidth(text_str)
+	local offset_x = 0
+	if string_width > limit then
+		local prev_canvas = love.graphics.getCanvas()
+		local new_canvas = love.graphics.newCanvas(limit, cur_font:getHeight())
+		local max_offset = string_width - limit + 4
+		offset_x = (0.5 + clamp(math.sin(love.timer.getTime() / (1 + max_offset / 250)) * 2, -1, 1) / 2) * max_offset
+		love.graphics.push("all")
+		love.graphics.origin()
+		love.graphics.setLineWidth(2)
+		love.graphics.setCanvas(new_canvas)
+		love.graphics.printf(text, -offset_x, 0, math.max(string_width, limit), align)
+		if offset_x > 0 then
+			love.graphics.line(1, 0, 1, cur_font:getHeight())
+		end
+		if offset_x < max_offset then
+			love.graphics.line(limit - 1, 0, limit - 1, cur_font:getHeight())
+		end
+		love.graphics.pop()
+		love.graphics.draw(new_canvas, x, y, ...)
+		new_canvas:release()
+	else
+		love.graphics.printf(text, x, y, limit, align)
+	end
+end
 
 ---@param input number
 ---@param edge_distance number
