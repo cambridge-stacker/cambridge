@@ -591,7 +591,7 @@ function love.filedropped(file)
 				info_string = info_string .. ("Pause count: %d\nTime Paused: %s\n"):format(replay_data.pause_count, formatTime(replay_data.pause_time))
 			end
 			if replay_data.sha256_table then
-				info_string = info_string .. ("SHA256 replay checksums:\nMode: %s\nRuleset: %s\n"):format(replay_data.sha256_table.mode, replay_data.sha256_table.ruleset)
+				info_string = info_string .. ("SHA256 replay hashes:\nMode: %s\nRuleset: %s\n"):format(replay_data.sha256_table.mode, replay_data.sha256_table.ruleset)
 			end
 			if replay_data.highscore_data then
 				info_string = info_string .. "In-replay highscore data:\n\n"
