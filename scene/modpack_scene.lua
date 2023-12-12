@@ -159,14 +159,14 @@ function ModPackScene:render()
 			-(self.left_menu_height + 140) + 40 * key,
 			140,
 			40))
-		love.graphics.printf(value, 40, 60 - self.left_menu_height + 40 * key, 240, "left")
+		drawWrappingText(value, 40, 60 - self.left_menu_height + 40 * key, 240, "left")
 	end
 	for key, value in pairs(self.selected_mod_packs) do
 		love.graphics.setColor(1, 1, 1, fadeoutAtEdges(
 			-(self.right_menu_height + 140) + 40 * key,
 			140,
 			40))
-		love.graphics.printf(value, 360, 60 - self.right_menu_height + 40 * key, 240, "left")
+		drawWrappingText(value, 360, 60 - self.right_menu_height + 40 * key, 240, "left")
 		if config.mod_packs_applied.pack_link and config.mod_packs_applied.pack_link[key] then
 			love.graphics.setLineWidth(4)
 			love.graphics.line(600, 85 - self.right_menu_height + 40 * key, 600, 105 - self.right_menu_height + 40 * key)
