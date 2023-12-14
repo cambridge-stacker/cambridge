@@ -150,10 +150,12 @@ function loadReplayList()
 
 	io_thread = love.thread.newThread( replay_load_code )
 	local prev_names = {}
+	local idx = 1
 	for key, value in pairs(recursionStringValueExtract(game_modes, "is_directory")) do
 		if not table.contains(prev_names, value.name) then
-			dict_ref[value.name] = key + 1
-			replay_tree[key + 1] = {name = value.name}
+			idx = idx + 1
+			dict_ref[value.name] = idx
+			replay_tree[idx] = {name = value.name}
 			table.insert(prev_names, value.name)
 		end
 	end
