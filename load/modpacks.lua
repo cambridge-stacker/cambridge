@@ -72,6 +72,11 @@ function loadModpacks()
             rulesets[#rulesets+1] = {name = value.name, is_directory = true, from_modpack = true}
             recursivelyLoadFromFileTable(game_modes[#game_modes], value.modes, "gamemode.lua")
             recursivelyLoadFromFileTable(rulesets[#rulesets], value.rulesets, "ruleset.lua")
+			local function padnum(d) return ("%03d%s"):format(#d, d) end
+			table.sort(game_modes[#game_modes], function(a,b)
+			return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
+			table.sort(rulesets[#rulesets], function(a,b)
+			return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
             if to_unmount and not config.mod_packs_applied.pack_link[key] then
                 unmountAll()
             end
