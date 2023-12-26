@@ -24,6 +24,7 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	self.secret_inputs = replay["secret_inputs"]
 	self.replay = deepcopy(replay)
 	self.game = game_mode(self.secret_inputs, self.replay.properties)
+	self.game.secret_inputs = self.secret_inputs
 	self.game.save_replay = false
 	self.ruleset = ruleset(self.game)
 	self.game:initialize(self.ruleset)
