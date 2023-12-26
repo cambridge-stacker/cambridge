@@ -181,6 +181,10 @@ function ModeSelectScene:render()
 		for index, value in ipairs(self.game_mode_selections) do
 			mode_path_name = mode_path_name..(value.name or "modes").." > "
 		end
+		love.graphics.setColor(1, 1, 1, fadeoutAtEdges(
+			-self.menu_mode_height - 20,
+			160,
+			20))
 		love.graphics.printf(
 			"Path: "..mode_path_name:sub(1, -3),
 			 40, 220 - self.menu_mode_height, 200, "left")
@@ -190,6 +194,10 @@ function ModeSelectScene:render()
 		for index, value in ipairs(self.ruleset_folder_selections) do
 			ruleset_path_name = ruleset_path_name..(value.name or "rulesets").." > "
 		end
+		love.graphics.setColor(1, 1, 1, fadeoutAtEdges(
+			-self.menu_ruleset_height - 20,
+			160,
+			20))
 		love.graphics.printf(
 			"Path: "..ruleset_path_name:sub(1, -3),
 			 360, 220 - self.menu_ruleset_height, 200, "left")

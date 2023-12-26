@@ -231,6 +231,10 @@ function ModeSelectScene:render()
 		for index, value in ipairs(self.game_mode_selections) do
 			mode_path_name = mode_path_name..(value.name or "modes").." > "
 		end
+		love.graphics.setColor(1, 1, 1, fadeoutAtEdges(
+			-self.menu_mode_y - 20,
+			160,
+			20))
 		love.graphics.printf(
 			"Path: "..mode_path_name:sub(1, -3),
 			 40, 220 - self.menu_mode_y, 200, "left")
