@@ -24,6 +24,7 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	self.secret_inputs = replay["secret_inputs"]
 	self.replay = deepcopy(replay)
 	self.game = game_mode(self.secret_inputs, self.replay.properties)
+	self.game.secret_inputs = self.secret_inputs
 	self.game.save_replay = false
 	self.ruleset = ruleset(self.game)
 	self.game:initialize(self.ruleset)
@@ -131,6 +132,21 @@ end
 
 function ReplayScene:render()
 	self.game:draw(self.paused)
+	if self.show_invisible then 
+		love.graphics.setColor(1, 1, 1, 1)
+		if self.game.grid and self.game.grid.draw then
+			self.game.grid:draw()
+			love.graphics.setColor(1, 1, 1, 1)
+			love.graphics.setFont(font_3x5_3)
+			love.graphics.printf("SHOW INVIS", 64, 60, 160, "center")
+		elseif not self.game.grid.draw then
+			love.graphics.setFont(font_3x5_2)
+			love.graphics.printf("GRID IS UNDRAWABLE", 64, 60, 160, "center")
+		else
+			love.graphics.setFont(font_3x5_2)
+			love.graphics.printf("GRID IS NOT FOUND", 64, 60, 160, "center")
+		end
+	end
 	if self.rerecord then
 		return
 	end
@@ -158,21 +174,6 @@ function ReplayScene:render()
 		end
 	else
 		love.graphics.printf("?? PAUSES (--:--.--)", 0, pauses_y_coordinate, 635, "right")
-	end
-	if self.show_invisible then 
-		love.graphics.setColor(1, 1, 1, 1)
-		if self.game.grid and self.game.grid.draw then
-			self.game.grid:draw()
-			love.graphics.setColor(1, 1, 1, 1)
-			love.graphics.setFont(font_3x5_3)
-			love.graphics.printf("SHOW INVIS", 64, 60, 160, "center")
-		elseif not self.game.grid.draw then
-			love.graphics.setFont(font_3x5_2)
-			love.graphics.printf("GRID IS UNDRAWABLE", 64, 60, 160, "center")
-		else
-			love.graphics.setFont(font_3x5_2)
-			love.graphics.printf("GRID IS NOT FOUND", 64, 60, 160, "center")
-		end
 	end
 end
 
@@ -233,6 +234,8 @@ function ReplayScene:onInputPress(e)
 		pitchBGM(1)
 	elseif e.input == "hold" then
 		self.show_invisible = not self.show_invisible
+	elseif self.rerecord then
+		--nothing
 	elseif e.input == "menu_left" then
 		self.replay_speed = self.replay_speed - 1
 		if self.replay_speed < 1 then
