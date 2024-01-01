@@ -57,12 +57,12 @@ local input_naming = {
 	load_state = "Load game state",
 	secret = "???",
 	fullscreen = "Toggle Fullscreen",
+	screenshot = "Screenshot",
 	--Game Inputs
 	left = "Move Left",
 	right = "Move Right",
 	up = "Hard Drop (Up)",
 	down = "Soft Drop (Down)",
-	screenshot = "Screenshot",
 	rotate_left = "Rotate CCW [1]",
 	rotate_left2 = "Rotate CCW [2]",
 	rotate_right = "Rotate CW [1]",
