@@ -170,9 +170,9 @@ function ModPackScene:render()
 		if config.mod_packs_applied.pack_link and config.mod_packs_applied.pack_link[key] then
 			love.graphics.setLineWidth(4)
 			love.graphics.line(600, 85 - self.right_menu_height + 40 * key, 600, 105 - self.right_menu_height + 40 * key)
-			love.graphics.setLineWidth(1)
 		end
 	end
+	love.graphics.setLineWidth(2)
 
 	local mouse_x, mouse_y = getScaledDimensions(love.mouse.getPosition())
 	if cursorHoverArea(40, 60, 240, 320) then
