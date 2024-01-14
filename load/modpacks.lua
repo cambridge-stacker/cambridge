@@ -46,7 +46,7 @@ function loadModpacks()
 		end
 		local function mount(archive, path)
 			mounts[#mounts+1] = archive
-			love.filesystem.mount(archive, path, true)
+			love.filesystem.mount(archive, path, false)
 		end
         local pack_list = {}
 		for index, value in ipairs(config.mod_packs_applied) do
