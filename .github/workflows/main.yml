@@ -24,6 +24,24 @@ jobs:
           mkdir dist/win32/libs/
           cp libs/discord-rpc_x64.dll dist/windows/libs/
           cp libs/discord-rpc_x86.dll dist/win32/libs/
+      - name: Unpack and fuse LOVE 11.5 AppImage and then re-package
+        run: |
+          ./love-11.5-x86_64.AppImage --appimage-extract
+          sed -i 's/Exec=love/Exec=cambridge/g' squashfs-root/love.desktop
+          sed -i 's/Icon=love/Icon=cambridge_icon/g' squashfs-root/love.desktop
+          sed -i 's/Name=LÖVE/Name=Cambridge/g' squashfs-root/love.desktop
+          sed -i 's/Comment=The unquestionably awesome 2D game engine/Comment=The Open Source Arcade Block Stacker!/g' squashfs-root/love.desktop
+          sed -i 's/#FUSE_PATH="$APPDIR\/my_game"/FUSE_PATH="$APPDIR\/bin\/cambridge"/g' squashfs-root/AppRun
+          mv squashfs-root/love.desktop squashfs-root/cambridge.desktop
+          cat squashfs-root/bin/love cambridge.love > squashfs-root/bin/cambridge
+          chmod +x squashfs-root/bin/cambridge
+          cp res/img/cambridge_icon.png squashfs-root/
+          mkdir squashfs-root/bin/libs
+          cp libs/discord-rpc.so squashfs-root/bin/libs
+          sudo add-apt-repository universe
+          sudo apt install libfuse2
+          ./appimagetool-x86_64.AppImage squashfs-root cambridge_linux_x64.AppImage
+          rm -rf ./squashfs-root/
       - name: Unpack and fuse LOVE 12.0 AppImage and then re-package
         run: |
           ./love-12.0-x86_64-dev_ci.AppImage --appimage-extract
@@ -41,6 +59,7 @@ jobs:
           sudo add-apt-repository universe
           sudo apt install libfuse2
           ./appimagetool-x86_64.AppImage squashfs-root cambridge_linux_experimental.AppImage
+          rm -rf ./squashfs-root/
       - name: Upload Windows x86 artifact
         uses: actions/upload-artifact@v3
         with:
@@ -71,7 +90,15 @@ jobs:
             libs/discord-rpc*
             SOURCES.md
             LICENSE.md
-      - name: Upload experimental Linux artifact
+      - name: Upload Linux AppImage artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: cambridge_linux_x64
+          path: |
+            cambridge_linux_x64.AppImage
+            SOURCES.md
+            LICENSE.md
+      - name: Upload experimental Linux AppImage artifact
         uses: actions/upload-artifact@v3
         with:
           name: cambridge_linux_experimental
@@ -106,6 +133,7 @@ jobs:
         (cd ./cambridge_other && zip -r9 ../cambridge_other.zip .)
         (cd ./cambridge_windows_x64 && zip -r9 ../cambridge_windows_x64.zip .)
         (cd ./cambridge_windows_x86 && zip -r9 ../cambridge_windows_x86.zip .)
+        (cd ./cambridge_linux_x64 && zip -r9 ../cambridge_linux_x64.zip .)
         (cd ./cambridge_linux_experimental && zip -r9 ../cambridge_linux_experimental.zip .)
         (cd ./cambridge_windows_aarch64_experimental && zip -r9 ../cambridge_windows_aarch64_experimental.zip .)
       working-directory: dist/
