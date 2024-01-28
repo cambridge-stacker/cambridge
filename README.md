@@ -5,11 +5,9 @@ Cambridge
 
 Welcome to Cambridge, the next open-source falling-block game engine!
 
-The project is written and maintained exclusively by [Milla](https://github.com/MillaBasset), [joezeng](https://github.com/joezeng) and [Oshisaure](https://github.com/oshisaure)!
+The project is written and maintained by [joezeng](https://github.com/joezeng), [Milla](https://github.com/MillaBasset), [Oshisaure](https://github.com/oshisaure), and a team of contributors at the [Cambridge Discord][discord]!
 
-The Discord server has been reopened! https://discord.gg/AADZUmgsph
-
-The game also has a website now with more detail than seen on this README: https://t-sp.in/cambridge
+The [Discord server][discord] has been reopened!
 
 Playing the game
 ----------------
@@ -52,7 +50,7 @@ You can download the .love file in the latest release, and run it with:
 
 Clone the repository in git:
 
-	git clone https://github.com/MillaBasset/cambridge
+	git clone https://github.com/cambridge-stacker/cambridge
 
 Alternatively, download the source code ZIP in the latest release.
 
@@ -73,7 +71,7 @@ Any bugs found here that does not also apply to vanilla version must only be rep
 
 ## Installing modpacks
 
-For instructions on how to install modpacks, go to [this](https://github.com/MillaBasset/cambridge-modpack) mod pack to get a taste of the mod potential.
+For instructions on how to install modpacks, go to [this](https://github.com/cambridge-stacker/cambridge-modpack) mod pack to get a taste of the mod potential.
 
 License
 -------
@@ -88,11 +86,12 @@ listed in the file SOURCES.
 
 Credits
 -------
-
-- [Lilla Oshisaure](https://www.youtube.com/user/LeSpyroshisaure) for being my co-dev!
+  
+- [Milla Basset](https://github.com/MillaBasset) for reviving the project and maintaining it from 2020 to 2024
+- [Lilla Oshisaure](https://www.youtube.com/user/LeSpyroshisaure) for development support and help!
 - [joezeng](https://github.com/joezeng) for the original project, and for offering to help with the expansion!
-- [The Tetra Legends Discord](http://discord.com/invite/7hMx5r2) for supporting me and playtesting!
-- [The Absolute Plus](https://discord.gg/6Gf2awJ) for being another source of motivation!
+- [The Tetra Legends Discord](http://discord.com/invite/7hMx5r2) for support and playtesting!
+- [The Absolute Plus](https://discord.gg/6Gf2awJ) for support!
 
 More special thanks can be found in-game, under the "Credits" menu.
 
@@ -111,7 +110,8 @@ Other Notable Games
 - [Example Block Game](https://github.com/oshisaure/example-block-game) by Oshisaure
 - [Master of Blocks](https://discord.gg/72FZ49mjWh) by Phoenix Flare
 - [Spirit Drop](https://rayblastgames.com/spiritdrop.php) by RayRay26
-- [Puzzle Trial](https://kagamine-rin.itch.io/puzzle-trial) by Rin
-- [stackfuse](https://github.com/sinefuse/stackfuse) by sinefuse
 
 ![Cambridge Logo](https://cdn.discordapp.com/attachments/827186653772644452/1077674343544393820/Icon_2.png)
+                                            
+
+[discord]: https://discord.gg/AADZUmgsph
