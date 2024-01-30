@@ -10,6 +10,8 @@ local main_menu_screens = {
 	ModeSelectScene,
 	HighscoresScene,
 	ReplaySelectScene,
+	JoinDiscordFunc,
+	ReportBugFunc,
 	SettingsScene,
 	CreditsScene,
 	ExitScene,
