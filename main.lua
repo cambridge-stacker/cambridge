@@ -72,9 +72,7 @@ function recursivelyLoadRequireFileTable(table, directory, blacklisted_string)
 	end
 end
 
-
----@param reload boolean|nil
-function initModules(reload)
+function unloadModules()
 	--module reload.
 	if reload then
 		for key, value in pairs(package.loaded) do
@@ -83,6 +81,9 @@ function initModules(reload)
 			end
 		end
 	end
+end
+
+function initModules()
 	game_modes = {}
 	recursivelyLoadRequireFileTable(game_modes, "tetris/modes", "gamemode.lua")
 	-- mode_list = love.filesystem.getDirectoryItems("tetris/modes")

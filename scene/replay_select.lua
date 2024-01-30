@@ -13,7 +13,8 @@ local loading_replays
 
 function ReplaySelectScene:new()
 	-- fully reload custom modules
-	initModules(true)
+	unloadModules()
+	initModules()
 	
 	self.replay_count = #(love.filesystem.getDirectoryItems("replays"))
 	if not loaded_replays and not loading_replays then

@@ -24,7 +24,7 @@ end
 
 function ModeSelectScene:new()
 	-- reload custom modules
-	initModules(true)
+	initModules()
 	if highscores == nil then highscores = {} end
 	if #game_modes == 0 or #rulesets == 0 then
 		self.display_warning = true
@@ -299,6 +299,11 @@ function ModeSelectScene:render()
 			260 - self.menu_ruleset_x + 120 * idx, 440, 120, "center")
 		end
 	end
+	if self.reload_time_remaining and self.reload_time_remaining > 0 then
+		love.graphics.setColor(1, 1, 1, self.reload_time_remaining / 60)
+		love.graphics.printf("Modules reloaded!", 0, 10, 640, "center")
+		self.reload_time_remaining = self.reload_time_remaining - 1
+	end
 end
 
 function ModeSelectScene:indirectStartMode()
@@ -360,6 +365,15 @@ function ModeSelectScene:menuGoForward(type)
 	end
 end
 function ModeSelectScene:onInputPress(e)
+	if e.scancode == "lctrl" or e.scancode == "rctrl" then
+		self.ctrl_held = true
+	end
+	if e.scancode == "r" and self.ctrl_held then
+		unloadModules()
+		scene = ModeSelectScene()
+		scene.reload_time_remaining = 90
+		playSE("ihs")
+	end
 	if (e.input or e.scancode) and (self.display_warning or #self.game_mode_folder == 0 or #self.ruleset_folder == 0) then
 		if self.display_warning then
 			scene = TitleScene()
@@ -469,6 +483,9 @@ function ModeSelectScene:onInputPress(e)
 end
 
 function ModeSelectScene:onInputRelease(e)
+	if e.scancode == "lctrl" or e.scancode == "rctrl" then
+		self.ctrl_held = false
+	end
 	if e.input == "menu_up" then
 		self.das_up = nil
 	elseif e.input == "menu_down" then
