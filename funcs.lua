@@ -373,6 +373,37 @@ function fadeoutAtEdges(input, edge_distance, edge_width)
 	end
 	return 1
 end
+function toFormattedValue(value)
+	
+	if type(value) == "table" and value.digits and value.sign then
+		local num = ""
+		if value.sign == "-" then
+			num = "-"
+		end
+		for id, digit in pairs(value.digits) do
+			if not value.dense or id == 1 then
+				num = num .. math.floor(digit) -- lazy way of getting rid of .0$
+			else
+				num = num .. string.format("%07d", digit)
+			end
+		end
+		return num
+	end
+	return value
+end
+
+---@param str string
+function stringWrapByLength(str, len)
+	local new_str = ""
+	if #str > len then
+		for i = 1, math.ceil(#str / len) do
+			new_str = new_str .. str:sub((i-1)*len+1, i*len+1).."\n"
+		end
+	else
+		return str
+	end
+	return new_str
+end
 
 --alias functions
 interpolatePos = interpolateNumber

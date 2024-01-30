@@ -515,37 +515,6 @@ local function multipleInputs(input_table, input)
 	return result_inputs
 end
 
-local function toFormattedValue(value)
-	
-	if type(value) == "table" and value.digits and value.sign then
-		local num = ""
-		if value.sign == "-" then
-			num = "-"
-		end
-		for id, digit in pairs(value.digits) do
-			if not value.dense or id == 1 then
-				num = num .. math.floor(digit) -- lazy way of getting rid of .0$
-			else
-				num = num .. string.format("%07d", digit)
-			end
-		end
-		return num
-	end
-	return value
-end
-
----@param str string
-local function stringLengthLimit(str, len)
-	local new_str = ""
-	if #str > len then
-		for i = 1, math.ceil(#str / len) do
-			new_str = new_str .. str:sub((i-1)*len+1, i*len+1).."\n"
-		end
-	else
-		return str
-	end
-	return new_str
-end
 
 ---@param file love.File
 function love.filedropped(file)
@@ -597,7 +566,7 @@ function love.filedropped(file)
 			if replay_data.highscore_data then
 				info_string = info_string .. "In-replay highscore data:\n\n"
 				for key, value in pairs(replay_data["highscore_data"]) do
-					info_string = info_string .. stringLengthLimit((key..": ".. toFormattedValue(value)), 75) .. "\n"
+					info_string = info_string .. stringWrapByLength((key..": ".. toFormattedValue(value)), 75) .. "\n"
 				end
 			else
 				info_string = info_string .. "Legacy replay\nLevel: "..replay_data["level"]
