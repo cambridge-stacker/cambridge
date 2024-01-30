@@ -109,9 +109,6 @@ function initModules()
 	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
 end
 
---#region Tetro48's code
-
-
 ---@param tbl table
 ---@param key_check any
 ---@return table
@@ -425,7 +422,6 @@ function love.errorhandler(msg)
 	end
 
 end
---#endregion
 
 function love.draw()
 	local mean_delta = getMeanDelta()

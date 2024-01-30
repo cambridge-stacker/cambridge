@@ -169,7 +169,6 @@ function clamp(x, min, max)
 	return x < min and min or (x > max and max or x)
 end
 
---#region Tetro48's code
 
 ---@param image love.Image
 ---@param origin_x integer
@@ -408,5 +407,3 @@ end
 --alias functions
 interpolatePos = interpolateNumber
 getScaledPos = getScaledDimensions
-
---#endregion
