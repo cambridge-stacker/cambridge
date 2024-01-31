@@ -868,6 +868,8 @@ function love.joystickhat(joystick, hat, direction)
 	end
 end
 
+local mouse_buttons_pressed = {}
+
 ---@param x number
 ---@param y number
 ---@param button integer
@@ -875,6 +877,7 @@ end
 ---@param presses integer
 function love.mousepressed(x, y, button, istouch, presses)
 	if mouse_idle > 2 then return end
+	mouse_buttons_pressed[button] = true
 	local screen_x, screen_y = love.graphics.getDimensions()
 	local scale_factor = math.min(screen_x / 640, screen_y / 480)
 	local local_x, local_y = (x - (screen_x - scale_factor * 640) / 2)/scale_factor, (y - (screen_y - scale_factor * 480) / 2)/scale_factor
@@ -887,7 +890,8 @@ end
 ---@param istouch boolean
 ---@param presses integer
 function love.mousereleased(x, y, button, istouch, presses)
-	if mouse_idle > 2 then return end
+	if mouse_idle > 2 and not mouse_buttons_pressed[button] then return end
+	mouse_buttons_pressed[button] = false
 	local screen_x, screen_y = love.graphics.getDimensions()
 	local scale_factor = math.min(screen_x / 640, screen_y / 480)
 	local local_x, local_y = (x - (screen_x - scale_factor * 640) / 2)/scale_factor, (y - (screen_y - scale_factor * 480) / 2)/scale_factor
