@@ -74,11 +74,9 @@ end
 
 function unloadModules()
 	--module reload.
-	if reload then
-		for key, value in pairs(package.loaded) do
-			if string.sub(key, 1, 7) == "tetris." then
-				package.loaded[key] = nil
-			end
+	for key, value in pairs(package.loaded) do
+		if string.sub(key, 1, 7) == "tetris." then
+			package.loaded[key] = nil
 		end
 	end
 end
