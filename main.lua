@@ -922,12 +922,9 @@ local FRAME_DURATION = 1.0 / TARGET_FPS
 
 ---@param fps number
 function setTargetFPS(fps)
-	if fps == -1 then
-		TARGET_FPS = -1
+	if fps <= 0 or fps == math.huge then
+		TARGET_FPS = math.huge
 		return
-	end
-	if fps <= 0 then
-		error("Illegal target FPS.")
 	end
 	TARGET_FPS = fps
 	FRAME_DURATION = 1.0 / TARGET_FPS
@@ -967,8 +964,7 @@ function love.run()
 		
 		if scene and scene.update and love.timer then
 			scene:update()
-
-			if time_accumulator < FRAME_DURATION or TARGET_FPS == -1 then
+			if time_accumulator < FRAME_DURATION or TARGET_FPS == math.huge then
 				if love.graphics and love.graphics.isActive() and love.draw then
 					love.graphics.origin()
 					love.graphics.clear(love.graphics.getBackgroundColor())
@@ -987,7 +983,7 @@ function love.run()
 						system_cursor_type = "arrow"
 					end
 				end
-				if TARGET_FPS ~= -1 then
+				if TARGET_FPS ~= math.huge then
 					-- request 1ms delays first but stop short of overshooting, then do "0ms" delays without overshooting (0ms requests generally do a delay of some nonzero amount of time, but maybe less than 1ms)
 					for milliseconds=0.001,0.000,-0.001 do
 						local max_delay = 0.0
