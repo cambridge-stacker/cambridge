@@ -75,14 +75,8 @@ function slider:update(mouseX, mouseY, mouseDown)
     if down then
         if self.grabbed then
             if self.orientation == 'horizontal' then
-                if setSystemCursorType then
-                    setSystemCursorType('sizewe')
-                end
                 self.value = self.value + dx / self.length
             elseif self.orientation == 'vertical' then
-                if setSystemCursorType then
-                    setSystemCursorType('sizens')
-                end
                 self.value = self.value - dy / self.length
             end
         elseif (x > knobX - self.width/2 and x < knobX + self.width/2 and y > knobY - self.width/2 and y < knobY + self.width/2) and not self.wasDown then
@@ -92,9 +86,6 @@ function slider:update(mouseX, mouseY, mouseDown)
         end
     else
         self.grabbed = false
-        if setSystemCursorType then
-            setSystemCursorType('arrow')
-        end
     end
 
     self.value = math.max(0, math.min(1, self.value))
