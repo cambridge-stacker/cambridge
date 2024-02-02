@@ -8,6 +8,14 @@ function Scene:render() end
 function Scene:onInputPress() end
 function Scene:onInputRelease() end
 
+--#region Named scene-function impostors
+--        For some reason, these "scenes" must be loaded before TitleScene or else title screen bugs out
+
+JoinDiscordFunc = require "scene.named_funcs.join_discord"
+ReportBugFunc = require "scene.named_funcs.report_bug"
+
+--#endregion
+
 ExitScene = require "scene.exit"
 GameScene = require "scene.game"
 ResourcePackScene = require "scene.resource_pack_scene"

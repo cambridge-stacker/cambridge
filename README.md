@@ -5,11 +5,9 @@ Cambridge
 
 Welcome to Cambridge, the next open-source falling-block game engine!
 
-The project is written and maintained exclusively by [Milla](https://github.com/MillaBasset), [joezeng](https://github.com/joezeng) and [Oshisaure](https://github.com/oshisaure)!
+The project is written and maintained by [joezeng](https://github.com/joezeng), [Milla](https://github.com/MillaBasset), [Oshisaure](https://github.com/oshisaure), and a team of contributors at the [Cambridge Discord][discord]!
 
-The Discord server has been reopened! https://discord.gg/AADZUmgsph
-
-The game also has a website now with more detail than seen on this README: https://t-sp.in/cambridge
+The [Discord server][discord] has been reopened!
 
 Playing the game
 ----------------
@@ -20,13 +18,13 @@ You do not need LÖVE on Windows, as it comes bundled with the program.
 
 #### Stable release
 
-To get the stable release, simply download either `cambridge_windows_x86.zip` (32-bit, x86) or `cambridge_windows_x64.zip` (64-bit, x86-64) in the [latest release](../../releases/latest).
+To get the stable release, simply download either `cambridge_windows_x86.zip` (32-bit, x86) or `cambridge_windows_x64.zip` (64-bit, x86-64) in the [latest release](https://github.com/cambridge-stacker/cambridge/releases/latest).
 
 All assets needed are bundled with the executable.
 
 #### Bleeding edge
 
-If you want the bleeding edge version, download [this](../../archive/master.zip). Extract the ZIP to a folder of your choosing.
+If you want the bleeding edge version, download [this](https://github.com/cambridge-stacker/cambridge/archive/master.zip). Extract the ZIP to a folder of your choosing.
 
 If you're on Windows, you can double-click `start.bat` to run the game. If that doesn't work, open a Command Prompt where you extracted Cambridge and run:
 
@@ -52,7 +50,7 @@ You can download the .love file in the latest release, and run it with:
 
 Clone the repository in git:
 
-	git clone https://github.com/MillaBasset/cambridge
+	git clone https://github.com/cambridge-stacker/cambridge
 
 Alternatively, download the source code ZIP in the latest release.
 
@@ -62,18 +60,9 @@ Then, navigate to the root directory that you just cloned, and type:
 
 It should run automatically!
 
-
-## Notes for Flooding edge
-
-This fork might have weird bugs that isn't addressed by [Tetro48](https://github.com/Tetro48/); it has a lot of changes.
-e.g.
-Mouse controls, cursor type, visual settings, separate audio settings, dedicated highscores viewer, replay tree, replay speed, tool-assisted speedrun mode, input re-work, replay tunings (although that'd be helpful), file drag-n-drop, and many many more.
-
-Any bugs found here that does not also apply to vanilla version must only be reported on this fork. Do not make issues related to this fork on [the fork's origin](https://github.com/MillaBasset/cambridge).
-
 ## Installing modpacks
 
-For instructions on how to install modpacks, go to [this](https://github.com/MillaBasset/cambridge-modpack) mod pack to get a taste of the mod potential.
+For instructions on how to install modpacks, go to [this](https://github.com/cambridge-stacker/cambridge-modpack) mod pack to get a taste of the mod potential.
 
 License
 -------
@@ -88,11 +77,12 @@ listed in the file SOURCES.
 
 Credits
 -------
-
-- [Lilla Oshisaure](https://www.youtube.com/user/LeSpyroshisaure) for being my co-dev!
+  
+- [Milla Basset](https://github.com/MillaBasset) for reviving the project and maintaining it from 2020 to 2024
+- [Lilla Oshisaure](https://www.youtube.com/user/LeSpyroshisaure) for development support and help!
 - [joezeng](https://github.com/joezeng) for the original project, and for offering to help with the expansion!
-- [The Tetra Legends Discord](http://discord.com/invite/7hMx5r2) for supporting me and playtesting!
-- [The Absolute Plus](https://discord.gg/6Gf2awJ) for being another source of motivation!
+- [The Tetra Legends Discord](http://discord.com/invite/7hMx5r2) for support and playtesting!
+- [The Absolute Plus](https://discord.gg/6Gf2awJ) for support!
 
 More special thanks can be found in-game, under the "Credits" menu.
 
@@ -111,7 +101,8 @@ Other Notable Games
 - [Example Block Game](https://github.com/oshisaure/example-block-game) by Oshisaure
 - [Master of Blocks](https://discord.gg/72FZ49mjWh) by Phoenix Flare
 - [Spirit Drop](https://rayblastgames.com/spiritdrop.php) by RayRay26
-- [Puzzle Trial](https://kagamine-rin.itch.io/puzzle-trial) by Rin
-- [stackfuse](https://github.com/sinefuse/stackfuse) by sinefuse
 
 ![Cambridge Logo](https://cdn.discordapp.com/attachments/827186653772644452/1077674343544393820/Icon_2.png)
+                                            
+
+[discord]: https://discord.gg/AADZUmgsph

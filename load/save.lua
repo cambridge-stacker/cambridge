@@ -14,12 +14,12 @@ function loadFromFile(filename)
 		if file_data == nil then
 			return {} -- new object
 		end
+	end
+	local result, save_data = pcall(binser.deserialize, file_data)
+	if result == false or save_data == nil then
+		return {} -- new object
 	else
 		love.filesystem.write(filename..".backup", file_data) -- backup creation if sucessful
-	end
-	local save_data = binser.deserialize(file_data)
-	if save_data == nil then
-		return {} -- new object
 	end
 	return save_data[1]
 end

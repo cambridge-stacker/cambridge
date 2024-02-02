@@ -73,17 +73,16 @@ function recursivelyLoadRequireFileTable(table, directory, blacklisted_string)
 	end
 end
 
-
----@param reload boolean|nil
-function initModules(reload)
+function unloadModules()
 	--module reload.
-	if reload then
-		for key, value in pairs(package.loaded) do
-			if string.sub(key, 1, 7) == "tetris." then
-				package.loaded[key] = nil
-			end
+	for key, value in pairs(package.loaded) do
+		if string.sub(key, 1, 7) == "tetris." then
+			package.loaded[key] = nil
 		end
 	end
+end
+
+function initModules()
 	game_modes = {}
 	recursivelyLoadRequireFileTable(game_modes, "tetris/modes", "gamemode.lua")
 	-- mode_list = love.filesystem.getDirectoryItems("tetris/modes")
@@ -110,9 +109,6 @@ function initModules(reload)
 	table.sort(rulesets, function(a,b)
 	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
 end
-
---#region Tetro48's code
-
 
 ---@param tbl table
 ---@param key_check any
@@ -433,7 +429,6 @@ function love.errorhandler(msg)
 	end
 
 end
---#endregion
 
 function love.draw()
 	local mean_delta = getMeanDelta()
@@ -523,37 +518,6 @@ local function multipleInputs(input_table, input)
 	return result_inputs
 end
 
-local function toFormattedValue(value)
-	
-	if type(value) == "table" and value.digits and value.sign then
-		local num = ""
-		if value.sign == "-" then
-			num = "-"
-		end
-		for id, digit in pairs(value.digits) do
-			if not value.dense or id == 1 then
-				num = num .. math.floor(digit) -- lazy way of getting rid of .0$
-			else
-				num = num .. string.format("%07d", digit)
-			end
-		end
-		return num
-	end
-	return value
-end
-
----@param str string
-local function stringLengthLimit(str, len)
-	local new_str = ""
-	if #str > len then
-		for i = 1, math.ceil(#str / len) do
-			new_str = new_str .. str:sub((i-1)*len+1, i*len+1).."\n"
-		end
-	else
-		return str
-	end
-	return new_str
-end
 
 ---@param file love.File
 function love.filedropped(file)
@@ -605,7 +569,7 @@ function love.filedropped(file)
 			if replay_data.highscore_data then
 				info_string = info_string .. "In-replay highscore data:\n\n"
 				for key, value in pairs(replay_data["highscore_data"]) do
-					info_string = info_string .. stringLengthLimit((key..": ".. toFormattedValue(value)), 75) .. "\n"
+					info_string = info_string .. stringWrapByLength((key..": ".. toFormattedValue(value)), 75) .. "\n"
 				end
 			else
 				info_string = info_string .. "Legacy replay\nLevel: "..replay_data["level"]
@@ -911,6 +875,8 @@ function love.joystickhat(joystick, hat, direction)
 	end
 end
 
+local mouse_buttons_pressed = {}
+
 ---@param x number
 ---@param y number
 ---@param button integer
@@ -918,6 +884,7 @@ end
 ---@param presses integer
 function love.mousepressed(x, y, button, istouch, presses)
 	if mouse_idle > 2 then return end
+	mouse_buttons_pressed[button] = true
 	local screen_x, screen_y = love.graphics.getDimensions()
 	local scale_factor = math.min(screen_x / 640, screen_y / 480)
 	local local_x, local_y = (x - (screen_x - scale_factor * 640) / 2)/scale_factor, (y - (screen_y - scale_factor * 480) / 2)/scale_factor
@@ -930,7 +897,8 @@ end
 ---@param istouch boolean
 ---@param presses integer
 function love.mousereleased(x, y, button, istouch, presses)
-	if mouse_idle > 2 then return end
+	if mouse_idle > 2 and not mouse_buttons_pressed[button] then return end
+	mouse_buttons_pressed[button] = false
 	local screen_x, screen_y = love.graphics.getDimensions()
 	local scale_factor = math.min(screen_x / 640, screen_y / 480)
 	local local_x, local_y = (x - (screen_x - scale_factor * 640) / 2)/scale_factor, (y - (screen_y - scale_factor * 480) / 2)/scale_factor
@@ -965,12 +933,9 @@ local FRAME_DURATION = 1.0 / TARGET_FPS
 
 ---@param fps number
 function setTargetFPS(fps)
-	if fps == -1 then
-		TARGET_FPS = -1
+	if fps <= 0 or fps == math.huge then
+		TARGET_FPS = math.huge
 		return
-	end
-	if fps <= 0 then
-		error("Illegal target FPS.")
 	end
 	TARGET_FPS = fps
 	FRAME_DURATION = 1.0 / TARGET_FPS
@@ -1010,8 +975,7 @@ function love.run()
 		
 		if scene and scene.update and love.timer then
 			scene:update()
-
-			if time_accumulator < FRAME_DURATION or TARGET_FPS == -1 then
+			if time_accumulator < FRAME_DURATION or TARGET_FPS == math.huge then
 				if love.graphics and love.graphics.isActive() and love.draw then
 					love.graphics.origin()
 					love.graphics.clear(love.graphics.getBackgroundColor())
@@ -1030,7 +994,7 @@ function love.run()
 						system_cursor_type = "arrow"
 					end
 				end
-				if TARGET_FPS ~= -1 then
+				if TARGET_FPS ~= math.huge then
 					-- request 1ms delays first but stop short of overshooting, then do "0ms" delays without overshooting (0ms requests generally do a delay of some nonzero amount of time, but maybe less than 1ms)
 					for milliseconds=0.001,0.000,-0.001 do
 						local max_delay = 0.0

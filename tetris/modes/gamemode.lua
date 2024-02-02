@@ -82,7 +82,6 @@ function GameMode:new(secret_inputs, properties)
 	self.section_start_time = 0
 	self.section_times = { [0] = 0 }
 	self.secondary_section_times = { [0] = 0 }
-	--#region Tetro48's set up code
 	cursor_type_record = config.visualsettings.cursor_type
 	if config.visualsettings.cursor_type ~= 1 then
 		is_cursor_visible = true
@@ -91,7 +90,6 @@ function GameMode:new(secret_inputs, properties)
 	end
 	config.visualsettings.cursor_type = 1
 	love.mouse.setVisible(is_cursor_visible)
-	--#endregion
 end
 
 function GameMode:getARR() return 1 end

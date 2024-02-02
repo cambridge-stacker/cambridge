@@ -13,7 +13,8 @@ local loading_replays
 
 function ReplaySelectScene:new()
 	-- fully reload custom modules
-	initModules(true)
+	unloadModules()
+	initModules()
 	
 	self.replay_count = #(love.filesystem.getDirectoryItems("replays"))
 	if not loaded_replays and not loading_replays then
@@ -48,27 +49,6 @@ function ReplaySelectScene:new()
 		state = "Choosing a replay",
 		largeImageKey = "ingame-000"
 	})
-end
-
-local function popFromChannel(channel_name)
-	local load_from = love.thread.getChannel(channel_name):pop()
-	if load_from then
-		return load_from
-	end
-end
-
-local function toFormattedValue(value)
-	if type(value) == "table" and value.digits and value.sign then
-		local num = ""
-		if value.sign == "-" then
-			num = "-"
-		end
-		for _, digit in pairs(value.digits) do
-			num = num .. math.floor(digit) -- lazy way of getting rid of .0$
-		end
-		return num
-	end
-	return value
 end
 
 function insertReplay(replay)
@@ -109,7 +89,7 @@ end
 function ReplaySelectScene:update()
 	if not loaded_replays then
 		self.state_string = love.thread.getChannel('load_state'):peek()
-		local replay = popFromChannel('replay')
+		local replay = love.thread.getChannel('replay'):pop()
 		local load = love.thread.getChannel( 'loaded_replays' ):pop()
 		while replay do
 			replays_loaded = replays_loaded + 1
@@ -119,7 +99,7 @@ function ReplaySelectScene:update()
 				table.insert(replay_tree[dict_ref[mode_name] ], #replays)
 			end
 			table.insert(replay_tree[1], #replays)
-			replay = popFromChannel('replay')
+			replay = love.thread.getChannel('replay'):pop()
 		end
 		if load then
 			loaded_replays = true
