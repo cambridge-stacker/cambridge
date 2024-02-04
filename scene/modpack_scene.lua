@@ -253,6 +253,19 @@ function ModPackScene:linkSelectedPack(index)
 	self:refreshPackSelection()
 end
 
+function ModPackScene:exitScene()
+	if equals(self.prev_mod_packs_applied, config.mod_packs_applied) then
+		playSE("menu_cancel")
+	else
+		playSE("mode_decide")
+	end
+	saveConfig()
+	unloadModules()
+	loadResources()
+	scene = self.prev_scene
+	collectgarbage("collect")
+end
+
 function ModPackScene:onInputPress(e)
 	if e.type == "mouse" then
 		self.mouse_control = true
@@ -261,14 +274,7 @@ function ModPackScene:onInputPress(e)
 			love.system.openURL("file://" .. love.filesystem.getSaveDirectory() .. "/modpacks/")
 		end
 		if cursorHoverArea(400, 400, 160, 30) then
-			if equals(self.prev_mod_packs_applied, config.mod_packs_applied) then
-				playSE("menu_cancel")
-			else
-				playSE("mode_decide")
-			end
-			saveConfig()
-			initModules()
-			scene = self.prev_scene
+			self:exitScene()
 		end
 		if cursorHoverArea(40, 60, 240, 320) then
 			local mod_pack_index = math.floor((e.y + self.left_menu_height - 60) / 40)
@@ -389,15 +395,7 @@ function ModPackScene:onInputPress(e)
 		self.selection_type = Mod1(self.selection_type + 1, 4)
 	end
 	if e.scancode == "escape" or e.input == "menu_back" or (self.selection_type == 4 and e.input == "menu_decide") then
-		if equals(self.prev_mod_packs_applied, config.mod_packs_applied) then
-			playSE("menu_cancel")
-		else
-			playSE("mode_decide")
-		end
-		saveConfig()
-		loadResources()
-		scene = self.prev_scene
-		collectgarbage("collect")
+		self:exitScene()
 	end
 end
 

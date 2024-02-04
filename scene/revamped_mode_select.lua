@@ -23,8 +23,6 @@ local function interpolateNumber(input, from, speed)
 end
 
 function ModeSelectScene:new()
-	-- reload custom modules
-	initModules()
 	if highscores == nil then highscores = {} end
 	if #game_modes == 0 or #rulesets == 0 then
 		self.display_warning = true
@@ -355,7 +353,9 @@ function ModeSelectScene:onInputPress(e)
 		self.ctrl_held = true
 	end
 	if e.scancode == "r" and self.ctrl_held then
+		-- reload custom modules
 		unloadModules()
+		initModules()
 		scene = ModeSelectScene()
 		scene.reload_time_remaining = 90
 		playSE("ihs")

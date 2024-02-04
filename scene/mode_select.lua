@@ -6,8 +6,6 @@ current_mode = 1
 current_ruleset = 1
 
 function ModeSelectScene:new()
-	-- reload custom modules
-	initModules()
 	self.game_mode_folder = game_modes
 	self.game_mode_selections = {game_modes}
 	self.ruleset_folder = rulesets
@@ -331,7 +329,9 @@ function ModeSelectScene:onInputPress(e)
 		self.ctrl_held = true
 	end
 	if e.scancode == "r" and self.ctrl_held then
+		-- reload custom modules
 		unloadModules()
+		initModules()
 		scene = ModeSelectScene()
 		scene.reload_time_remaining = 90
 		playSE("ihs")

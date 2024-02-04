@@ -8,12 +8,12 @@ function recursivelyLoadFromFileTable(dest, source, blacklisted_string)
 			dest[#dest+1] = {name = name, is_directory = true}
 			recursivelyLoadFromFileTable(dest[#dest], name, blacklisted_string)
 		end
-        local require_string = string.gsub(name, "/", ".")
+        local require_string = string.gsub(name, "/", "."):sub(1, -5)
 		if name ~= blacklisted_string and name:sub(-4) == ".lua" then
-            if package.loaded[require_string:sub(1, -5)] ~= nil then
-                package.loaded[require_string:sub(1, -5)] = nil
+            if package.loaded[require_string] ~= nil then
+                package.loaded[require_string] = nil
             end
-			dest[#dest+1] = require(require_string:sub(1, -5))
+			dest[#dest+1] = require(require_string)
 			if not (type(dest[#dest]) == "table" and type(dest[#dest].__call) == "function") then
 				error("Add a return to "..name..".\nMust be a table with __call function.", 1)
 			end
