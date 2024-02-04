@@ -258,10 +258,11 @@ function ModPackScene:exitScene()
 		playSE("menu_cancel")
 	else
 		playSE("mode_decide")
+		unloadModules()
+		initModules()
+		loadResources()
 	end
 	saveConfig()
-	unloadModules()
-	loadResources()
 	scene = self.prev_scene
 	collectgarbage("collect")
 end
