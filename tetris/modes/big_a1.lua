@@ -4,7 +4,7 @@ local BigA1Game = MarathonA1Game:extend()
 
 BigA1Game.name = "Big A1"
 BigA1Game.hash = "BigA1"
-BigA1Game.tagline = "Big blocks in the most celebrated TGM mode!"
+BigA1Game.tagline = "Can you survive the awkward big blocks to reach the title of Grand Master?"
 
 function BigA1Game:new()
 	BigA1Game.super:new()
