@@ -250,6 +250,23 @@ function copyDirectoryRecursively(source_directory, destination_directory, overr
 	end
 end
 
+---@param tbl table
+---@param key_check any
+---@return table
+function recursionStringValueExtract(tbl, key_check)
+	local result = {}
+	for key, value in pairs(tbl) do
+		if type(value) == "table" and (key_check == nil or value[key_check]) then
+			local recursion_result = recursionStringValueExtract(value, key_check)
+			for k2, v2 in pairs(recursion_result) do
+				table.insert(result, v2)
+			end
+		elseif tostring(value) == "Object" then
+			table.insert(result, value)
+		end
+	end
+	return result
+end
 -- For when you need to convert given coordinate to where it'd be in scaled 640x480 equivalent.
 ---@param x number
 ---@param y number
