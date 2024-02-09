@@ -267,28 +267,11 @@ function ReplaySelectScene:render()
 			end
 			if replay.sha256_table then
 				if config.visualsettings.debug_level > 2 then
-					idx = idx + 2
-					love.graphics.setFont(font_3x5_2)
-					love.graphics.printf(("SHA256 replay hashes:\n   Mode: %s\nRuleset: %s"):format(replay.sha256_table.mode, replay.sha256_table.ruleset), 0, 140 + idx * 20, 640, "center")
-				end
-				if replay.sha256_table.mode ~= self.replay_sha_table.mode then
-					idx = idx + 1
-					love.graphics.setColor(1, 0, 0)
-					love.graphics.printf("SHA256 hash for mode doesn't match!", 0, 170 + idx * 20, 640, "center")
 					idx = idx + 1
 					love.graphics.setFont(font_3x5)
-					love.graphics.printf(("Replay: %s\nMode:   %s"):format(replay.sha256_table.mode, self.replay_sha_table.mode), 0, 170 + idx * 20, 640, "center")
-					love.graphics.setColor(1, 1, 1)
-				end
-				if replay.sha256_table.ruleset ~= self.replay_sha_table.ruleset then
-					idx = idx + 2
-					love.graphics.setColor(1, 0, 0)
-					love.graphics.setFont(font_3x5_2)
-					love.graphics.printf("SHA256 hash for ruleset doesn't match!", 0, 170 + idx * 20, 640, "center")
-					idx = idx + 1
-					love.graphics.setFont(font_3x5)
-					love.graphics.printf(("Replay: %s\nRuleset:%s"):format(replay.sha256_table.ruleset, self.replay_sha_table.ruleset), 0, 170 + idx * 20, 640, "center")
-					love.graphics.setColor(1, 1, 1)
+					love.graphics.printf(("SHA256 replay hashes:\n   Mode: %s\nRuleset: %s"):format(replay.sha256_table.mode, replay.sha256_table.ruleset), 0, 160 + idx * 20, 640, "center")
+					idx = idx + 1.5
+					love.graphics.printf(("SHA256 comparison hashes:\n   Mode: %s\nRuleset: %s"):format(self.replay_sha_table.mode, self.replay_sha_table.ruleset), 0, 160 + idx * 20, 640, "center")
 				end
 			end
 			if replay.highscore_data then
