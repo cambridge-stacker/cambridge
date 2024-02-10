@@ -236,6 +236,19 @@ function ResourcePackScene:swapSelectedPack(old_index, new_index)
 	self:refreshPackSelection()
 end
 
+function ResourcePackScene:exitScene()
+	if equals(self.prev_resource_packs_applied, config.resource_packs_applied) then
+		playSE("menu_cancel")
+	else
+		playSE("mode_decide")
+	end
+	saveConfig()
+	loadResources()
+	--unloading modules is kinda necessary
+	unloadModules()
+	scene = self.prev_scene
+end
+
 function ResourcePackScene:onInputPress(e)
 	if e.type == "mouse" then
 		self.mouse_control = true
@@ -244,14 +257,7 @@ function ResourcePackScene:onInputPress(e)
 			love.system.openURL("file://" .. love.filesystem.getSaveDirectory() .. "/resourcepacks/")
 		end
 		if cursorHoverArea(400, 400, 160, 30) then
-			if equals(self.prev_resource_packs_applied, config.resource_packs_applied) then
-				playSE("menu_cancel")
-			else
-				playSE("mode_decide")
-			end
-			saveConfig()
-			loadResources()
-			scene = self.prev_scene
+			self:exitScene()
 		end
 		if cursorHoverArea(40, 60, 240, 320) then
 			local resource_pack_index = math.floor((e.y + self.left_menu_height - 60) / 40)
@@ -365,14 +371,7 @@ function ResourcePackScene:onInputPress(e)
 		self.selection_type = Mod1(self.selection_type + 1, 4)
 	end
 	if e.scancode == "escape" or e.input == "menu_back" or (self.selection_type == 4 and e.input == "menu_decide") then
-		if equals(self.prev_resource_packs_applied, config.resource_packs_applied) then
-			playSE("menu_cancel")
-		else
-			playSE("mode_decide")
-		end
-		saveConfig()
-		loadResources()
-		scene = self.prev_scene
+		self:exitScene()
 	end
 end
 
