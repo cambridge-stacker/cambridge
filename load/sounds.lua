@@ -44,6 +44,34 @@ for k,v in pairs(sound_paths) do
 		sounds[k] = {}
 	end
 end
+
+-- This supports resource pack system. This shouldn't run every frame.
+---@param path string
+---@param sound string
+---@param subsound any
+function loadSound(path, sound, subsound)
+	if love.filesystem.getInfo(applied_packs_path..path) then
+		path = applied_packs_path..path
+	end
+	if(love.filesystem.getInfo(path)) then
+		-- this file exists
+		buffer_sounds[sound] = buffer_sounds[sound] or {}
+		local buffer_tbl_ref = buffer_sounds[sound]
+		if subsound then
+			buffer_sounds[sound][subsound] = {}
+			sounds_played[sound] = sounds_played[sound] or {}
+			sounds_played[sound][subsound] = 0
+			buffer_tbl_ref = buffer_tbl_ref[subsound]
+		else
+			sounds_played[sound] = 0
+		end
+		local sound_data = love.sound.newSoundData(path)
+		for k3 = 1, config.sound_sources do
+			buffer_tbl_ref[k3] = love.audio.newSource(sound_data)
+		end
+	end
+end
+
 -- Replace each sound effect string with its love audiosource counterpart, but only if it exists. This lets the game handle missing SFX.
 function generateSoundTable()
 	if config.sound_sources == nil then config.sound_sources = 1 end
@@ -52,36 +80,10 @@ function generateSoundTable()
 		if(type(v) == "table") then
 			-- list of subsounds
 			for k2,v2 in pairs(v) do
-				local path = v2
-				if love.filesystem.getInfo(applied_packs_path..path) then
-					path = applied_packs_path..path
-				end
-				if(love.filesystem.getInfo(path)) then
-					-- this file exists
-					buffer_sounds[k] = buffer_sounds[k] or {}
-					buffer_sounds[k][k2] = {}
-					sounds_played[k] = sounds_played[k] or {}
-					sounds_played[k][k2] = 0
-					local sound_data = love.sound.newSoundData(path)
-					for k3 = 1, config.sound_sources do
-						buffer_sounds[k][k2][k3] = love.audio.newSource(sound_data)
-					end
-				end
+				loadSound(v2, k, k2)
 			end
 		else
-			local path = v
-			if love.filesystem.getInfo(applied_packs_path..path) then
-				path = applied_packs_path..path
-			end
-			if(love.filesystem.getInfo(path)) then
-				-- this file exists
-				buffer_sounds[k] = {}
-				local sound_data = love.sound.newSoundData(path)
-				for k2 = 1, config.sound_sources do
-					buffer_sounds[k][k2] = love.audio.newSource(sound_data)
-				end
-				sounds_played[k] = 0
-			end
+			loadSound(v, k)
 		end
 	end
 end

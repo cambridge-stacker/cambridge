@@ -199,10 +199,10 @@ end
 function Ruleset:initializePiece(
 	inputs, data, grid, gravity, prev_inputs,
 	move, lock_delay, drop_speed,
-	drop_locked, hard_drop_locked, big, irs, half_block
+	drop_locked, hard_drop_locked, big, irs, half_block, offset
 )
 	local spawn_positions
-	if big and not half_block then
+	if big then
 		spawn_positions = self.big_spawn_positions
 	else
 		spawn_positions = self.spawn_positions
@@ -233,11 +233,14 @@ function Ruleset:initializePiece(
 	end
 	
 	local spawn_y = spawn_positions[data.shape].y - spawn_dy
-	if big and not half_block then
+	if big then
 		spawn_x = spawn_x + math.floor(spawn_positions[data.shape].x * grid.width / 10)
 		spawn_y = spawn_y + spawn_positions[data.shape].y
-	elseif big and half_block then
-		spawn_y = math.ceil(spawn_y / 2) * 2
+	end
+
+	if offset then
+		spawn_x = spawn_x + offset.x
+		spawn_y = spawn_y + offset.y
 	end
 
 	local piece = Piece(data.shape, data.orientation - 1, {

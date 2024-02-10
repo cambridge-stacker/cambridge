@@ -10,52 +10,56 @@ ConfigScene.options = {
 	{
 		config_name = "display_gamemode",
 		display_name = "Display Info",
-		options = {"On", "Off"}
+		options = {"On", "Off"},
+		description = "Shows some game info.\nWhile playing (depends on gamemode): <mode_name> - <ruleset_name>\nIf enabled or on title screen: (<target_fps>) <fps> fps - <version>"
 	},
 	{
 		config_name = "smooth_movement",
 		display_name = "Smooth Piece Drop",
-		options = {"On", "Off"}
+		options = {"On", "Off"},
 	},
 	{
 		config_name = "smooth_scroll",
 		display_name = "Smooth Scrolling",
-		options = {"On", "Off"}
+		options = {"On", "Off"},
+		description = "Option to let menus and numbers smoothly interpolate\nif enabled. This affects interpolateNumber function."
 	},
 	{
 		config_name = "cursor_highlight",
 		display_name = "Cursor Highlight",
-		options = {"On", "Off"}
+		options = {"On", "Off"},
 	},
 	{
 		config_name = "cursor_type",
 		display_name = "Cursor Type",
-		options = {"Standard", "Tetro48's"}
+		options = {"Standard", "Tetro48's"},
+		description = "Standard is a cursor of an operating system\nTetro48's cursor is custom-made"
 	},
 	{
 		config_name = "mode_entry",
 		display_name = "Mode Entry",
-		options = {"Instant", "Animated"}
+		options = {"Instant", "Animated"},
 	},
 	{
 		config_name = "tagline_position",
 		display_name = "Tagline placement",
-		options = {"Top", "Bottom", "None"}
+		options = {"Top", "Bottom", "None"},
 	},
 	{
 		config_name = "mode_select_type",
 		display_name = "Mode Select Type",
-		options = {"Default", "Oshi's idea"}
+		options = {"Default", "Oshi's idea"},
 	},
 	{
 		config_name = "credits_position",
 		display_name = "Credits Pos-ing",
-		options = {"Right", "Center"}
+		options = {"Right", "Center"},
 	},
 	{
 		config_name = "debug_level",
 		display_name = "Debug Level",
-		options = {"Off", "Min", "Max"}
+		options = {"Off", "Min", "Max"},
+		description = "How much debug info do you want displayed?\nMin: Lua memory usage data\nMax: Memory usage, GPU stats data and 2 true hashes stored in replays"
 	}
 }
 local optioncount = #ConfigScene.options
@@ -83,15 +87,7 @@ function ConfigScene:render()
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_2)
 	love.graphics.print("(THIS WILL NOT BE STORED IN REPLAYS)", 80, 80)
-	-- love.graphics.setColor(1, 1, 1, 0.5)
-	-- love.graphics.rectangle("fill", 580, 40, 60, 35)
-	-- love.graphics.setColor(1, 1, 1, 1)
-	-- love.graphics.setFont(font_3x5_3)
-	-- love.graphics.printf("SAVE", 580, 40, 60, "center")
-	-- love.graphics.setFont(font_3x5)
-	-- love.graphics.printf("(MOUSE ONLY)", 580, 62, 60, "center")
 
-	--Lazy check to see if we're on the SFX or BGM slider. Probably will need to be rewritten if more options get added.
 	love.graphics.setColor(1, 1, 1, 0.5)
     love.graphics.rectangle("fill", 25, 98 + self.highlight * 20, 170, 22)
 
@@ -104,6 +100,10 @@ function ConfigScene:render()
             love.graphics.setColor(1, 1, b, config.visualsettings[option.config_name] == j and 1 or 0.5)
             love.graphics.printf(setting, 100 + 110 * j, 100 + i * 20, 100, "center")
         end
+	end
+	love.graphics.setColor(1, 1, 1, 1)
+	if self.options[self.highlight].description then
+		love.graphics.printf("Description: " .. self.options[self.highlight].description, 20, 380, 600, "left")
 	end
 
 	love.graphics.setColor(1, 1, 1, 0.75)

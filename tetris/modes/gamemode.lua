@@ -75,6 +75,7 @@ function GameMode:new(secret_inputs, properties)
 	self.lock_on_soft_drop = false
 	self.lock_on_hard_drop = false
 	self.cleared_block_table = {}
+	self.piece_spawn_offset = {x = 0, y = 0}
 	self.last_lcd = 0
 	self.used_randomizer = nil
 	self.hold_queue = nil
@@ -687,7 +688,7 @@ function GameMode:initializeNextPiece(
 		self.drop_locked, self.hard_drop_locked, self.big_mode,
 		(
 			self.frames == 0 or (ruleset.are and self:getARE() ~= 0)
-		) and self.irs or false, self.half_block_mode
+		) and self.irs or false, self.half_block_mode, self.piece_spawn_offset
 	)
 	if config.gamesettings.buffer_lock == 3 then
 		if self.buffer_hard_drop then
