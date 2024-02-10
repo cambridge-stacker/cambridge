@@ -244,8 +244,9 @@ function ResourcePackScene:exitScene()
 	end
 	saveConfig()
 	loadResources()
-	--unloading modules is kinda necessary
+	--reloading modules is kinda necessary
 	unloadModules()
+	initModules()
 	scene = self.prev_scene
 end
 
