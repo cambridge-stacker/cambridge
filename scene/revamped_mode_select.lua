@@ -2,26 +2,6 @@ local ModeSelectScene = Scene:extend()
 
 ModeSelectScene.title = "Mode list"
 
---Interpolates in a smooth fashion unless the visual setting for scrolling is nil or off.
-local function interpolateNumber(input, from, speed)
-	if config.visualsettings["smooth_scroll"] == 2 or config.visualsettings["smooth_scroll"] == nil then
-		return from
-	end
-    if speed == nil then speed = 1 end
-	if from > input then
-		input = input + ((from - input) / 4) * speed
-		if input > from - 0.02 then
-			input = from
-		end
-	elseif from < input then
-		input = input + ((from - input) / 4) * speed
-		if input < from + 0.02 then
-			input = from
-		end
-	end
-	return input
-end
-
 function ModeSelectScene:new()
 	-- reload custom modules
 	initModules()
