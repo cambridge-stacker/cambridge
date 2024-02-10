@@ -10,6 +10,7 @@ local savestate_frames = nil
 local state_loaded = false
 
 function ReplayScene:new(replay, game_mode, ruleset)
+	love.mouse.setVisible(true)
 	pitchBGM(1)
 	config.gamesettings = replay["gamesettings"]
 	if replay["delayed_auto_shift"] then config.das = replay["delayed_auto_shift"] end
