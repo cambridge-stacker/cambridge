@@ -132,11 +132,9 @@ function loadReplayList()
 	io_thread:start()
 end
 
-is_cursor_visible = true
 mouse_idle = 0
 TAS_mode = false
 loaded_replays = false
-local prev_cur_pos_x, prev_cur_pos_y = 0, 0
 local system_cursor_type = "arrow"
 local screenshot_images = {}
 
@@ -444,13 +442,6 @@ function love.draw()
 	end
 
 	if scene.title == "Game" or scene.title == "Replay" then
-		-- if config.visualsettings.cursor_type ~= 1 then
-		-- 	is_cursor_visible = true
-		-- else
-		-- 	is_cursor_visible = love.mouse.isVisible()
-		-- end
-		-- config.visualsettings.cursor_type = 0
-		-- love.mouse.setVisible(is_cursor_visible)
 	else
 		love.mouse.setVisible(config.visualsettings.cursor_type == 1)
 		if config.visualsettings.cursor_type ~= 1 then
@@ -859,10 +850,8 @@ local mouse_buttons_pressed = {}
 function love.mousepressed(x, y, button, istouch, presses)
 	if mouse_idle > 2 then return end
 	mouse_buttons_pressed[button] = true
-	local screen_x, screen_y = love.graphics.getDimensions()
-	local scale_factor = math.min(screen_x / 640, screen_y / 480)
-	local local_x, local_y = (x - (screen_x - scale_factor * 640) / 2)/scale_factor, (y - (screen_y - scale_factor * 480) / 2)/scale_factor
-	scene:onInputPress({input=nil, type="mouse", x=local_x, y=local_y, button=button, istouch=istouch, presses=presses})
+	local local_x, local_y = getScaledDimensions(x, y)
+	scene:onInputPress({type="mouse", x=local_x, y=local_y, button=button, istouch=istouch, presses=presses})
 end
 
 ---@param x number
@@ -873,10 +862,17 @@ end
 function love.mousereleased(x, y, button, istouch, presses)
 	if mouse_idle > 2 and not mouse_buttons_pressed[button] then return end
 	mouse_buttons_pressed[button] = false
+	local local_x, local_y = getScaledDimensions(x, y)
+	scene:onInputRelease({type="mouse", x=local_x, y=local_y, button=button, istouch=istouch, presses=presses})
+end
+
+function love.mousemoved(x, y, dx, dy)
+	mouse_idle = 0
 	local screen_x, screen_y = love.graphics.getDimensions()
 	local scale_factor = math.min(screen_x / 640, screen_y / 480)
-	local local_x, local_y = (x - (screen_x - scale_factor * 640) / 2)/scale_factor, (y - (screen_y - scale_factor * 480) / 2)/scale_factor
-	scene:onInputRelease({input=nil, type="mouse", x=local_x, y=local_y, button=button, istouch=istouch, presses=presses})
+	local local_x, local_y = getScaledDimensions(x, y)
+	local local_dx, local_dy = getScaledDimensions(dx, dy)
+	scene:onInputPress({type="mouse_move", x=local_x, y=local_y, dx=local_dx, dy=local_dy})
 end
 
 function love.focus(f)
@@ -957,12 +953,7 @@ function love.run()
 					love.graphics.present()
 				end
 				if love.mouse then
-					if prev_cur_pos_x == love.mouse.getX() and prev_cur_pos_y == love.mouse.getY() then
-						mouse_idle = mouse_idle + love.timer.getDelta()
-					else
-						mouse_idle = 0
-					end
-					prev_cur_pos_x, prev_cur_pos_y = love.mouse.getPosition()
+					mouse_idle = mouse_idle + love.timer.getDelta()
 					love.mouse.setCursor(love.mouse.getSystemCursor(system_cursor_type))
 					if system_cursor_type ~= "arrow" then
 						system_cursor_type = "arrow"
