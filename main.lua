@@ -206,7 +206,7 @@ local function getDeltaTime()
 end
 local time_table = {}
 local last_fps = 0
-local function getMeanDelta()
+local function getAvgDelta()
 	if #time_table > 24 then
 		table.remove(time_table, 1)
 	end
@@ -403,7 +403,7 @@ function love.errorhandler(msg)
 end
 
 function love.draw()
-	local mean_delta = getMeanDelta()
+	local avg_delta = getAvgDelta()
 	love.graphics.setCanvas(GLOBAL_CANVAS)
 	love.graphics.clear()
 
@@ -429,7 +429,7 @@ function love.draw()
 	if config.visualsettings.display_gamemode == 1 or scene.title == "Title" then
 		bottom_right_corner_y_offset = bottom_right_corner_y_offset + 20
 		love.graphics.printf(
-			string.format("(%g) %.2f fps - %s", getTargetFPS(), 1.0 / mean_delta, version),
+			string.format("(%g) %.2f fps - %s", getTargetFPS(), 1.0 / avg_delta, version),
 			0, 480 - bottom_right_corner_y_offset, 635, "right"
 		)
 	end
