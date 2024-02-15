@@ -396,6 +396,7 @@ function ReplaySelectScene:startReplay()
 
 	if replays[pointer]["highscore_data"] and not self.chosen_replay then
 		self.chosen_replay = true
+		self.auto_menu_offset = 0
 		self.replay_sha_table = {mode = sha2.sha256(binser.serialize(mode)), ruleset = sha2.sha256(binser.serialize(rules))}
 		playSE("main_decide")
 		self.das_down = nil
