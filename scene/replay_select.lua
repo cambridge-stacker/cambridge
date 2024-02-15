@@ -258,7 +258,14 @@ function ReplaySelectScene:render()
 					version_text_color = {1, 0, 0, 1}
 				end
 				love.graphics.setFont(font_3x5_2)
-				love.graphics.printf({"Cambridge version for this replay: ", version_text_color, replay.cambridge_version}, 0, 190, 640, "center")
+				love.graphics.printf({"Cambridge version for this replay: ", version_text_color, replay.cambridge_version}, 0, 160 + idx * 20, 640, "center")
+			end
+			if replay.ruleset_override then
+				idx = idx + 1
+				love.graphics.setFont(font_3x5_2)
+				love.graphics.setColor(1, 1, 0, 1)
+				love.graphics.printf("This mode overrides the ruleset.", 0, 160 + idx * 20, 640, "center")
+				love.graphics.setColor(1, 1, 1, 1)
 			end
 			if replay.pause_count and replay.pause_time then
 				idx = idx + 1.5
@@ -310,9 +317,12 @@ function ReplaySelectScene:render()
 				local replay = replays[replay_idx]
 				local display_string
 				if replay_tree[self.menu_state.submenu].name == "All" then
-					display_string = os.date("%c", replay["timestamp"]).." - ".. replay["mode"].." - "..replay["ruleset"]
+					display_string = os.date("%c", replay["timestamp"]).." - ".. replay["mode"]
 				else
-					display_string = os.date("%c", replay["timestamp"]).." - "..replay["ruleset"]
+					display_string = os.date("%c", replay["timestamp"])
+				end
+				if not replay.ruleset_override then
+					display_string = display_string.." - "..replay["ruleset"]
 				end
 				if replay["level"] ~= nil then
 					display_string = display_string.." - Level: "..replay["level"]
@@ -379,7 +389,7 @@ function ReplaySelectScene:startReplay()
 			break
 		end
 	end
-	if mode == nil or rules == nil then
+	if mode == nil or (rules == nil and not replays[pointer].ruleset_override) then
 		self.display_error = true
 		return
 	end

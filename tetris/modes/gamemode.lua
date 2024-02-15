@@ -147,6 +147,7 @@ function GameMode:saveReplay()
 	local replay = {}
 	replay["cambridge_version"] = version
 	replay["highscore_data"] = self:getHighscoreData()
+	replay["ruleset_override"] = self.ruleset_override
 	replay["properties"] = self.replay_properties
 	replay["toolassisted"] = self.ineligible
 	replay["inputs"] = self.replay_inputs
