@@ -203,6 +203,7 @@ function ReplayScene:onInputPress(e)
 				self.retry_ruleset, self.secret_inputs
 			) or ReplaySelectScene()
 	 	)
+		scene.safety_frames = 2
 		savestate_frames = nil
 	elseif e.input == "frame_step" and (TAS_mode or not self.rerecord) then
 		self.frame_steps = self.frame_steps + 1
