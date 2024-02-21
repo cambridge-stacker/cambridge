@@ -164,6 +164,9 @@ function initConfig()
 		end
 		if config.current_mode then current_mode = config.current_mode end
 		if config.current_ruleset then current_ruleset = config.current_ruleset end
+		if config.current_folder_selections then
+			current_folder_selections = config.current_folder_selections
+		end
 		scene = TitleScene()
 		--if updateInputConfig still fails
 		if inputUpdaterConditions(config.input.keys) then

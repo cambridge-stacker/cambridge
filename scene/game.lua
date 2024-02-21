@@ -7,6 +7,7 @@ GameScene.title = "Game"
 require 'load.save'
 
 function GameScene:new(game_mode, ruleset, inputs)
+	love.mouse.setVisible(true)
 	self.retry_mode = game_mode
 	self.retry_ruleset = ruleset
 	self.secret_inputs = inputs
@@ -96,6 +97,7 @@ function GameScene:onInputPress(e)
 		sortReplays()
 		scene = e.input == "retry" and GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs) or
 				config.visualsettings.mode_select_type == 1 and ModeSelectScene() or RevModeSelectScene()
+		scene.safety_frames = 2
 	elseif e.input == "frame_step" and TAS_mode then
 		self.frame_steps = self.frame_steps + 1
 	elseif e.input == "retry" then
@@ -120,6 +122,7 @@ function GameScene:onInputPress(e)
 		else
 			scene = RevModeSelectScene()
 		end
+		scene.safety_frames = 2
 	elseif e.input and string.sub(e.input, 1, 5) ~= "menu_" and e.input ~= "frame_step" then
 		self.inputs[e.input] = true
 		if config.gamesettings["diagonal_input"] == 3 and opposite_directions[e.input] then

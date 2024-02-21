@@ -78,7 +78,7 @@ listed in the file SOURCES.
 Credits
 -------
   
-- [Milla Basset](https://github.com/MillaBasset) for reviving the project and maintaining it from 2020 to 2024
+- [Milla Basset](https://github.com/MillaBasset) for reviving the project and maintaining it from 2020 to 2024!
 - [Lilla Oshisaure](https://www.youtube.com/user/LeSpyroshisaure) for development support and help!
 - [joezeng](https://github.com/joezeng) for the original project, and for offering to help with the expansion!
 - [The Tetra Legends Discord](http://discord.com/invite/7hMx5r2) for support and playtesting!

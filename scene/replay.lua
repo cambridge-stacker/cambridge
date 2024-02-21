@@ -10,6 +10,7 @@ local savestate_frames = nil
 local state_loaded = false
 
 function ReplayScene:new(replay, game_mode, ruleset)
+	love.mouse.setVisible(true)
 	pitchBGM(1)
 	config.gamesettings = replay["gamesettings"]
 	if replay["delayed_auto_shift"] then config.das = replay["delayed_auto_shift"] end
@@ -26,7 +27,9 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	self.game = game_mode(self.secret_inputs, self.replay.properties)
 	self.game.secret_inputs = self.secret_inputs
 	self.game.save_replay = false
-	self.ruleset = ruleset(self.game)
+	if ruleset then
+		self.ruleset = ruleset(self.game)
+	end
 	self.game:initialize(self.ruleset)
 	self.movement_queue = {}
 	self.inputs = {
@@ -200,6 +203,7 @@ function ReplayScene:onInputPress(e)
 				self.retry_ruleset, self.secret_inputs
 			) or ReplaySelectScene()
 	 	)
+		scene.safety_frames = 2
 		savestate_frames = nil
 	elseif e.input == "frame_step" and (TAS_mode or not self.rerecord) then
 		self.frame_steps = self.frame_steps + 1

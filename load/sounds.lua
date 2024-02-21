@@ -75,7 +75,7 @@ end
 -- Replace each sound effect string with its love audiosource counterpart, but only if it exists. This lets the game handle missing SFX.
 function generateSoundTable()
 	if config.sound_sources == nil then config.sound_sources = 1 end
-	buffer_sounds = {}
+	-- buffer_sounds = {}
 	for k,v in pairs(sound_paths) do
 		if(type(v) == "table") then
 			-- list of subsounds

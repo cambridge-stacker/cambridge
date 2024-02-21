@@ -374,7 +374,7 @@ function drawWrappingText(text, x, y, limit, align, ...)
 		love.graphics.draw(new_canvas, x, y, ...)
 		new_canvas:release()
 	else
-		love.graphics.printf(text, x, y, limit, align)
+		love.graphics.printf(text, x, y, limit, align, ...)
 	end
 end
 
