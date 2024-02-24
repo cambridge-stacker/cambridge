@@ -303,12 +303,8 @@ function ModeSelectScene:indirectStartMode()
 end
 --Direct way of starting a mode.
 function ModeSelectScene:startMode()
-	if #self.game_mode_selections == 1 then
-		current_mode = self.menu_state.mode
-	end
-	if #self.ruleset_folder_selections == 1 then
-		current_ruleset = self.menu_state.ruleset
-	end
+	current_mode = self.menu_state.mode
+	current_ruleset = self.menu_state.ruleset
 	config.current_mode = current_mode
 	config.current_ruleset = current_ruleset
 	config.current_folder_selections = current_folder_selections
