@@ -274,11 +274,23 @@ function love.errorhandler(msg)
 		love.filesystem.mount(source_dir, "")
 	end
 
+
+	if type(config.mod_packs_applied) == "table" then
+		for key, value in ipairs(config.mod_packs_applied) do
+			love.filesystem.mount("modpacks/"..value, "")
+		end
+	end
 	local lua_file_content = {}
 	if love.filesystem.getInfo(errored_filename, "file") then
 		local str_data = love.filesystem.read("string", errored_filename)
-		for v in string.gmatch(str_data, "([^\r\n]*)\r\n?") do
+		for v in string.gmatch(str_data, "([^\n]*)\n?") do
 			lua_file_content[#lua_file_content+1] = v
+		end
+	end
+
+	if type(config.mod_packs_applied) == "table" then
+		for key, value in ipairs(config.mod_packs_applied) do
+			love.filesystem.unmount("modpacks/"..value)
 		end
 	end
 
@@ -361,9 +373,6 @@ function love.errorhandler(msg)
 			if local_line > 0 and local_line <= #lua_file_content then
 				love.graphics.print(local_line.. ": " .. lua_file_content[local_line] .. (local_line == line_error and " <---" or "") , pos, pos + (i * 15) - 5)
 			end
-		end
-		if #lua_file_content == 0 then
-			love.graphics.print("Couldn't find a lua file! Is it missing in some way?", pos, pos + 30)
 		end
 		love.graphics.printf(p, pos, pos + 120, love.graphics.getWidth() - pos)
 		love.graphics.present()
