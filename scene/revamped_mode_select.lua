@@ -215,9 +215,10 @@ function ModeSelectScene:render()
 		for index, value in ipairs(self.ruleset_folder_selections) do
 			ruleset_path_name = ruleset_path_name..(value.name or "rulesets").." > "
 		end
+		love.graphics.setColor(1, 1, 1, 1)
 		love.graphics.printf(
 			"Path: "..ruleset_path_name:sub(1, -3),
-			 360 - self.menu_ruleset_x, 420, 60 + (#ruleset_path_name * 9), "left")
+			 360 - self.menu_ruleset_x, 420, 60 + font_3x5_2:getWidth(ruleset_path_name), "left")
 	end
 	love.graphics.setFont(font_3x5_2)
 	if #self.game_mode_folder == 0 then
