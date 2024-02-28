@@ -205,6 +205,8 @@ function ModeSelectScene:render()
 			mode_path_name = mode_path_name..(value.name or "modes").." > "
 		end
 		love.graphics.printf(
+			self.game_mode_folder.is_tag and
+			"Tag: ".. self.game_mode_folder.name or
 			"Path: "..mode_path_name:sub(1, -3),
 			 40, 220 - self.menu_mode_y, 200, "left")
 	end
@@ -214,8 +216,10 @@ function ModeSelectScene:render()
 			ruleset_path_name = ruleset_path_name..(value.name or "rulesets").." > "
 		end
 		love.graphics.printf(
+			self.ruleset_folder.is_tag and
+			"Tag: ".. self.ruleset_folder.name or
 			"Path: "..ruleset_path_name:sub(1, -3),
-			 360 - self.menu_ruleset_x, 420, 60 + (#ruleset_path_name * 9), "left")
+			 360 - self.menu_ruleset_x, 420, 60 + font_3x5_2:getWidth(ruleset_path_name), "left")
 	end
 	love.graphics.setFont(font_3x5_2)
 	if #self.game_mode_folder == 0 then
@@ -236,13 +240,15 @@ function ModeSelectScene:render()
 				(260 - self.menu_mode_y) + 20 * idx,
 				320,
 				20)
+			local r = mode.is_tag and 0 or 1
 			if highlight < 0.5 then
+				r = 1-highlight
 				b = highlight
 			end
 			if idx == self.menu_state.mode and self.starting then
 				b = self.start_frames % 10 > 4 and 0 or 1
 			end
-			love.graphics.setColor(1, 1, b, fadeoutAtEdges(
+			love.graphics.setColor(r, 1, b, fadeoutAtEdges(
 				-self.menu_mode_y + 20 * idx + 20,
 				160,
 				20))
@@ -260,10 +266,12 @@ function ModeSelectScene:render()
 			local highlight = cursorHighlight(
 				260 - self.menu_ruleset_x + 120 * idx, 440,
 				120, 20)
+			local r = ruleset.is_tag and 0 or 1
 			if highlight < 0.5 then
+				r = 1-highlight
 				b = highlight
 			end
-			love.graphics.setColor(1, 1, b, fadeoutAtEdges(
+			love.graphics.setColor(r, 1, b, fadeoutAtEdges(
 				-self.menu_ruleset_x + 120 * idx,
 				240,
 				120)
