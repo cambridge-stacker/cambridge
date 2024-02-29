@@ -43,7 +43,7 @@ end
 
 function GameScene:update()
 	if self.paused and self.frame_steps == 0 then
-		self.game.pause_time = self.game.pause_time + 1
+		self.game.pause_time = self.game.pause_time + love.timer.getDelta() / (1/60)
 	else
 		if self.frame_steps > 0 then
 			self.game.ineligible = true
