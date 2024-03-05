@@ -105,42 +105,6 @@ local function screenshotFunction(image)
 	screenshot_images[#screenshot_images+1] = {image = love.graphics.newImage(image), time = 0, y_position = #screenshot_images * 260}
 end
 
-local function drawTASWatermark()
-	love.graphics.setFont(font_3x5_4)
-	love.graphics.setColor(1, 1, 1, 0.2)
-	love.graphics.printf(
-		"T A S", -300, 100, 150, "center", 0, 8, 8
-	)
-end
-
-local function drawWatermarks()
-	local is_TAS_used = false
-	if scene.replay then
-		if scene.replay["toolassisted"] == true then
-			is_TAS_used = true
-		end
-	end
-
-	if scene.game then
-		if scene.game.ineligible then
-			is_TAS_used = true
-		end
-	end
-
-	if TAS_mode then
-		if scene.title == "Game" or scene.title == "Replay" and not scene.replay["toolassisted"] == true then
-			is_TAS_used = true
-		end
-		love.graphics.setColor(1, 1, 1, love.timer.getTime() % 2 < 1 and 1 or 0)
-		love.graphics.setFont(font_3x5_3)
-		love.graphics.printf(
-			"TAS MODE ON", 240, 0, 160, "center"
-		)
-	end
-	if is_TAS_used then
-		drawTASWatermark()
-	end
-end
 local last_time = 0
 local function getDeltaTime()
 	local time = love.timer.getTime()
@@ -191,6 +155,7 @@ local function drawScreenshotPreviews()
 	end
 end
 
+--#region Error Handler
 local utf8 = require("utf8")
 
 local function error_printer(msg, layer)
@@ -349,6 +314,7 @@ function love.errorhandler(msg)
 	end
 
 end
+--#endregion
 
 function love.draw()
 	local avg_delta = getAvgDelta()
@@ -369,6 +335,13 @@ function love.draw()
 		
 	scene:render()
 
+	if TAS_mode then
+		love.graphics.setColor(1, 1, 1, love.timer.getTime() % 2 < 1 and 1 or 0)
+		love.graphics.setFont(font_3x5_3)
+		love.graphics.printf(
+			"TAS MODE ON", 240, 0, 160, "center"
+		)
+	end
 	drawWatermarks()
 
 	local bottom_right_corner_y_offset = 0

@@ -178,6 +178,13 @@ function ReplayScene:render()
 	else
 		love.graphics.printf("?? PAUSES (--:--.--)", 0, pauses_y_coordinate, 635, "right")
 	end
+	if self.replay["toolassisted"] or TAS_mode then
+		love.graphics.setFont(font_3x5_4)
+		love.graphics.setColor(1, 1, 1, 0.2)
+		love.graphics.printf(
+			"T A S", -295, 100, 150, "center", 0, 8, 8
+		)
+	end
 end
 
 local movement_directions = {"left", "right", "down", "up"}
