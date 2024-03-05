@@ -244,6 +244,7 @@ function HighscoreScene:back()
 		self.hash_highscore = nil
 		self.menu_slot_positions = {}
 		self.interpolated_menu_slot_positions = {}
+		self.key_count = 0
 	else
 		scene = TitleScene()
 	end
