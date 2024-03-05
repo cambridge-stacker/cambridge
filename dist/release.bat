@@ -1,5 +1,4 @@
 call package.bat
-cd ..\
 mkdir dist
 mkdir dist\windows
 mkdir dist\windows\libs
