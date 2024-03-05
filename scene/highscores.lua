@@ -263,7 +263,7 @@ end
 function HighscoreScene:changeOption(rel)
 	local len
 	local old_value
-	if math.abs(rel) == 9 then
+	if math.abs(rel) == 9 and self.key_count > 0 then
 		self.sort_type = "<"
 		len = self.key_count
 		old_value = self.selected_key_id
@@ -271,6 +271,7 @@ function HighscoreScene:changeOption(rel)
 		if old_value ~= self.selected_key_id then
 			playSE("cursor")
 		end
+		return
 	end
 	if self.hash_highscore == nil then
 		len = #self.hash_table
