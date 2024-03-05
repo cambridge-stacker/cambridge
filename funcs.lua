@@ -348,14 +348,13 @@ end
 ---@param x number
 ---@param y number
 ---@param limit number
----@param align "center"|"left"|"right"|"justify"
+---@param align "center"|"justify"|"left"|"right"
 function drawWrappingText(text, x, y, limit, align, ...)
 	local cur_font = love.graphics.getFont()
 	local text_str = getStringFromTable(text)
 	local string_width = cur_font:getWidth(text_str)
 	local offset_x = 0
 	if string_width > limit then
-		local prev_canvas = love.graphics.getCanvas()
 		local new_canvas = love.graphics.newCanvas(limit, cur_font:getHeight())
 		local max_offset = string_width - limit + 4
 		offset_x = (0.5 + clamp(math.sin(love.timer.getTime() / (1 + max_offset / 250)) * 2, -1, 1) / 2) * max_offset
