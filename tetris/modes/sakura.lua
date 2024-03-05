@@ -446,6 +446,7 @@ function SakuraGame:advanceOneFrame(inputs, ruleset)
     else
         self.cleared_frames = STAGE_TRANSITION_TIME
         if not self.prev_inputs.hold and inputs.hold then
+            playSE("ihs")
             self.hold_queue = table.remove(self.next_queue, 1)
             table.insert(self.next_queue, self:getNextPiece(ruleset))
         end
@@ -474,7 +475,7 @@ local function colourColor(game, block, x, y, age)
     if game.stage_frames == 0 or game.cleared_frames ~= STAGE_TRANSITION_TIME then
         a = 1
     else
-        a = (game.stage_frames/30 + (y + math.abs(x-5.5))/5) % 1
+        a = (game.stage_frames/30 + ((24-y) + math.abs(x-5.5))/10) % 1
     end
     return r, g, b, a, 0
 end
