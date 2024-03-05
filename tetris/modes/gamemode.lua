@@ -68,13 +68,13 @@ function GameMode:new(secret_inputs, properties)
 		"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
 		"GM"
 	}
+	self.piece_spawn_offset = {x = 0, y = 0}
 	-- variables related to configurable parameters
 	self.drop_locked = false
 	self.hard_drop_locked = false
 	self.lock_on_soft_drop = false
 	self.lock_on_hard_drop = false
 	self.cleared_block_table = {}
-	self.piece_spawn_offset = {x = 0, y = 0}
 	self.last_lcd = 0
 	self.used_randomizer = nil
 	self.hold_queue = nil
