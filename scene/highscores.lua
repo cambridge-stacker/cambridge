@@ -17,6 +17,10 @@ function HighscoreScene:new()
 	self.das = 0
 	self.menu_hash_y = 20
 	self.menu_list_y = 20
+	self.menu_slot_positions = {}
+	self.interpolated_menu_slot_positions = {}
+	self.sort_type = "<"
+	self.sorted_key_id = nil
 	self.auto_menu_offset = 0
 
 	DiscordRPC:update({
@@ -53,9 +57,48 @@ function HighscoreScene:update()
 end
 function HighscoreScene:selectHash()
     self.list_pointer = 1
+	self.selected_key_id = 1
+	self.sorted_key_id = nil
+	self.key_sort_string = nil
+	self.sort_type = "<"
+	self.key_count = 0
+	self.key_references = {}
     self.hash = self.hash_table[self.hash_id]
     self.hash_highscore = highscores[self.hash]
+	for key, slot in pairs(self.hash_highscore) do
+		self.menu_slot_positions[key] = key * 20
+		self.interpolated_menu_slot_positions[key] = 0
+		if key == 1 then
+			for name, value in pairs(slot) do
+				self.key_count = self.key_count + 1
+				self.key_references[self.key_count] = name
+			end
+		end
+	end
 end
+
+function HighscoreScene:sortByKey(key)
+	local table_content = {}
+	for k, v in pairs(self.hash_highscore) do
+		table_content[k] = {id = k, value = v}
+	end
+	local function padnum(d) return ("%03d%s"):format(#d, d) end
+	if self.sort_type ~= "" then
+		table.sort(table_content, function (a, b)
+			if self.sort_type == ">" then
+				return tostring(a.value[key]):gsub("%d+",padnum) < tostring(b.value[key]):gsub("%d+",padnum)
+			else
+				return tostring(a.value[key]):gsub("%d+",padnum) > tostring(b.value[key]):gsub("%d+",padnum)
+			end
+		end)
+	end
+	for k, v in pairs(table_content) do
+		self.menu_slot_positions[v.id] = k * 20
+	end
+	self.key_sort_string = self.sort_type == "<" and "v" or self.sort_type == ">" and "^" or ""
+	self.sort_type = self.sort_type == "<" and ">" or self.sort_type == ">" and "" or "<"
+end
+
 function HighscoreScene:render()
 	drawBackground(0)
 
@@ -92,21 +135,27 @@ function HighscoreScene:render()
 		end
         for key, slot in pairs(self.hash_highscore) do
             local idx = 1
+			self.interpolated_menu_slot_positions[key] = interpolateNumber(self.interpolated_menu_slot_positions[key], self.menu_slot_positions[key])
+			if type(self.sorted_key_id) == "number" then
+				love.graphics.printf(self.key_sort_string, -30 + self.sorted_key_id * 100, 100, 90)
+			end
             for name, value in pairs(slot) do
                 if key == 1 then
-                    love.graphics.setColor(1, 1, 1, 1)
-                    love.graphics.printf(name, -20 + idx * 100, 100, 100)
+					local b = cursorHighlight(-20 + idx * 100, 100, 100, 20)
+					if self.selected_key_id == idx then
+						b = 0
+					end
+                    love.graphics.setColor(1, 1, b, 1)
+                    love.graphics.printf(name, -20 + idx * 100, 100, 90)
+					love.graphics.line(-25 + idx * 100, 100, -25 + idx * 100, 480)
                 end
-				love.graphics.setColor(1, 1, 1, fadeoutAtEdges((-self.menu_list_y - 170) + 20 * key, 170, 20))
+				love.graphics.setColor(1, 1, 1, fadeoutAtEdges((-self.menu_list_y - 170) + self.interpolated_menu_slot_positions[key], 170, 20))
 				local formatted_string = toFormattedValue(value)
-				if love.graphics.getFont():getWidth(formatted_string) > 100 then
-					formatted_string = formatted_string:sub(1, 6-math.floor(math.log10(#formatted_string))).."...".."("..#formatted_string..")"
-				end
-                love.graphics.printf(formatted_string, -20 + idx * 100, 120 + 20 * key - self.menu_list_y, 100)
+                drawWrappingText(tostring(formatted_string), -20 + idx * 100, 120 + self.interpolated_menu_slot_positions[key] - self.menu_list_y, 100, "left")
                 idx = idx + 1
             end
-			love.graphics.setColor(1, 1, 1, fadeoutAtEdges((-self.menu_list_y - 170) + 20 * key, 170, 20))
-            love.graphics.printf(tostring(key), 20, 120 + 20 * key - self.menu_list_y, 100)
+			love.graphics.setColor(1, 1, 1, fadeoutAtEdges((-self.menu_list_y - 170) + self.interpolated_menu_slot_positions[key], 170, 20))
+            love.graphics.printf(tostring(key), 20, 120 + self.interpolated_menu_slot_positions[key] - self.menu_list_y, 100)
         end
     else
         love.graphics.setColor(1, 1, 1, 0.5)
@@ -136,13 +185,27 @@ function HighscoreScene:onInputPress(e)
                 playSE("main_decide")
                 self:selectHash()
             end
+		else
+			if cursorHoverArea(80, 100, 100 * self.key_count, 20) then
+				playSE("cursor_lr")
+				local old_key_id = self.sorted_key_id
+				self.sorted_key_id = math.floor((e.x + 20) / 100)
+				if self.sorted_key_id ~= old_key_id then
+					self.sort_type = "<"
+				end
+				self:sortByKey(self.key_references[self.sorted_key_id])
+			end
         end
-        if e.x > 20 and e.y > 40 and e.x < 70 and e.y < 70 then
+        if cursorHoverArea(20, 40, 50, 30) then
             self:back()
         end
 	elseif (e.input == "menu_decide") and self.hash == nil then
 		playSE("main_decide")
 		self:selectHash()
+	elseif e.input == "menu_decide" and self.hash ~= nil then
+		playSE("cursor_lr")
+		self.sorted_key_id = self.selected_key_id
+		self:sortByKey(self.key_references[self.selected_key_id])
 	elseif e.input == "menu_up" then
 		self:changeOption(-1)
 		self.das_up = true
@@ -178,6 +241,8 @@ function HighscoreScene:back()
 		self.menu_list_y = 20
         self.hash = nil
         self.hash_highscore = nil
+		self.menu_slot_positions = {}
+		self.interpolated_menu_slot_positions = {}
     else
         scene = TitleScene()
     end
@@ -198,6 +263,15 @@ end
 function HighscoreScene:changeOption(rel)
 	local len
 	local old_value
+	if math.abs(rel) == 9 then
+		self.sort_type = "<"
+		len = self.key_count
+		old_value = self.selected_key_id
+        self.selected_key_id = Mod1(self.selected_key_id + rel / 9, len)
+		if old_value ~= self.selected_key_id then
+			playSE("cursor")
+		end
+	end
 	if self.hash_highscore == nil then
 		len = #self.hash_table
 		old_value = self.hash_id
