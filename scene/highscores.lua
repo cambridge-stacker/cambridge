@@ -136,9 +136,6 @@ function HighscoreScene:render()
         for key, slot in pairs(self.hash_highscore) do
             local idx = 1
 			self.interpolated_menu_slot_positions[key] = interpolateNumber(self.interpolated_menu_slot_positions[key], self.menu_slot_positions[key])
-			if type(self.sorted_key_id) == "number" then
-				love.graphics.printf(self.key_sort_string, -30 + self.sorted_key_id * 100, 100, 90)
-			end
             for name, value in pairs(slot) do
                 if key == 1 then
 					local b = cursorHighlight(-20 + idx * 100, 100, 100, 20)
@@ -157,6 +154,9 @@ function HighscoreScene:render()
 			love.graphics.setColor(1, 1, 1, fadeoutAtEdges((-self.menu_list_y - 170) + self.interpolated_menu_slot_positions[key], 170, 20))
             love.graphics.printf(tostring(key), 20, 120 + self.interpolated_menu_slot_positions[key] - self.menu_list_y, 100)
         end
+		if type(self.sorted_key_id) == "number" then
+			love.graphics.printf(self.key_sort_string, -30 + self.sorted_key_id * 100, 100, 90)
+		end
     else
         love.graphics.setColor(1, 1, 1, 0.5)
         love.graphics.rectangle("fill", 3, 258 + (self.hash_id * 20) - self.menu_hash_y, 634, 22)
