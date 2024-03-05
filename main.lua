@@ -342,7 +342,6 @@ function love.draw()
 			"TAS MODE ON", 240, 0, 160, "center"
 		)
 	end
-	drawWatermarks()
 
 	local bottom_right_corner_y_offset = 0
 	love.graphics.setFont(font_3x5_2)
