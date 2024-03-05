@@ -253,7 +253,7 @@ function loadResources()
 			end
 		end
 	end
-	
+
 	if not initial_load or #config.resource_packs_applied > 0 then
 		love.graphics.setCanvas()
 		love.graphics.clear()
@@ -295,7 +295,7 @@ function loadResources()
 	loadImageTable(misc_graphics, misc_graphics_paths)
 
 	--#region Backgrounds stuff. Warning: Code duplication
-	
+
 	local function loadExtendedBgs()
 		--Dynamic reloading, ey?
 		package.loaded["res.backgrounds.extend_section_bg"] = nil
@@ -310,7 +310,7 @@ function loadResources()
 	while (createBackgroundIfExists(section, section*100)) do
 		section = section + 1
 	end
-	
+
 	-- create named backgrounds
 	for index, value in ipairs(named_backgrounds) do
 		createBackgroundIfExists(value, string.gsub(value, "_", "-"))

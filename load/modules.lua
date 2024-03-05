@@ -7,7 +7,6 @@ function recursivelyLoadRequireFileTable(tbl, directory, blacklisted_string)
 	local require_string = string.gsub(directory, "/", ".")
 	local list = love.filesystem.getDirectoryItems(directory)
 	for index, name in ipairs(list) do
-		
 		if love.filesystem.getInfo(directory.."/"..name, "directory") then
 			tbl[#tbl+1] = {name = name, is_directory = true}
 			recursivelyLoadRequireFileTable(tbl[#tbl], directory.."/"..name, blacklisted_string)

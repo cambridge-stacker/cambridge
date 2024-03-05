@@ -110,7 +110,7 @@ function ReplayScene:update()
 		state = self.game.name,
 		largeImageKey = "ingame-"..self.game:getBackground().."00"
 	})
-	
+
 	if love.thread.getChannel("savestate"):peek() == "save" then
 		love.thread.getChannel("savestate"):clear()
 		savestate_frames = self.frames
@@ -135,7 +135,7 @@ end
 
 function ReplayScene:render()
 	self.game:draw(self.paused)
-	if self.show_invisible then 
+	if self.show_invisible then
 		love.graphics.setColor(1, 1, 1, 1)
 		if self.game.grid and self.game.grid.draw then
 			self.game.grid:draw()

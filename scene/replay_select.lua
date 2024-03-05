@@ -15,7 +15,7 @@ function ReplaySelectScene:new()
 	-- fully reload custom modules
 	unloadModules()
 	initModules()
-	
+
 	self.replay_count = #(love.filesystem.getDirectoryItems("replays"))
 	if not loaded_replays and not loading_replays then
 		loading_replays = true
@@ -55,7 +55,7 @@ function insertReplay(replay)
 	for key, value in pairs(replay) do
 		replay[key] = toFormattedValue(value)
 	end
-	if replay.highscore_data then 
+	if replay.highscore_data then
 		for key, value in pairs(replay.highscore_data) do
 			replay.highscore_data[key] = toFormattedValue(value)
 		end
@@ -229,7 +229,7 @@ function ReplaySelectScene:render()
 			if(idx >= self.height_offset/20-10 and idx <= self.height_offset/20+10) then
 				local b = cursorHighlight(0, (260 - self.height_offset) + 20 * idx, 640, 20)
 				love.graphics.setColor(1,1,b,fadeoutAtEdges((-self.height_offset) + 20 * idx, 180, 20))
-				love.graphics.printf(branch.name, 6, (260 - self.height_offset) + 20 * idx, 640, "left")	
+				love.graphics.printf(branch.name, 6, (260 - self.height_offset) + 20 * idx, 640, "left")
 			end
 		end
 	elseif self.chosen_replay then

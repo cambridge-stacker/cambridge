@@ -16,7 +16,7 @@ MarathonA3Game.tagline = "The game gets faster way more quickly! Can you get all
 
 function MarathonA3Game:new()
 	MarathonA3Game.super:new()
-	
+
 	self.speed_level = 0
 	self.roll_frames = 0
 	self.combo = 1
@@ -33,7 +33,7 @@ function MarathonA3Game:new()
 	self.secondary_section_times = { [0] = 0 }
 	self.section_times = { [0] = 0 }
 	self.section_cool = false
-	
+
 	self.randomizer = History6RollsRandomizer()
 
 self.SGnames = {
@@ -41,16 +41,16 @@ self.SGnames = {
 		"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
 		"GM"
 	}
-	
+
 	self.additive_gravity = false
 	self.lock_drop = true
 	self.lock_hard_drop = true
 	self.enable_hold = true
 	self.next_queue_length = 3
-	
+
 	self.coolregret_message = "COOL!!"
 	self.coolregret_timer = 0
-	
+
 	self.torikan_passed = false
 end
 
@@ -182,7 +182,7 @@ end
 
 local cool_cutoffs = {
 	frameTime(0,52), frameTime(0,52), frameTime(0,49), frameTime(0,45), frameTime(0,45),
-	frameTime(0,42), frameTime(0,42), frameTime(0,38), frameTime(0,38), 
+	frameTime(0,42), frameTime(0,42), frameTime(0,38), frameTime(0,38),
 }
 
 local regret_cutoffs = {
@@ -217,7 +217,7 @@ function MarathonA3Game:updateSectionTimes(old_level, new_level)
 		else
 			table.insert(self.section_regrets, 0)
 		end
-		
+
 		if self.section_cool then
 			self.section_cool_grade = self.section_cool_grade + 1
 		end
@@ -242,7 +242,7 @@ end
 
 function MarathonA3Game:updateScore(level, drop_bonus, cleared_lines)
 	self:updateGrade(cleared_lines)
-	if not self.clear then	
+	if not self.clear then
 		if cleared_lines > 0 then
 			self.combo = self.combo + (cleared_lines - 1) * 2
 			if cleared_lines > 1 then
@@ -463,7 +463,7 @@ function MarathonA3Game:drawScoringInfo()
 			love.graphics.printf(formatTime(time), section_70_x, 40 + 20 * section, 90, "left")
 		end
 	end
-	
+
 	local current_x
 	if #self.section_times < #self.secondary_section_times then
 		current_x = section_x

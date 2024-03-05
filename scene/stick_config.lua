@@ -207,7 +207,7 @@ function StickConfigScene:onInputPress(e)
 		-- function keys, escape, and tab are reserved and can't be remapped
 		if e.scancode == "escape" then
 			if self.reconfiguration then
-                config.input.joysticks[self.joystick_name] = self.new_input
+				config.input.joysticks[self.joystick_name] = self.new_input
 				saveConfig()
 			end
 			playSE("menu_cancel")
@@ -216,8 +216,8 @@ function StickConfigScene:onInputPress(e)
 			if e.scancode == "return" then
 				-- save new input, then load next scene
 				local had_config = config.input ~= nil
-                if not config.input then config.input = {} end
-                config.input.joysticks[self.joystick_name] = self.new_input
+				if not config.input then config.input = {} end
+				config.input.joysticks[self.joystick_name] = self.new_input
 				saveConfig()
 				scene = had_config and InputConfigScene() or TitleScene()
 			elseif e.scancode == "delete" or e.scancode == "backspace" then
@@ -248,7 +248,7 @@ function StickConfigScene:onInputPress(e)
 		elseif e.scancode == "tab" then
 			self.set_inputs[configurable_inputs[self.input_state]] = "skipped"
 			self.input_state = self.input_state + 1
-        end
+		end
 	elseif string.sub(e.type, 1, 3) == "joy" then
 		if self.joystick_name == "" then
 			self.joystick_name = e.name

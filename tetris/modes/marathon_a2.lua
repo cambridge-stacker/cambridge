@@ -29,7 +29,7 @@ function MarathonA2Game:new()
 	self.section_times = { [0] = 0 }
 	self.section_tetrises = { [0] = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
 	self.tetris_count = 0
-	
+
 	self.SGnames = {
 		"9", "8", "7", "6", "5", "4", "3", "2", "1",
 		"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
@@ -366,7 +366,7 @@ function MarathonA2Game:drawScoringInfo()
 	love.graphics.printf("SCORE", 240, 200, 40, "left")
 	love.graphics.printf("LEVEL", 240, 320, 40, "left")
 	local sg = self.grid:checkSecretGrade()
-	if sg >= 5 then 
+	if sg >= 5 then
 		love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
 	end
 
@@ -379,7 +379,7 @@ function MarathonA2Game:drawScoringInfo()
 			if self.roll_frames > 3701 then love.graphics.setColor(1, 0.5, 0, 1)
 			else love.graphics.setColor(0, 1, 0, 1) end
 		end
-	end	
+	end
 	love.graphics.printf(self:getLetterGrade(), 240, 140, 90, "left")
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.printf(self.score, 240, 220, 90, "left")

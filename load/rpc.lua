@@ -35,7 +35,7 @@ if success then
 
 	RPC.initialize(DiscordRPC.appId, true)
 	now = os.time(os.date("*t"))
-	
+
 	DiscordRPC.RPC = RPC
 	print("DiscordRPC successfully loaded.")
 else

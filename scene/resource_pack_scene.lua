@@ -8,11 +8,11 @@ function ResourcePackScene:new()
 	self.prev_scene = scene
 	self.valid_resource_packs = {}
 	self.resource_pack_index = {}
-    DiscordRPC:update({
-        details = "In settings",
-        state = "Choosing resource packs",
-        largeImageKey = "settings-input"
-    })
+	DiscordRPC:update({
+		details = "In settings",
+		state = "Choosing resource packs",
+		largeImageKey = "settings-input"
+	})
 	if not love.filesystem.getInfo("resourcepacks", "directory") then
 		love.filesystem.createDirectory("resourcepacks")
 	end

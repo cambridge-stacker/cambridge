@@ -42,7 +42,7 @@ local mainmenuidle = {
 }
 
 function TitleScene:new()
-    self.love2d_major, self.love2d_minor, self.love2d_revision = love.getVersion()
+	self.love2d_major, self.love2d_minor, self.love2d_revision = love.getVersion()
 	self.main_menu_state = 1
 	self.frames = 0
 	self.snow_bg_opacity = 0

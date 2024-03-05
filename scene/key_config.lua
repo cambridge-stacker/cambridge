@@ -160,10 +160,10 @@ function KeyConfigScene:render()
 	love.graphics.setColor(1, 1, 1, 1)
 	drawBackground("options_input")
 	if self.reconfiguration and not self.configurable_inputs then
-		
+
 		love.graphics.setFont(font_8x11)
 		love.graphics.print("KEY CONFIG", 80, 43)
-		
+
 		if config.input then
 			local b = cursorHighlight(20, 40, 50, 30)
 			love.graphics.setColor(1, 1, b, 1)
@@ -173,10 +173,10 @@ function KeyConfigScene:render()
 
 		love.graphics.setFont(font_3x5_2)
 		love.graphics.print("Which controls do you want to configure?", 80, 90)
-	
+
 		love.graphics.setColor(1, 1, 1, 0.5)
 		love.graphics.rectangle("fill", 75, 118 + 50 * self.menu_state, 200, 33)
-	
+
 		love.graphics.setFont(font_3x5_3)
 		love.graphics.setColor(1, 1, 1, 1)
 		local b = cursorHighlight(80,170,200,50)
@@ -289,7 +289,7 @@ function KeyConfigScene:onInputPress(e)
 						playSE("erase", "single")
 					end
 				end
-                config.input.keys = self.new_input
+				config.input.keys = self.new_input
 				saveConfig()
 			else
 				if e.scancode == "escape" then
@@ -311,8 +311,8 @@ function KeyConfigScene:onInputPress(e)
 			if e.scancode == "return" then
 				-- save new input, then load next scene
 				local had_config = config.input ~= nil
-                if not config.input then config.input = {} end
-                config.input.keys = self.new_input
+				if not config.input then config.input = {} end
+				config.input.keys = self.new_input
 				saveConfig()
 				scene = had_config and InputConfigScene() or TitleScene()
 			elseif e.scancode == "delete" or e.scancode == "backspace" then

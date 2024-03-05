@@ -67,7 +67,7 @@ function ConfigScene:new()
 		sfx_volume = newSlider(320, 210, 480, config.sfx_volume*100, 0, 100, function(v) config.sfx_volume = v/100 config.audiosettings.sfx_volume = v end, {width=20, knob="circle", track="roundrect"}),
 		bgm_volume = newSlider(320, 265, 480, config.bgm_volume*100, 0, 100, function(v) config.bgm_volume = v/100 config.audiosettings.bgm_volume = v end, {width=20, knob="circle", track="roundrect"}),
 	}
-	
+
 	--#region Init option positions and sliders
 
 	local y = 100
@@ -102,7 +102,7 @@ function ConfigScene:render()
 	love.graphics.setColor(1, 1, 1, 1)
 	drawBackground("options_game")
 
-    love.graphics.setFont(font_8x11)
+	love.graphics.setFont(font_8x11)
 	love.graphics.print("AUDIO SETTINGS", 80, 43)
 	local b = cursorHighlight(20, 40, 50, 30)
 	love.graphics.setColor(1, 1, b, 1)
@@ -112,12 +112,12 @@ function ConfigScene:render()
 	love.graphics.print("(THIS WILL NOT BE STORED IN REPLAYS)", 80, 80)
 
 	love.graphics.setColor(1, 1, 1, 0.5)
-    love.graphics.rectangle("fill", 25, self.option_pos_y[self.highlight] - 2, 190, 22)
+	love.graphics.rectangle("fill", 25, self.option_pos_y[self.highlight] - 2, 190, 22)
 
 	love.graphics.setFont(font_3x5_2)
 	for i, option in ipairs(ConfigScene.options) do
-        love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.printf(option.display_name, 40, self.option_pos_y[i], 170, "left")
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.printf(option.display_name, 40, self.option_pos_y[i], 170, "left")
 		if option.type == "slider" then
 			self:renderSlider(i, option)
 		elseif option.type == "options" then
@@ -155,7 +155,7 @@ function ConfigScene:changeValue(by)
 		sld:update(x, y)
 	end
 	if option.type == "options" then
-        config.audiosettings[option.config_name] = Mod1(config.audiosettings[option.config_name]+by, #option.type)
+		config.audiosettings[option.config_name] = Mod1(config.audiosettings[option.config_name]+by, #option.type)
 	end
 end
 
@@ -179,11 +179,11 @@ function ConfigScene:onInputPress(e)
 		playSE("cursor")
 		self.highlight = Mod1(self.highlight+1, optioncount)
 	elseif e.input == "menu_left" then
-        self:changeValue(-option.increase_by)
-        playSE(option.sound_effect_name or "cursor_lr")
+		self:changeValue(-option.increase_by)
+		playSE(option.sound_effect_name or "cursor_lr")
 	elseif e.input == "menu_right" then
 		self:changeValue(option.increase_by)
-        playSE(option.sound_effect_name or "cursor_lr")
+		playSE(option.sound_effect_name or "cursor_lr")
 	elseif e.input == "menu_back" then
 		playSE("menu_cancel")
 		loadSave()
