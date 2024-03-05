@@ -22,6 +22,7 @@ function HighscoreScene:new()
 	self.sort_type = "<"
 	self.sorted_key_id = nil
 	self.auto_menu_offset = 0
+	self.key_count = 0
 
 	DiscordRPC:update({
 		details = "In menus",
