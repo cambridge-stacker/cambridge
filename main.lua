@@ -70,8 +70,10 @@ function loadReplayList()
 
 	io_thread = love.thread.newThread( replay_load_code )
 	for key, value in pairs(recursionStringValueExtract(game_modes, "is_directory")) do
-		dict_ref[value.name] = key + 1
-		replay_tree[key + 1] = {name = value.name}
+		if not dict_ref[value.name] then
+			dict_ref[value.name] = #replay_tree + 1
+			replay_tree[#replay_tree + 1] = {name = value.name}
+		end
 	end
 	io_thread:start()
 end
