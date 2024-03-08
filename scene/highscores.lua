@@ -137,23 +137,27 @@ function HighscoreScene:render()
 		for key, slot in pairs(self.hash_highscore) do
 			local idx = 1
 			self.interpolated_menu_slot_positions[key] = interpolateNumber(self.interpolated_menu_slot_positions[key], self.menu_slot_positions[key])
-			for name, value in pairs(slot) do
-				if key == 1 then
-					local b = cursorHighlight(-20 + idx * 100, 100, 100, 20)
-					if self.selected_key_id == idx then
-						b = 0
+			if self.interpolated_menu_slot_positions[key] > -20 + self.menu_list_y and
+			   self.interpolated_menu_slot_positions[key] < 360 + self.menu_list_y then
+				local text_alpha = fadeoutAtEdges((-self.menu_list_y - 170) + self.interpolated_menu_slot_positions[key], 170, 20)
+				for name, value in pairs(slot) do
+					if key == 1 then
+						local b = cursorHighlight(-20 + idx * 100, 100, 100, 20)
+						if self.selected_key_id == idx then
+							b = 0
+						end
+						love.graphics.setColor(1, 1, b, 1)
+						love.graphics.printf(name, -20 + idx * 100, 100, 90)
+						love.graphics.line(-25 + idx * 100, 100, -25 + idx * 100, 480)
 					end
-					love.graphics.setColor(1, 1, b, 1)
-					love.graphics.printf(name, -20 + idx * 100, 100, 90)
-					love.graphics.line(-25 + idx * 100, 100, -25 + idx * 100, 480)
+					love.graphics.setColor(1, 1, 1, text_alpha)
+					local formatted_string = toFormattedValue(value)
+					drawWrappingText(tostring(formatted_string), -20 + idx * 100, 120 + self.interpolated_menu_slot_positions[key] - self.menu_list_y, 100, "left")
+					idx = idx + 1
 				end
-				love.graphics.setColor(1, 1, 1, fadeoutAtEdges((-self.menu_list_y - 170) + self.interpolated_menu_slot_positions[key], 170, 20))
-				local formatted_string = toFormattedValue(value)
-				drawWrappingText(tostring(formatted_string), -20 + idx * 100, 120 + self.interpolated_menu_slot_positions[key] - self.menu_list_y, 100, "left")
-				idx = idx + 1
+				love.graphics.setColor(1, 1, 1, text_alpha)
+				love.graphics.printf(tostring(key), 20, 120 + self.interpolated_menu_slot_positions[key] - self.menu_list_y, 100)
 			end
-			love.graphics.setColor(1, 1, 1, fadeoutAtEdges((-self.menu_list_y - 170) + self.interpolated_menu_slot_positions[key], 170, 20))
-			love.graphics.printf(tostring(key), 20, 120 + self.interpolated_menu_slot_positions[key] - self.menu_list_y, 100)
 		end
 		if type(self.sorted_key_id) == "number" then
 			love.graphics.printf(self.key_sort_string, -30 + self.sorted_key_id * 100, 100, 90)
