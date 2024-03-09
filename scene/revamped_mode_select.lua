@@ -2,47 +2,36 @@ local ModeSelectScene = Scene:extend()
 
 ModeSelectScene.title = "Mode list"
 
---Interpolates in a smooth fashion unless the visual setting for scrolling is nil or off.
-local function interpolateNumber(input, from, speed)
-	if config.visualsettings["smooth_scroll"] == 2 or config.visualsettings["smooth_scroll"] == nil then
-		return from
-	end
-    if speed == nil then speed = 1 end
-	if from > input then
-		input = input + ((from - input) / 4) * speed
-		if input > from - 0.02 then
-			input = from
-		end
-	elseif from < input then
-		input = input + ((from - input) / 4) * speed
-		if input < from + 0.02 then
-			input = from
-		end
-	end
-	return input
-end
-
 function ModeSelectScene:new()
 	-- reload custom modules
-	initModules(true)
+	initModules()
 	if highscores == nil then highscores = {} end
-	if #game_modes == 0 or #rulesets == 0 then
-		self.display_warning = true
-		current_mode = 1
-		current_ruleset = 1
-	else
-		self.display_warning = false
-		if current_mode > #game_modes then
-			current_mode = 1
-		end
-		if current_ruleset > #rulesets then
-			current_ruleset = 1
-		end
-	end
 	self.game_mode_folder = game_modes
 	self.game_mode_selections = {game_modes}
 	self.ruleset_folder = rulesets
 	self.ruleset_folder_selections = {rulesets}
+	self.menu_state = {}
+	if #self.game_mode_folder == 0 or #self.ruleset_folder == 0 then
+		self.display_warning = true
+		current_mode = 1
+		current_ruleset = 1
+	else
+		for k, v in pairs(current_folder_selections) do
+			for k2, v2 in pairs(v) do
+				self.menu_state[k] = v2
+				if not self:menuGoForward(k, true) then
+					break
+				end
+			end
+		end
+		self.display_warning = false
+		if current_mode > #self.game_mode_folder then
+			current_mode = 1
+		end
+		if current_ruleset > #self.ruleset_folder then
+			current_ruleset = 1
+		end
+	end
 	self.menu_state = {
 		mode = current_mode,
 		ruleset = current_ruleset,
@@ -52,8 +41,9 @@ function ModeSelectScene:new()
 	self.menu_mode_y = 20
 	self.menu_ruleset_x = 20
 	self.auto_mode_offset = 0
-    self.auto_ruleset_offset = 0
+	self.auto_ruleset_offset = 0
 	self.start_frames, self.starting = 0, false
+	self.safety_frames = 0
 	DiscordRPC:update({
 		details = "In menus",
 		state = "Chosen ??? and ???.",
@@ -95,6 +85,7 @@ end
 
 function ModeSelectScene:update()
 	switchBGM(nil)
+	self.safety_frames = self.safety_frames - 1
 	if self.starting then
 		self.start_frames = self.start_frames + 1
 		if self.start_frames > 60 or config.visualsettings.mode_entry == 1 then
@@ -140,25 +131,7 @@ function ModeSelectScene:update()
 		largeImageKey = "ingame-000"
 	})
 end
---Takes cares of both normal numbers and bigints.
-local function toFormattedValue(value)
-	
-	if type(value) == "table" and value.digits and value.sign then
-		local num = ""
-		if value.sign == "-" then
-			num = "-"
-		end
-		for id, digit in pairs(value.digits) do
-			if not value.dense or id == 1 then
-				num = num .. math.floor(digit) -- lazy way of getting rid of .0$
-			else
-                num = num .. string.format("%07d", digit)
-			end
-		end
-		return num
-	end
-	return tostring(value)
-end
+
 function ModeSelectScene:render()
 	drawBackground(0)
 
@@ -190,13 +163,13 @@ function ModeSelectScene:render()
 	self.menu_mode_y = interpolateNumber(self.menu_mode_y / 20, mode_selected) * 20
 	self.menu_ruleset_x = interpolateNumber(self.menu_ruleset_x / 120, ruleset_selected) * 120
 
-    love.graphics.setColor(1, 1, 1, 0.5)
-	love.graphics.rectangle("fill", 20, 258 + (mode_selected * 20) - self.menu_mode_y, 240, 22)
-	love.graphics.rectangle("fill", 260 + (ruleset_selected * 120) - self.menu_ruleset_x, 440, 120, 22)
-    love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.setColor(1, 1, 1, 0.5)
+	love.graphics.rectangle("fill", 20, 259 + (mode_selected * 20) - self.menu_mode_y, 240, 22)
+	love.graphics.rectangle("fill", 260 + (ruleset_selected * 120) - self.menu_ruleset_x, 439, 120, 22)
+	love.graphics.setColor(1, 1, 1, 1)
 
-    local hash = ((self.game_mode_folder[mode_selected] or {}).hash or "not a value") .. "-" .. ((self.ruleset_folder[ruleset_selected] or {}).hash or "not a value")
-    local mode_highscore = highscores[hash]
+	local hash = ((self.game_mode_folder[mode_selected] or {}).hash or "not a value") .. "-" .. ((self.ruleset_folder[ruleset_selected] or {}).hash or "not a value")
+	local mode_highscore = highscores[hash]
 
 	if 	self.game_mode_folder[self.menu_state.mode]
 	and not self.game_mode_folder[self.menu_state.mode].is_directory then
@@ -204,25 +177,25 @@ function ModeSelectScene:render()
 			"Tagline: "..(self.game_mode_folder[mode_selected].tagline or "Missing."),
 			 280, 40, 360, "left")
 	end
-    if mode_highscore ~= nil then
-        for key, slot in pairs(mode_highscore) do
-            if key == 11 then
-                break
-            end
-            local idx = 1
-            for name, value in pairs(slot) do
-                if key == 1 then
-                    love.graphics.printf(name, 180 + idx * 100, 100, 100)
-                end
+	if mode_highscore ~= nil then
+		for key, slot in pairs(mode_highscore) do
+			if key == 11 then
+				break
+			end
+			local idx = 1
+			for name, value in pairs(slot) do
+				if key == 1 then
+					love.graphics.printf(name, 180 + idx * 100, 100, 100)
+				end
 				local formatted_string = toFormattedValue(value)
 				if love.graphics.getFont():getWidth(formatted_string) > 100 then
 					formatted_string = formatted_string:sub(1, 6-math.floor(math.log10(#formatted_string))).."...".."("..#formatted_string..")"
 				end
-                love.graphics.printf(formatted_string, 180 + idx * 100, 100 + 20 * key, 100)
-                idx = idx + 1
-            end
-        end
-    end
+				love.graphics.printf(formatted_string, 180 + idx * 100, 100 + 20 * key, 100)
+				idx = idx + 1
+			end
+		end
+	end
 
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_2)
@@ -232,6 +205,8 @@ function ModeSelectScene:render()
 			mode_path_name = mode_path_name..(value.name or "modes").." > "
 		end
 		love.graphics.printf(
+			self.game_mode_folder.is_tag and
+			"Tag: ".. self.game_mode_folder.name or
 			"Path: "..mode_path_name:sub(1, -3),
 			 40, 220 - self.menu_mode_y, 200, "left")
 	end
@@ -241,8 +216,10 @@ function ModeSelectScene:render()
 			ruleset_path_name = ruleset_path_name..(value.name or "rulesets").." > "
 		end
 		love.graphics.printf(
+			self.ruleset_folder.is_tag and
+			"Tag: ".. self.ruleset_folder.name or
 			"Path: "..ruleset_path_name:sub(1, -3),
-			 360 - self.menu_ruleset_x, 420, 60 + (#ruleset_path_name * 9), "left")
+			 360 - self.menu_ruleset_x, 420, 60 + font_3x5_2:getWidth(ruleset_path_name), "left")
 	end
 	love.graphics.setFont(font_3x5_2)
 	if #self.game_mode_folder == 0 then
@@ -264,17 +241,19 @@ function ModeSelectScene:render()
 				setTooltip(((mode.hash and "ID: ".. mode.hash .. "\n" or "") ..
 				(mode.tagline and "Desc.: " .. mode.tagline .. "\n" or "")):sub(1, -2))
 			end
+			local r = mode.is_tag and 0 or 1
 			if highlight < 0.5 then
+				r = 1-highlight
 				b = highlight
 			end
 			if idx == self.menu_state.mode and self.starting then
 				b = self.start_frames % 10 > 4 and 0 or 1
 			end
-			love.graphics.setColor(1, 1, b, fadeoutAtEdges(
+			love.graphics.setColor(r, 1, b, fadeoutAtEdges(
 				-self.menu_mode_y + 20 * idx + 20,
 				160,
 				20))
-			love.graphics.printf(mode.name,
+			drawWrappingText(mode.name,
 			40, (260 - self.menu_mode_y) + 20 * idx, 200, "left")
 		end
 	end
@@ -286,38 +265,42 @@ function ModeSelectScene:render()
 				b = 0.4
 			end
 			local x = 260 - self.menu_ruleset_x + 120 * idx
-			local highlight = cursorHighlight(x, 440, 320, 20)
 			if cursorHoverArea(x, 440, 320, 20) and not ruleset.is_directory then
 				setTooltip(((ruleset.hash and "ID: ".. ruleset.hash .. "\n" or "") ..
 				(ruleset.tagline and "Desc.: " .. ruleset.tagline .. "\n" or "")):sub(1, -2))
 			end
 			local highlight = cursorHighlight(x, 440, 120, 20)
+			local r = ruleset.is_tag and 0 or 1
 			if highlight < 0.5 then
+				r = 1-highlight
 				b = highlight
 			end
-			love.graphics.setColor(1, 1, b, fadeoutAtEdges(
+			love.graphics.setColor(r, 1, b, fadeoutAtEdges(
 				-self.menu_ruleset_x + 120 * idx,
 				240,
 				120)
 			)
-			love.graphics.printf(ruleset.name,
+			drawWrappingText(ruleset.name,
 			260 - self.menu_ruleset_x + 120 * idx, 440, 120, "center")
 		end
+	end
+	if self.reload_time_remaining and self.reload_time_remaining > 0 then
+		love.graphics.setColor(1, 1, 1, self.reload_time_remaining / 60)
+		love.graphics.printf("Modules reloaded!", 0, 10, 640, "center")
+		self.reload_time_remaining = self.reload_time_remaining - 1
 	end
 end
 
 function ModeSelectScene:indirectStartMode()
 	if self.ruleset_folder[self.menu_state.ruleset].is_directory then
 		playSE("main_decide")
-		self.ruleset_folder = self.ruleset_folder[self.menu_state.ruleset]
-		self.ruleset_folder_selections[#self.ruleset_folder_selections+1] = self.ruleset_folder
+		self:menuGoForward("ruleset")
 		self.menu_state.ruleset = 1
 		return
 	end
 	if self.game_mode_folder[self.menu_state.mode].is_directory then
 		playSE("main_decide")
-		self.game_mode_folder = self.game_mode_folder[self.menu_state.mode]
-		self.game_mode_selections[#self.game_mode_selections+1] = self.game_mode_folder
+		self:menuGoForward("mode")
 		self.menu_state.mode = 1
 		return
 	end
@@ -330,14 +313,11 @@ function ModeSelectScene:indirectStartMode()
 end
 --Direct way of starting a mode.
 function ModeSelectScene:startMode()
-	if #self.game_mode_selections == 1 then
-		current_mode = self.menu_state.mode
-	end
-	if #self.ruleset_folder_selections == 1 then
-		current_ruleset = self.menu_state.ruleset
-	end
+	current_mode = self.menu_state.mode
+	current_ruleset = self.menu_state.ruleset
 	config.current_mode = current_mode
 	config.current_ruleset = current_ruleset
+	config.current_folder_selections = current_folder_selections
 	saveConfig()
 	scene = GameScene(
 		self.game_mode_folder[self.menu_state.mode],
@@ -345,26 +325,60 @@ function ModeSelectScene:startMode()
 		self.secret_inputs
 	)
 end
-function ModeSelectScene:menuGoBack(type)
-	if type == "mode" and #self.game_mode_selections > 1 then
+
+function ModeSelectScene:menuGoBack(menu_type)
+	local selection = table.remove(current_folder_selections[menu_type], #current_folder_selections[menu_type])
+	self.menu_state[menu_type] = selection
+	if menu_type == "mode" and #self.game_mode_selections > 1 then
+		self.menu_mode_y = selection * 20 - 20
 		self.game_mode_selections[#self.game_mode_selections] = nil
 		self.game_mode_folder = self.game_mode_selections[#self.game_mode_selections]
-	elseif #self.ruleset_folder_selections > 1 then
+	elseif menu_type == "ruleset" and #self.ruleset_folder_selections > 1 then
+		self.menu_ruleset_x = selection * 120 - 120
 		self.ruleset_folder_selections[#self.ruleset_folder_selections] = nil
 		self.ruleset_folder = self.ruleset_folder_selections[#self.ruleset_folder_selections]
 	end
 end
 
-function ModeSelectScene:menuGoForward(type)
-	if type == "mode" then
+function ModeSelectScene:menuGoForward(menu_type, is_load)
+	if not is_load then
+		table.insert(current_folder_selections[menu_type], self.menu_state[menu_type])
+	end
+	if menu_type == "mode" and type(self.game_mode_folder[self.menu_state.mode]) == "table" then
+		self.menu_mode_y = -20
 		self.game_mode_folder = self.game_mode_folder[self.menu_state.mode]
 		self.game_mode_selections[#self.game_mode_selections+1] = self.game_mode_folder
-	else
+		return true
+	elseif menu_type == "ruleset" and type(self.ruleset_folder[self.menu_state.ruleset]) == "table" then
+		self.menu_ruleset_x = -20
 		self.ruleset_folder = self.ruleset_folder[self.menu_state.ruleset]
 		self.ruleset_folder_selections[#self.ruleset_folder_selections+1] = self.ruleset_folder
+		return true
 	end
 end
+
+function ModeSelectScene:exitScene()
+	current_mode = self.menu_state.mode
+	current_ruleset = self.menu_state.ruleset
+	config.current_mode = current_mode
+	config.current_ruleset = current_ruleset
+	config.current_folder_selections = current_folder_selections
+	scene = TitleScene()
+end
+
 function ModeSelectScene:onInputPress(e)
+	if self.safety_frames > 0 then
+		return
+	end
+	if e.scancode == "lctrl" or e.scancode == "rctrl" then
+		self.ctrl_held = true
+	end
+	if e.scancode == "r" and self.ctrl_held then
+		unloadModules()
+		scene = ModeSelectScene()
+		scene.reload_time_remaining = 90
+		playSE("ihs")
+	end
 	if (e.input or e.scancode) and (self.display_warning or #self.game_mode_folder == 0 or #self.ruleset_folder == 0) then
 		if self.display_warning then
 			scene = TitleScene()
@@ -373,7 +387,7 @@ function ModeSelectScene:onInputPress(e)
 		else
 			self:menuGoBack("ruleset")
 		end
-	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
+	elseif e.input == "menu_back" then
 		local has_started = self.starting
 		if self.starting then
 			self.starting = false
@@ -383,16 +397,14 @@ function ModeSelectScene:onInputPress(e)
 		playSE("menu_cancel")
 		if #self.game_mode_selections > 1 then
 			self:menuGoBack("mode")
-			self.menu_state.mode = 1
 			return
 		end
 		if #self.ruleset_folder_selections > 1 then
 			self:menuGoBack("ruleset")
-			self.menu_state.ruleset = 1
 			return
 		end
 		if not has_started then
-			scene = TitleScene()
+			self:exitScene()
 		end
 	elseif e.type == "mouse" then
 		if e.y < 80 then
@@ -400,32 +412,28 @@ function ModeSelectScene:onInputPress(e)
 				playSE("menu_cancel")
 				if #self.game_mode_selections > 1 then
 					self:menuGoBack("mode")
-					self.menu_state.mode = 1
 					return
 				end
 				if #self.ruleset_folder_selections > 1 then
 					self:menuGoBack("ruleset")
-					self.menu_state.ruleset = 1
 					return
 				end
-				scene = TitleScene()
+				self:exitScene()
 			end
 			return
 		end
 		if #self.game_mode_folder == 0 then
 			self:menuGoBack("mode")
-			self.menu_state.mode = 1
 			return
 		end
 		if #self.ruleset_folder == 0 then
 			self:menuGoBack("ruleset")
-			self.menu_state.ruleset = 1
 			return
 		end
-        if e.y < 440 then
-            if e.x < 260 then
-                self.auto_mode_offset = math.floor((e.y - 260)/20)
-                if self.auto_mode_offset == 0 then
+		if e.y < 440 then
+			if e.x < 260 then
+				self.auto_mode_offset = math.floor((e.y - 260)/20)
+				if self.auto_mode_offset == 0 then
 					if self.game_mode_folder[self.menu_state.mode].is_directory then
 						playSE("main_decide")
 						self:menuGoForward("mode")
@@ -433,69 +441,74 @@ function ModeSelectScene:onInputPress(e)
 						return
 					end
 					self:indirectStartMode()
-                end
-            end
-        else
-            self.auto_ruleset_offset = math.floor((e.x - 260)/120)
+				end
+			end
+		else
+			self.auto_ruleset_offset = math.floor((e.x - 260)/120)
 			if self.auto_ruleset_offset == 0 and self.ruleset_folder[self.menu_state.ruleset].is_directory then
 				playSE("main_decide")
 				self:menuGoForward("ruleset")
 				self.menu_state.ruleset = 1
 			end
-        end
-    elseif self.starting then return
-    elseif e.type == "wheel" then
+		end
+	elseif self.starting then return
+	elseif e.type == "wheel" then
 		if #self.ruleset_folder == 0 or #self.game_mode_folder == 0 then
 			return
 		end
-        if e.x ~= 0 then
-            self:changeRuleset(-e.x)
-        end
-        if e.y ~= 0 then
-            self:changeMode(-e.y)
-        end
-    elseif e.input == "menu_decide" or e.scancode == "return" then
-        self:indirectStartMode()
-    elseif e.input == "up" or e.scancode == "up" then
-        self.das_up = true
-        self.das_down = nil
-    elseif e.input == "down" or e.scancode == "down" then
-        self.das_down = true
-        self.das_up = nil
-    elseif e.input == "left" or e.scancode == "left" then
-        self.das_left = true
-        self.das_right = nil
-    elseif e.input == "right" or e.scancode == "right" then
-        self.das_right = true
-        self.das_left = nil
-    elseif e.input then
-        self.secret_inputs[e.input] = true
-    end
+		if e.x ~= 0 then
+			self:changeRuleset(-e.x)
+		end
+		if e.y ~= 0 then
+			self:changeMode(-e.y)
+		end
+	elseif e.input == "menu_decide" then
+		self:indirectStartMode()
+	elseif e.input == "menu_up" then
+		self.das_up = true
+		self.das_down = nil
+	elseif e.input == "menu_down" then
+		self.das_down = true
+		self.das_up = nil
+	elseif e.input == "menu_left" then
+		self.das_left = true
+		self.das_right = nil
+	elseif e.input == "menu_right" then
+		self.das_right = true
+		self.das_left = nil
+	elseif e.input then
+		self.secret_inputs[e.input] = true
+	end
 end
 
 function ModeSelectScene:onInputRelease(e)
-	if e.input == "up" or e.scancode == "up" then
+	if e.scancode == "lctrl" or e.scancode == "rctrl" then
+		self.ctrl_held = false
+	end
+	if e.input == "menu_up" then
 		self.das_up = nil
-	elseif e.input == "down" or e.scancode == "down" then
+	elseif e.input == "menu_down" then
 		self.das_down = nil
-    elseif e.input == "left" or e.scancode == "left" then
-        self.das_left = nil
-    elseif e.input == "right" or e.scancode == "right" then
-        self.das_right = nil
+	elseif e.input == "menu_left" then
+		self.das_left = nil
+	elseif e.input == "menu_right" then
+		self.das_right = nil
 	elseif e.input then
 		self.secret_inputs[e.input] = false
 	end
 end
 
 function ModeSelectScene:changeMode(rel)
-	playSE("cursor")
 	local len = #self.game_mode_folder
+	if len == 0 then return end
+	playSE("cursor")
 	self.menu_state.mode = Mod1(self.menu_state.mode + rel, len)
 end
 
 function ModeSelectScene:changeRuleset(rel)
-	playSE("cursor_lr")
 	local len = #self.ruleset_folder
+	if len == 0 then return end
+	playSE("cursor_lr")
 	self.menu_state.ruleset = Mod1(self.menu_state.ruleset + rel, len)
 end
 

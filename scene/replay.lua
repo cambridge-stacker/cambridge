@@ -10,6 +10,7 @@ local savestate_frames = nil
 local state_loaded = false
 
 function ReplayScene:new(replay, game_mode, ruleset)
+	love.mouse.setVisible(true)
 	pitchBGM(1)
 	config.gamesettings = replay["gamesettings"]
 	if replay["delayed_auto_shift"] then config.das = replay["delayed_auto_shift"] end
@@ -24,8 +25,11 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	self.secret_inputs = replay["secret_inputs"]
 	self.replay = deepcopy(replay)
 	self.game = game_mode(self.secret_inputs, self.replay.properties)
+	self.game.secret_inputs = self.secret_inputs
 	self.game.save_replay = false
-	self.ruleset = ruleset(self.game)
+	if ruleset then
+		self.ruleset = ruleset(self.game)
+	end
 	self.game:initialize(self.ruleset)
 	self.movement_queue = {}
 	self.inputs = {
@@ -106,7 +110,7 @@ function ReplayScene:update()
 		state = self.game.name,
 		largeImageKey = "ingame-"..self.game:getBackground().."00"
 	})
-	
+
 	if love.thread.getChannel("savestate"):peek() == "save" then
 		love.thread.getChannel("savestate"):clear()
 		savestate_frames = self.frames
@@ -131,6 +135,21 @@ end
 
 function ReplayScene:render()
 	self.game:draw(self.paused)
+	if self.show_invisible then
+		love.graphics.setColor(1, 1, 1, 1)
+		if self.game.grid and self.game.grid.draw then
+			self.game.grid:draw()
+			love.graphics.setColor(1, 1, 1, 1)
+			love.graphics.setFont(font_3x5_3)
+			love.graphics.printf("SHOW INVIS", 64, 60, 160, "center")
+		elseif not self.game.grid.draw then
+			love.graphics.setFont(font_3x5_2)
+			love.graphics.printf("GRID IS UNDRAWABLE", 64, 60, 160, "center")
+		else
+			love.graphics.setFont(font_3x5_2)
+			love.graphics.printf("GRID IS NOT FOUND", 64, 60, 160, "center")
+		end
+	end
 	if self.rerecord then
 		return
 	end
@@ -159,20 +178,12 @@ function ReplayScene:render()
 	else
 		love.graphics.printf("?? PAUSES (--:--.--)", 0, pauses_y_coordinate, 635, "right")
 	end
-	if self.show_invisible then 
-		love.graphics.setColor(1, 1, 1, 1)
-		if self.game.grid and self.game.grid.draw then
-			self.game.grid:draw()
-			love.graphics.setColor(1, 1, 1, 1)
-			love.graphics.setFont(font_3x5_3)
-			love.graphics.printf("SHOW INVIS", 64, 60, 160, "center")
-		elseif not self.game.grid.draw then
-			love.graphics.setFont(font_3x5_2)
-			love.graphics.printf("GRID IS UNDRAWABLE", 64, 60, 160, "center")
-		else
-			love.graphics.setFont(font_3x5_2)
-			love.graphics.printf("GRID IS NOT FOUND", 64, 60, 160, "center")
-		end
+	if self.replay["toolassisted"] or TAS_mode then
+		love.graphics.setFont(font_3x5_4)
+		love.graphics.setColor(1, 1, 1, 0.2)
+		love.graphics.printf(
+			"T A S", -295, 100, 150, "center", 0, 8, 8
+		)
 	end
 end
 
@@ -199,6 +210,7 @@ function ReplayScene:onInputPress(e)
 				self.retry_ruleset, self.secret_inputs
 			) or ReplaySelectScene()
 	 	)
+		scene.safety_frames = 2
 		savestate_frames = nil
 	elseif e.input == "frame_step" and (TAS_mode or not self.rerecord) then
 		self.frame_steps = self.frame_steps + 1
@@ -233,13 +245,15 @@ function ReplayScene:onInputPress(e)
 		pitchBGM(1)
 	elseif e.input == "hold" then
 		self.show_invisible = not self.show_invisible
-	elseif e.input == "left" then
+	elseif self.rerecord then
+		--nothing
+	elseif e.input == "menu_left" then
 		self.replay_speed = self.replay_speed - 1
 		if self.replay_speed < 1 then
 			self.replay_speed = 1
 		end
 		pitchBGM(self.replay_speed)
-	elseif e.input == "right" then
+	elseif e.input == "menu_right" then
 		self.replay_speed = self.replay_speed + 1
 		if self.replay_speed > 99 then
 			self.replay_speed = 99

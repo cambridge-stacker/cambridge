@@ -7,16 +7,60 @@ require 'load.save'
 ConfigScene.options = {
 	-- this serves as reference to what the options' values mean i guess?
 	-- Format: {name in config, displayed name, options}
-	{"display_gamemode", "Display Info", {"On", "Off"}},
-	{"smooth_movement", "Smooth Piece Drop", {"On", "Off"}},
-	{"smooth_scroll", "Smooth Scrolling", {"On", "Off"}},
-	{"cursor_highlight", "Cursor Highlight", {"On", "Off"}},
-	{"cursor_type", "Cursor Type", {"Standard", "Tetro48's"}},
-	{"mode_entry", "Mode Entry", {"Instant", "Animated"}},
-	{"tagline_position", "Tagline placement", {"Top", "Bottom", "None"}},
-	{"mode_select_type", "Mode Select Type", {"Default", "Oshi's idea"}},
-	{"credits_position", "Credits Pos-ing", {"Right", "Center"}},
-	{"debug_level", "Debug Level", {"Off", "Min", "Max"}}
+	{
+		config_name = "display_gamemode",
+		display_name = "Display Info",
+		options = {"On", "Off"},
+		description = "Shows some game info.\nWhile playing (depends on gamemode): <mode_name> - <ruleset_name>\nIf enabled or on title screen: (<target_fps>) <fps> fps - <version>"
+	},
+	{
+		config_name = "smooth_movement",
+		display_name = "Smooth Piece Drop",
+		options = {"On", "Off"},
+	},
+	{
+		config_name = "smooth_scroll",
+		display_name = "Smooth Scrolling",
+		options = {"On", "Off"},
+		description = "Option to let menus and numbers smoothly interpolate\nif enabled. This affects interpolateNumber function."
+	},
+	{
+		config_name = "cursor_highlight",
+		display_name = "Cursor Highlight",
+		options = {"On", "Off"},
+	},
+	{
+		config_name = "cursor_type",
+		display_name = "Cursor Type",
+		options = {"Standard", "Tetro48's"},
+		description = "Standard is a cursor of an operating system\nTetro48's cursor is custom-made"
+	},
+	{
+		config_name = "mode_entry",
+		display_name = "Mode Entry",
+		options = {"Instant", "Animated"},
+	},
+	{
+		config_name = "tagline_position",
+		display_name = "Tagline placement",
+		options = {"Top", "Bottom", "None"},
+	},
+	{
+		config_name = "mode_select_type",
+		display_name = "Mode Select Type",
+		options = {"Default", "Oshi's idea"},
+	},
+	{
+		config_name = "credits_position",
+		display_name = "Credits Pos-ing",
+		options = {"Right", "Center"},
+	},
+	{
+		config_name = "debug_level",
+		display_name = "Debug Level",
+		options = {"Off", "Min", "Max"},
+		description = "How much debug info do you want displayed?\nMin: Lua memory usage data\nMax: Memory usage, GPU stats data and 2 true hashes stored in replays"
+	}
 }
 local optioncount = #ConfigScene.options
 
@@ -35,7 +79,7 @@ function ConfigScene:render()
 	love.graphics.setColor(1, 1, 1, 1)
 	drawBackground("options_game")
 
-    love.graphics.setFont(font_8x11)
+	love.graphics.setFont(font_8x11)
 	love.graphics.print("VISUAL SETTINGS", 80, 43)
 	local b = cursorHighlight(20, 40, 50, 30)
 	love.graphics.setColor(1, 1, b, 1)
@@ -43,27 +87,23 @@ function ConfigScene:render()
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_2)
 	love.graphics.print("(THIS WILL NOT BE STORED IN REPLAYS)", 80, 80)
-	-- love.graphics.setColor(1, 1, 1, 0.5)
-	-- love.graphics.rectangle("fill", 580, 40, 60, 35)
-	-- love.graphics.setColor(1, 1, 1, 1)
-	-- love.graphics.setFont(font_3x5_3)
-	-- love.graphics.printf("SAVE", 580, 40, 60, "center")
-	-- love.graphics.setFont(font_3x5)
-	-- love.graphics.printf("(MOUSE ONLY)", 580, 62, 60, "center")
 
-	--Lazy check to see if we're on the SFX or BGM slider. Probably will need to be rewritten if more options get added.
 	love.graphics.setColor(1, 1, 1, 0.5)
-    love.graphics.rectangle("fill", 25, 98 + self.highlight * 20, 170, 22)
+	love.graphics.rectangle("fill", 25, 98 + self.highlight * 20, 170, 22)
 
 	love.graphics.setFont(font_3x5_2)
 	for i, option in ipairs(ConfigScene.options) do
-        love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.printf(option[2], 40, 100 + i * 20, 150, "left")
-        for j, setting in ipairs(option[3]) do
-            local b = cursorHighlight(100 + 110 * j, 100 + i * 20,100,20)
-            love.graphics.setColor(1, 1, b, config.visualsettings[option[1]] == j and 1 or 0.5)
-            love.graphics.printf(setting, 100 + 110 * j, 100 + i * 20, 100, "center")
-        end
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.printf(option.display_name, 40, 100 + i * 20, 150, "left")
+		for j, setting in ipairs(option.options) do
+			local b = cursorHighlight(100 + 110 * j, 100 + i * 20,100,20)
+			love.graphics.setColor(1, 1, b, config.visualsettings[option.config_name] == j and 1 or 0.5)
+			love.graphics.printf(setting, 100 + 110 * j, 100 + i * 20, 100, "center")
+		end
+	end
+	love.graphics.setColor(1, 1, 1, 1)
+	if self.options[self.highlight].description then
+		love.graphics.printf("Description: " .. self.options[self.highlight].description, 20, 380, 600, "left")
 	end
 
 	love.graphics.setColor(1, 1, 1, 0.75)
@@ -77,37 +117,37 @@ function ConfigScene:onInputPress(e)
 			scene = SettingsScene()
 		end
 		for i, option in ipairs(ConfigScene.options) do
-			for j, setting in ipairs(option[3]) do
+			for j, setting in ipairs(option.options) do
 				if e.x > 100 + 110 * j and e.x < 200 + 110 * j then
 					if e.y > 100 + i * 20 and e.y < 120 + i * 20 then
 						self.main_menu_state = math.floor((e.y - 280) / 20)
 						playSE("cursor_lr")
-						config.visualsettings[option[1]] = Mod1(j, #option[3])
+						config.visualsettings[option.config_name] = Mod1(j, #option.options)
 					end
 				end
 				-- local option = ConfigScene.options[self.highlight]
 			end
 		end
 	end
-	if e.input == "menu_decide" or e.scancode == "return" then
+	if e.input == "menu_decide" then
 		playSE("mode_decide")
 		saveConfig()
 		scene = SettingsScene()
-	elseif e.input == "up" or e.scancode == "up" then
+	elseif e.input == "menu_up" then
 		playSE("cursor")
 		self.highlight = Mod1(self.highlight-1, optioncount)
-	elseif e.input == "down" or e.scancode == "down" then
+	elseif e.input == "menu_down" then
 		playSE("cursor")
 		self.highlight = Mod1(self.highlight+1, optioncount)
-	elseif e.input == "left" or e.scancode == "left" then
-        playSE("cursor_lr")
-        local option = ConfigScene.options[self.highlight]
-        config.visualsettings[option[1]] = Mod1(config.visualsettings[option[1]]-1, #option[3])
-	elseif e.input == "right" or e.scancode == "right" then
-        playSE("cursor_lr")
-        local option = ConfigScene.options[self.highlight]
-        config.visualsettings[option[1]] = Mod1(config.visualsettings[option[1]]+1, #option[3])
-	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
+	elseif e.input == "menu_left" then
+		playSE("cursor_lr")
+		local option = ConfigScene.options[self.highlight]
+		config.visualsettings[option.config_name] = Mod1(config.visualsettings[option.config_name]-1, #option.options)
+	elseif e.input == "menu_right" then
+		playSE("cursor_lr")
+		local option = ConfigScene.options[self.highlight]
+		config.visualsettings[option.config_name] = Mod1(config.visualsettings[option.config_name]+1, #option.options)
+	elseif e.input == "menu_back" then
 		playSE("menu_cancel")
 		loadSave()
 		scene = SettingsScene()

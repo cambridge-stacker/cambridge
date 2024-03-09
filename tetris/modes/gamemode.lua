@@ -3,7 +3,6 @@ require 'funcs'
 
 local playedReadySE = false
 local playedGoSE = false
-local cursor_type_record = 1
 
 local Grid = require 'tetris.components.grid'
 local Randomizer = require 'tetris.randomizers.randomizer'
@@ -25,7 +24,7 @@ function GameMode:new(secret_inputs, properties)
 	self.random_state = love.math.getRandomState()
 	self.save_replay = config.gamesettings.save_replay == 1
 	self.replay_properties = properties or {}
-	
+
 	self.grid = Grid(10, 24)
 	self.randomizer = Randomizer()
 	self.piece = nil
@@ -69,6 +68,7 @@ function GameMode:new(secret_inputs, properties)
 		"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
 		"GM"
 	}
+	self.piece_spawn_offset = {x = 0, y = 0}
 	-- variables related to configurable parameters
 	self.drop_locked = false
 	self.hard_drop_locked = false
@@ -82,16 +82,6 @@ function GameMode:new(secret_inputs, properties)
 	self.section_start_time = 0
 	self.section_times = { [0] = 0 }
 	self.secondary_section_times = { [0] = 0 }
-	--#region Tetro48's set up code
-	cursor_type_record = config.visualsettings.cursor_type
-	if config.visualsettings.cursor_type ~= 1 then
-		is_cursor_visible = true
-	else
-		is_cursor_visible = love.mouse.isVisible()
-	end
-	config.visualsettings.cursor_type = 1
-	love.mouse.setVisible(is_cursor_visible)
-	--#endregion
 end
 
 function GameMode:getARR() return 1 end
@@ -157,6 +147,7 @@ function GameMode:saveReplay()
 	local replay = {}
 	replay["cambridge_version"] = version
 	replay["highscore_data"] = self:getHighscoreData()
+	replay["ruleset_override"] = self.ruleset_override
 	replay["properties"] = self.replay_properties
 	replay["toolassisted"] = self.ineligible
 	replay["inputs"] = self.replay_inputs
@@ -261,7 +252,7 @@ function GameMode:update(inputs, ruleset)
 	) then
 		self:onAttemptPieceRotate(self.piece, self.grid)
 	end
-	
+
 	if self.piece == nil then
 		self:processDelays(inputs, ruleset)
 	else
@@ -361,7 +352,7 @@ function GameMode:update(inputs, ruleset)
 			if self.immobile_spin_bonus and
 			   self.piece.last_rotated and (
 				self.piece:isDropBlocked(self.grid) and
-				self.piece:isMoveBlocked(self.grid, { x=-1, y=0 }) and 
+				self.piece:isMoveBlocked(self.grid, { x=-1, y=0 }) and
 				self.piece:isMoveBlocked(self.grid, { x=1, y=0 }) and
 				self.piece:isMoveBlocked(self.grid, { x=0, y=-1 })
 			) then
@@ -369,7 +360,7 @@ function GameMode:update(inputs, ruleset)
 			end
 
 			self.grid:applyPiece(self.piece)
-			
+
 			-- mark squares (can be overridden)
 			if self.square_mode then
 				self.squares = self.squares + self.grid:markSquares()
@@ -430,7 +421,7 @@ function GameMode:onAttemptPieceRotate(piece, grid) end
 function GameMode:onPieceMove(piece, grid, dx) end
 function GameMode:onPieceRotate(piece, grid, drot) end
 function GameMode:onPieceDrop(piece, grid, dy) end
-function GameMode:onPieceLock(piece, cleared_row_count) 
+function GameMode:onPieceLock(piece, cleared_row_count)
 	playSE("lock")
 end
 
@@ -474,7 +465,6 @@ function GameMode:onGameComplete()
 end
 
 function GameMode:onExit()
-	config.visualsettings.cursor_type = cursor_type_record
 end
 
 -- DAS functions
@@ -689,7 +679,7 @@ function GameMode:initializeNextPiece(
 		self.drop_locked, self.hard_drop_locked, self.big_mode,
 		(
 			self.frames == 0 or (ruleset.are and self:getARE() ~= 0)
-		) and self.irs or false, self.half_block_mode
+		) and self.irs or false, self.half_block_mode, self.piece_spawn_offset
 	)
 	if config.gamesettings.buffer_lock == 3 then
 		if self.buffer_hard_drop then
@@ -911,8 +901,8 @@ function GameMode:drawNextQueue(ruleset)
 	if self.hold_queue ~= nil and self.enable_hold then
 		self:setHoldOpacity()
 		drawPiece(
-			self.hold_queue.shape, 
-			self.hold_queue.skin, 
+			self.hold_queue.shape,
+			self.hold_queue.skin,
 			ruleset.block_offsets[self.hold_queue.shape][self.hold_queue.orientation],
 			-16, -32
 		)
@@ -1013,7 +1003,7 @@ end
 
 function GameMode:drawSectionTimesWithSplits(current_section, section_limit)
 	section_limit = section_limit or math.huge
-	
+
 	local section_x = 440
 	local split_x = 530
 
@@ -1028,7 +1018,7 @@ function GameMode:drawSectionTimesWithSplits(current_section, section_limit)
 			love.graphics.printf(formatTime(split_time), split_x, 40 + 20 * section, 90, "left")
 		end
 	end
-	
+
 	if (current_section <= section_limit) then
 		love.graphics.printf(formatTime(self.frames - self.section_start_time), section_x, 40 + 20 * current_section, 90, "left")
 		love.graphics.printf(formatTime(self.frames), split_x, 40 + 20 * current_section, 90, "left")

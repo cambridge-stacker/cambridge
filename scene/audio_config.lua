@@ -9,12 +9,49 @@ ConfigScene.options = {
 	-- Option types: slider, options
 	-- Format if type is options:	{name in config, displayed name, type, description, options}
 	-- Format if otherwise:			{name in config, displayed name, type, description, min, max, increase by, string format, sound effect name, rounding type}
-	{"master_volume", "Master Volume", "slider", "This will affect all sound sources. ALL OF IT.", 0, 100, 5, "%d%%", "cursor"},
-	{"sfx_volume", "SFX Volume", "slider", nil, 0, 100, 5, "%d%%", "cursor"},
-	{"bgm_volume", "BGM Volume", "slider", nil, 0, 100, 5, "%d%%", "cursor"},
-	{"sound_sources", "Simult. SFX sources", "slider", "High values may result in high memory consumption, "..
-	"though it allows multiples of the same sound effect to be played at once."..
-	"\n(There's some exceptions, e.g. SFX added through modes/rulesets)", 1, 30, 1, "%0d", "cursor", "floor"}
+	{
+		config_name = "master_volume",
+		display_name = "Master Volume",
+		type = "slider",
+		description = "This will affect all sound sources. ALL OF IT.",
+		min = 0,
+		max = 100,
+		increase_by = 5,
+		format = "%d%%",
+		sound_effect_name = "cursor"
+	},
+	{
+		config_name = "sfx_volume",
+		display_name = "SFX Volume",
+		type = "slider",
+		min = 0,
+		max = 100,
+		increase_by = 5,
+		format = "%d%%",
+		sound_effect_name = "cursor"
+	},
+	{
+		config_name = "bgm_volume",
+		display_name = "BGM Volume",
+		type = "slider",
+		min = 0,
+		max = 100,
+		increase_by = 5,
+		format = "%d%%",
+		sound_effect_name = "cursor"},
+	{
+		config_name = "sound_sources",
+		display_name = "Simult. SFX sources",
+		type = "slider",
+		description = "High values may result in high memory consumption, though it allows multiples of the same sound effect to be played at once." ..
+		"\n(There's some exceptions, e.g. SFX added through modes/rulesets)",
+		min = 1,
+		max = 30,
+		increase_by = 1,
+		format = "%0d",
+		sound_effect_name = "cursor",
+		rounding_type = "floor"
+	}
 }
 local optioncount = #ConfigScene.options
 
@@ -30,19 +67,19 @@ function ConfigScene:new()
 		sfx_volume = newSlider(320, 210, 480, config.sfx_volume*100, 0, 100, function(v) config.sfx_volume = v/100 config.audiosettings.sfx_volume = v end, {width=20, knob="circle", track="roundrect"}),
 		bgm_volume = newSlider(320, 265, 480, config.bgm_volume*100, 0, 100, function(v) config.bgm_volume = v/100 config.audiosettings.bgm_volume = v end, {width=20, knob="circle", track="roundrect"}),
 	}
-	
+
 	--#region Init option positions and sliders
 
 	local y = 100
 	for idx, option in ipairs(ConfigScene.options) do
 		y = y + 20
 		table.insert(self.option_pos_y, y)
-		if option[3] == "slider" then
+		if option.type == "slider" then
 			y = y + 35
-			if config.audiosettings[option[1]] == nil then
-				config.audiosettings[option[1]] = (option[6] - option[5]) / 2 + option[5]
+			if config.audiosettings[option.config_name] == nil then
+				config.audiosettings[option.config_name] = (option.max - option.min) / 2 + option.min
 			end
-			self.sliders[option[1]] = self.sliders[option[1]] or newSlider(320, y, 480, config.audiosettings[option[1]], option[5], option[6], function(v) config.audiosettings[option[1]] = math.floor(v) end, {width=20, knob="circle", track="roundrect"})
+			self.sliders[option.config_name] = self.sliders[option.config_name] or newSlider(320, y, 480, config.audiosettings[option.config_name], option.min, option.max, function(v) config.audiosettings[option.config_name] = math.floor(v) end, {width=20, knob="circle", track="roundrect"})
 		end
 	end
 	--#endregion
@@ -65,7 +102,7 @@ function ConfigScene:render()
 	love.graphics.setColor(1, 1, 1, 1)
 	drawBackground("options_game")
 
-    love.graphics.setFont(font_8x11)
+	love.graphics.setFont(font_8x11)
 	love.graphics.print("AUDIO SETTINGS", 80, 43)
 	local b = cursorHighlight(20, 40, 50, 30)
 	love.graphics.setColor(1, 1, b, 1)
@@ -75,20 +112,20 @@ function ConfigScene:render()
 	love.graphics.print("(THIS WILL NOT BE STORED IN REPLAYS)", 80, 80)
 
 	love.graphics.setColor(1, 1, 1, 0.5)
-    love.graphics.rectangle("fill", 25, self.option_pos_y[self.highlight] - 2, 190, 22)
+	love.graphics.rectangle("fill", 25, self.option_pos_y[self.highlight] - 2, 190, 22)
 
 	love.graphics.setFont(font_3x5_2)
 	for i, option in ipairs(ConfigScene.options) do
-        love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.printf(option[2], 40, self.option_pos_y[i], 170, "left")
-		if option[3] == "slider" then
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.printf(option.display_name, 40, self.option_pos_y[i], 170, "left")
+		if option.type == "slider" then
 			self:renderSlider(i, option)
-		elseif option[3] == "options" then
+		elseif option.type == "options" then
 			self:renderOptions(i, option)
 		end
 	end
-	if self.options[self.highlight][4] then
-		love.graphics.printf("Description: " .. self.options[self.highlight][4], 20, 400, 600, "left")
+	if self.options[self.highlight].description then
+		love.graphics.printf("Description: " .. self.options[self.highlight].description, 20, 400, 600, "left")
 	end
 
 	love.graphics.setColor(1, 1, 1, 0.75)
@@ -96,35 +133,35 @@ end
 
 function ConfigScene:renderSlider(idx, option)
 	love.graphics.setColor(1, 1, 1, 0.75)
-	self.sliders[option[1]]:draw()
+	self.sliders[option.config_name]:draw()
 	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.printf(string.format(option[8],self.sliders[option[1]]:getValue()), 160, self.option_pos_y[idx], 320, "center")
+	love.graphics.printf(string.format(option.format,self.sliders[option.config_name]:getValue()), 160, self.option_pos_y[idx], 320, "center")
 end
 
 function ConfigScene:renderOptions(idx, option)
-	for j, setting in ipairs(option[5]) do
+	for j, setting in ipairs(option.options) do
 		local b = cursorHighlight(100 + 110 * j, self.option_pos_y[idx], 100, 20)
-		love.graphics.setColor(1, 1, b, config.audiosettings[option[1]] == j and 1 or 0.5)
+		love.graphics.setColor(1, 1, b, config.audiosettings[option.config_name] == j and 1 or 0.5)
 		love.graphics.printf(setting, 100 + 110 * j, self.option_pos_y[idx], 100, "center")
 	end
 end
 
 function ConfigScene:changeValue(by)
 	local option = self.options[self.highlight]
-	if option[3] == "slider" then
-		local sld = self.sliders[option[1]]
+	if option.type == "slider" then
+		local sld = self.sliders[option.config_name]
 		sld.value = math.max(0, math.min(sld.max, (sld:getValue() + by - sld.min))) / (sld.max - sld.min)
 		local x, y = getScaledDimensions(love.mouse.getPosition())
 		sld:update(x, y)
 	end
-	if option[3] == "options" then
-        config.audiosettings[option[1]] = Mod1(config.audiosettings[option[1]]+by, #option[3])
+	if option.type == "options" then
+		config.audiosettings[option.config_name] = Mod1(config.audiosettings[option.config_name]+by, #option.type)
 	end
 end
 
 function ConfigScene:onInputPress(e)
 	local option = self.options[self.highlight]
-	if e.input == "menu_decide" or e.scancode == "return" or (e.type == "mouse" and e.button == 1 and e.x > 20 and e.y > 40 and e.x < 70 and e.y < 70) then
+	if e.input == "menu_decide" or (e.type == "mouse" and e.button == 1 and e.x > 20 and e.y > 40 and e.x < 70 and e.y < 70) then
 		if config.sound_sources ~= config.audiosettings.sound_sources then
 			config.sound_sources = config.audiosettings.sound_sources
 			--why is this necessary???
@@ -135,19 +172,19 @@ function ConfigScene:onInputPress(e)
 		playSE("mode_decide")
 		saveConfig()
 		scene = SettingsScene()
-	elseif e.input == "up" or e.scancode == "up" then
+	elseif e.input == "menu_up" then
 		playSE("cursor")
 		self.highlight = Mod1(self.highlight-1, optioncount)
-	elseif e.input == "down" or e.scancode == "down" then
+	elseif e.input == "menu_down" then
 		playSE("cursor")
 		self.highlight = Mod1(self.highlight+1, optioncount)
-	elseif e.input == "left" or e.scancode == "left" then
-        self:changeValue(-option[7])
-        playSE(option[9] or "cursor_lr")
-	elseif e.input == "right" or e.scancode == "right" then
-		self:changeValue(option[7])
-        playSE(option[9] or "cursor_lr")
-	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
+	elseif e.input == "menu_left" then
+		self:changeValue(-option.increase_by)
+		playSE(option.sound_effect_name or "cursor_lr")
+	elseif e.input == "menu_right" then
+		self:changeValue(option.increase_by)
+		playSE(option.sound_effect_name or "cursor_lr")
+	elseif e.input == "menu_back" then
 		playSE("menu_cancel")
 		loadSave()
 		love.audio.setVolume(config.master_volume)

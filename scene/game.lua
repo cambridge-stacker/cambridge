@@ -7,6 +7,7 @@ GameScene.title = "Game"
 require 'load.save'
 
 function GameScene:new(game_mode, ruleset, inputs)
+	love.mouse.setVisible(true)
 	self.retry_mode = game_mode
 	self.retry_ruleset = ruleset
 	self.secret_inputs = inputs
@@ -42,7 +43,7 @@ end
 
 function GameScene:update()
 	if self.paused and self.frame_steps == 0 then
-		self.game.pause_time = self.game.pause_time + 1
+		self.game.pause_time = self.game.pause_time + love.timer.getDelta() / (1/60)
 	else
 		if self.frame_steps > 0 then
 			self.game.ineligible = true
@@ -74,6 +75,13 @@ function GameScene:render()
 			formatTime(self.game.pause_time)
 		), 0, 0, 635, "right")
 	end
+	if TAS_mode or self.game.ineligible then
+		love.graphics.setFont(font_3x5_4)
+		love.graphics.setColor(1, 1, 1, 0.2)
+		love.graphics.printf(
+			"T A S", -295, 100, 150, "center", 0, 8, 8
+		)
+	end
 end
 
 local movement_directions = {"left", "right", "down", "up"}
@@ -96,6 +104,7 @@ function GameScene:onInputPress(e)
 		sortReplays()
 		scene = e.input == "retry" and GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs) or
 				config.visualsettings.mode_select_type == 1 and ModeSelectScene() or RevModeSelectScene()
+		scene.safety_frames = 2
 	elseif e.input == "frame_step" and TAS_mode then
 		self.frame_steps = self.frame_steps + 1
 	elseif e.input == "retry" then
@@ -120,6 +129,7 @@ function GameScene:onInputPress(e)
 		else
 			scene = RevModeSelectScene()
 		end
+		scene.safety_frames = 2
 	elseif e.input and string.sub(e.input, 1, 5) ~= "menu_" and e.input ~= "frame_step" then
 		self.inputs[e.input] = true
 		if config.gamesettings["diagonal_input"] == 3 and opposite_directions[e.input] then

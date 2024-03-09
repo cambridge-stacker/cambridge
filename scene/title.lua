@@ -10,6 +10,8 @@ local main_menu_screens = {
 	ModeSelectScene,
 	HighscoresScene,
 	ReplaySelectScene,
+	JoinDiscordFunc,
+	ReportBugFunc,
 	SettingsScene,
 	CreditsScene,
 	ExitScene,
@@ -40,7 +42,7 @@ local mainmenuidle = {
 }
 
 function TitleScene:new()
-    self.love2d_major, self.love2d_minor, self.love2d_revision = love.getVersion()
+	self.love2d_major, self.love2d_minor, self.love2d_revision = love.getVersion()
 	self.main_menu_state = 1
 	self.frames = 0
 	self.snow_bg_opacity = 0
@@ -104,17 +106,17 @@ function TitleScene:render()
 
 	if not enter_pressed then
 		love.graphics.setFont(font_3x5_3)
-		love.graphics.printf("Welcome To Cambridge: Flooding Edge!", 80, 240, 480, "center")
+		love.graphics.printf("Welcome To Cambridge: The Next Open-Source Stacker!", 0, 240, 640, "center")
 		if love.timer.getTime() % 2 <= 1 then
 			love.graphics.printf(self.press_enter_text, 80, 360, 480, "center")
 		end
 		love.graphics.setFont(font_3x5_2)
-		if not (self.love2d_major == 11 and self.love2d_minor == 3) and not (self.love2d_major == 12 and self.love2d_minor == 0) then
-			love.graphics.printf({{1, 0, 0, 1}, ("LOVE %d.%d is a potentially unstable version for Cambridge in other OS such as macOS or Linux at the moment! Stick to 11.3 for now."):format(self.love2d_major, self.love2d_minor)}, 50, 60, 540, "center")
+		if not (self.love2d_major == 11 and (self.love2d_minor == 3 or self.love2d_minor == 5)) and not (self.love2d_major == 12 and self.love2d_minor == 0) then
+			love.graphics.printf({{1, 0, 0, 1}, ("LOVE %d.%d is a potentially unstable version for Cambridge in other OS such as macOS or Linux at the moment! Stick to 11.3 or 11.5 for now."):format(self.love2d_major, self.love2d_minor)}, 50, 60, 540, "center")
 		elseif (self.love2d_major == 12 and self.love2d_minor == 0) then
 			love.graphics.printf({{1, 1, 0, 1}, "Currently LOVE 12.0 is in development. Expect there be more bugs. Cambridge currently doesn't utilise the new features at the moment."}, 50, 60, 540, "center")
 		end
-		love.graphics.printf("This particular fork has a lot of changes, so expect that there'd be a lot of bugs!\nReport bugs found here to Tetro48, in detail.", 120, 280, 400, "center")
+		love.graphics.printf("This new version has a lot of changes, so expect that there'd be a lot of bugs!\nReport bugs and issues found here to cambridge-stacker repository, in detail.", 0, 280, 640, "center")
 	end
 	local x, y
 	if enter_pressed then
@@ -192,13 +194,13 @@ function TitleScene:onInputPress(e)
 		end
 		return
 	end
-	if e.input == "menu_decide" or e.scancode == "return" then
+	if e.input == "menu_decide" then
 		playSE("main_decide")
 		scene = main_menu_screens[self.main_menu_state]()
-	elseif e.input == "up" or e.scancode == "up" then
+	elseif e.input == "menu_up" then
 		self:changeOption(-1)
 		playSE("cursor")
-	elseif e.input == "down" or e.scancode == "down" then
+	elseif e.input == "menu_down" then
 		self:changeOption(1)
 		playSE("cursor")
 	elseif e.input == "menu_back" or e.scancode == "backspace" or e.scancode == "delete" then

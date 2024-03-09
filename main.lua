@@ -19,6 +19,7 @@ function love.load()
 	require "load.bgm"
 	require "load.save"
 	require "load.bigint"
+	require "load.modules"
 	require "load.version"
 	loadSave()
 	require "funcs"
@@ -50,84 +51,6 @@ function love.load()
 	-- this is executed after the sound table is generated. why is that is unknown.
 	if config.secret then playSE("welcome") end
 end
----@param table table
----@param directory string
----@param blacklisted_string string
-function recursivelyLoadRequireFileTable(table, directory, blacklisted_string)
-	--LOVE 12.0 will warn about require strings having forward slashes in them if this is not done.
-	local require_string = string.gsub(directory, "/", ".")
-	local list = love.filesystem.getDirectoryItems(directory)
-	for index, name in ipairs(list) do
-		
-		if love.filesystem.getInfo(directory.."/"..name, "directory") then
-			table[#table+1] = {name = name, is_directory = true}
-			recursivelyLoadRequireFileTable(table[#table], directory.."/"..name, blacklisted_string)
-		end
-		if name ~= blacklisted_string and name:sub(-4) == ".lua" then
-			table[#table+1] = require(require_string.."."..name:sub(1, -5))
-			if not (type(table[#table]) == "table" and type(table[#table].__call) == "function") then
-				error("Add a return to "..directory.."/"..name..".\nMust be a table with __call function.", 1)
-			end
-		end
-	end
-end
-
-
----@param reload boolean|nil
-function initModules(reload)
-	--module reload.
-	if reload then
-		for key, value in pairs(package.loaded) do
-			if string.sub(key, 1, 7) == "tetris." then
-				package.loaded[key] = nil
-			end
-		end
-	end
-	game_modes = {}
-	recursivelyLoadRequireFileTable(game_modes, "tetris/modes", "gamemode.lua")
-	-- mode_list = love.filesystem.getDirectoryItems("tetris/modes")
-	-- for i=1,#mode_list do
-	-- 	if(mode_list[i] ~= "gamemode.lua" and string.sub(mode_list[i], -4) == ".lua") then
-	-- 		game_modes[#game_modes+1] = require ("tetris.modes."..string.sub(mode_list[i],1,-5))
-	-- 	end
-	-- end
-	rulesets = {}
-	recursivelyLoadRequireFileTable(rulesets, "tetris/rulesets", "ruleset.lua")
-	-- rule_list = love.filesystem.getDirectoryItems("tetris/rulesets")
-	-- for i=1,#rule_list do
-	-- 	if(rule_list[i] ~= "ruleset.lua" and string.sub(rule_list[i], -4) == ".lua") then
-	-- 		rulesets[#rulesets+1] = require ("tetris.rulesets."..string.sub(rule_list[i],1,-5))
-	-- 	end
-	-- end
-
-	--sort mode/rule lists
-	local function padnum(d) return ("%03d%s"):format(#d, d) end
-	table.sort(game_modes, function(a,b)
-	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
-	table.sort(rulesets, function(a,b)
-	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
-end
-
---#region Tetro48's code
-
-
----@param tbl table
----@param key_check any
----@return table
-local function recursionStringValueExtract(tbl, key_check)
-	local result = {}
-	for key, value in pairs(tbl) do
-		if type(value) == "table" and (key_check == nil or value[key_check]) then
-			local recursion_result = recursionStringValueExtract(value, key_check)
-			for k2, v2 in pairs(recursion_result) do
-				table.insert(result, v2)
-			end
-		elseif tostring(value) == "Object" then
-			table.insert(result, value)
-		end
-	end
-	return result
-end
 
 local io_thread
 
@@ -147,17 +70,17 @@ function loadReplayList()
 
 	io_thread = love.thread.newThread( replay_load_code )
 	for key, value in pairs(recursionStringValueExtract(game_modes, "is_directory")) do
-		dict_ref[value.name] = key + 1
-		replay_tree[key + 1] = {name = value.name}
+		if not dict_ref[value.name] then
+			dict_ref[value.name] = #replay_tree + 1
+			replay_tree[#replay_tree + 1] = {name = value.name}
+		end
 	end
 	io_thread:start()
 end
 
-is_cursor_visible = true
 mouse_idle = 0
 TAS_mode = false
 loaded_replays = false
-local prev_cur_pos_x, prev_cur_pos_y = 0, 0
 local system_cursor_type = "arrow"
 local screenshot_images = {}
 
@@ -184,42 +107,6 @@ local function screenshotFunction(image)
 	screenshot_images[#screenshot_images+1] = {image = love.graphics.newImage(image), time = 0, y_position = #screenshot_images * 260}
 end
 
-local function drawTASWatermark()
-	love.graphics.setFont(font_3x5_4)
-	love.graphics.setColor(1, 1, 1, 0.2)
-	love.graphics.printf(
-		"T A S", -300, 100, 150, "center", 0, 8, 8
-	)
-end
-
-local function drawWatermarks()
-	local is_TAS_used = false
-	if scene.replay then
-		if scene.replay["toolassisted"] == true then
-			is_TAS_used = true
-		end
-	end
-
-	if scene.game then
-		if scene.game.ineligible then
-			is_TAS_used = true
-		end
-	end
-
-	if TAS_mode then
-		if scene.title == "Game" or scene.title == "Replay" and not scene.replay["toolassisted"] == true then
-			is_TAS_used = true
-		end
-		love.graphics.setColor(1, 1, 1, love.timer.getTime() % 2 < 1 and 1 or 0)
-		love.graphics.setFont(font_3x5_3)
-		love.graphics.printf(
-			"TAS MODE ON", 240, 0, 160, "center"
-		)
-	end
-	if is_TAS_used then
-		drawTASWatermark()
-	end
-end
 local last_time = 0
 local function getDeltaTime()
 	local time = love.timer.getTime()
@@ -229,7 +116,7 @@ local function getDeltaTime()
 end
 local time_table = {}
 local last_fps = 0
-local function getMeanDelta()
+local function getAvgDelta()
 	if #time_table > 24 then
 		table.remove(time_table, 1)
 	end
@@ -270,6 +157,7 @@ local function drawScreenshotPreviews()
 	end
 end
 
+--#region Error Handler
 local utf8 = require("utf8")
 
 local function error_printer(msg, layer)
@@ -288,11 +176,12 @@ function love.errorhandler(msg)
 		love.filesystem.mount(source_dir, "")
 	end
 
-	local str_data = love.filesystem.read("string", errored_filename)
-
 	local lua_file_content = {}
-	for v in string.gmatch(str_data, "([^\r\n]*)\r\n?") do
-		lua_file_content[#lua_file_content+1] = v
+	if love.filesystem.getInfo(errored_filename, "file") then
+		local str_data = love.filesystem.read("string", errored_filename)
+		for v in string.gmatch(str_data, "([^\r\n]*)\r\n?") do
+			lua_file_content[#lua_file_content+1] = v
+		end
 	end
 
 	error_printer(msg, 2)
@@ -374,6 +263,9 @@ function love.errorhandler(msg)
 			if local_line > 0 and local_line <= #lua_file_content then
 				love.graphics.print(local_line.. ": " .. lua_file_content[local_line] .. (local_line == line_error and " <---" or "") , pos, pos + (i * 15) - 5)
 			end
+		end
+		if #lua_file_content == 0 then
+			love.graphics.print("Couldn't find a lua file! Is it missing in some way?", pos, pos + 30)
 		end
 		love.graphics.printf(p, pos, pos + 120, love.graphics.getWidth() - pos)
 		love.graphics.present()
@@ -476,7 +368,7 @@ end
 function love.draw()
 	tooltip_string = ""
 	tooltip_width = 0
-	local mean_delta = getMeanDelta()
+	local avg_delta = getAvgDelta()
 	love.graphics.setCanvas(GLOBAL_CANVAS)
 	love.graphics.clear()
 
@@ -494,7 +386,13 @@ function love.draw()
 		
 	scene:render()
 
-	drawWatermarks()
+	if TAS_mode then
+		love.graphics.setColor(1, 1, 1, love.timer.getTime() % 2 < 1 and 1 or 0)
+		love.graphics.setFont(font_3x5_3)
+		love.graphics.printf(
+			"TAS MODE ON", 240, 0, 160, "center"
+		)
+	end
 
 	local bottom_right_corner_y_offset = 0
 	love.graphics.setFont(font_3x5_2)
@@ -502,7 +400,7 @@ function love.draw()
 	if config.visualsettings.display_gamemode == 1 or scene.title == "Title" then
 		bottom_right_corner_y_offset = bottom_right_corner_y_offset + 20
 		love.graphics.printf(
-			string.format("(%g) %.2f fps - %s", getTargetFPS(), 1.0 / mean_delta, version),
+			string.format("(%g) %.2f fps - %s", getTargetFPS(), 1.0 / avg_delta, version),
 			0, 480 - bottom_right_corner_y_offset, 635, "right"
 		)
 	end
@@ -515,13 +413,6 @@ function love.draw()
 	end
 
 	if scene.title == "Game" or scene.title == "Replay" then
-		-- if config.visualsettings.cursor_type ~= 1 then
-		-- 	is_cursor_visible = true
-		-- else
-		-- 	is_cursor_visible = love.mouse.isVisible()
-		-- end
-		-- config.visualsettings.cursor_type = 0
-		-- love.mouse.setVisible(is_cursor_visible)
 	else
 		love.mouse.setVisible(config.visualsettings.cursor_type == 1)
 		if config.visualsettings.cursor_type ~= 1 then
@@ -564,37 +455,6 @@ local function multipleInputs(input_table, input)
 	return result_inputs
 end
 
-local function toFormattedValue(value)
-	
-	if type(value) == "table" and value.digits and value.sign then
-		local num = ""
-		if value.sign == "-" then
-			num = "-"
-		end
-		for id, digit in pairs(value.digits) do
-			if not value.dense or id == 1 then
-				num = num .. math.floor(digit) -- lazy way of getting rid of .0$
-			else
-				num = num .. string.format("%07d", digit)
-			end
-		end
-		return num
-	end
-	return value
-end
-
----@param str string
-local function stringLengthLimit(str, len)
-	local new_str = ""
-	if #str > len then
-		for i = 1, math.ceil(#str / len) do
-			new_str = new_str .. str:sub((i-1)*len+1, i*len+1).."\n"
-		end
-	else
-		return str
-	end
-	return new_str
-end
 
 ---@param file love.File
 function love.filedropped(file)
@@ -641,12 +501,12 @@ function love.filedropped(file)
 				info_string = info_string .. ("Pause count: %d\nTime Paused: %s\n"):format(replay_data.pause_count, formatTime(replay_data.pause_time))
 			end
 			if replay_data.sha256_table then
-				info_string = info_string .. ("SHA256 replay checksums:\nMode: %s\nRuleset: %s\n"):format(replay_data.sha256_table.mode, replay_data.sha256_table.ruleset)
+				info_string = info_string .. ("SHA256 replay hashes:\nMode: %s\nRuleset: %s\n"):format(replay_data.sha256_table.mode, replay_data.sha256_table.ruleset)
 			end
 			if replay_data.highscore_data then
 				info_string = info_string .. "In-replay highscore data:\n\n"
 				for key, value in pairs(replay_data["highscore_data"]) do
-					info_string = info_string .. stringLengthLimit((key..": ".. toFormattedValue(value)), 75) .. "\n"
+					info_string = info_string .. stringWrapByLength((key..": ".. toFormattedValue(value)), 75) .. "\n"
 				end
 			else
 				info_string = info_string .. "Legacy replay\nLevel: "..replay_data["level"]
@@ -952,6 +812,8 @@ function love.joystickhat(joystick, hat, direction)
 	end
 end
 
+local mouse_buttons_pressed = {}
+
 ---@param x number
 ---@param y number
 ---@param button integer
@@ -959,10 +821,9 @@ end
 ---@param presses integer
 function love.mousepressed(x, y, button, istouch, presses)
 	if mouse_idle > 2 then return end
-	local screen_x, screen_y = love.graphics.getDimensions()
-	local scale_factor = math.min(screen_x / 640, screen_y / 480)
-	local local_x, local_y = (x - (screen_x - scale_factor * 640) / 2)/scale_factor, (y - (screen_y - scale_factor * 480) / 2)/scale_factor
-	scene:onInputPress({input=nil, type="mouse", x=local_x, y=local_y, button=button, istouch=istouch, presses=presses})
+	mouse_buttons_pressed[button] = true
+	local local_x, local_y = getScaledDimensions(x, y)
+	scene:onInputPress({type="mouse", x=local_x, y=local_y, button=button, istouch=istouch, presses=presses})
 end
 
 ---@param x number
@@ -971,11 +832,27 @@ end
 ---@param istouch boolean
 ---@param presses integer
 function love.mousereleased(x, y, button, istouch, presses)
-	if mouse_idle > 2 then return end
+	if mouse_idle > 2 and not mouse_buttons_pressed[button] then return end
+	mouse_buttons_pressed[button] = false
+	local local_x, local_y = getScaledDimensions(x, y)
+	scene:onInputRelease({type="mouse", x=local_x, y=local_y, button=button, istouch=istouch, presses=presses})
+end
+
+function love.mousemoved(x, y, dx, dy)
+	mouse_idle = 0
 	local screen_x, screen_y = love.graphics.getDimensions()
 	local scale_factor = math.min(screen_x / 640, screen_y / 480)
-	local local_x, local_y = (x - (screen_x - scale_factor * 640) / 2)/scale_factor, (y - (screen_y - scale_factor * 480) / 2)/scale_factor
-	scene:onInputRelease({input=nil, type="mouse", x=local_x, y=local_y, button=button, istouch=istouch, presses=presses})
+	local local_x, local_y = getScaledDimensions(x, y)
+	local local_dx, local_dy = getScaledDimensions(dx, dy)
+	scene:onInputPress({type="mouse_move", x=local_x, y=local_y, dx=local_dx, dy=local_dy})
+end
+
+function love.focus(f)
+	if f then
+		love.audio.setVolume(config.audiosettings.master_volume / 100)
+	else
+		love.audio.setVolume(config.audiosettings.master_volume / 1000)
+	end
 end
 
 ---@param x number
@@ -998,12 +875,9 @@ local FRAME_DURATION = 1.0 / TARGET_FPS
 
 ---@param fps number
 function setTargetFPS(fps)
-	if fps == -1 then
-		TARGET_FPS = -1
+	if fps <= 0 or fps == math.huge then
+		TARGET_FPS = math.huge
 		return
-	end
-	if fps <= 0 then
-		error("Illegal target FPS.")
 	end
 	TARGET_FPS = fps
 	FRAME_DURATION = 1.0 / TARGET_FPS
@@ -1043,8 +917,7 @@ function love.run()
 		
 		if scene and scene.update and love.timer then
 			scene:update()
-
-			if time_accumulator < FRAME_DURATION or TARGET_FPS == -1 then
+			if time_accumulator < FRAME_DURATION or TARGET_FPS == math.huge then
 				if love.graphics and love.graphics.isActive() and love.draw then
 					love.graphics.origin()
 					love.graphics.clear(love.graphics.getBackgroundColor())
@@ -1052,18 +925,13 @@ function love.run()
 					love.graphics.present()
 				end
 				if love.mouse then
-					if prev_cur_pos_x == love.mouse.getX() and prev_cur_pos_y == love.mouse.getY() then
-						mouse_idle = mouse_idle + love.timer.getDelta()
-					else
-						mouse_idle = 0
-					end
-					prev_cur_pos_x, prev_cur_pos_y = love.mouse.getPosition()
+					mouse_idle = mouse_idle + love.timer.getDelta()
 					love.mouse.setCursor(love.mouse.getSystemCursor(system_cursor_type))
 					if system_cursor_type ~= "arrow" then
 						system_cursor_type = "arrow"
 					end
 				end
-				if TARGET_FPS ~= -1 then
+				if TARGET_FPS ~= math.huge then
 					-- request 1ms delays first but stop short of overshooting, then do "0ms" delays without overshooting (0ms requests generally do a delay of some nonzero amount of time, but maybe less than 1ms)
 					for milliseconds=0.001,0.000,-0.001 do
 						local max_delay = 0.0

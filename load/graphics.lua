@@ -1,35 +1,45 @@
 local image_formats = {"png", "jpg", "bmp", "tga"}
+
+---Putting file format at the end isn't required. Also it supports resource pack system.
+---@param path string
+---@return love.Image
+function loadImage(path)
+	local is_packs_present = #config.resource_packs_applied > 0
+	for _, v in pairs(image_formats) do
+		local local_path = path.."."..v
+		if love.filesystem.getInfo(local_path) then
+			path = local_path
+			if not is_packs_present then break end
+		end
+		if love.filesystem.getInfo(applied_packs_path..local_path) then
+			path = applied_packs_path..local_path
+			break
+		end
+	end
+	if love.filesystem.getInfo(path) then
+		-- this file exists
+		return love.graphics.newImage(path)
+	end
+	error(("Image (%s) not found!"):format(path))
+end
+
 local function loadImageTable(image_table, path_table)
 	for k,v in pairs(path_table) do
-		if(type(v) == "table") then
+		if type(v) == "table" then
+			image_table[k] = {}
 			-- list of subimages
 			for k2,v2 in pairs(v) do
-				for _, v3 in pairs(image_formats) do
-					if(love.filesystem.getInfo(v2.."."..v3)) then
-						-- this file exists
-						image_table[k] = image_table[k] or {}
-						image_table[k][k2] = love.graphics.newImage(v2.."."..v3)
-						break
-					end
-				end
-				if image_table[k][k2] == nil then
-					error(("Image (%s) not found!"):format(v2))
-				end
+				image_table[k][k2] = loadImage(v2)
 			end
 		else
-			for _, v2 in pairs(image_formats) do
-				if(love.filesystem.getInfo(v.."."..v2)) then
-					-- this file exists
-					image_table[k] = love.graphics.newImage(v.."."..v2)
-					break
-				end
-			end
-			if image_table[k] == nil then
-				error(("Image (%s) not found!"):format(v))
-			end
+			image_table[k] = loadImage(v)
 		end
 	end
 end
+
+--It's a pseudo-random string to avoid most folder collisions.
+applied_packs_path = ""
+
 backgrounds = {}
 backgrounds_paths = {
 	title = "res/backgrounds/title",
@@ -216,6 +226,11 @@ local previous_selected_packs = {}
 local initial_load = true
 
 function loadResources()
+	local random_numbers = {}
+	for i = 1, 32 do
+		random_numbers[#random_numbers+1] = love.math.random(1, 127)
+	end
+	applied_packs_path = table.concat(random_numbers)
 	if not initial_load and equals(previous_selected_packs, config.resource_packs_applied) then
 		return
 	end
@@ -227,20 +242,18 @@ function loadResources()
 		end
 	end
 	for k, v in pairs(previous_selected_packs) do
-		if not config.resource_packs_applied[k] then
-			love.filesystem.unmount("resourcepacks/"..v)
-		end
+		love.filesystem.unmount("resourcepacks/"..v)
 	end
 	if type(config.resource_packs_applied) == "table" then
 		for k, v in pairs(config.resource_packs_applied) do
-			if resource_pack_indexes[v] and not previous_selected_packs[k] then
-				love.filesystem.mount("resourcepacks/"..v, "res/")
+			if resource_pack_indexes[v] then
+				love.filesystem.mount("resourcepacks/"..v, applied_packs_path.."res/")
 			elseif not previous_selected_packs[k] then
 				table.remove(config.resource_packs_applied, k)
 			end
 		end
 	end
-	
+
 	if not initial_load or #config.resource_packs_applied > 0 then
 		love.graphics.setCanvas()
 		love.graphics.clear()
@@ -282,7 +295,7 @@ function loadResources()
 	loadImageTable(misc_graphics, misc_graphics_paths)
 
 	--#region Backgrounds stuff. Warning: Code duplication
-	
+
 	local function loadExtendedBgs()
 		--Dynamic reloading, ey?
 		package.loaded["res.backgrounds.extend_section_bg"] = nil
@@ -297,7 +310,7 @@ function loadResources()
 	while (createBackgroundIfExists(section, section*100)) do
 		section = section + 1
 	end
-	
+
 	-- create named backgrounds
 	for index, value in ipairs(named_backgrounds) do
 		createBackgroundIfExists(value, string.gsub(value, "_", "-"))

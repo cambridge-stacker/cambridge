@@ -20,34 +20,6 @@ function deepcopy(t)
 	return target
 end
 
--- returns infinite-layer deep copy of t, in a way that allows multiple reference
----@return any
-function refdeepcopy(t, ref)
-	print(type(t))
-	if type(t) ~= "table" then return t end
-	ref = ref or {[t] = t}
-	if t == ref[t] then return ref[t] end
-	local target = {}
-	for k, v in next, t do
-		local new_key, new_value
-		if not ref[k] then
-			new_key = refdeepcopy(k)
-			ref[k] = new_key
-		else
-			new_key = ref[k]
-		end
-		if not ref[v] then
-			new_value = refdeepcopy(v)
-			ref[v] = new_value
-		else
-			new_value = ref[v]
-		end
-		target[new_key] = new_value
-	end
-	setmetatable(target, refdeepcopy(getmetatable(t)))
-	return target
-end
-
 ---@param tbl table
 function strTrueValues(tbl)
 	-- returns a concatenation of all the keys in tbl with value true, separated with spaces
@@ -197,7 +169,6 @@ function clamp(x, min, max)
 	return x < min and min or (x > max and max or x)
 end
 
---#region Tetro48's code
 
 ---@param image love.Image
 ---@param origin_x integer
@@ -279,6 +250,23 @@ function copyDirectoryRecursively(source_directory, destination_directory, overr
 	end
 end
 
+---@param tbl table
+---@param key_check any
+---@return table
+function recursionStringValueExtract(tbl, key_check)
+	local result = {}
+	for key, value in pairs(tbl) do
+		if type(value) == "table" and (key_check == nil or value[key_check]) then
+			local recursion_result = recursionStringValueExtract(value, key_check)
+			for k2, v2 in pairs(recursion_result) do
+				table.insert(result, v2)
+			end
+		elseif tostring(value) == "Object" then
+			table.insert(result, value)
+		end
+	end
+	return result
+end
 -- For when you need to convert given coordinate to where it'd be in scaled 640x480 equivalent.
 ---@param x number
 ---@param y number
@@ -340,6 +328,54 @@ function interpolateNumber(input, destination)
 	return input
 end
 
+---note: if you input just a string here, it'll output an input. it ignores tables within input table
+---@param text table|string
+local function getStringFromTable(text)
+	if type(text) == "string" then
+		return text
+	end
+	local str_out = ""
+	for _, value in ipairs(text) do
+		if type(value) == "string" then
+			str_out = str_out .. value
+		end
+	end
+	return str_out
+end
+
+---Strings with newlines are not recommended
+---@param text string|table
+---@param x number
+---@param y number
+---@param limit number
+---@param align "center"|"justify"|"left"|"right"
+function drawWrappingText(text, x, y, limit, align, ...)
+	local cur_font = love.graphics.getFont()
+	local text_str = getStringFromTable(text)
+	local string_width = cur_font:getWidth(text_str)
+	local offset_x = 0
+	if string_width > limit then
+		local new_canvas = love.graphics.newCanvas(limit, cur_font:getHeight())
+		local max_offset = string_width - limit + 4
+		offset_x = (0.5 + clamp(math.sin(love.timer.getTime() / (1 + max_offset / 250)) * 2, -1, 1) / 2) * max_offset
+		love.graphics.push("all")
+		love.graphics.origin()
+		love.graphics.setLineWidth(2)
+		love.graphics.setCanvas(new_canvas)
+		love.graphics.printf(text, -offset_x, 0, math.max(string_width, limit), align)
+		if offset_x > 0 then
+			love.graphics.line(1, 0, 1, cur_font:getHeight())
+		end
+		if offset_x < max_offset then
+			love.graphics.line(limit - 1, 0, limit - 1, cur_font:getHeight())
+		end
+		love.graphics.pop()
+		love.graphics.draw(new_canvas, x, y, ...)
+		new_canvas:release()
+	else
+		love.graphics.printf(text, x, y, limit, align, ...)
+	end
+end
 
 ---@param input number
 ---@param edge_distance number
@@ -352,9 +388,38 @@ function fadeoutAtEdges(input, edge_distance, edge_width)
 	end
 	return 1
 end
+function toFormattedValue(value)
+	
+	if type(value) == "table" and value.digits and value.sign then
+		local num = ""
+		if value.sign == "-" then
+			num = "-"
+		end
+		for id, digit in pairs(value.digits) do
+			if not value.dense or id == 1 then
+				num = num .. math.floor(digit) -- lazy way of getting rid of .0$
+			else
+				num = num .. string.format("%07d", digit)
+			end
+		end
+		return num
+	end
+	return value
+end
+
+---@param str string
+function stringWrapByLength(str, len)
+	local new_str = ""
+	if #str > len then
+		for i = 1, math.ceil(#str / len) do
+			new_str = new_str .. str:sub((i-1)*len+1, i*len+1).."\n"
+		end
+	else
+		return str
+	end
+	return new_str
+end
 
 --alias functions
 interpolatePos = interpolateNumber
 getScaledPos = getScaledDimensions
-
---#endregion

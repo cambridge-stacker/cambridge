@@ -19,6 +19,8 @@ function CreditsScene:new()
             title = "Game Developers",
             "Oshisaure",
             "Joe Zeng",
+            "MillaBasset",
+            "Tetro48",
         },
         {
             title = "Project Heads",
@@ -37,12 +39,6 @@ function CreditsScene:new()
             "MrZ - Techmino",
             "Phoenix Flare - Master of Blocks",
             "RayRay26 - Spirit Drop",
-            "Rin - Puzzle Trial",
-            "sinefuse - stackfuse"
-        },
-        {
-            title = "Flooding Edge Maintainer",
-            "Tetro48"
         },
         {
             title = "Special Thanks",
@@ -85,7 +81,6 @@ function CreditsScene:new()
             "switchpalacecorner",
             "terpyderp",
             "Tetrian22",
-            "Tetro48",
             "ThatCookie",
             "TimmSkiller",
             "Trixciel",
@@ -148,8 +143,8 @@ function CreditsScene:render()
 
     love.graphics.setFont(font_3x5_4)
     love.graphics.printf("Cambridge Credits", text_x, 500 - offset, 320, align)
-    love.graphics.printf("THANK YOU\nFOR PLAYING!", text_x, math.max(self.final_y - offset, 240), 320, align)
-    love.graphics.printf("- Milla", text_x, math.max(self.final_y + 80 - offset, 320), 320, align)
+    love.graphics.setFont(font_3x5_3)
+    love.graphics.printf("THANK YOU FOR PLAYING!", text_x, math.max(self.final_y - offset, 240), 320, align)
 
     for index, block in ipairs(self.credit_blocks) do
         love.graphics.setFont(font_3x5_3)
@@ -159,20 +154,25 @@ function CreditsScene:render()
             love.graphics.printf(value, text_x, block.y + 30 + key * 18 - offset, 320, align)
         end
     end
+    love.graphics.print(("Credit time: %.2fs / %.2fs, %dx"):format((self.time / (self.final_y / self.music_duration)) / 60, (self.final_y + ((self.final_y / self.music_duration) * 120)) / (self.final_y / self.music_duration) / 60, self.scroll_speed), 0, 460)
 end
 
 function CreditsScene:onInputPress(e)
-    if e.type == "mouse" and e.button == 1 then
-        scene = TitleScene()
-        pitchBGM(1)
-        switchBGM(nil)
+    if e.type == "mouse" then
+        if e.button == 1 then
+            self.scroll_speed = self.hold_speed
+            pitchBGM(self.hold_speed)
+        elseif e.button == 2 then
+            scene = TitleScene()
+            pitchBGM(1)
+            switchBGM(nil)
+        end
     end
     if e.scancode == "space" then
         self.scroll_speed = self.hold_speed
         pitchBGM(self.hold_speed)
     end
-    if e.input == "menu_decide" or e.scancode == "return" or
-       e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
+    if e.input == "menu_decide" or e.input == "menu_back" then
         scene = TitleScene()
         pitchBGM(1)
         switchBGM(nil)
@@ -180,7 +180,7 @@ function CreditsScene:onInputPress(e)
 end
 
 function CreditsScene:onInputRelease(e)
-    if e.scancode == "space" then
+    if e.scancode == "space" or e.type == "mouse" and e.button == 1 then
         self.scroll_speed = 1
         pitchBGM(1)
     end

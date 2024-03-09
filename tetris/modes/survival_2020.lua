@@ -44,7 +44,7 @@ end
 function Survival2020Game:getLineARE()
 	return self:getARE()
 end
- 
+
 function Survival2020Game:getDasLimit()
 		if self.level < 200 then return 9
 	elseif self.level < 500 then return 7

@@ -8,11 +8,11 @@ function ResourcePackScene:new()
 	self.prev_scene = scene
 	self.valid_resource_packs = {}
 	self.resource_pack_index = {}
-    DiscordRPC:update({
-        details = "In settings",
-        state = "Choosing resource packs",
-        largeImageKey = "settings-input"
-    })
+	DiscordRPC:update({
+		details = "In settings",
+		state = "Choosing resource packs",
+		largeImageKey = "settings-input"
+	})
 	if not love.filesystem.getInfo("resourcepacks", "directory") then
 		love.filesystem.createDirectory("resourcepacks")
 	end
@@ -156,14 +156,14 @@ function ResourcePackScene:render()
 			-(self.left_menu_height + 140) + 40 * key,
 			140,
 			40))
-		love.graphics.printf(value, 40, 60 - self.left_menu_height + 40 * key, 240, "left")
+		drawWrappingText(value, 40, 60 - self.left_menu_height + 40 * key, 240, "left")
 	end
 	for key, value in pairs(self.selected_resource_packs) do
 		love.graphics.setColor(1, 1, 1, fadeoutAtEdges(
 			-(self.right_menu_height + 140) + 40 * key,
 			140,
 			40))
-		love.graphics.printf(value, 360, 60 - self.right_menu_height + 40 * key, 240, "left")
+		drawWrappingText(value, 360, 60 - self.right_menu_height + 40 * key, 240, "left")
 	end
 
 	local mouse_x, mouse_y = getScaledDimensions(love.mouse.getPosition())
@@ -236,6 +236,19 @@ function ResourcePackScene:swapSelectedPack(old_index, new_index)
 	self:refreshPackSelection()
 end
 
+function ResourcePackScene:exitScene()
+	if equals(self.prev_resource_packs_applied, config.resource_packs_applied) then
+		playSE("menu_cancel")
+	else
+		playSE("mode_decide")
+	end
+	saveConfig()
+	loadResources()
+	--unloading modules is kinda necessary
+	unloadModules()
+	scene = self.prev_scene
+end
+
 function ResourcePackScene:onInputPress(e)
 	if e.type == "mouse" then
 		self.mouse_control = true
@@ -244,14 +257,7 @@ function ResourcePackScene:onInputPress(e)
 			love.system.openURL("file://" .. love.filesystem.getSaveDirectory() .. "/resourcepacks/")
 		end
 		if cursorHoverArea(400, 400, 160, 30) then
-			if equals(self.prev_resource_packs_applied, config.resource_packs_applied) then
-				playSE("menu_cancel")
-			else
-				playSE("mode_decide")
-			end
-			saveConfig()
-			loadResources()
-			scene = self.prev_scene
+			self:exitScene()
 		end
 		if cursorHoverArea(40, 60, 240, 320) then
 			local resource_pack_index = math.floor((e.y + self.left_menu_height - 60) / 40)
@@ -291,7 +297,7 @@ function ResourcePackScene:onInputPress(e)
 		if cursorHoverArea(360, 60, 240, 300) and self.selected_resource_packs_count > 7 then
 			self.right_menu_scrollbar.value = self.right_menu_scrollbar.value + (e.y / self.unselected_resource_packs_count)
 		end
-	else
+	elseif e.type ~= "mouse_move" then
 		self.mouse_control = false
 	end
 	if e.input == "hold" then
@@ -316,12 +322,12 @@ function ResourcePackScene:onInputPress(e)
 		dividend = 1
 	end
 	local prev_right_selection_index = self.right_selection_index
-	if e.input == "up" or e.input == "down" then
+	if e.input == "menu_up" or e.input == "menu_down" then
 		if self.selection_type == 0 then
 			self.selection_type = 1
 			return
 		end
-		local inc_or_dec = (e.input == "down" and 1 or -1)
+		local inc_or_dec = (e.input == "menu_down" and 1 or -1)
 		if self.selection_type == 1 then
 			if self.left_selection_index + inc_or_dec > dividend then
 				self.selection_type = 3
@@ -334,11 +340,11 @@ function ResourcePackScene:onInputPress(e)
 				return
 			end
 			self.right_selection_index = math.max(self.right_selection_index + inc_or_dec, 1)
-		elseif self.selection_type > 2 and e.input == "up" then
+		elseif self.selection_type > 2 and e.input == "menu_up" then
 			self.selection_type = self.selection_type - 2
 		end
 	end
-	if e.input == "left" then
+	if e.input == "menu_left" then
 		if self.selection_type == 0 then
 			self.selection_type = 1
 			return
@@ -347,7 +353,7 @@ function ResourcePackScene:onInputPress(e)
 			self.selection_type = self.selection_type - 1
 		end
 	end
-	if e.input == "right" then
+	if e.input == "menu_right" then
 		if self.selection_type == 0 then
 			self.selection_type = 1
 			return
@@ -365,14 +371,7 @@ function ResourcePackScene:onInputPress(e)
 		self.selection_type = Mod1(self.selection_type + 1, 4)
 	end
 	if e.scancode == "escape" or e.input == "menu_back" or (self.selection_type == 4 and e.input == "menu_decide") then
-		if equals(self.prev_resource_packs_applied, config.resource_packs_applied) then
-			playSE("menu_cancel")
-		else
-			playSE("mode_decide")
-		end
-		saveConfig()
-		loadResources()
-		scene = self.prev_scene
+		self:exitScene()
 	end
 end
 

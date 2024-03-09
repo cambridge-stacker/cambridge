@@ -13,8 +13,9 @@ local loading_replays
 
 function ReplaySelectScene:new()
 	-- fully reload custom modules
-	initModules(true)
-	
+	unloadModules()
+	initModules()
+
 	self.replay_count = #(love.filesystem.getDirectoryItems("replays"))
 	if not loaded_replays and not loading_replays then
 		loading_replays = true
@@ -50,32 +51,11 @@ function ReplaySelectScene:new()
 	})
 end
 
-local function popFromChannel(channel_name)
-	local load_from = love.thread.getChannel(channel_name):pop()
-	if load_from then
-		return load_from
-	end
-end
-
-local function toFormattedValue(value)
-	if type(value) == "table" and value.digits and value.sign then
-		local num = ""
-		if value.sign == "-" then
-			num = "-"
-		end
-		for _, digit in pairs(value.digits) do
-			num = num .. math.floor(digit) -- lazy way of getting rid of .0$
-		end
-		return num
-	end
-	return value
-end
-
 function insertReplay(replay)
 	for key, value in pairs(replay) do
 		replay[key] = toFormattedValue(value)
 	end
-	if replay.highscore_data then 
+	if replay.highscore_data then
 		for key, value in pairs(replay.highscore_data) do
 			replay.highscore_data[key] = toFormattedValue(value)
 		end
@@ -109,7 +89,7 @@ end
 function ReplaySelectScene:update()
 	if not loaded_replays then
 		self.state_string = love.thread.getChannel('load_state'):peek()
-		local replay = popFromChannel('replay')
+		local replay = love.thread.getChannel('replay'):pop()
 		local load = love.thread.getChannel( 'loaded_replays' ):pop()
 		while replay do
 			replays_loaded = replays_loaded + 1
@@ -119,7 +99,7 @@ function ReplaySelectScene:update()
 				table.insert(replay_tree[dict_ref[mode_name] ], #replays)
 			end
 			table.insert(replay_tree[1], #replays)
-			replay = popFromChannel('replay')
+			replay = love.thread.getChannel('replay'):pop()
 		end
 		if load then
 			loaded_replays = true
@@ -249,7 +229,7 @@ function ReplaySelectScene:render()
 			if(idx >= self.height_offset/20-10 and idx <= self.height_offset/20+10) then
 				local b = cursorHighlight(0, (260 - self.height_offset) + 20 * idx, 640, 20)
 				love.graphics.setColor(1,1,b,fadeoutAtEdges((-self.height_offset) + 20 * idx, 180, 20))
-				love.graphics.printf(branch.name, 6, (260 - self.height_offset) + 20 * idx, 640, "left")	
+				love.graphics.printf(branch.name, 6, (260 - self.height_offset) + 20 * idx, 640, "left")
 			end
 		end
 	elseif self.chosen_replay then
@@ -278,7 +258,14 @@ function ReplaySelectScene:render()
 					version_text_color = {1, 0, 0, 1}
 				end
 				love.graphics.setFont(font_3x5_2)
-				love.graphics.printf({"Cambridge version for this replay: ", version_text_color, replay.cambridge_version}, 0, 190, 640, "center")
+				love.graphics.printf({"Cambridge version for this replay: ", version_text_color, replay.cambridge_version}, 0, 160 + idx * 20, 640, "center")
+			end
+			if replay.ruleset_override then
+				idx = idx + 1
+				love.graphics.setFont(font_3x5_2)
+				love.graphics.setColor(1, 1, 0, 1)
+				love.graphics.printf("This mode overrides the ruleset.", 0, 160 + idx * 20, 640, "center")
+				love.graphics.setColor(1, 1, 1, 1)
 			end
 			if replay.pause_count and replay.pause_time then
 				idx = idx + 1.5
@@ -287,28 +274,11 @@ function ReplaySelectScene:render()
 			end
 			if replay.sha256_table then
 				if config.visualsettings.debug_level > 2 then
-					idx = idx + 2
-					love.graphics.setFont(font_3x5_2)
-					love.graphics.printf(("SHA256 replay checksums:\n   Mode: %s\nRuleset: %s"):format(replay.sha256_table.mode, replay.sha256_table.ruleset), 0, 140 + idx * 20, 640, "center")
-				end
-				if replay.sha256_table.mode ~= self.replay_sha_table.mode then
-					idx = idx + 1
-					love.graphics.setColor(1, 0, 0)
-					love.graphics.printf("SHA256 checksum for mode doesn't match!", 0, 170 + idx * 20, 640, "center")
 					idx = idx + 1
 					love.graphics.setFont(font_3x5)
-					love.graphics.printf(("Replay: %s\nMode:   %s"):format(replay.sha256_table.mode, self.replay_sha_table.mode), 0, 170 + idx * 20, 640, "center")
-					love.graphics.setColor(1, 1, 1)
-				end
-				if replay.sha256_table.ruleset ~= self.replay_sha_table.ruleset then
-					idx = idx + 2
-					love.graphics.setColor(1, 0, 0)
-					love.graphics.setFont(font_3x5_2)
-					love.graphics.printf("SHA256 checksum for ruleset doesn't match!", 0, 170 + idx * 20, 640, "center")
-					idx = idx + 1
-					love.graphics.setFont(font_3x5)
-					love.graphics.printf(("Replay: %s\nRuleset:%s"):format(replay.sha256_table.ruleset, self.replay_sha_table.ruleset), 0, 170 + idx * 20, 640, "center")
-					love.graphics.setColor(1, 1, 1)
+					love.graphics.printf(("SHA256 replay hashes:\n   Mode: %s\nRuleset: %s"):format(replay.sha256_table.mode, replay.sha256_table.ruleset), 0, 160 + idx * 20, 640, "center")
+					idx = idx + 1.5
+					love.graphics.printf(("SHA256 comparison hashes:\n   Mode: %s\nRuleset: %s"):format(self.replay_sha_table.mode, self.replay_sha_table.ruleset), 0, 160 + idx * 20, 640, "center")
 				end
 			end
 			if replay.highscore_data then
@@ -347,9 +317,12 @@ function ReplaySelectScene:render()
 				local replay = replays[replay_idx]
 				local display_string
 				if replay_tree[self.menu_state.submenu].name == "All" then
-					display_string = os.date("%c", replay["timestamp"]).." - ".. replay["mode"].." - "..replay["ruleset"]
+					display_string = os.date("%c", replay["timestamp"]).." - ".. replay["mode"]
 				else
-					display_string = os.date("%c", replay["timestamp"]).." - "..replay["ruleset"]
+					display_string = os.date("%c", replay["timestamp"])
+				end
+				if not replay.ruleset_override then
+					display_string = display_string.." - "..replay["ruleset"]
 				end
 				if replay["level"] ~= nil then
 					display_string = display_string.." - Level: "..replay["level"]
@@ -357,7 +330,7 @@ function ReplaySelectScene:render()
 				if replay["timer"] ~= nil then
 					display_string = display_string.." - Time: "..formatTime(replay["timer"])
 				end
-				if #display_string > 78 then
+				if #display_string > 78 and idx ~= self.menu_state.replay then
 					display_string = display_string:sub(1, 75) .. "..."
 				end
 				local b, g = cursorHighlight(0, (260 - self.height_offset) + 20 * idx, 640, 20), 1
@@ -370,24 +343,10 @@ function ReplaySelectScene:render()
 					b = 0
 				end
 				love.graphics.setColor(1,g,b,fadeoutAtEdges((-self.height_offset) + 20 * idx, 180, 20))
-				love.graphics.printf(display_string, 6, (260 - self.height_offset) + 20 * idx, 640, "left")
+				drawWrappingText(display_string, 6, (260 - self.height_offset) + 20 * idx, 628, "left")
 			end
 		end
 	end
-end
-local function recursionStringValueExtract(tbl, key_check)
-	local result = {}
-	for key, value in pairs(tbl) do
-		if type(value) == "table" and (key_check == nil or value[key_check]) then
-			local recursion_result = recursionStringValueExtract(value, key_check)
-			for k2, v2 in pairs(recursion_result) do
-				table.insert(result, v2)
-			end
-		elseif tostring(value) == "Object" then
-			table.insert(result, value)
-		end
-	end
-	return result
 end
 
 function ReplaySelectScene:startReplay()
@@ -430,13 +389,14 @@ function ReplaySelectScene:startReplay()
 			break
 		end
 	end
-	if mode == nil or rules == nil then
+	if mode == nil or (rules == nil and not replays[pointer].ruleset_override) then
 		self.display_error = true
 		return
 	end
 
 	if replays[pointer]["highscore_data"] and not self.chosen_replay then
 		self.chosen_replay = true
+		self.auto_menu_offset = 0
 		self.replay_sha_table = {mode = sha2.sha256(binser.serialize(mode)), ruleset = sha2.sha256(binser.serialize(rules))}
 		playSE("main_decide")
 		self.das_down = nil
@@ -503,7 +463,7 @@ function ReplaySelectScene:onInputPress(e)
 			self.chosen_replay = false
 		end
 	elseif not loaded_replays then
-		if e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
+		if e.input == "menu_back" then
 			playSE("menu_cancel")
 			scene = TitleScene()
 		end
@@ -511,37 +471,37 @@ function ReplaySelectScene:onInputPress(e)
 		if e.y ~= 0 then
 			self:changeOption(-e.y)
 		end
-	elseif e.input == "menu_decide" or e.scancode == "return" then
+	elseif e.input == "menu_decide" then
 		self:startReplay()
 	elseif self.chosen_replay then
-		if e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
+		if e.input == "menu_back" then
 			self.chosen_replay = false
 		end
-	elseif e.input == "up" or e.scancode == "up" then
+	elseif e.input == "menu_up" then
 		self:changeOption(-1)
 		self.das_up = true
 		self.das_down = nil
 		self.das_left = nil
 		self.das_right = nil
-	elseif e.input == "down" or e.scancode == "down" then
+	elseif e.input == "menu_down" then
 		self:changeOption(1)
 		self.das_down = true
 		self.das_up = nil
 		self.das_left = nil
 		self.das_right = nil
-	elseif e.input == "left" or e.scancode == "left" then
+	elseif e.input == "menu_left" then
 		self:changeOption(-9)
 		self.das_left = true
 		self.das_right = nil
 		self.das_up = nil
 		self.das_down = nil
-	elseif e.input == "right" or e.scancode == "right" then
+	elseif e.input == "menu_right" then
 		self:changeOption(9)
 		self.das_right = true
 		self.das_left = nil
 		self.das_up = nil
 		self.das_down = nil
-	elseif e.input == "menu_back" or e.scancode == "delete" or e.scancode == "backspace" then
+	elseif e.input == "menu_back" then
 		playSE("menu_cancel")
 		if self.menu_state.submenu ~= 0 then
 			self.menu_state.submenu = 0
@@ -555,13 +515,13 @@ function ReplaySelectScene:onInputPress(e)
 end
 
 function ReplaySelectScene:onInputRelease(e)
-	if e.input == "up" or e.scancode == "up" then
+	if e.input == "menu_up" then
 		self.das_up = nil
-	elseif e.input == "down" or e.scancode == "down" then
+	elseif e.input == "menu_down" then
 		self.das_down = nil
-	elseif e.input == "right" or e.scancode == "right" then
+	elseif e.input == "menu_right" then
 		self.das_right = nil
-	elseif e.input == "left" or e.scancode == "left" then
+	elseif e.input == "menu_left" then
 		self.das_left = nil
 	end
 end

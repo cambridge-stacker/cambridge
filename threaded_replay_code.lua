@@ -32,7 +32,7 @@ replay_load_code = [[
 		local success, new_replay = pcall(
 			function() return binser.deserialize(data)[1] end
 		)
-		if new_replay == nil then
+		if new_replay == nil or not success then
 			love.filesystem.remove("replays/"..replay_file_list[i])
 			print ("The replay at replays/"..replay_file_list[i].." is corrupted or has no data, thus, deleted.")
 		else
@@ -47,7 +47,7 @@ replay_load_code = [[
 			love.thread.getChannel('replay'):push(new_replay)
 		end
 	end
-    love.thread.getChannel( 'replay_tree' ):push( replay_tree )
-    love.thread.getChannel( 'loaded_replays' ):push( true )
+	love.thread.getChannel( 'replay_tree' ):push( replay_tree )
+	love.thread.getChannel( 'loaded_replays' ):push( true )
 	print("Loaded replays.")
 ]]
