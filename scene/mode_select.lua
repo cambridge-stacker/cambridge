@@ -231,7 +231,8 @@ function ModeSelectScene:render()
 			local highlight = cursorHighlight(0, y, 320, 20)
 			if cursorHoverArea(0, y, 320, 20) and not mode.is_directory then
 				setTooltip(((mode.hash and "ID: ".. mode.hash .. "\n" or "") ..
-				(mode.tagline and "Desc.: " .. mode.tagline .. "\n" or "")):sub(1, -2))
+				(mode.tagline and "Desc.: " .. mode.tagline .. "\n" or "") ..
+				(mode.tags and "Tags: ".. table.concat(mode.tags, ", ") .. "\n" or "")):sub(1, -2))
 			end
 			local r = mode.is_tag and 0 or 1
 			if highlight < 0.5 then
@@ -260,7 +261,8 @@ function ModeSelectScene:render()
 			local highlight = cursorHighlight(320, y, 320, 20)
 			if cursorHoverArea(320, y, 320, 20) and not ruleset.is_directory then
 				setTooltip(((ruleset.hash and "ID: ".. ruleset.hash .. "\n" or "") ..
-				(ruleset.tagline and "Desc.: " .. ruleset.tagline .. "\n" or "")):sub(1, -2))
+				(ruleset.tagline and "Desc.: " .. ruleset.tagline .. "\n" or "") ..
+				(ruleset.tags and "Tags: ".. table.concat(ruleset.tags, ", ") .. "\n" or "")):sub(1, -2))
 			end
 			local r = ruleset.is_tag and 0 or 1
 			if highlight < 0.5 then
