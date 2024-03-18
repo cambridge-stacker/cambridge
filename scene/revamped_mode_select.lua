@@ -44,6 +44,7 @@ function ModeSelectScene:new()
 	self.auto_ruleset_offset = 0
 	self.start_frames, self.starting = 0, false
 	self.safety_frames = 0
+	self:refreshHighscores()
 	DiscordRPC:update({
 		details = "In menus",
 		state = "Chosen ??? and ???.",
@@ -168,8 +169,6 @@ function ModeSelectScene:render()
 	love.graphics.rectangle("fill", 260 + (ruleset_selected * 120) - self.menu_ruleset_x, 439, 120, 22)
 	love.graphics.setColor(1, 1, 1, 1)
 
-	local hash = ((self.game_mode_folder[mode_selected] or {}).hash or "not a value") .. "-" .. ((self.ruleset_folder[ruleset_selected] or {}).hash or "not a value")
-	local mode_highscore = highscores[hash]
 
 	if 	self.game_mode_folder[self.menu_state.mode]
 	and not self.game_mode_folder[self.menu_state.mode].is_directory then
@@ -177,22 +176,18 @@ function ModeSelectScene:render()
 			"Tagline: "..(self.game_mode_folder[mode_selected].tagline or "Missing."),
 			 280, 40, 360, "left")
 	end
-	if mode_highscore ~= nil then
-		for key, slot in pairs(mode_highscore) do
+	if type(self.mode_highscore) == "table" then
+		for name, idx in pairs(self.highscore_index) do
+			drawWrappingText(tostring(name), 180 + idx * 100, 100, 100, "left")
+		end
+		for key, slot in pairs(self.mode_highscore) do
 			if key == 11 then
 				break
 			end
-			local idx = 1
 			for name, value in pairs(slot) do
-				if key == 1 then
-					love.graphics.printf(name, 180 + idx * 100, 100, 100)
-				end
+				local idx = self.highscore_index[name]
 				local formatted_string = toFormattedValue(value)
-				if love.graphics.getFont():getWidth(formatted_string) > 100 then
-					formatted_string = formatted_string:sub(1, 6-math.floor(math.log10(#formatted_string))).."...".."("..#formatted_string..")"
-				end
-				love.graphics.printf(formatted_string, 180 + idx * 100, 100 + 20 * key, 100)
-				idx = idx + 1
+				drawWrappingText(tostring(formatted_string), 180 + idx * 100, 100 + 20 * key, 100, "left")
 			end
 		end
 	end
@@ -238,7 +233,7 @@ function ModeSelectScene:render()
 			local highlight = cursorHighlight(
 				0,
 				(260 - self.menu_mode_y) + 20 * idx,
-				320,
+				260,
 				20)
 			local r = mode.is_tag and 0 or 1
 			if highlight < 0.5 then
@@ -494,11 +489,22 @@ function ModeSelectScene:onInputRelease(e)
 	end
 end
 
+function ModeSelectScene:refreshHighscores()
+	if self.game_mode_folder[self.menu_state.mode].hash == nil or self.ruleset_folder[self.menu_state.ruleset].hash == nil then
+		self.mode_highscore = nil
+		return
+	end
+	local hash = self.game_mode_folder[self.menu_state.mode].hash .. "-" .. self.ruleset_folder[self.menu_state.ruleset].hash
+	self.mode_highscore = highscores[hash]
+	self.highscore_index = HighscoresScene.getHighscoreIndexing(hash)
+end
+
 function ModeSelectScene:changeMode(rel)
 	local len = #self.game_mode_folder
 	if len == 0 then return end
 	playSE("cursor")
 	self.menu_state.mode = Mod1(self.menu_state.mode + rel, len)
+	self:refreshHighscores()
 end
 
 function ModeSelectScene:changeRuleset(rel)
@@ -506,6 +512,7 @@ function ModeSelectScene:changeRuleset(rel)
 	if len == 0 then return end
 	playSE("cursor_lr")
 	self.menu_state.ruleset = Mod1(self.menu_state.ruleset + rel, len)
+	self:refreshHighscores()
 end
 
 return ModeSelectScene
