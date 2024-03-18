@@ -85,6 +85,10 @@ function HighscoreScene:selectHash()
 	self.hash = self.hash_table[self.hash_id]
 	self.hash_highscore = highscores[self.hash]
 	self.highscore_index, self.index_count = self.getHighscoreIndexing(self.hash)
+	self.id_to_key = {}
+	for key, value in pairs(self.highscore_index) do
+		self.id_to_key[value] = key
+	end
 	for key, slot in pairs(self.hash_highscore) do
 		self.menu_slot_positions[key] = key * 20
 		self.interpolated_menu_slot_positions[key] = 0
@@ -210,7 +214,7 @@ function HighscoreScene:onInputPress(e)
 				if self.sorted_key_id ~= old_key_id then
 					self.sort_type = "<"
 				end
-				self:sortByKey(self.highscore_index[self.sorted_key_id])
+				self:sortByKey(self.id_to_key[self.sorted_key_id])
 			end
 		end
 		if cursorHoverArea(20, 40, 50, 30) then
@@ -222,7 +226,7 @@ function HighscoreScene:onInputPress(e)
 	elseif e.input == "menu_decide" and self.hash ~= nil and self.index_count > 0 then
 		playSE("cursor_lr")
 		self.sorted_key_id = self.selected_key_id
-		self:sortByKey(self.highscore_index[self.selected_key_id])
+		self:sortByKey(self.id_to_key[self.selected_key_id])
 	elseif e.input == "menu_up" then
 		self:changeOption(-1)
 		self.das_up = true
