@@ -214,11 +214,18 @@ misc_graphics_paths = {
 	icon = "res/img/cambridge_transparent"
 }
 
--- utility function to allow any size background to be used
--- this will stretch the background to 4:3 aspect ratio
+-- Utility function to allow any size background to be used.
+-- This will stretch the background to either 4:3, or screen's aspect ratio.
 function drawBackground(id)
 	local bg_object = fetchBackgroundAndLoop(id)
-	drawSizeIndependentImage(bg_object, 0, 0, 0, 640, 480)
+	local x, y, w, h = 0, 0, 640, 480
+	if config.visualsettings.stretch_background == 2 then
+		x, y = love.graphics.inverseTransformPoint(0, 0)
+		local window_width, window_height = love.graphics.getDimensions()
+		local scale_factor = math.min(window_width / 640, window_height / 480)
+		w, h = window_width / scale_factor, window_height / scale_factor
+	end
+	drawSizeIndependentImage(bg_object, x, y, 0, w, h)
 end
 
 
