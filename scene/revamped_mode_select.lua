@@ -286,13 +286,12 @@ function ModeSelectScene:indirectStartMode()
 	if self.ruleset_folder[self.menu_state.ruleset].is_directory then
 		playSE("main_decide")
 		self:menuGoForward("ruleset")
-		self.menu_state.ruleset = 1
+		self:refreshHighscores()
 		return
-	end
-	if self.game_mode_folder[self.menu_state.mode].is_directory then
+	elseif self.game_mode_folder[self.menu_state.mode].is_directory then
 		playSE("main_decide")
 		self:menuGoForward("mode")
-		self.menu_state.mode = 1
+		self:refreshHighscores()
 		return
 	end
 	playSE("mode_decide")
@@ -329,6 +328,7 @@ function ModeSelectScene:menuGoBack(menu_type)
 		self.ruleset_folder_selections[#self.ruleset_folder_selections] = nil
 		self.ruleset_folder = self.ruleset_folder_selections[#self.ruleset_folder_selections]
 	end
+	self.mode_highscore = nil
 end
 
 function ModeSelectScene:menuGoForward(menu_type, is_load)
@@ -339,11 +339,13 @@ function ModeSelectScene:menuGoForward(menu_type, is_load)
 		self.menu_mode_y = -20
 		self.game_mode_folder = self.game_mode_folder[self.menu_state.mode]
 		self.game_mode_selections[#self.game_mode_selections+1] = self.game_mode_folder
+		self.menu_state.mode = 1
 		return true
 	elseif menu_type == "ruleset" and type(self.ruleset_folder[self.menu_state.ruleset]) == "table" then
 		self.menu_ruleset_x = -20
 		self.ruleset_folder = self.ruleset_folder[self.menu_state.ruleset]
 		self.ruleset_folder_selections[#self.ruleset_folder_selections+1] = self.ruleset_folder
+		self.menu_state.ruleset = 1
 		return true
 	end
 end
@@ -428,7 +430,7 @@ function ModeSelectScene:onInputPress(e)
 					if self.game_mode_folder[self.menu_state.mode].is_directory then
 						playSE("main_decide")
 						self:menuGoForward("mode")
-						self.menu_state.mode = 1
+						self:refreshHighscores()
 						return
 					end
 					self:indirectStartMode()
@@ -439,7 +441,7 @@ function ModeSelectScene:onInputPress(e)
 			if self.auto_ruleset_offset == 0 and self.ruleset_folder[self.menu_state.ruleset].is_directory then
 				playSE("main_decide")
 				self:menuGoForward("ruleset")
-				self.menu_state.ruleset = 1
+				self:refreshHighscores()
 			end
 		end
 	elseif self.starting then return
