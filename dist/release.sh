@@ -16,6 +16,7 @@ mkdir dist/win32/libs/
 cp libs/discord-rpc_x64.dll dist/windows/libs/
 cp libs/discord-rpc_x86.dll dist/win32/libs/
 
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 # Install packages for appimagetool
 sudo add-apt-repository universe
 sudo apt install libfuse2
@@ -52,11 +53,19 @@ mkdir squashfs-root/bin/libs
 cp ../../libs/discord-rpc.so squashfs-root/bin/libs
 ./appimagetool-x86_64.AppImage squashfs-root cambridge_linux_experimental.AppImage
 rm -rf ./squashfs-root/
+fi
 
 # Zip releases
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 cd ../
+else
+cd ./dist
+fi
+
 (cd ./win32 && zip -r9 ../cambridge_windows_x86.zip * -x ./win32/love.exe)
 (cd ./windows && zip -r9 ../cambridge_windows_x64.zip * -x ./windows/love.exe)
 (cd ./win_aarch64 && zip -r9 ../cambridge_windows_aarch64_experimental.zip * -x love.exe lovec.exe)
 (cd ../ && zip -r9 ./dist/cambridge_other.zip SOURCES.md LICENSE.md cambridge.love libs/discord-rpc*)
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 (cd ./linux && zip -r9 ../cambridge_linux_x64.zip cambridge_linux_x64.AppImage SOURCES.md LICENSE.md && zip -r9 ../cambridge_linux_experimental.zip cambridge_linux_experimental.AppImage SOURCES.md LICENSE.md)
+fi
