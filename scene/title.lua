@@ -176,15 +176,6 @@ function TitleScene:changeOption(rel)
 end
 
 function TitleScene:onInputPress(e)
-	if e.type == "mouse" and menu_frames > 10 * #main_menu_screens then
-		if e.x > 40 and e.x < 160 then
-			if e.y > 300 and e.y < 300 + #main_menu_screens * 20 then
-				self.main_menu_state = math.floor((e.y - 280) / 20)
-				playSE("main_decide")
-				scene = main_menu_screens[self.main_menu_state]()
-			end
-		end
-	end
 	if not enter_pressed then
 		if e.scancode == "return" or e.scancode == "kpenter" or e.input == "menu_decide" then
 			enter_pressed = true
@@ -193,6 +184,15 @@ function TitleScene:onInputPress(e)
 			love.event.quit()
 		end
 		return
+	end
+	if e.type == "mouse" and menu_frames > 10 * #main_menu_screens then
+		if e.x > 40 and e.x < 160 then
+			if e.y > 300 and e.y < 300 + #main_menu_screens * 20 then
+				self.main_menu_state = math.floor((e.y - 280) / 20)
+				playSE("main_decide")
+				scene = main_menu_screens[self.main_menu_state]()
+			end
+		end
 	end
 	if e.input == "menu_decide" then
 		playSE("main_decide")
