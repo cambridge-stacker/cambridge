@@ -29,7 +29,7 @@ function Race40Game:new()
 			"GM"
    	}
 	self.upstacked = false
-	
+
 	self.lock_drop = true
 	self.lock_hard_drop = true
 	self.instant_hard_drop = true
@@ -126,14 +126,14 @@ function Race40Game:drawScoringInfo()
 	love.graphics.setColor(1, 1, 1, 1)
 
 	local text_x = config["side_next"] and 320 or 240
-	
+
 	love.graphics.setFont(font_3x5_2)
 	love.graphics.printf("NEXT", 64, 40, 40, "left")
 	love.graphics.printf("LINES", text_x, 320, 40, "left")
 	love.graphics.printf("line/min", text_x, 160, 80, "left")
 	love.graphics.printf("piece/sec", text_x, 220, 80, "left")
 	local sg = self.grid:checkSecretGrade()
-		if sg >= 7 or self.upstacked then 
+		if sg >= 7 or self.upstacked then
 			love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
 		end
 

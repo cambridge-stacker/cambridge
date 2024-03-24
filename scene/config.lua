@@ -13,7 +13,7 @@ function ConfigScene:render()
 end
 
 function ConfigScene:changeOption(rel)
-	local len = table.getn(main_menu_screens)
+	local len = #main_menu_screens
 	self.main_menu_state = (self.main_menu_state + len + rel - 1) % len + 1
 end
 

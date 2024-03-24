@@ -1,28 +1,28 @@
 font_3x5 = love.graphics.newImageFont(
-	"res/fonts/3x5.png",
+	"res/fonts/3x5-ext.png",
 	" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_" ..
-	"`abcdefghijklmnopqrstuvwxyz{|}~™",
+	"`abcdefghijklmnopqrstuvwxyz{|}~™АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя",
 	-1
 )
 
 font_3x5_2 = love.graphics.newImageFont(
-	"res/fonts/3x5_double.png",
+	"res/fonts/3x5_double-ext.png",
 	" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_" ..
-	"`abcdefghijklmnopqrstuvwxyz{|}~™",
+	"`abcdefghijklmnopqrstuvwxyz{|}~™АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя",
 	-2
 )
 
 font_3x5_3 = love.graphics.newImageFont(
-	"res/fonts/3x5_medium.png",
+	"res/fonts/3x5_medium-ext.png",
 	" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_" ..
-	"`abcdefghijklmnopqrstuvwxyz{|}~",
+	"`abcdefghijklmnopqrstuvwxyz{|}~™АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя",
 	-3
 )
 
 font_3x5_4 = love.graphics.newImageFont(
-	"res/fonts/3x5_large.png",
+	"res/fonts/3x5_large-ext.png",
 	" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_" ..
-	"`abcdefghijklmnopqrstuvwxyz{|}~",
+	"`abcdefghijklmnopqrstuvwxyz{|}~™АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя",
 	-4
 )
 
