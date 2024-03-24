@@ -172,17 +172,21 @@ function StickConfigScene:render()
 end
 
 function StickConfigScene:rebind(binding)
+	local input_type = configurable_inputs[self.input_state]
 	if binding == nil then
-		self.new_input[configurable_inputs[self.input_state]] = nil
-		self.set_inputs[configurable_inputs[self.input_state]] = "erased"
+		self.new_input[input_type] = nil
+		self.set_inputs[input_type] = "erased"
 		return true
 	end
-	if self:mutexCheck(configurable_inputs[self.input_state], binding) then
-		self.set_inputs[configurable_inputs[self.input_state]] = "<provide an other joystick input>"
+	if self:mutexCheck(input_type, binding) then
+		self.set_inputs[input_type] = "<provide an other joystick input>"
 		return false
 	end
-	self.set_inputs[configurable_inputs[self.input_state]] = self:formatBinding(binding)
-	self.new_input[configurable_inputs[self.input_state]] = binding
+	self.set_inputs[input_type] = self:formatBinding(binding)
+	self.new_input[input_type] = binding
+	if input_type == "left" or input_type == "right" or input_type == "up" or input_type == "down" then
+		self.new_input["menu_"..input_type] = binding
+	end
 	return true
 end
 
