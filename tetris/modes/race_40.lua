@@ -106,6 +106,11 @@ function Race40Game:drawGrid(ruleset)
 	if self.piece ~= nil then
 		self:drawGhostPiece(ruleset)
 	end
+	if self.lines >= self.line_goal - 20 and self.lines < self.line_goal then
+		local line_height = (self.lines - self.line_goal + 20) * 16 + 80
+		love.graphics.setColor(1, 0, 0, 1)
+		love.graphics.line(64, line_height, 224, line_height)
+	end
 end
 
 function Race40Game:getHighscoreData()
