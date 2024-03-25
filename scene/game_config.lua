@@ -82,7 +82,7 @@ function ConfigScene:render()
 	love.graphics.setColor(1, 1, 1, 1)
 	drawBackground("options_game")
 
-    love.graphics.setFont(font_8x11)
+	love.graphics.setFont(font_8x11)
 	love.graphics.print("GAME SETTINGS", 80, 43)
 	local b = cursorHighlight(20, 40, 50, 30)
 	love.graphics.setColor(1, 1, b, 1)

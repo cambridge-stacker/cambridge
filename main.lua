@@ -19,6 +19,7 @@ function love.load()
 	require "load.bgm"
 	require "load.save"
 	require "load.bigint"
+	require "load.modules"
 	require "load.version"
 	require "load.modpacks"
 	loadSave()
@@ -51,99 +52,6 @@ function love.load()
 	-- this is executed after the sound table is generated. why is that is unknown.
 	if config.secret then playSE("welcome") end
 end
----@param tbl table
----@param directory string
----@param blacklisted_string string
-function recursivelyLoadRequireFileTable(tbl, directory, blacklisted_string)
-	--LOVE 12.0 will warn about require strings having forward slashes in them if this is not done.
-	local require_string = string.gsub(directory, "/", ".")
-	local list = love.filesystem.getDirectoryItems(directory)
-	for index, name in ipairs(list) do
-		
-		if love.filesystem.getInfo(directory.."/"..name, "directory") then
-			tbl[#tbl+1] = {name = name, is_directory = true}
-			recursivelyLoadRequireFileTable(tbl[#tbl], directory.."/"..name, blacklisted_string)
-		end
-		if name ~= blacklisted_string and name:sub(-4) == ".lua" then
-			tbl[#tbl+1] = require(require_string.."."..name:sub(1, -5))
-			if not (type(tbl[#tbl]) == "table" and type(tbl[#tbl].__call) == "function") then
-				error("Add a return to "..directory.."/"..name..".\nMust be a table with __call function.", 1)
-			end
-		end
-	end
-end
-
-function unloadModules()
-	--module reload.
-	for key, value in pairs(package.loaded) do
-		if string.sub(key, 1, 7) == "tetris." then
-			package.loaded[key] = nil
-		end
-	end
-end
-
----@param init table
-function recursivelyTagModules(init, tbl, tag_tbl)
-	if not tbl then tbl = init end
-	if not tag_tbl then tag_tbl = {} end
-	for k, v in pairs(tbl) do
-		if type(v) == "table" and v.is_directory == true and not (v.is_tag) then
-			recursivelyTagModules(init, v, tag_tbl)
-		end
-		if type(v) == "table" and type(v.tags) == "table" then
-			for k2, v2 in pairs(v.tags) do
-				tag_tbl[v2] = tag_tbl[v2] or {name = v2, is_directory = true, is_tag = true}
-				table.insert(tag_tbl[v2], v)
-			end
-		end
-	end
-	if init ~= tbl then return end
-
-	local sorted_tags = {}
-	--#region Sort tag names
-	for key, value in pairs(tag_tbl) do
-		table.insert(sorted_tags, value)
-	end
-	local function padnum(d) return ("%03d%s"):format(#d, d) end
-	table.sort(sorted_tags, function(a,b)
-	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
-	--#endregion
-
-	for key, value in ipairs(sorted_tags) do
-		table.insert(init, value)
-	end
-end
-
-function initModules()
-	game_modes = {}
-	recursivelyLoadRequireFileTable(game_modes, "tetris/modes", "gamemode.lua")
-	-- mode_list = love.filesystem.getDirectoryItems("tetris/modes")
-	-- for i=1,#mode_list do
-	-- 	if(mode_list[i] ~= "gamemode.lua" and string.sub(mode_list[i], -4) == ".lua") then
-	-- 		game_modes[#game_modes+1] = require ("tetris.modes."..string.sub(mode_list[i],1,-5))
-	-- 	end
-	-- end
-	rulesets = {}
-	recursivelyLoadRequireFileTable(rulesets, "tetris/rulesets", "ruleset.lua")
-	-- rule_list = love.filesystem.getDirectoryItems("tetris/rulesets")
-	-- for i=1,#rule_list do
-	-- 	if(rule_list[i] ~= "ruleset.lua" and string.sub(rule_list[i], -4) == ".lua") then
-	-- 		rulesets[#rulesets+1] = require ("tetris.rulesets."..string.sub(rule_list[i],1,-5))
-	-- 	end
-	-- end
-
-	loadModpacks()
-
-	--sort mode/rule lists
-	local function padnum(d) return ("%03d%s"):format(#d, d) end
-	table.sort(game_modes, function(a,b)
-	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
-	table.sort(rulesets, function(a,b)
-	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
-	recursivelyTagModules(game_modes)
-	recursivelyTagModules(rulesets)
-end
-
 
 local io_thread
 
@@ -162,14 +70,10 @@ function loadReplayList()
 	end
 
 	io_thread = love.thread.newThread( replay_load_code )
-	local prev_names = {}
-	local idx = 1
 	for key, value in pairs(recursionStringValueExtract(game_modes, "is_directory")) do
-		if not table.contains(prev_names, value.name) then
-			idx = idx + 1
-			dict_ref[value.name] = idx
-			replay_tree[idx] = {name = value.name}
-			table.insert(prev_names, value.name)
+		if not dict_ref[value.name] then
+			dict_ref[value.name] = #replay_tree + 1
+			replay_tree[#replay_tree + 1] = {name = value.name}
 		end
 	end
 	io_thread:start()
@@ -204,42 +108,6 @@ local function screenshotFunction(image)
 	screenshot_images[#screenshot_images+1] = {image = love.graphics.newImage(image), time = 0, y_position = #screenshot_images * 260}
 end
 
-local function drawTASWatermark()
-	love.graphics.setFont(font_3x5_4)
-	love.graphics.setColor(1, 1, 1, 0.2)
-	love.graphics.printf(
-		"T A S", -300, 100, 150, "center", 0, 8, 8
-	)
-end
-
-local function drawWatermarks()
-	local is_TAS_used = false
-	if scene.replay then
-		if scene.replay["toolassisted"] == true then
-			is_TAS_used = true
-		end
-	end
-
-	if scene.game then
-		if scene.game.ineligible then
-			is_TAS_used = true
-		end
-	end
-
-	if TAS_mode then
-		if scene.title == "Game" or scene.title == "Replay" and not scene.replay["toolassisted"] == true then
-			is_TAS_used = true
-		end
-		love.graphics.setColor(1, 1, 1, love.timer.getTime() % 2 < 1 and 1 or 0)
-		love.graphics.setFont(font_3x5_3)
-		love.graphics.printf(
-			"TAS MODE ON", 240, 0, 160, "center"
-		)
-	end
-	if is_TAS_used then
-		drawTASWatermark()
-	end
-end
 local last_time = 0
 local function getDeltaTime()
 	local time = love.timer.getTime()
@@ -290,6 +158,7 @@ local function drawScreenshotPreviews()
 	end
 end
 
+--#region Error Handler
 local utf8 = require("utf8")
 
 local function error_printer(msg, layer)
@@ -457,6 +326,7 @@ function love.errorhandler(msg)
 	end
 
 end
+--#endregion
 
 function love.draw()
 	local avg_delta = getAvgDelta()
@@ -477,7 +347,13 @@ function love.draw()
 		
 	scene:render()
 
-	drawWatermarks()
+	if TAS_mode then
+		love.graphics.setColor(1, 1, 1, love.timer.getTime() % 2 < 1 and 1 or 0)
+		love.graphics.setFont(font_3x5_3)
+		love.graphics.printf(
+			"TAS MODE ON", 240, 0, 160, "center"
+		)
+	end
 
 	local bottom_right_corner_y_offset = 0
 	love.graphics.setFont(font_3x5_2)

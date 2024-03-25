@@ -131,8 +131,8 @@ end
 
 function SurvivalA2Game:getLetterGrade()
 		if self.level >= 999 then return "GM"
-	elseif self.level >  500 then return "M" 
-	elseif self.level == 500 and not self.clear then return "M" 
+	elseif self.level >  500 then return "M"
+	elseif self.level == 500 and not self.clear then return "M"
 	else return "" end
 end
 
@@ -145,7 +145,7 @@ function SurvivalA2Game:drawScoringInfo()
 	love.graphics.setColor(1, 1, 1, 1)
 
 	local text_x = config["side_next"] and 320 or 240
-	
+
 	love.graphics.setFont(font_3x5_2)
 	love.graphics.print(
 		self.das.direction .. " " ..
@@ -157,7 +157,7 @@ function SurvivalA2Game:drawScoringInfo()
 	love.graphics.printf("SCORE", text_x, 200, 40, "left")
 	love.graphics.printf("LEVEL", text_x, 320, 40, "left")
 	local sg = self.grid:checkSecretGrade()
-	if sg >= 5 then 
+	if sg >= 5 then
 		love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
 	end
 

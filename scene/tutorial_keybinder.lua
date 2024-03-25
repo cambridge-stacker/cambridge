@@ -92,24 +92,24 @@ local function newSetInputs()
 end
 
 function KeyConfigScene:new()
-    if (require("tetris.modes.marathon_a3") == nil) then
-        error("Missing mode: marathon_a3. It's required.")
-    end
-    if (require("tetris.rulesets.standard") == nil) then
-        error("Missing ruleset: standard. It's required.")
-    end
+	if (require("tetris.modes.marathon_a3") == nil) then
+		error("Missing mode: marathon_a3. It's required.")
+	end
+	if (require("tetris.rulesets.standard") == nil) then
+		error("Missing ruleset: standard. It's required.")
+	end
 	self.input_state = 1
-    self.visual_input_state = 1
+	self.visual_input_state = 1
 
 	self.set_inputs = newSetInputs()
 	self.new_input = {}
 
-    self.nested_scene = TitleScene()
+	self.nested_scene = TitleScene()
 
-    self.failed_input_assignment_time = 0
+	self.failed_input_assignment_time = 0
 
-    self.transition_time = 0
-    self.transitioned = true
+	self.transition_time = 0
+	self.transitioned = true
 
 	if not config.input then config.input = {} end
 
@@ -122,19 +122,19 @@ function KeyConfigScene:new()
 end
 
 function KeyConfigScene:update()
-    self.nested_scene:update()
+	self.nested_scene:update()
 	self.safety_frames = self.safety_frames - 1
-    self.failed_input_assignment_time = self.failed_input_assignment_time - 1
-    self.transition_time = self.transition_time + 0.066
-    if self.transition_time > 0 then
-        self.visual_input_state = self.input_state
-        if not self.transitioned then
-            self.transitioned = true
-            if self.input_state == 3 then
-                self.nested_scene = GameScene(require("tetris.modes.marathon_a3"), require("tetris.rulesets.standard_exp"), {})
-            end
-        end
-    end
+	self.failed_input_assignment_time = self.failed_input_assignment_time - 1
+	self.transition_time = self.transition_time + 0.066
+	if self.transition_time > 0 then
+		self.visual_input_state = self.input_state
+		if not self.transitioned then
+			self.transitioned = true
+			if self.input_state == 3 then
+				self.nested_scene = GameScene(require("tetris.modes.marathon_a3"), require("tetris.rulesets.standard_exp"), {})
+			end
+		end
+	end
 end
 
 function KeyConfigScene:render()
@@ -144,15 +144,15 @@ function KeyConfigScene:render()
 	-- 	0, 0, 0,
 	-- 	0.5, 0.5
 	-- )
-    self.nested_scene:render()
+	self.nested_scene:render()
 	love.graphics.setFont(font_3x5_4)
-    love.graphics.setColor(0, 0, 0, self.transitioned and 0 or (1 - math.min(1, math.abs(self.transition_time))))
-    love.graphics.rectangle("fill", 0, 0, 640, 480)
+	love.graphics.setColor(0, 0, 0, self.transitioned and 0 or (1 - math.min(1, math.abs(self.transition_time))))
+	love.graphics.rectangle("fill", 0, 0, 640, 480)
 
-    love.graphics.setColor(1, 1, 1)
-    
-    love.graphics.printf(self.visual_input_state > #configurable_inputs and "You've now configured." or self.failed_input_assignment_time > 0 and "Inaccessible key." or input_description[configurable_inputs[self.visual_input_state]], 
-    80, 200, 480, "center", 0, 1, math.min(1, math.abs(self.transition_time)))
+	love.graphics.setColor(1, 1, 1)
+
+	love.graphics.printf(self.visual_input_state > #configurable_inputs and "You've now configured." or self.failed_input_assignment_time > 0 and "Inaccessible key." or input_description[configurable_inputs[self.visual_input_state]],
+	80, 200, 480, "center", 0, 1, math.min(1, math.abs(self.transition_time)))
 end
 
 function KeyConfigScene:formatKey(key)
@@ -192,53 +192,53 @@ function KeyConfigScene:onInputPress(e)
 		-- function keys, and tab are reserved and can't be remapped
 		if self.input_state > #configurable_inputs then
 			if e.scancode == "return" then
-                if not config.input then config.input = {} end
-                config.input.keys = self.new_input
+				if not config.input then config.input = {} end
+				config.input.keys = self.new_input
 				saveConfig()
 				scene = config.visualsettings.mode_select_type == 2 and RevModeSelectScene() or ModeSelectScene()
 			end
 		elseif e.scancode == "tab" then
-            self.failed_input_assignment_time = 120
-            playSE("erase", "single")
-            return
+			self.failed_input_assignment_time = 120
+			playSE("erase", "single")
+			return
 		-- all other keys can be configured
 		elseif self:rebindKey(e.scancode) then
-            self.transition_time = -1
-            if self.input_state == 1 then
-                self.nested_scene = config.visualsettings.mode_select_type == 2 and RevModeSelectScene() or ModeSelectScene()
-                playSE("main_decide")
-            end
-            if self.input_state == 2 then
-                self.transitioned = false
-                self.transition_time = -3
-                self.nested_scene = TitleScene()
-            end
-            if self.input_state > 2 and self.input_state ~= 11 and self.input_state ~= 13 then
-                local input_copy = copy(e)
-                input_copy.input = configurable_inputs[self.input_state]
-                self.nested_scene:onInputPress(input_copy)
-            elseif self.input_state == 11 then
-                self.nested_scene = GameScene(require("tetris.modes.marathon_a3"), require("tetris.rulesets.standard"), {})
-            elseif self.input_state == 13 then
+			self.transition_time = -1
+			if self.input_state == 1 then
+				self.nested_scene = config.visualsettings.mode_select_type == 2 and RevModeSelectScene() or ModeSelectScene()
+				playSE("main_decide")
+			end
+			if self.input_state == 2 then
+				self.transitioned = false
+				self.transition_time = -3
+				self.nested_scene = TitleScene()
+			end
+			if self.input_state > 2 and self.input_state ~= 11 and self.input_state ~= 13 then
+				local input_copy = copy(e)
+				input_copy.input = configurable_inputs[self.input_state]
+				self.nested_scene:onInputPress(input_copy)
+			elseif self.input_state == 11 then
+				self.nested_scene = GameScene(require("tetris.modes.marathon_a3"), require("tetris.rulesets.standard"), {})
+			elseif self.input_state == 13 then
 				local keys = self.new_input
 				keys.menu_left = keys.left
 				keys.menu_right = keys.right
 				keys.menu_up = keys.up
 				keys.menu_down = keys.down
-                self.nested_scene = config.visualsettings.mode_select_type == 2 and RevModeSelectScene() or ModeSelectScene()
-            end
+				self.nested_scene = config.visualsettings.mode_select_type == 2 and RevModeSelectScene() or ModeSelectScene()
+			end
 			self.input_state = self.input_state + 1
 		else
-            self.failed_input_assignment_time = 120
+			self.failed_input_assignment_time = 120
 			playSE("erase", "single")
 		end
 	end
 end
 
 function KeyConfigScene:onInputRelease(e)
-    local input_copy = copy(e)
-    input_copy.input = configurable_inputs[self.input_state - 1]
-    self.nested_scene:onInputRelease(input_copy)
+	local input_copy = copy(e)
+	input_copy.input = configurable_inputs[self.input_state - 1]
+	self.nested_scene:onInputRelease(input_copy)
 end
 
 return KeyConfigScene

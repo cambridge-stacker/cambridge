@@ -25,7 +25,7 @@ function PhantomMania2Game:new()
 	self.hold_age = 0
 	self.queue_age = 0
 	self.roll_points = 0
-	
+
 	self.SGnames = {
 		"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
 		"M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9",
@@ -318,7 +318,7 @@ function PhantomMania2Game:drawScoringInfo()
 	love.graphics.printf("SCORE", text_x, 200, 40, "left")
 	love.graphics.printf("LEVEL", text_x, 320, 40, "left")
 	local sg = self.grid:checkSecretGrade()
-	if sg >= 5 then 
+	if sg >= 5 then
 		love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
 	end
 
@@ -338,7 +338,7 @@ function PhantomMania2Game:drawScoringInfo()
 	else
 		love.graphics.printf(math.floor(self.level / 100 + 1) * 100, text_x, 370, 50, "right")
 	end
-	
+
 	if sg >= 5 then
 		love.graphics.printf(self.SGnames[sg], 240, 450, 180, "left")
 	end

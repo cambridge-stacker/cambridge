@@ -60,6 +60,12 @@ ConfigScene.options = {
 		display_name = "Debug Level",
 		options = {"Off", "Min", "Max"},
 		description = "How much debug info do you want displayed?\nMin: Lua memory usage data\nMax: Memory usage, GPU stats data and 2 true hashes stored in replays"
+	},
+	{
+		config_name = "stretch_background",
+		display_name = "Stretch Background",
+		options = {"Off", "On"},
+		description = "Whether to fit the background image to 4:3 aspect ratio, or the aspect ratio of the game window"
 	}
 }
 local optioncount = #ConfigScene.options
@@ -79,7 +85,7 @@ function ConfigScene:render()
 	love.graphics.setColor(1, 1, 1, 1)
 	drawBackground("options_game")
 
-    love.graphics.setFont(font_8x11)
+	love.graphics.setFont(font_8x11)
 	love.graphics.print("VISUAL SETTINGS", 80, 43)
 	local b = cursorHighlight(20, 40, 50, 30)
 	love.graphics.setColor(1, 1, b, 1)
@@ -89,17 +95,17 @@ function ConfigScene:render()
 	love.graphics.print("(THIS WILL NOT BE STORED IN REPLAYS)", 80, 80)
 
 	love.graphics.setColor(1, 1, 1, 0.5)
-    love.graphics.rectangle("fill", 25, 98 + self.highlight * 20, 170, 22)
+	love.graphics.rectangle("fill", 25, 98 + self.highlight * 20, 170, 22)
 
 	love.graphics.setFont(font_3x5_2)
 	for i, option in ipairs(ConfigScene.options) do
-        love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.printf(option.display_name, 40, 100 + i * 20, 150, "left")
-        for j, setting in ipairs(option.options) do
-            local b = cursorHighlight(100 + 110 * j, 100 + i * 20,100,20)
-            love.graphics.setColor(1, 1, b, config.visualsettings[option.config_name] == j and 1 or 0.5)
-            love.graphics.printf(setting, 100 + 110 * j, 100 + i * 20, 100, "center")
-        end
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.printf(option.display_name, 40, 100 + i * 20, 150, "left")
+		for j, setting in ipairs(option.options) do
+			local b = cursorHighlight(100 + 110 * j, 100 + i * 20,100,20)
+			love.graphics.setColor(1, 1, b, config.visualsettings[option.config_name] == j and 1 or 0.5)
+			love.graphics.printf(setting, 100 + 110 * j, 100 + i * 20, 100, "center")
+		end
 	end
 	love.graphics.setColor(1, 1, 1, 1)
 	if self.options[self.highlight].description then
@@ -140,13 +146,13 @@ function ConfigScene:onInputPress(e)
 		playSE("cursor")
 		self.highlight = Mod1(self.highlight+1, optioncount)
 	elseif e.input == "menu_left" then
-        playSE("cursor_lr")
-        local option = ConfigScene.options[self.highlight]
-        config.visualsettings[option.config_name] = Mod1(config.visualsettings[option.config_name]-1, #option.options)
+		playSE("cursor_lr")
+		local option = ConfigScene.options[self.highlight]
+		config.visualsettings[option.config_name] = Mod1(config.visualsettings[option.config_name]-1, #option.options)
 	elseif e.input == "menu_right" then
-        playSE("cursor_lr")
-        local option = ConfigScene.options[self.highlight]
-        config.visualsettings[option.config_name] = Mod1(config.visualsettings[option.config_name]+1, #option.options)
+		playSE("cursor_lr")
+		local option = ConfigScene.options[self.highlight]
+		config.visualsettings[option.config_name] = Mod1(config.visualsettings[option.config_name]+1, #option.options)
 	elseif e.input == "menu_back" then
 		playSE("menu_cancel")
 		loadSave()

@@ -44,7 +44,7 @@ end
 function Survival2020Game:getLineARE()
 	return self:getARE()
 end
- 
+
 function Survival2020Game:getDasLimit()
 		if self.level < 200 then return 9
 	elseif self.level < 500 then return 7
@@ -222,6 +222,14 @@ local function getLetterGrade(grade)
 	end
 end
 
+function Survival2020Game:getEndOfSectionForSection(section)
+	if section == 21 then
+		return 2020
+	else
+		return section * 100
+	end
+end
+
 function Survival2020Game:drawScoringInfo()
 	Survival2020Game.super.drawScoringInfo(self)
 
@@ -244,7 +252,7 @@ function Survival2020Game:drawScoringInfo()
 	if self.clear then
 		love.graphics.printf(self.level, text_x, 370, 50, "right")
 	else
-		love.graphics.printf(math.floor(self.level / 100 + 1) * 100, text_x, 370, 50, "right")
+		love.graphics.printf(self:getEndOfSectionForSection(current_section), text_x, 370, 50, "right")
 	end
 end
 

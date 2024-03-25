@@ -50,7 +50,7 @@ function History6Rolls35PoolRandomizer:updateHistory(shape)
 
 	local highdrought
 	local highdroughtcount = 0
-	for k, v in pairs(self.droughts) do 
+	for k, v in pairs(self.droughts) do
 		if k == shape then
 			self.droughts[k] = 0
 		else

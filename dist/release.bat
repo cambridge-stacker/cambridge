@@ -1,5 +1,4 @@
 call package.bat
-cd ..\
 mkdir dist
 mkdir dist\windows
 mkdir dist\windows\libs
@@ -8,10 +7,10 @@ mkdir dist\win32\libs
 mkdir dist\other
 mkdir dist\other\libs
 
-copy /b dist\windows\love.exe+cambridge.love dist\windows\cambridge.exe
-copy /b dist\win32\love.exe+cambridge.love dist\win32\cambridge.exe
-copy /b dist\win_aarch64\love.exe+cambridge.love dist\win_aarch64\cambridge.exe
-copy /b cambridge.love dist\other\cambridge.love
+copy /b dist\windows\love.exe+dist\cambridge.love dist\windows\cambridge.exe
+copy /b dist\win32\love.exe+dist\cambridge.love dist\win32\cambridge.exe
+copy /b dist\win_aarch64\love.exe+dist\cambridge.love dist\win_aarch64\cambridge.exe
+copy /b dist\cambridge.love dist\other\cambridge.love
 
 copy libs\discord-rpc_x64.dll dist\windows\libs
 copy libs\discord-rpc_x86.dll dist\win32\libs

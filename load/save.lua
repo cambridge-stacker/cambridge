@@ -109,7 +109,7 @@ function initConfig()
 	if not config.master_volume then config.master_volume = 1 end
 	if not config.sfx_volume then config.sfx_volume = 0.5 end
 	if not config.bgm_volume then config.bgm_volume = 0.5 end
-	
+
 	if config.fullscreen == nil then config.fullscreen = false end
 	if config.secret == nil then config.secret = false end
 

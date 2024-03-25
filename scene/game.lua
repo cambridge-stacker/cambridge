@@ -75,6 +75,13 @@ function GameScene:render()
 			formatTime(self.game.pause_time)
 		), 0, 0, 635, "right")
 	end
+	if TAS_mode or self.game.ineligible then
+		love.graphics.setFont(font_3x5_4)
+		love.graphics.setColor(1, 1, 1, 0.2)
+		love.graphics.printf(
+			"T A S", -295, 100, 150, "center", 0, 8, 8
+		)
+	end
 end
 
 local movement_directions = {"left", "right", "down", "up"}

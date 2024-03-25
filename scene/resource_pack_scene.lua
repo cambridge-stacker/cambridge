@@ -8,11 +8,11 @@ function ResourcePackScene:new()
 	self.prev_scene = scene
 	self.valid_resource_packs = {}
 	self.resource_pack_index = {}
-    DiscordRPC:update({
-        details = "In settings",
-        state = "Choosing resource packs",
-        largeImageKey = "settings-input"
-    })
+	DiscordRPC:update({
+		details = "In settings",
+		state = "Choosing resource packs",
+		largeImageKey = "settings-input"
+	})
 	if not love.filesystem.getInfo("resourcepacks", "directory") then
 		love.filesystem.createDirectory("resourcepacks")
 	end
@@ -296,9 +296,9 @@ function ResourcePackScene:onInputPress(e)
 			self.left_menu_scrollbar.value = self.left_menu_scrollbar.value + (e.y / self.unselected_resource_packs_count)
 		end
 		if cursorHoverArea(360, 60, 240, 300) and self.selected_resource_packs_count > 7 then
-			self.right_menu_scrollbar.value = self.right_menu_scrollbar.value + (e.y / self.unselected_resource_packs_count)
+			self.right_menu_scrollbar.value = self.right_menu_scrollbar.value + (e.y / self.selected_resource_packs_count)
 		end
-	else
+	elseif e.type ~= "mouse_move" then
 		self.mouse_control = false
 	end
 	if e.input == "hold" then
