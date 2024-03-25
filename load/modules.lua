@@ -68,6 +68,8 @@ function initModules()
 	rulesets = {}
 	recursivelyLoadRequireFileTable(rulesets, "tetris/rulesets", "ruleset.lua")
 
+	loadModpacks()
+
 	--sort mode/rule lists
 	local function padnum(d) return ("%03d%s"):format(#d, d) end
 	table.sort(game_modes, function(a,b)
