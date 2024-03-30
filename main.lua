@@ -21,7 +21,6 @@ function love.load()
 	require "load.bigint"
 	require "load.modules"
 	require "load.version"
-	require "load.modpacks"
 	loadSave()
 	require "funcs"
 	require "scene"
