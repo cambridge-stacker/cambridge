@@ -638,13 +638,21 @@ end
 ---@param axis number
 ---@param value number
 function love.joystickaxis(joystick, axis, value)
-	local input_pressed = nil
 	local result_inputs = {}
+	local joystick_input_table = nil
+	local joystick_name = joystick:getName()
+	if config.input and config.input.joysticks and config.input.joysticks[joystick_name] then
+		joystick_input_table = config.input.joysticks[joystick_name]
+	end
 	if math.abs(value) >= 1 then
-		if config.input and config.input.joysticks and config.input.joysticks[joystick:getName()] then
-			result_inputs = multipleInputs(config.input.joysticks[joystick:getName()],"axes-"..axis.."-"..(value >= 1 and "positive" or "negative"))
+		if type(joystick_input_table) == "table" then
+			result_inputs = multipleInputs(joystick_input_table, "axes-"..axis.."-"..(value >= 1 and "positive" or "negative"))
 			for _, input in pairs(result_inputs) do
 				scene:onInputPress({input=input, type="joyaxis", name=joystick:getName(), axis=axis, value=value})
+			end
+			local opposite_direction_inputs = multipleInputs(joystick_input_table, "axes-"..axis.."-"..(value <= -1 and "positive" or "negative"))
+			for _, input in pairs(opposite_direction_inputs) do
+				scene:onInputRelease({input=input, type="joyaxis", name=joystick:getName(), axis=axis, value=value})
 			end
 			-- scene:onInputPress({input=input_pressed, type="joyaxis", name=joystick:getName(), axis=axis, value=value})
 		end
@@ -652,8 +660,8 @@ function love.joystickaxis(joystick, axis, value)
 			scene:onInputPress({type="joyaxis", name=joystick:getName(), axis=axis, value=value})
 		end
 	else
-		if config.input and config.input.joysticks and config.input.joysticks[joystick:getName()] then
-			for input_type, v in pairs(config.input.joysticks[joystick:getName()]) do
+		if type(joystick_input_table) == "table" then
+			for input_type, v in pairs(joystick_input_table) do
 				if "axes-"..axis.."-".."negative" == v then
 					table.insert(result_inputs, input_type)
 				end
@@ -662,11 +670,11 @@ function love.joystickaxis(joystick, axis, value)
 				end
 			end
 			for _, input in pairs(result_inputs) do
-				scene:onInputRelease({input=input, type="joyaxis", name=joystick:getName(), axis=axis, value=value})
+				scene:onInputRelease({input=input, type="joyaxis", name=joystick_name, axis=axis, value=value})
 			end
 		end
 		if #result_inputs == 0 then
-			scene:onInputRelease({type="joyaxis", name=joystick:getName(), axis=axis, value=value})
+			scene:onInputRelease({type="joyaxis", name=joystick_name, axis=axis, value=value})
 		end
 	end
 end
