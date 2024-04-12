@@ -195,7 +195,7 @@ function KeyConfigScene:onInputPress(e)
 				if not config.input then config.input = {} end
 				config.input.keys = self.new_input
 				saveConfig()
-				scene = config.visualsettings.mode_select_type == 2 and RevModeSelectScene() or ModeSelectScene()
+				scene = TitleScene.menu_screens[1]()
 			end
 		elseif e.scancode == "tab" then
 			self.failed_input_assignment_time = 120
@@ -205,7 +205,7 @@ function KeyConfigScene:onInputPress(e)
 		elseif self:rebindKey(e.scancode) then
 			self.transition_time = -1
 			if self.input_state == 1 then
-				self.nested_scene = config.visualsettings.mode_select_type == 2 and RevModeSelectScene() or ModeSelectScene()
+				self.nested_scene = TitleScene.menu_screens[1]()
 				playSE("main_decide")
 			end
 			if self.input_state == 2 then
@@ -225,7 +225,7 @@ function KeyConfigScene:onInputPress(e)
 				keys.menu_right = keys.right
 				keys.menu_up = keys.up
 				keys.menu_down = keys.down
-				self.nested_scene = config.visualsettings.mode_select_type == 2 and RevModeSelectScene() or ModeSelectScene()
+				self.nested_scene = TitleScene.menu_screens[1]()
 			end
 			self.input_state = self.input_state + 1
 		else
