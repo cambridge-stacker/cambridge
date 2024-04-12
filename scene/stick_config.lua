@@ -110,8 +110,7 @@ function StickConfigScene:formatBinding(binding)
 	local substring = binding:sub(binding:find("-") + 1, #binding)
 	local mid_substring = binding:sub(1, binding:find("-") - 1)
 	if mid_substring == "buttons" then
-		return "Button " ..
-		substring
+		return "Button " .. substring
 	elseif mid_substring == "hat" then
 		local secondmid_substring = substring:sub(1, substring:find("-") - 1)
 		local second_substring = substring:sub(substring:find("-") + 1)
@@ -120,7 +119,7 @@ function StickConfigScene:formatBinding(binding)
 	elseif mid_substring == "axes" then
 		local second_substring = substring:sub(1, substring:find("-") - 1)
 		return "Axis " ..
-		(substring == "positive" and "+" or "-") .. second_substring
+		(substring:sub(substring:find("-") + 1) == "positive" and "+" or "-") .. second_substring
 	end
 	return "Missing"
 end
