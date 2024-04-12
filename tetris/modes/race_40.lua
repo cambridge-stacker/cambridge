@@ -115,7 +115,7 @@ end
 
 function Race40Game:getHighscoreData()
 	return {
-		level = self.level,
+		lines = self.lines,
 		frames = self.frames,
 	}
 end
