@@ -57,12 +57,13 @@ function HighscoreScene:update()
 	end
 end
 
+---@return table, number
 function HighscoreScene.getHighscoreIndexing(hash)
 	local count = 0
 	local highscore_index = {}
 	local highscore_reference = highscores[hash]
 	if highscore_reference == nil then
-		return nil, 0
+		return {}, 0
 	end
 	for key, value in pairs(highscore_reference) do
 		for k2, v2 in pairs(value) do
@@ -75,6 +76,44 @@ function HighscoreScene.getHighscoreIndexing(hash)
 	return highscore_index, count
 end
 
+---@param hash string
+---@param font love.Font
+---@return table
+function HighscoreScene.getHighscoreColumnWidths(hash, font)
+	font = font or love.graphics.getFont()
+	local highscore_column_widths = {}
+	local highscore_reference = highscores[hash]
+	if highscore_reference == nil then
+		return {}
+	end
+	local highscore_indexing = HighscoreScene.getHighscoreIndexing(hash)
+	for name, idx in pairs(highscore_indexing) do
+		highscore_column_widths[name] = font:getWidth(name)
+	end
+	for key, value in pairs(highscore_reference) do
+		for k2, v2 in pairs(value) do
+			highscore_column_widths[k2] = math.max(highscore_column_widths[k2], font:getWidth(v2))
+		end
+	end
+	return highscore_column_widths
+end
+
+---@param widths table
+---@param indexing table
+---@param initial_pos number
+---@return table
+function HighscoreScene.getHighscoreColumnPositions(widths, indexing, initial_pos)
+	local positions = {initial_pos}
+	local indexed_widths = {}
+	for key, value in pairs(widths) do
+		indexed_widths[indexing[key]] = value
+	end
+	for i = 2, #indexed_widths do
+		positions[i] = positions[i] or 0 + positions[i-1] + indexed_widths[i-1] + 20
+	end
+	return positions
+end
+
 function HighscoreScene:selectHash()
 	self.list_pointer = 1
 	self.selected_key_id = 1
@@ -85,6 +124,8 @@ function HighscoreScene:selectHash()
 	self.hash = self.hash_table[self.hash_id]
 	self.hash_highscore = highscores[self.hash]
 	self.highscore_index, self.index_count = self.getHighscoreIndexing(self.hash)
+	self.highscore_column_widths = self.getHighscoreColumnWidths(self.hash, font_3x5_2)
+	self.highscore_column_positions = self.getHighscoreColumnPositions(self.highscore_column_widths, self.highscore_index, 100)
 	self.id_to_key = {}
 	for key, value in pairs(self.highscore_index) do
 		self.id_to_key[value] = key
@@ -139,8 +180,8 @@ function HighscoreScene:render()
 	if type(self.hash_highscore) == "table" then
 		self.menu_list_y = interpolateNumber(self.menu_list_y / 20, self.list_pointer) * 20
 		love.graphics.printf("num", 20, 100, 100)
-		if #self.hash_highscore > 18 then
-			if self.list_pointer == #self.hash_highscore - 17 then
+		if #self.hash_highscore > 17 then
+			if self.list_pointer == #self.hash_highscore - 16 then
 				love.graphics.printf("^^", 5, 450, 15)
 			else
 				love.graphics.printf("v", 5, 460, 15)
@@ -152,31 +193,36 @@ function HighscoreScene:render()
 			end
 		end
 		for name, idx in pairs(self.highscore_index) do
-			local b = cursorHighlight(-20 + idx * 100, 100, 100, 20)
+			local column_x = self.highscore_column_positions[idx]
+			local column_w = self.highscore_column_widths[name]
+			local b = cursorHighlight(-25 + column_x, 100, column_w + 20, 20)
 			if self.selected_key_id == idx then
 				b = 0
 			end
 			love.graphics.setColor(1, 1, b, 1)
-			love.graphics.printf(name, -20 + idx * 100, 100, 90)
-			love.graphics.line(-25 + idx * 100, 100, -25 + idx * 100, 480)
+			love.graphics.printf(name, -20 + column_x, 100, column_w)
+			love.graphics.line(-25 + column_x, 100, -25 + column_x, 480)
 		end
 		for key, slot in pairs(self.hash_highscore) do
 			self.interpolated_menu_slot_positions[key] = interpolateNumber(self.interpolated_menu_slot_positions[key], self.menu_slot_positions[key])
-			if self.interpolated_menu_slot_positions[key] > -20 + self.menu_list_y and
-			   self.interpolated_menu_slot_positions[key] < 360 + self.menu_list_y then
-				local text_alpha = fadeoutAtEdges((-self.menu_list_y - 170) + self.interpolated_menu_slot_positions[key], 170, 20)
+			local slot_y = self.interpolated_menu_slot_positions[key]
+			if slot_y > -20 + self.menu_list_y and
+			   slot_y < 360 + self.menu_list_y then
+				local text_alpha = fadeoutAtEdges((-self.menu_list_y - 170) + slot_y, 170, 20)
 				for name, value in pairs(slot) do
 					local idx = self.highscore_index[name]
 					love.graphics.setColor(1, 1, 1, text_alpha)
 					local formatted_string = toFormattedValue(value)
-					drawWrappingText(tostring(formatted_string), -20 + idx * 100, 120 + self.interpolated_menu_slot_positions[key] - self.menu_list_y, 100, "left")
+					local column_x = self.highscore_column_positions[idx]
+					drawWrappingText(tostring(formatted_string), -20 + column_x, 120 + slot_y - self.menu_list_y, self.highscore_column_widths[name], "left")
 				end
 				love.graphics.setColor(1, 1, 1, text_alpha)
-				love.graphics.printf(tostring(key), 20, 120 + self.interpolated_menu_slot_positions[key] - self.menu_list_y, 100)
+				love.graphics.printf(tostring(key), 20, 120 + slot_y - self.menu_list_y, 100)
 			end
 		end
+		love.graphics.setColor(1, 1, 1, 1)
 		if type(self.sorted_key_id) == "number" then
-			love.graphics.printf(self.key_sort_string, -30 + self.sorted_key_id * 100, 100, 90)
+			love.graphics.printf(self.key_sort_string, -30 + self.highscore_column_positions[self.sorted_key_id], 100, 90)
 		end
 	else
 		love.graphics.setColor(1, 1, 1, 0.5)
@@ -207,14 +253,16 @@ function HighscoreScene:onInputPress(e)
 				self:selectHash()
 			end
 		else
-			if cursorHoverArea(80, 100, 100 * self.index_count, 20) then
-				playSE("cursor_lr")
-				local old_key_id = self.sorted_key_id
-				self.sorted_key_id = math.floor((e.x + 20) / 100)
-				if self.sorted_key_id ~= old_key_id then
-					self.sort_type = "<"
+			local old_key_id = self.sorted_key_id
+			for name, idx in pairs(self.highscore_index) do
+				if cursorHoverArea(self.highscore_column_positions[idx] - 25, 100, self.highscore_column_widths[name] + 20, 20) then
+					playSE("cursor_lr")
+					self.sorted_key_id = idx
+					if self.sorted_key_id ~= old_key_id then
+						self.sort_type = "<"
+					end
+					self:sortByKey(self.id_to_key[self.sorted_key_id])
 				end
-				self:sortByKey(self.id_to_key[self.sorted_key_id])
 			end
 		end
 		if cursorHoverArea(20, 40, 50, 30) then
@@ -304,7 +352,7 @@ function HighscoreScene:changeOption(rel)
 		end
 	else
 		len = #self.hash_highscore
-		len = math.max(len-17, 1)
+		len = math.max(len-16, 1)
 		old_value = self.list_pointer
 		self.list_pointer = Mod1(self.list_pointer + rel, len)
 		if old_value ~= self.list_pointer then
