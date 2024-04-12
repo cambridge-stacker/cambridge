@@ -492,6 +492,10 @@ function ModeSelectScene:onInputRelease(e)
 end
 
 function ModeSelectScene:refreshHighscores()
+	if #self.game_mode_folder == 0 or #self.ruleset_folder == 0 then
+		self.mode_highscore = nil
+		return
+	end
 	if self.game_mode_folder[self.menu_state.mode].hash == nil or self.ruleset_folder[self.menu_state.ruleset].hash == nil then
 		self.mode_highscore = nil
 		return
