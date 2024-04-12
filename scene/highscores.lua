@@ -79,8 +79,9 @@ end
 ---@param hash string
 ---@param font love.Font
 ---@return table
-function HighscoreScene.getHighscoreColumnWidths(hash, font)
+function HighscoreScene.getHighscoreColumnWidths(hash, font, width_limit)
 	font = font or love.graphics.getFont()
+	width_limit = width_limit or 200
 	local highscore_column_widths = {}
 	local highscore_reference = highscores[hash]
 	if highscore_reference == nil then
@@ -94,6 +95,9 @@ function HighscoreScene.getHighscoreColumnWidths(hash, font)
 		for k2, v2 in pairs(value) do
 			highscore_column_widths[k2] = math.max(highscore_column_widths[k2], font:getWidth(v2))
 		end
+	end
+	for key, value in pairs(highscore_column_widths) do
+		highscore_column_widths[key] = math.min(width_limit, value)
 	end
 	return highscore_column_widths
 end
@@ -200,7 +204,7 @@ function HighscoreScene:render()
 				b = 0
 			end
 			love.graphics.setColor(1, 1, b, 1)
-			love.graphics.printf(name, -20 + column_x, 100, column_w)
+			drawWrappingText(name, -20 + column_x, 100, column_w, "left")
 			love.graphics.line(-25 + column_x, 100, -25 + column_x, 480)
 		end
 		for key, slot in pairs(self.hash_highscore) do
