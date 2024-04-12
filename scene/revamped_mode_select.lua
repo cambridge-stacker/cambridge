@@ -178,7 +178,11 @@ function ModeSelectScene:render()
 	end
 	if type(self.mode_highscore) == "table" then
 		for name, idx in pairs(self.highscore_index) do
-			drawWrappingText(tostring(name), 180 + idx * 100, 100, 100, "left")
+			local column_x = self.highscore_column_positions[idx]
+			local column_w = self.highscore_column_widths[name]
+			love.graphics.setColor(1, 1, 1, 1)
+			love.graphics.printf(tostring(name), column_x, 100, column_w, "left")
+			love.graphics.line(-5 + column_x, 100, -5 + column_x, 220)
 		end
 		for key, slot in pairs(self.mode_highscore) do
 			if key == 11 then
@@ -187,7 +191,7 @@ function ModeSelectScene:render()
 			for name, value in pairs(slot) do
 				local idx = self.highscore_index[name]
 				local formatted_string = toFormattedValue(value)
-				drawWrappingText(tostring(formatted_string), 180 + idx * 100, 100 + 20 * key, 100, "left")
+				love.graphics.printf(tostring(formatted_string), self.highscore_column_positions[idx], 100 + 20 * key, self.highscore_column_widths[name], "left")
 			end
 		end
 	end
@@ -503,6 +507,8 @@ function ModeSelectScene:refreshHighscores()
 	local hash = self.game_mode_folder[self.menu_state.mode].hash .. "-" .. self.ruleset_folder[self.menu_state.ruleset].hash
 	self.mode_highscore = highscores[hash]
 	self.highscore_index = HighscoresScene.getHighscoreIndexing(hash)
+	self.highscore_column_widths = HighscoresScene.getHighscoreColumnWidths(hash, font_3x5_2)
+	self.highscore_column_positions = HighscoresScene.getHighscoreColumnPositions(self.highscore_column_widths, self.highscore_index, 280)
 end
 
 function ModeSelectScene:changeMode(rel)
