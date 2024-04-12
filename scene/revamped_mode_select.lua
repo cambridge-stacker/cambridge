@@ -182,7 +182,7 @@ function ModeSelectScene:render()
 			local column_w = self.highscore_column_widths[name]
 			love.graphics.setColor(1, 1, 1, 1)
 			love.graphics.printf(tostring(name), column_x, 100, column_w, "left")
-			love.graphics.line(-5 + column_x, 100, -5 + column_x, 220)
+			love.graphics.line(-5 + column_x, 100, -5 + column_x, 320)
 		end
 		for key, slot in pairs(self.mode_highscore) do
 			if key == 11 then
