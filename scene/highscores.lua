@@ -3,6 +3,7 @@ local HighscoreScene = Scene:extend()
 HighscoreScene.title = "Highscores"
 
 function HighscoreScene:new()
+	self.removeEmpty()
 	self.hash_table = {}
 	for hash, value in pairs(highscores) do
 		table.insert(self.hash_table, hash)
@@ -30,6 +31,7 @@ function HighscoreScene:new()
 		largeImageKey = "ingame-000"
 	})
 end
+
 function HighscoreScene:update()
 	if self.auto_menu_offset ~= 0 then
 		self:changeOption(self.auto_menu_offset < 0 and -1 or 1)
@@ -54,6 +56,26 @@ function HighscoreScene:update()
 		end
 		self:changeOption(change)
 		self.das = self.das - 4
+	end
+end
+
+function HighscoreScene.removeEmpty()
+	local removed_lists_count = 0
+	local removed_rows_count = 0
+	for hash, tbl in pairs(highscores) do
+		for i = #tbl, 1, -1 do
+			if (next(tbl[i]) == nil) then
+				table.remove(tbl, i)
+				removed_rows_count = removed_rows_count + 1
+			end
+		end
+		if next(tbl) == nil then
+			highscores[hash] = nil
+			removed_lists_count = removed_lists_count + 1
+		end
+	end
+	if removed_rows_count > 0 then
+		print(("[Highscores] Removed %d empty lists and %d empty rows"):format(removed_lists_count, removed_rows_count))
 	end
 end
 
