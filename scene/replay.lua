@@ -7,7 +7,6 @@ local ReplayScene = Scene:extend()
 ReplayScene.title = "Replay"
 
 local savestate_frames = nil
-local state_loaded = false
 
 function ReplayScene:new(replay, game_mode, ruleset)
 	love.mouse.setVisible(true)
@@ -69,12 +68,6 @@ end
 
 function ReplayScene:update()
 	local frames_left = self.replay_speed
-	local pre_sfx_volume
-	if TAS_mode and state_loaded then
-		pre_sfx_volume = config.sfx_volume
-		config.sfx_volume = 0	--This is to stop blasting your ears every time you load a state.
-		frames_left = savestate_frames
-	end
 	if not self.paused or self.frame_steps > 0 then
 		if self.frame_steps > 0 then
 			self.game.ineligible = self.rerecord or self.game.ineligible
@@ -100,37 +93,33 @@ function ReplayScene:update()
 			self.game.grid:update()
 		end
 	end
-	if state_loaded then
-		state_loaded = false
-		config.sfx_volume = pre_sfx_volume --Returns the volume to normal.
-		self.paused = true
-	end
 	DiscordRPC:update({
 		details = self.rerecord and self.game.rpc_details or ("Viewing a".. (self.replay["toolassisted"] and " tool-assisted" or "") .." replay"),
 		state = self.game.name,
 		largeImageKey = "ingame-"..self.game:getBackground().."00"
 	})
+end
 
-	if love.thread.getChannel("savestate"):peek() == "save" then
-		love.thread.getChannel("savestate"):clear()
-		savestate_frames = self.frames
-		print("State saved at frame "..self.frames)
+function ReplayScene:loadState()
+	if savestate_frames == nil then
+		print("Save the state first. Press F4 for that. Alt-F4 will close the game, so, keep that in mind.")
+		return
 	end
-
-	if love.thread.getChannel("savestate"):peek() == "load" then
-		love.thread.getChannel("savestate"):clear()
-		if savestate_frames == nil then
-			print("Load the state first. Press F4 for that. Alt-F4 will close the game, so, keep that in mind.")
-			return
-		end
-		--restarts like usual, but not really.
-		self.game:onExit()
-		scene = ReplayScene(
-			self.retry_replay, self.retry_mode,
-			self.retry_ruleset, self.secret_inputs
-		)
-		state_loaded = true
-	end
+	
+	local prev_sfx_volume = config.sfx_volume
+	config.sfx_volume = 0	--This is to stop blasting your ears every time you load a state.
+	--restarts like usual, but not really.
+	self.game:onExit()
+	scene = ReplayScene(
+		self.retry_replay, self.retry_mode,
+		self.retry_ruleset
+	)
+	scene.replay_speed = savestate_frames
+	scene:update()
+	config.sfx_volume = prev_sfx_volume --Returns the volume to normal.
+	scene.replay_speed = self.replay_speed
+	scene.show_invisible = self.show_invisible
+	scene.paused = true
 end
 
 function ReplayScene:render()
@@ -212,6 +201,12 @@ function ReplayScene:onInputPress(e)
 	 	)
 		scene.safety_frames = 2
 		savestate_frames = nil
+	--hardcoded input
+	elseif e.input == "save_state" then
+		savestate_frames = self.frames
+		print("State saved at frame "..self.frames)
+	elseif e.input == "load_state" then
+		self:loadState()
 	elseif e.input == "frame_step" and (TAS_mode or not self.rerecord) then
 		self.frame_steps = self.frame_steps + 1
 	elseif e.input == "pause" and not (self.game.game_over or self.game.completed) then
