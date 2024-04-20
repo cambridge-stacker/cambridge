@@ -82,6 +82,7 @@ end
 ---@return table, number
 function HighscoreScene.getHighscoreIndexing(hash)
 	local count = 0
+	local index_sorting = {}
 	local highscore_index = {}
 	local highscore_reference = highscores[hash]
 	if highscore_reference == nil then
@@ -91,9 +92,16 @@ function HighscoreScene.getHighscoreIndexing(hash)
 		for k2, v2 in pairs(value) do
 			if not highscore_index[k2] then
 				count = count + 1
+				index_sorting[count] = k2
 				highscore_index[k2] = count
 			end
 		end
+	end
+	local function padnum(d) return ("%03d%s"):format(#d, d) end
+	table.sort(index_sorting, function(a,b)
+	return tostring(a):gsub("%d+",padnum) < tostring(b):gsub("%d+",padnum) end)
+	for key, value in pairs(index_sorting) do
+		highscore_index[value] = key
 	end
 	return highscore_index, count
 end
