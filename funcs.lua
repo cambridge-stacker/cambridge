@@ -223,33 +223,6 @@ function rainbowString(string)
 	return tbl
 end
 
----@param source_directory string
----@param destination_directory string
----@param override_warning boolean
-function copyDirectoryRecursively(source_directory, destination_directory, override_warning)
-	local directory_items = love.filesystem.getDirectoryItems(source_directory)
-	if not love.filesystem.getInfo(destination_directory, "directory") then
-		love.filesystem.createDirectory(destination_directory)
-	end
-	for _, path in pairs(directory_items) do
-		local source_path = source_directory.."/"..path
-		local destination_path = destination_directory.."/"..path
-		if love.filesystem.getInfo(source_path, "directory") then
-			copyDirectoryRecursively(source_path, destination_path, override_warning)
-		end
-		if love.filesystem.getInfo(source_path, "file") then
-			local msgbox_choice = 2
-			if love.filesystem.getInfo(destination_path, "file") and override_warning then
-				msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "This file ("..path..") already exists! Do you want to override it?", {"No", "Yes", }, "info", false)
-			end
-			if msgbox_choice == 2 then
-				local file = love.filesystem.read(source_path)
-				love.filesystem.write(destination_path, file)
-			end
-		end
-	end
-end
-
 ---@param tbl table
 ---@param key_check any
 ---@return table

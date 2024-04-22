@@ -13,6 +13,7 @@ function love.load()
 	love.graphics.clear()
 	math.randomseed(os.time())
 	highscores = {}
+	require "load.filesystem"
 	require "load.rpc"
 	require "load.graphics"
 	require "load.sounds"
