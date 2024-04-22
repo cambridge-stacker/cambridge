@@ -312,6 +312,12 @@ function ReplaySelectScene:render()
 			)
 			return
 		end
+		love.graphics.setColor(1,1,1,fadeoutAtEdges(-self.height_offset - 80, 180, 20))
+		love.graphics.printf("Color legend:", 0, 180 - self.height_offset, 640, "center")
+		love.graphics.printf({
+		 {1, 1, 1, 1}, "White: Contains highscore data and isn't ineligible\n",
+		 {1, 0, 0, 1}, "Red", {1, 1, 1, 1}, ": A replay that either has used TAS or is ineligible\n",
+		 {1, 0.5, 0.8, 1}, "Pink", {1, 1, 1, 1}, ": A replay that doesn't contain highscore data or is legacy"}, 0, 200 - self.height_offset, 640, "center")
 		for idx, replay_idx in ipairs(replay_tree[self.menu_state.submenu]) do
 			if(idx >= self.height_offset/20-10 and idx <= self.height_offset/20+10) then
 				local replay = replays[replay_idx]
@@ -334,7 +340,7 @@ function ReplaySelectScene:render()
 					display_string = display_string:sub(1, 75) .. "..."
 				end
 				local b, g = cursorHighlight(0, (260 - self.height_offset) + 20 * idx, 640, 20), 1
-				if not replay["highscore_data"] then
+				if not replay["highscore_data"] or next(replay["highscore_data"]) == nil then
 					g = 0.5
 					b = 0.8
 				end
