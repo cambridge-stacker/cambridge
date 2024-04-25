@@ -633,7 +633,7 @@ function SakuraGame:drawCustom()
 		love.graphics.printf("STAGE TIME", 64, 300, 160, "center")
 
 		love.graphics.setFont(font_3x5_3)
-		love.graphics.printf("STAGE " .. self.current_map, 64, 100, 160, "center")
+		love.graphics.printf(self:getStageString(), 64, 100, 160, "center")
 		love.graphics.setColor(
 			self.cleared_frames % 4 < 2 and
 			{ 1, 1, 0.3, 1 } or
