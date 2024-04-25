@@ -283,17 +283,18 @@ end
 ---@param input number
 ---@param destination number
 ---@return number
-function interpolateNumber(input, destination)
+function interpolateNumber(input, destination, division_factor)
+	division_factor = division_factor or 4
 	if config.visualsettings["smooth_scroll"] == 2 then
 		return destination
 	end
 	if destination > input then
-		input = input + (destination - input) / 4
+		input = input + (destination - input) / division_factor
 		if input > destination - 0.02 then
 			input = destination
 		end
 	elseif destination < input then
-		input = input + (destination - input) / 4
+		input = input + (destination - input) / division_factor
 		if input < destination + 0.02 then
 			input = destination
 		end
