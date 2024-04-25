@@ -64,7 +64,7 @@ function History6Rolls35PoolRandomizer:updateHistory(shape)
 			self.droughts[v] = 0
 		else
 			self.droughts[v] = self.droughts[v] + 1
-			if v >= highdroughtcount then
+			if self.droughts[v] >= highdroughtcount then
 				highdrought = v
 				highdroughtcount = self.droughts[v]
 			end
