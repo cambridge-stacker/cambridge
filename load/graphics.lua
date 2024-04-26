@@ -324,6 +324,7 @@ function loadResources()
 	end
 	--#endregion
 	generateSoundTable()
+	generateBGMTable()
 
 	collectgarbage("collect")
 
