@@ -113,6 +113,12 @@ function CreditsScene:new()
 end
 
 function CreditsScene:update()
+	if self.increase_speed then
+		self.scroll_speed = interpolateNumber(self.scroll_speed, self.hold_speed, 8)
+	else
+		self.scroll_speed = interpolateNumber(self.scroll_speed, 1, 8)
+	end
+	pitchBGM(self.scroll_speed)
 	local time_fragment = (self.final_y / self.music_duration)
 	self.time = self.time + (time_fragment * self.scroll_speed)
 	if self.time >= self.final_y + (time_fragment * 120) then
@@ -154,14 +160,13 @@ function CreditsScene:render()
 			love.graphics.printf(value, text_x, block.y + 30 + key * 18 - offset, 320, align)
 		end
 	end
-	love.graphics.print(("Credit time: %.2fs / %.2fs, %dx"):format((self.time / (self.final_y / self.music_duration)) / 60, (self.final_y + ((self.final_y / self.music_duration) * 120)) / (self.final_y / self.music_duration) / 60, self.scroll_speed), 0, 460)
+	love.graphics.print(("Credit time: %.2fs / %.2fs, %.1fx"):format((self.time / (self.final_y / self.music_duration)) / 60, (self.final_y + ((self.final_y / self.music_duration) * 120)) / (self.final_y / self.music_duration) / 60, self.scroll_speed), 0, 460)
 end
 
 function CreditsScene:onInputPress(e)
 	if e.type == "mouse" then
 		if e.button == 1 then
-			self.scroll_speed = self.hold_speed
-			pitchBGM(self.hold_speed)
+			self.increase_speed = true
 		elseif e.button == 2 then
 			scene = TitleScene()
 			pitchBGM(1)
@@ -169,8 +174,7 @@ function CreditsScene:onInputPress(e)
 		end
 	end
 	if e.scancode == "space" then
-		self.scroll_speed = self.hold_speed
-		pitchBGM(self.hold_speed)
+		self.increase_speed = true
 	end
 	if e.input == "menu_decide" or e.input == "menu_back" then
 		scene = TitleScene()
@@ -181,8 +185,7 @@ end
 
 function CreditsScene:onInputRelease(e)
 	if e.scancode == "space" or e.type == "mouse" and e.button == 1 then
-		self.scroll_speed = 1
-		pitchBGM(1)
+		self.increase_speed = false
 	end
 end
 
