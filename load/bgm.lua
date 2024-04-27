@@ -32,6 +32,14 @@ function loadBGM(path, sound, subsound)
 	end
 end
 
+---@param sound string
+---@param tbl table
+function loadBGMsFromTable(sound, tbl)
+	for key, value in pairs(tbl) do
+		loadBGM(value, sound, key)
+	end
+end
+
 function generateBGMTable()
 	for k,v in pairs(bgm_paths) do
 		if(type(v) == "table") then
