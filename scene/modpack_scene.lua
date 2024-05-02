@@ -343,12 +343,12 @@ function ModPackScene:onInputPress(e)
 		dividend = 1
 	end
 	local prev_right_selection_index = self.right_selection_index
-	if e.input == "up" or e.input == "down" then
+	if e.input == "menu_up" or e.input == "menu_down" then
 		if self.selection_type == 0 then
 			self.selection_type = 1
 			return
 		end
-		local inc_or_dec = (e.input == "down" and 1 or -1)
+		local inc_or_dec = (e.input == "menu_down" and 1 or -1)
 		if self.selection_type == 1 then
 			if self.left_selection_index + inc_or_dec > dividend then
 				self.selection_type = 3
@@ -361,11 +361,11 @@ function ModPackScene:onInputPress(e)
 				return
 			end
 			self.right_selection_index = math.max(self.right_selection_index + inc_or_dec, 1)
-		elseif self.selection_type > 2 and e.input == "up" then
+		elseif self.selection_type > 2 and e.input == "menu_up" then
 			self.selection_type = self.selection_type - 2
 		end
 	end
-	if e.input == "left" then
+	if e.input == "menu_left" then
 		if self.selection_type == 0 then
 			self.selection_type = 1
 			return
@@ -374,7 +374,7 @@ function ModPackScene:onInputPress(e)
 			self.selection_type = self.selection_type - 1
 		end
 	end
-	if e.input == "right" then
+	if e.input == "menu_right" then
 		if self.selection_type == 0 then
 			self.selection_type = 1
 			return
