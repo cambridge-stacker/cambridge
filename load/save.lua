@@ -1,27 +1,8 @@
 local binser = require 'libs.binser'
 
 function loadSave()
-	config = loadFromFile('config.sav')
-	highscores = loadFromFile('highscores.sav')
-end
-
-function loadFromFile(filename)
-	local file_data = love.filesystem.read(filename)
-	if file_data == nil then
-		--Gets backup just in case.
-		file_data = love.filesystem.read(filename..".backup")
-		-- if no backup
-		if file_data == nil then
-			return {} -- new object
-		end
-	end
-	local result, save_data = pcall(binser.deserialize, file_data)
-	if result == false or save_data == nil then
-		return {} -- new object
-	else
-		love.filesystem.write(filename..".backup", file_data) -- backup creation if sucessful
-	end
-	return save_data[1]
+	config = loadFromFile('config.sav', true)
+	highscores = loadFromFile('highscores.sav', true)
 end
 
 local configurable_inputs = {
@@ -174,15 +155,6 @@ function initConfig()
 			scene = InputConfigScene()
 		end
 	end
-end
-
-function saveToFile(filename, data)
-	local is_successful, message = love.filesystem.write(filename..".tmp", data) --temporary file.
-	if not is_successful then
-		error("Failed to save file: "..filename..". Error message: "..message)
-	end
-	love.filesystem.remove(filename..".tmp") --cleanup.
-	love.filesystem.write(filename, data)
 end
 
 function saveConfig()

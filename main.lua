@@ -13,6 +13,7 @@ function love.load()
 	love.graphics.clear()
 	math.randomseed(os.time())
 	highscores = {}
+	require "load.filesystem"
 	require "load.rpc"
 	require "load.graphics"
 	require "load.sounds"
@@ -527,9 +528,9 @@ function love.keypressed(key, scancode)
 		print("The old way of framestepping is deprecated!")
 	-- load state tool
 	elseif scancode == "f4" and TAS_mode and (scene.title == "Replay") then
-		love.thread.getChannel("savestate"):push( "save" )
+		scene:onInputPress({input="save_state"})
 	elseif scancode == "f5" and TAS_mode and (scene.title == "Replay") then
-		love.thread.getChannel("savestate"):push( "load" )
+		scene:onInputPress({input="load_state"})
 	-- secret sound playing :eyes:
 	elseif scancode == "f8" and scene.title == "Title" then
 		config.secret = not config.secret

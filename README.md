@@ -38,7 +38,7 @@ Then, check the mod pack section at the bottom of this page.
 
 ### macOS, Linux
 
-If you haven't already, install `love` with your favourite package manager (Homebrew on macOS, your system's default on Linux). **Make sure you're using LÖVE 11.3, because it won't work with earlier or later versions!**
+If you haven't already, install `love` with your favourite package manager (Homebrew on macOS, your system's default on Linux). **Make sure you're not using LÖVE 11.4, because it's been proven to randomly freeze Cambridge!**
 
 #### Downloading a release
 

@@ -104,6 +104,7 @@ function TitleScene:render()
 	love.graphics.setColor(1, 1, 1, 1 - self.snow_bg_opacity)
 	drawBackground("title_no_icon") -- title, title_night
 
+	love.graphics.setColor(1, 1, 1, 1)
 	if not enter_pressed then
 		love.graphics.setFont(font_3x5_3)
 		love.graphics.printf("Welcome To Cambridge: The Next Open-Source Stacker!", 0, 240, 640, "center")
@@ -122,7 +123,7 @@ function TitleScene:render()
 	if enter_pressed then
 		x, y = 490, 192
 	else
-		x, y = 256, 140
+		x, y = 272, 140
 	end
 	for _, b in ipairs(block_offsets) do
 		drawSizeIndependentImage(

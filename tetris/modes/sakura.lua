@@ -279,10 +279,14 @@ function SakuraGame:new(secret_inputs)
 	self.cleared_frames = STAGE_TRANSITION_TIME
 	self.stage_frames = 0
 	self.time_extend = 0
+	self.time_penalty = 0
+	self.skip_delay = 3
 	self.maps_cleared = 0
 	self.map_20_time = 0
 	self.stage_pieces = 0
 	self.mirror_time = 0
+	self.skip_hold_time = 0
+	self.flash_frames = 0
 	self.grid:applyMap(maps[self.current_map])
 
 	self.lock_drop = true
@@ -356,9 +360,22 @@ function SakuraGame:onPieceEnter()
 		-- self.grid:mirror()
 	end
 	self.stage_pieces = self.stage_pieces + 1
+	self.skip_delay = 3
 end
 
 function SakuraGame:advanceOneFrame(inputs, ruleset)
+	local has_gem_blocks = self.grid:hasGemBlocks()
+	if inputs.generic_1 and not self.skipped and has_gem_blocks and self.current_map <= 20 then
+		self.skip_hold_time = self.skip_hold_time + 1
+		if self.skip_hold_time >= 90 and self.time_limit > frameTime(0,30) then
+			self.skipped = true
+			self.time_extend = 0
+			self.time_penalty = frameTime(0,30)
+		end
+	else
+		self.skip_hold_time = 0
+	end
+	self.flash_frames = self.flash_frames + 1
 	if self.ready_frames == 0 then
 		if self.mirror_time > 0 then
 			self.mirror_time = self.mirror_time - 1
@@ -368,26 +385,31 @@ function SakuraGame:advanceOneFrame(inputs, ruleset)
 			return false
 		end
 		if self.lcd > 0 then
-				if self.stage_frames <= frameTime(0,10) then self.time_extend = 600
-			elseif self.stage_frames <= frameTime(0,30) then self.time_extend = 300
+			if     self.stage_frames <= frameTime(0,10) then self.time_extend = 600
+			elseif self.stage_frames <= frameTime(0,20) then self.time_extend = 300
 			else self.time_extend = 0 end
 		end
 
-		if not self.grid:hasGemBlocks() or
+		if not has_gem_blocks or 
+		(self.skipped and self.skip_delay <= 0) or
 		(self.stage_frames >= 3600 and self.piece == nil
 		and self.current_map <= 20) then
 			self.lcd = 0
 			self.are = 0
 			if self.stage_frames >= 3600 then self.time_extend = 0 end
 			self.piece = nil
-
-			if inputs.generic_1 ~= self.prev_inputs.generic_1 then
+			if inputs.generic_1 and not self.prev_inputs.generic_1 then
 				self.cleared_frames = 0
 				if self.time_extend > 0 then
 					self.time_limit = self.time_limit + self.time_extend
 					self.time_extend = 0
 				end
+				if self.time_penalty > 0 then
+					self.time_limit = self.time_limit - self.time_penalty
+					self.time_penalty = 0
+				end
 			end
+			self.prev_inputs.generic_1 = inputs.generic_1
 			-- transition to next map
 			if self.cleared_frames > 0 then
 				self.cleared_frames = self.cleared_frames - 1
@@ -395,11 +417,15 @@ function SakuraGame:advanceOneFrame(inputs, ruleset)
 					self.time_limit = self.time_limit + 3
 					self.time_extend = self.time_extend - 3
 				end
+				if self.time_penalty > 0 then
+					self.time_limit = self.time_limit - 15
+					self.time_penalty = self.time_penalty - 15
+				end
 				return false
 			end
 
 			self.hold_queue = nil
-			if self.current_map > 20 or (self.stage_frames < 3600 and self.current_map <= 20) then self.maps_cleared = self.maps_cleared + 1 end
+			if not has_gem_blocks then self.maps_cleared = self.maps_cleared + 1 end
 			self.stage_frames = -1
 			self.level = 0
 			self.grid:clear()
@@ -416,6 +442,7 @@ function SakuraGame:advanceOneFrame(inputs, ruleset)
 				self.stage_pieces = 0
 				self.grid:applyMap(maps[self.current_map])
 			end
+			self.skipped = false
 
 			-- this is necessary to fix timer
 			self.frames = self.frames - 1
@@ -429,6 +456,9 @@ function SakuraGame:advanceOneFrame(inputs, ruleset)
 			self.game_over = true
 		end
 
+		if self.piece ~= nil then
+			self.skip_delay = self.skip_delay - 1
+		end
 		if self.piece ~= nil and
 		   effects[self.current_map] == "roll" and
 		   self.stage_pieces % 4 == 0
@@ -455,6 +485,23 @@ function SakuraGame:advanceOneFrame(inputs, ruleset)
 end
 
 function SakuraGame:onGameComplete() end
+
+function SakuraGame:getStageString()
+	if self.current_map > 20 then
+		return "EX STAGE ".. self.current_map - 20
+	else
+		return "STAGE " .. self.current_map
+	end
+end
+
+function SakuraGame:getStageShort()
+	
+	if self.current_map > 20 then
+		return "EX".. self.current_map - 20
+	else
+		return tostring(self.current_map)
+	end
+end
 
 local function colourXRay(game, block, x, y, age)
 	local r, g, b, a = .5,.5,.5
@@ -531,7 +578,7 @@ function SakuraGame:drawScoringInfo()
 
 	love.graphics.setFont(font_3x5_3)
 	love.graphics.setColor(
-		(self.time_limit % 4 < 2 and
+		(self.flash_frames % 4 < 2 and
 		self.time_limit <= frameTime(0,10) and
 		self.cleared_frames == STAGE_TRANSITION_TIME and
 		self.time_limit ~= 0 and
@@ -549,7 +596,7 @@ function SakuraGame:drawScoringInfo()
 
 	love.graphics.setFont(font_8x11)
 	love.graphics.printf(formatTime(self.frames), 64, 420, 160, "center")
-	love.graphics.printf(self.current_map, 290, 110, 80, "left")
+	love.graphics.printf(self:getStageShort(), 290, 110, 80, "left")
 end
 
 function SakuraGame:drawCustom()
@@ -557,7 +604,7 @@ function SakuraGame:drawCustom()
 
 	if self.ready_frames ~= 0 and not self.clear then
 		love.graphics.setFont(font_3x5_4)
-		love.graphics.printf("STAGE " .. self.current_map, 64, 170, 160, "center")
+		love.graphics.printf(self:getStageString(), 64, 170, 160, "center")
 
 		love.graphics.setFont(font_3x5_3)
 		if effects[self.current_map] then
@@ -565,7 +612,18 @@ function SakuraGame:drawCustom()
 		end
 	end
 
-	if self.cleared_frames > 0 and
+	if self.skipped and self.skip_delay <= 0 then
+		love.graphics.setFont(font_3x5_2)
+		love.graphics.printf("Clear %", 64, 320, 160, "center")
+		love.graphics.setFont(font_3x5_3)
+		love.graphics.printf(self:getStageString(), 64, 120, 160, "center")
+		love.graphics.printf("STAGE SKIP", 64, 170, 160, "center")
+		love.graphics.printf("PENALTY", 64, 240, 160, "center")
+		love.graphics.printf("-30 SEC", 64, 280, 160, "center")
+		local percentage = math.floor(100 * self.maps_cleared / self.current_map)
+		love.graphics.printf(percentage.."%", 64, 340, 160, "center")
+
+	elseif self.cleared_frames > 0 and
 	(not self.grid:hasGemBlocks() or
 	(self.stage_frames >= 3600 and self.piece == nil
 	and self.current_map <= 20)) then
@@ -575,7 +633,7 @@ function SakuraGame:drawCustom()
 		love.graphics.printf("STAGE TIME", 64, 300, 160, "center")
 
 		love.graphics.setFont(font_3x5_3)
-		love.graphics.printf("STAGE " .. self.current_map, 64, 100, 160, "center")
+		love.graphics.printf(self:getStageString(), 64, 100, 160, "center")
 		love.graphics.setColor(
 			self.cleared_frames % 4 < 2 and
 			{ 1, 1, 0.3, 1 } or
@@ -602,7 +660,7 @@ function SakuraGame:drawCustom()
 end
 
 function SakuraGame:getBackground()
-	return (self.current_map - 1) % 20
+	return math.floor(self.level / 100)
 end
 
 function SakuraGame:getHighscoreData()

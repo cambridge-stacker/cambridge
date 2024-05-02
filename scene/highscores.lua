@@ -3,6 +3,7 @@ local HighscoreScene = Scene:extend()
 HighscoreScene.title = "Highscores"
 
 function HighscoreScene:new()
+	self.removeEmpty()
 	self.hash_table = {}
 	for hash, value in pairs(highscores) do
 		table.insert(self.hash_table, hash)
@@ -30,6 +31,7 @@ function HighscoreScene:new()
 		largeImageKey = "ingame-000"
 	})
 end
+
 function HighscoreScene:update()
 	if self.auto_menu_offset ~= 0 then
 		self:changeOption(self.auto_menu_offset < 0 and -1 or 1)
@@ -57,9 +59,30 @@ function HighscoreScene:update()
 	end
 end
 
+function HighscoreScene.removeEmpty()
+	local removed_lists_count = 0
+	local removed_rows_count = 0
+	for hash, tbl in pairs(highscores) do
+		for i = #tbl, 1, -1 do
+			if (next(tbl[i]) == nil) then
+				table.remove(tbl, i)
+				removed_rows_count = removed_rows_count + 1
+			end
+		end
+		if next(tbl) == nil then
+			highscores[hash] = nil
+			removed_lists_count = removed_lists_count + 1
+		end
+	end
+	if removed_rows_count > 0 then
+		print(("[Highscores] Removed %d empty lists and %d empty rows"):format(removed_lists_count, removed_rows_count))
+	end
+end
+
 ---@return table, number
 function HighscoreScene.getHighscoreIndexing(hash)
 	local count = 0
+	local index_sorting = {}
 	local highscore_index = {}
 	local highscore_reference = highscores[hash]
 	if highscore_reference == nil then
@@ -69,9 +92,16 @@ function HighscoreScene.getHighscoreIndexing(hash)
 		for k2, v2 in pairs(value) do
 			if not highscore_index[k2] then
 				count = count + 1
+				index_sorting[count] = k2
 				highscore_index[k2] = count
 			end
 		end
+	end
+	local function padnum(d) return ("%03d%s"):format(#d, d) end
+	table.sort(index_sorting, function(a,b)
+	return tostring(a):gsub("%d+",padnum) < tostring(b):gsub("%d+",padnum) end)
+	for key, value in pairs(index_sorting) do
+		highscore_index[value] = key
 	end
 	return highscore_index, count
 end

@@ -17,20 +17,40 @@ bgm_paths = {
 
 bgm = {}
 
-for k,v in pairs(bgm_paths) do
-	if(type(v) == "table") then
-		-- list of subsounds
-		for k2,v2 in pairs(v) do
-			if(love.filesystem.getInfo(v2)) then
-				-- this file exists
-				bgm[k] = bgm[k] or {}
-				bgm[k][k2] = love.audio.newSource(v2, "stream")
-			end
+function loadBGM(path, sound, subsound)
+	if love.filesystem.getInfo(applied_packs_path..path) then
+		path = applied_packs_path..path
+	end
+	if(love.filesystem.getInfo(path)) then
+		-- this file exists
+		if subsound then
+			bgm[sound] = bgm[sound] or {}
+			bgm[sound][subsound] = love.audio.newSource(path, "stream")
+		else
+			bgm[sound] = love.audio.newSource(path, "stream")
 		end
-	else
-		if(love.filesystem.getInfo(v)) then
-			-- this file exists
-			bgm[k] = love.audio.newSource(v, "stream")
+	end
+end
+
+---@param sound string
+---@param tbl table
+function loadBGMsFromTable(sound, tbl)
+	for key, value in pairs(tbl) do
+		loadBGM(value, sound, key)
+	end
+end
+
+function generateBGMTable()
+	for k,v in pairs(bgm_paths) do
+		if(type(v) == "table") then
+			-- list of subsounds
+			for k2,v2 in pairs(v) do
+				loadBGM(v2, k, k2)
+			end
+		else
+			if(love.filesystem.getInfo(v)) then
+				loadBGM(v, k)
+			end
 		end
 	end
 end

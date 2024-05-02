@@ -72,6 +72,14 @@ function loadSound(path, sound, subsound)
 	end
 end
 
+---@param sound string
+---@param tbl table
+function loadSoundsFromTable(sound, tbl)
+	for key, value in pairs(tbl) do
+		loadSound(value, sound, key)
+	end
+end
+
 -- Replace each sound effect string with its love audiosource counterpart, but only if it exists. This lets the game handle missing SFX.
 function generateSoundTable()
 	if config.sound_sources == nil then config.sound_sources = 1 end
