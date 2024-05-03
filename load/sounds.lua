@@ -108,6 +108,9 @@ local function playRawSE(audio_source)
 end
 
 local function playRawSEOnce(audio_source)
+	if type(audio_source) == "table" then
+		error("Tried to play a table.")
+	end
 	audio_source:setVolume(config.sfx_volume)
 	if audio_source:isPlaying() then
 		return
@@ -130,16 +133,19 @@ function playSE(sound, subsound)
 		end
 	end
 	if type(buffer_sounds[sound]) == "table" then
-		if type(buffer_sounds[sound][subsound]) == "table" then
-			sounds_played[sound][subsound] = sounds_played[sound][subsound] + 1
-			local index = Mod1(sounds_played[sound][subsound], config.sound_sources)
-			playRawSE(buffer_sounds[sound][subsound][index])
+		if subsound ~= nil then
+			if type(buffer_sounds[sound][subsound]) == "table" then
+				sounds_played[sound][subsound] = sounds_played[sound][subsound] + 1
+				local index = Mod1(sounds_played[sound][subsound], config.sound_sources)
+				playRawSE(buffer_sounds[sound][subsound][index])
+				return
+			end
+		else
+			sounds_played[sound] = sounds_played[sound] + 1
+			local index = Mod1(sounds_played[sound], config.sound_sources)
+			playRawSE(buffer_sounds[sound][index])
 			return
 		end
-		sounds_played[sound] = sounds_played[sound] + 1
-		local index = Mod1(sounds_played[sound], config.sound_sources)
-		playRawSE(buffer_sounds[sound][index])
-		return
 	end
 end
 
@@ -158,13 +164,16 @@ function playSEOnce(sound, subsound)
 		end
 	end
 	if type(buffer_sounds[sound]) == "table" then
-		if type(buffer_sounds[sound][subsound]) == "table" then
-			local index = Mod1(sounds_played[sound][subsound], config.sound_sources)
-			playRawSEOnce(buffer_sounds[sound][subsound][index])
+		if subsound ~= nil then
+			if type(buffer_sounds[sound][subsound]) == "table" then
+				local index = Mod1(sounds_played[sound][subsound], config.sound_sources)
+				playRawSEOnce(buffer_sounds[sound][subsound][index])
+				return
+			end
+		else
+			local index = Mod1(sounds_played[sound], config.sound_sources)
+			playRawSEOnce(buffer_sounds[sound][index])
 			return
 		end
-		local index = Mod1(sounds_played[sound], config.sound_sources)
-		playRawSEOnce(buffer_sounds[sound][index])
-		return
 	end
 end
