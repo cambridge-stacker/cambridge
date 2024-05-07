@@ -119,6 +119,7 @@ local function playRawSEOnce(audio_source)
 end
 
 function playSE(sound, subsound)
+	if config and config.sfx_volume <= 0 then return end
 	if sound ~= nil then
 		if sounds[sound] then
 			if subsound ~= nil then
@@ -150,6 +151,7 @@ function playSE(sound, subsound)
 end
 
 function playSEOnce(sound, subsound)
+	if config and config.sfx_volume <= 0 then return end
 	if sound ~= nil then
 		if sounds[sound] then
 			if subsound ~= nil then
