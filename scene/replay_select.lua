@@ -388,6 +388,7 @@ function ReplaySelectScene.indexModeFromReplay(replay)
 		end
 	end
 end
+
 function ReplaySelectScene.indexRulesetFromReplay(replay)
 	for key, value in pairs(recursionStringValueExtract(rulesets, "is_directory")) do
 		if value.name == replay["ruleset"] or value.hash == replay["ruleset_hash"] then
@@ -396,11 +397,17 @@ function ReplaySelectScene.indexRulesetFromReplay(replay)
 	end
 end
 
-function ReplaySelectScene:generateHighscoreRowOffsets(highscore_data)
+---@param highscore_data table
+---@param font love.Font
+---@return table
+function ReplaySelectScene:generateHighscoreRowOffsets(highscore_data, font)
 	local highscores_idx_offset = {}
 	for key, value in pairs(self.highscores_indexing) do
 		local idx = 0
-		local _, wrappedtext = love.graphics.getFont():getWrap(value..": "..tostring(highscore_data[value]), 640)
+		local _, wrappedtext = font:getWrap(value..": "..tostring(highscore_data[value]), 640)
+		if self.highscores_data_comparison then
+			_, wrappedtext = font:getWrap(key..": "..tostring(self.highscores_data_comparison[key]).." -"..tostring(highscore_data[key]).."- ", 640)
+		end
 		for _ in pairs(wrappedtext) do
 			idx = idx + 0.8
 		end
@@ -450,7 +457,7 @@ function ReplaySelectScene:startReplay()
 		self.das_left = nil
 		self.das_right = nil
 		self.highscores_indexing = self.getHighscoreDataIndexing(replay["highscore_data"])
-		self.highscores_idx_offset = self:generateHighscoreRowOffsets(replay["highscore_data"])
+		self.highscores_idx_offset = self:generateHighscoreRowOffsets(replay["highscore_data"], font_3x5_2)
 		return
 	end
 
@@ -510,7 +517,7 @@ function ReplaySelectScene:verifyHighscoreData()
 			concat_table[key] = value
 		end
 		self.highscores_indexing = self.getHighscoreDataIndexing(concat_table)
-		self.highscores_idx_offset = self:generateHighscoreRowOffsets(replay["highscore_data"])
+		self.highscores_idx_offset = self:generateHighscoreRowOffsets(replay["highscore_data"], font_3x5_2)
 		playSE("erase", "single")
 	else
 		self.highscores_data_matching = true
