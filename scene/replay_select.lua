@@ -361,26 +361,6 @@ function ReplaySelectScene:render()
 	end
 end
 
-function ReplaySelectScene.getHighscoreDataIndexing(highscore_data)
-	local count = 0
-	local index_sorting = {}
-	local highscore_index = {}
-	for k2, v2 in pairs(highscore_data) do
-		if not highscore_index[k2] then
-			count = count + 1
-			index_sorting[count] = k2
-			highscore_index[k2] = count
-		end
-	end
-	local function padnum(d) return ("%03d%s"):format(#d, d) end
-	table.sort(index_sorting, function(a,b)
-	return tostring(a):gsub("%d+",padnum) < tostring(b):gsub("%d+",padnum) end)
-	for key, value in pairs(index_sorting) do
-		highscore_index[value] = key
-	end
-	return highscore_index, count
-end
-
 function ReplaySelectScene.indexModeFromReplay(replay)
 	for key, value in pairs(recursionStringValueExtract(game_modes, "is_directory")) do
 		if value.name == replay["mode"] or value.hash == replay["mode_hash"] then
@@ -456,7 +436,7 @@ function ReplaySelectScene:startReplay()
 		self.das_up = nil
 		self.das_left = nil
 		self.das_right = nil
-		self.highscores_indexing = self.getHighscoreDataIndexing(replay["highscore_data"])
+		self.highscores_indexing = HighscoresScene.getHighscoreIndexing({replay["highscore_data"]})
 		self.highscores_idx_offset = self:generateHighscoreRowOffsets(replay["highscore_data"], font_3x5_2)
 		return
 	end
@@ -512,11 +492,7 @@ function ReplaySelectScene:verifyHighscoreData()
 	scene = prev_scene
 	if not equals(replay["highscore_data"], highscore_data) then
 		self.highscores_data_comparison = highscore_data
-		local concat_table = copy(replay["highscore_data"])
-		for key, value in pairs(highscore_data) do
-			concat_table[key] = value
-		end
-		self.highscores_indexing = self.getHighscoreDataIndexing(concat_table)
+		self.highscores_indexing = HighscoresScene.getHighscoreIndexing({replay["highscore_data"], highscore_data})
 		self.highscores_idx_offset = self:generateHighscoreRowOffsets(replay["highscore_data"], font_3x5_2)
 		playSE("erase", "single")
 	else
