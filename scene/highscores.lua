@@ -80,11 +80,16 @@ function HighscoreScene.removeEmpty()
 end
 
 ---@return table, number
-function HighscoreScene.getHighscoreIndexing(hash)
+function HighscoreScene.getHighscoreIndexing(reference)
 	local count = 0
 	local index_sorting = {}
 	local highscore_index = {}
-	local highscore_reference = highscores[hash]
+	local highscore_reference
+	if type(reference) == "table" then
+		highscore_reference = reference
+	else
+		highscore_reference = highscores[reference]
+	end
 	if highscore_reference == nil then
 		return {}, 0
 	end
