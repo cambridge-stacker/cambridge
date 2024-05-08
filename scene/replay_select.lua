@@ -494,7 +494,7 @@ function ReplaySelectScene:verifyHighscoreData()
 		self.highscores_data_comparison = highscore_data
 		self.highscores_indexing = HighscoresScene.getHighscoreIndexing({replay["highscore_data"], highscore_data})
 		self.highscores_idx_offset = self:generateHighscoreRowOffsets(replay["highscore_data"], font_3x5_2)
-		playSE("erase", "single")
+		playSE("error")
 	else
 		self.highscores_data_matching = true
 	end

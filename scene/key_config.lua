@@ -286,7 +286,7 @@ function KeyConfigScene:onInputPress(e)
 						playSE("mode_decide")
 						self.key_rebinding = false
 					else
-						playSE("erase", "single")
+						playSE("error")
 					end
 				end
 				config.input.keys = self.new_input
@@ -328,7 +328,7 @@ function KeyConfigScene:onInputPress(e)
 		elseif self:rebindKey(e.scancode) then
 			self.input_state = self.input_state + 1
 		else
-			playSE("erase", "single")
+			playSE("error")
 		end
 	elseif e.type == "mouse" then
 		if self.configurable_inputs == nil then
