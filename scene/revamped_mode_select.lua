@@ -279,6 +279,13 @@ function ModeSelectScene:render()
 			260 - self.menu_ruleset_x + 120 * idx, 440, 120, "center")
 		end
 	end
+	if self.game_mode_folder[self.menu_state.mode]
+	and self.game_mode_folder[self.menu_state.mode].ruleset_override then
+		love.graphics.setColor(0, 0, 0, 0.75)
+		love.graphics.rectangle("fill", 0, 420, 640, 60)
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.printf("This mode overrides the chosen ruleset!", 0, 440, 640, "center")
+	end
 	if self.reload_time_remaining and self.reload_time_remaining > 0 then
 		love.graphics.setColor(1, 1, 1, self.reload_time_remaining / 60)
 		love.graphics.printf("Modules reloaded!", 0, 10, 640, "center")
@@ -332,7 +339,9 @@ function ModeSelectScene:menuGoBack(menu_type)
 		self.ruleset_folder_selections[#self.ruleset_folder_selections] = nil
 		self.ruleset_folder = self.ruleset_folder_selections[#self.ruleset_folder_selections]
 	end
-	self.mode_highscore = nil
+	if not self:getHighscoreConditions() then
+		self.mode_highscore = nil
+	end
 end
 
 function ModeSelectScene:menuGoForward(menu_type, is_load)
@@ -495,16 +504,30 @@ function ModeSelectScene:onInputRelease(e)
 	end
 end
 
-function ModeSelectScene:refreshHighscores()
+function ModeSelectScene:getHighscoreConditions()
 	if #self.game_mode_folder == 0 or #self.ruleset_folder == 0 then
+		return false
+	end
+	if self.game_mode_folder[self.menu_state.mode].hash == nil then
+		return false
+	end
+	if not (self.game_mode_folder[self.menu_state.mode].ruleset_override or self.ruleset_folder[self.menu_state.ruleset].hash) then
+		return false
+	end
+	return true
+end
+
+function ModeSelectScene:refreshHighscores()
+	if not self:getHighscoreConditions() then
 		self.mode_highscore = nil
 		return
 	end
-	if self.game_mode_folder[self.menu_state.mode].hash == nil or self.ruleset_folder[self.menu_state.ruleset].hash == nil then
-		self.mode_highscore = nil
-		return
+	local hash = self.game_mode_folder[self.menu_state.mode].hash .. "-"
+	if self.game_mode_folder[self.menu_state.mode].ruleset_override then
+		hash = hash .. self.game_mode_folder[self.menu_state.mode].ruleset_override
+	else
+		hash = hash .. self.ruleset_folder[self.menu_state.ruleset].hash
 	end
-	local hash = self.game_mode_folder[self.menu_state.mode].hash .. "-" .. self.ruleset_folder[self.menu_state.ruleset].hash
 	self.mode_highscore = highscores[hash]
 	self.highscore_index = HighscoresScene.getHighscoreIndexing(hash)
 	self.highscore_column_widths = HighscoresScene.getHighscoreColumnWidths(hash, font_3x5_2)
