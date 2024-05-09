@@ -149,7 +149,8 @@ function GameMode:saveReplay()
 	replay["highscore_data"] = self:getHighscoreData()
 	replay["ruleset_override"] = self.ruleset_override
 	replay["properties"] = self.replay_properties
-	replay["toolassisted"] = self.ineligible
+	replay["toolassisted"] = self.toolassisted
+	replay["ineligible"] = self.ineligible or self.ruleset.ineligible
 	replay["inputs"] = self.replay_inputs
 	replay["random_low"] = self.random_low
 	replay["random_high"] = self.random_high

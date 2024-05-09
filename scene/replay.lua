@@ -70,7 +70,7 @@ function ReplayScene:update()
 	local frames_left = self.replay_speed
 	if not self.paused or self.frame_steps > 0 then
 		if self.frame_steps > 0 then
-			self.game.ineligible = self.rerecord or self.game.ineligible
+			self.game.toolassisted = self.rerecord or self.game.toolassisted
 			self.frame_steps = self.frame_steps - 1
 		end
 		while frames_left > 0 do

@@ -244,10 +244,17 @@ function ReplaySelectScene:render()
 		local replay = replays[pointer]
 		if replay then
 			local idx = 0
+			if replay.ineligible then
+				love.graphics.setFont(font_3x5_2)
+				love.graphics.setColor(1, 1, 0, 1)
+				love.graphics.printf("This replay is ineligible for leaderboards", 0, 80, 640, "center")
+				love.graphics.setColor(1, 1, 1, 1)
+				idx = idx + 1
+			end
 			if replay.toolassisted then
 				love.graphics.setFont(font_3x5_2)
 				love.graphics.setColor(1, 1, 0, 1)
-				love.graphics.printf("This replay either used built-in TAS or has ineligible flag set", 0, 80, 640, "center")
+				love.graphics.printf("This replay has likely used in-game TAS", 0, 80, 640, "center")
 				love.graphics.setColor(1, 1, 1, 1)
 				idx = idx + 1
 			end
