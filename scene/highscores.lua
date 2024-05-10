@@ -124,11 +124,11 @@ function HighscoreScene.getHighscoreColumnWidths(hash, font, width_limit)
 	end
 	local highscore_indexing = HighscoreScene.getHighscoreIndexing(hash)
 	for name, idx in pairs(highscore_indexing) do
-		highscore_column_widths[name] = font:getWidth(name)
+		highscore_column_widths[name] = font:getWidth(tostring(name))
 	end
 	for key, value in pairs(highscore_reference) do
 		for k2, v2 in pairs(value) do
-			highscore_column_widths[k2] = math.max(highscore_column_widths[k2], font:getWidth(v2))
+			highscore_column_widths[k2] = math.max(highscore_column_widths[k2], font:getWidth(tostring(v2)))
 		end
 	end
 	for key, value in pairs(highscore_column_widths) do
