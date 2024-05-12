@@ -52,35 +52,9 @@ function love.load()
 	if config.secret then playSE("welcome") end
 end
 
-local io_thread
-
-function loadReplayList()
-	replays = {}
-	replay_tree = {{name = "All"}}
-	dict_ref = {}
-	loaded_replays = false
-	collectgarbage("collect")
-
-	--proper disposal to avoid some memory problems
-	if io_thread then
-		io_thread:release()
-		love.thread.getChannel( 'replay' ):clear()
-		love.thread.getChannel( 'loaded_replays' ):clear()
-	end
-
-	io_thread = love.thread.newThread( replay_load_code )
-	for key, value in pairs(recursionStringValueExtract(game_modes, "is_directory")) do
-		if not dict_ref[value.name] then
-			dict_ref[value.name] = #replay_tree + 1
-			replay_tree[#replay_tree + 1] = {name = value.name}
-		end
-	end
-	io_thread:start()
-end
 
 mouse_idle = 0
 TAS_mode = false
-loaded_replays = false
 local system_cursor_type = "arrow"
 local screenshot_images = {}
 
@@ -861,7 +835,7 @@ function love.run()
 			for name, a,b,c,d,e,f in love.event.poll() do
 				if name == "quit" then
 					if not love.quit or not love.quit() then
-						if io_thread then io_thread:release() end
+						if disposeReplayThread then disposeReplayThread() end
 						return a or 0
 					end
 				end
