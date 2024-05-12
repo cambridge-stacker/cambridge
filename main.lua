@@ -21,12 +21,11 @@ function love.load()
 	require "load.save"
 	require "load.bigint"
 	require "load.modules"
+	require "load.replays"
 	require "load.version"
 	loadSave()
 	require "funcs"
 	require "scene"
-
-	require "threaded_replay_code"
 	
 	--config["side_next"] = false
 	--config["reverse_rotate"] = true
