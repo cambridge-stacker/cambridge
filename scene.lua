@@ -6,6 +6,7 @@ function Scene:new() end
 function Scene:update() end
 function Scene:render() end
 function Scene:onInputPress() end
+function Scene:onInputMove() end
 function Scene:onInputRelease() end
 
 --#region Named scene-function impostors

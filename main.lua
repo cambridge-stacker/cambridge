@@ -772,11 +772,9 @@ end
 
 function love.mousemoved(x, y, dx, dy)
 	mouse_idle = 0
-	local screen_x, screen_y = love.graphics.getDimensions()
-	local scale_factor = math.min(screen_x / 640, screen_y / 480)
 	local local_x, local_y = getScaledDimensions(x, y)
 	local local_dx, local_dy = getScaledDimensions(dx, dy)
-	scene:onInputPress({type="mouse_move", x=local_x, y=local_y, dx=local_dx, dy=local_dy})
+	scene:onInputMove({type="mouse", x=local_x, y=local_y, dx=local_dx, dy=local_dy})
 end
 
 function love.focus(f)
