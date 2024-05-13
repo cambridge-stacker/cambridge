@@ -222,11 +222,11 @@ function KeyConfigScene:render()
 	love.graphics.printf("Function keys (F1, F2, etc.), and tab can't be changed", 0, 40, 640, "left")
 end
 
-function KeyConfigScene:formatKey(key)
-	if love.keyboard.getKeyFromScancode(key) == key then
-		return "key ".. key
+function KeyConfigScene:formatKey(scancode)
+	if love.keyboard.getKeyFromScancode(scancode) == scancode then
+		return "key ".. scancode
 	else
-		return "key " .. love.keyboard.getKeyFromScancode(key) .. ", scancode (" .. key .. ")"
+		return "key " .. love.keyboard.getKeyFromScancode(scancode) .. ", scancode (" .. scancode .. ")"
 	end
 end
 
