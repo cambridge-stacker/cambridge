@@ -770,11 +770,52 @@ function love.mousereleased(x, y, button, istouch, presses)
 	scene:onInputRelease({type="mouse", x=local_x, y=local_y, button=button, istouch=istouch, presses=presses})
 end
 
-function love.mousemoved(x, y, dx, dy)
+---@param x number
+---@param y number
+---@param dx number
+---@param dy number
+---@param istouch boolean
+function love.mousemoved(x, y, dx, dy, istouch)
 	mouse_idle = 0
 	local local_x, local_y = getScaledDimensions(x, y)
 	local local_dx, local_dy = getScaledDimensions(dx, dy)
-	scene:onInputMove({type="mouse", x=local_x, y=local_y, dx=local_dx, dy=local_dy})
+	scene:onInputMove({type="mouse", x=local_x, y=local_y, dx=local_dx, dy=local_dy, istouch=istouch})
+end
+
+---@param id lightuserdata
+---@param x number
+---@param y number
+---@param dx number
+---@param dy number
+---@param pressure number
+function love.touchpressed(id, x, y, dx, dy, pressure)
+	local local_x, local_y = getScaledDimensions(x, y)
+	local local_dx, local_dy = getScaledDimensions(dx, dy)
+	scene:onInputPress({type="touch", id=id, x=local_x, y=local_y, dx=local_dx, dy=local_dy, pressure=pressure})
+end
+
+---@param id lightuserdata
+---@param x number
+---@param y number
+---@param dx number
+---@param dy number
+---@param pressure number
+function love.touchmoved(id, x, y, dx, dy, pressure)
+	local local_x, local_y = getScaledDimensions(x, y)
+	local local_dx, local_dy = getScaledDimensions(dx, dy)
+	scene:onInputMove({type="touch", id=id, x=local_x, y=local_y, dx=local_dx, dy=local_dy, pressure=pressure})
+end
+
+---@param id lightuserdata
+---@param x number
+---@param y number
+---@param dx number
+---@param dy number
+---@param pressure number
+function love.touchreleased(id, x, y, dx, dy, pressure)
+	local local_x, local_y = getScaledDimensions(x, y)
+	local local_dx, local_dy = getScaledDimensions(dx, dy)
+	scene:onInputRelease({type="touch", id=id, x=local_x, y=local_y, dx=local_dx, dy=local_dy, pressure=pressure})
 end
 
 function love.focus(f)
