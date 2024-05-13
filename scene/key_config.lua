@@ -226,7 +226,7 @@ function KeyConfigScene:formatKey(key)
 	if love.keyboard.getKeyFromScancode(key) == key then
 		return "key ".. key
 	else
-		return "scancode " .. love.keyboard.getKeyFromScancode(key) .. ", key (" .. key .. ")"
+		return "key " .. love.keyboard.getKeyFromScancode(key) .. ", scancode (" .. key .. ")"
 	end
 end
 
