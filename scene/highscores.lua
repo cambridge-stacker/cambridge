@@ -25,6 +25,10 @@ function HighscoreScene:new()
 	self.auto_menu_offset = 0
 	self.index_count = 0
 
+	if #self.hash_table == 0 then
+		self.empty_highscores = true
+	end
+
 	DiscordRPC:update({
 		details = "In menus",
 		state = "Peeking their own highscores",
@@ -205,6 +209,16 @@ function HighscoreScene:render()
 	love.graphics.setColor(1, 1, highlight, 1)
 	love.graphics.printf("<-", 20, 40, 50, "center")
 	love.graphics.setColor(1, 1, 1, 1)
+	if self.empty_highscores then
+		love.graphics.setFont(font_3x5_3)
+		love.graphics.printf("There's no recorded highscores!", 0, 200, 640, "center")
+		love.graphics.setFont(font_3x5_2)
+		love.graphics.printf(
+			"Go play some modes, then come back!\n" ..
+			"Press or click anything to leave this menu.",
+			0, 240, 640, "center")
+		return
+	end
 
 	love.graphics.setFont(font_8x11)
 	if self.hash ~= nil then
@@ -278,7 +292,8 @@ function HighscoreScene:render()
 end
 
 function HighscoreScene:onInputPress(e)
-	if (self.display_warning or self.display_error) and e.input then
+	if self.empty_highscores then
+		playSE("menu_cancel")
 		scene = TitleScene()
 	elseif e.type == "wheel" then
 		if e.y ~= 0 then
