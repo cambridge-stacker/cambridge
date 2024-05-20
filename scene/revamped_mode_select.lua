@@ -44,6 +44,7 @@ function ModeSelectScene:new()
 	self.auto_ruleset_offset = 0
 	self.start_frames, self.starting = 0, false
 	self.safety_frames = 0
+	self:refreshHighscores()
 	DiscordRPC:update({
 		details = "In menus",
 		state = "Chosen ??? and ???.",
@@ -168,8 +169,6 @@ function ModeSelectScene:render()
 	love.graphics.rectangle("fill", 260 + (ruleset_selected * 120) - self.menu_ruleset_x, 439, 120, 22)
 	love.graphics.setColor(1, 1, 1, 1)
 
-	local hash = ((self.game_mode_folder[mode_selected] or {}).hash or "not a value") .. "-" .. ((self.ruleset_folder[ruleset_selected] or {}).hash or "not a value")
-	local mode_highscore = highscores[hash]
 
 	if 	self.game_mode_folder[self.menu_state.mode]
 	and not self.game_mode_folder[self.menu_state.mode].is_directory then
@@ -177,22 +176,22 @@ function ModeSelectScene:render()
 			"Tagline: "..(self.game_mode_folder[mode_selected].tagline or "Missing."),
 			 280, 40, 360, "left")
 	end
-	if mode_highscore ~= nil then
-		for key, slot in pairs(mode_highscore) do
+	if type(self.mode_highscore) == "table" then
+		for name, idx in pairs(self.highscore_index) do
+			local column_x = self.highscore_column_positions[idx]
+			local column_w = self.highscore_column_widths[name]
+			love.graphics.setColor(1, 1, 1, 1)
+			love.graphics.printf(tostring(name), column_x, 100, column_w, "left")
+			love.graphics.line(-5 + column_x, 100, -5 + column_x, 320)
+		end
+		for key, slot in pairs(self.mode_highscore) do
 			if key == 11 then
 				break
 			end
-			local idx = 1
 			for name, value in pairs(slot) do
-				if key == 1 then
-					love.graphics.printf(name, 180 + idx * 100, 100, 100)
-				end
+				local idx = self.highscore_index[name]
 				local formatted_string = toFormattedValue(value)
-				if love.graphics.getFont():getWidth(formatted_string) > 100 then
-					formatted_string = formatted_string:sub(1, 6-math.floor(math.log10(#formatted_string))).."...".."("..#formatted_string..")"
-				end
-				love.graphics.printf(formatted_string, 180 + idx * 100, 100 + 20 * key, 100)
-				idx = idx + 1
+				love.graphics.printf(tostring(formatted_string), self.highscore_column_positions[idx], 100 + 20 * key, self.highscore_column_widths[name], "left")
 			end
 		end
 	end
@@ -286,6 +285,13 @@ function ModeSelectScene:render()
 			260 - self.menu_ruleset_x + 120 * idx, 440, 120, "center")
 		end
 	end
+	if self.game_mode_folder[self.menu_state.mode]
+	and self.game_mode_folder[self.menu_state.mode].ruleset_override then
+		love.graphics.setColor(0, 0, 0, 0.75)
+		love.graphics.rectangle("fill", 0, 420, 640, 60)
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.printf("This mode overrides the chosen ruleset!", 0, 440, 640, "center")
+	end
 	if self.reload_time_remaining and self.reload_time_remaining > 0 then
 		love.graphics.setColor(1, 1, 1, self.reload_time_remaining / 60)
 		love.graphics.printf("Modules reloaded!", 0, 10, 640, "center")
@@ -297,13 +303,12 @@ function ModeSelectScene:indirectStartMode()
 	if self.ruleset_folder[self.menu_state.ruleset].is_directory then
 		playSE("main_decide")
 		self:menuGoForward("ruleset")
-		self.menu_state.ruleset = 1
+		self:refreshHighscores()
 		return
-	end
-	if self.game_mode_folder[self.menu_state.mode].is_directory then
+	elseif self.game_mode_folder[self.menu_state.mode].is_directory then
 		playSE("main_decide")
 		self:menuGoForward("mode")
-		self.menu_state.mode = 1
+		self:refreshHighscores()
 		return
 	end
 	playSE("mode_decide")
@@ -340,6 +345,9 @@ function ModeSelectScene:menuGoBack(menu_type)
 		self.ruleset_folder_selections[#self.ruleset_folder_selections] = nil
 		self.ruleset_folder = self.ruleset_folder_selections[#self.ruleset_folder_selections]
 	end
+	if not self:getHighscoreConditions() then
+		self.mode_highscore = nil
+	end
 end
 
 function ModeSelectScene:menuGoForward(menu_type, is_load)
@@ -350,11 +358,13 @@ function ModeSelectScene:menuGoForward(menu_type, is_load)
 		self.menu_mode_y = -20
 		self.game_mode_folder = self.game_mode_folder[self.menu_state.mode]
 		self.game_mode_selections[#self.game_mode_selections+1] = self.game_mode_folder
+		self.menu_state.mode = 1
 		return true
 	elseif menu_type == "ruleset" and type(self.ruleset_folder[self.menu_state.ruleset]) == "table" then
 		self.menu_ruleset_x = -20
 		self.ruleset_folder = self.ruleset_folder[self.menu_state.ruleset]
 		self.ruleset_folder_selections[#self.ruleset_folder_selections+1] = self.ruleset_folder
+		self.menu_state.ruleset = 1
 		return true
 	end
 end
@@ -439,7 +449,7 @@ function ModeSelectScene:onInputPress(e)
 					if self.game_mode_folder[self.menu_state.mode].is_directory then
 						playSE("main_decide")
 						self:menuGoForward("mode")
-						self.menu_state.mode = 1
+						self:refreshHighscores()
 						return
 					end
 					self:indirectStartMode()
@@ -450,7 +460,7 @@ function ModeSelectScene:onInputPress(e)
 			if self.auto_ruleset_offset == 0 and self.ruleset_folder[self.menu_state.ruleset].is_directory then
 				playSE("main_decide")
 				self:menuGoForward("ruleset")
-				self.menu_state.ruleset = 1
+				self:refreshHighscores()
 			end
 		end
 	elseif self.starting then return
@@ -500,11 +510,42 @@ function ModeSelectScene:onInputRelease(e)
 	end
 end
 
+function ModeSelectScene:getHighscoreConditions()
+	if #self.game_mode_folder == 0 or #self.ruleset_folder == 0 then
+		return false
+	end
+	if self.game_mode_folder[self.menu_state.mode].hash == nil then
+		return false
+	end
+	if not (self.game_mode_folder[self.menu_state.mode].ruleset_override or self.ruleset_folder[self.menu_state.ruleset].hash) then
+		return false
+	end
+	return true
+end
+
+function ModeSelectScene:refreshHighscores()
+	if not self:getHighscoreConditions() then
+		self.mode_highscore = nil
+		return
+	end
+	local hash = self.game_mode_folder[self.menu_state.mode].hash .. "-"
+	if self.game_mode_folder[self.menu_state.mode].ruleset_override then
+		hash = hash .. self.game_mode_folder[self.menu_state.mode].ruleset_override
+	else
+		hash = hash .. self.ruleset_folder[self.menu_state.ruleset].hash
+	end
+	self.mode_highscore = highscores[hash]
+	self.highscore_index = HighscoresScene.getHighscoreIndexing(hash)
+	self.highscore_column_widths = HighscoresScene.getHighscoreColumnWidths(hash, font_3x5_2)
+	self.highscore_column_positions = HighscoresScene.getHighscoreColumnPositions(self.highscore_column_widths, self.highscore_index, 280)
+end
+
 function ModeSelectScene:changeMode(rel)
 	local len = #self.game_mode_folder
 	if len == 0 then return end
 	playSE("cursor")
 	self.menu_state.mode = Mod1(self.menu_state.mode + rel, len)
+	self:refreshHighscores()
 end
 
 function ModeSelectScene:changeRuleset(rel)
@@ -512,6 +553,7 @@ function ModeSelectScene:changeRuleset(rel)
 	if len == 0 then return end
 	playSE("cursor_lr")
 	self.menu_state.ruleset = Mod1(self.menu_state.ruleset + rel, len)
+	self:refreshHighscores()
 end
 
 return ModeSelectScene

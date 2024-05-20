@@ -138,7 +138,8 @@ function Ruleset:movePiece(piece, grid, move, instant)
 		else
 			piece:moveInGrid(offset, 1, grid, false)
 		end
-		if piece.position.x ~= x then
+		--this big piece fix is jank
+		if piece.position.x ~= x and (block_offset == 1 or i % 2 == 0) then
 			self:onPieceMove(piece, grid)
 			if piece.locked then break end
 		end

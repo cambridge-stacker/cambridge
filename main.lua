@@ -13,6 +13,7 @@ function love.load()
 	love.graphics.clear()
 	math.randomseed(os.time())
 	highscores = {}
+	require "load.filesystem"
 	require "load.rpc"
 	require "load.graphics"
 	require "load.sounds"
@@ -20,12 +21,11 @@ function love.load()
 	require "load.save"
 	require "load.bigint"
 	require "load.modules"
+	require "load.replays"
 	require "load.version"
 	loadSave()
 	require "funcs"
 	require "scene"
-
-	require "threaded_replay_code"
 	
 	--config["side_next"] = false
 	--config["reverse_rotate"] = true
@@ -52,35 +52,9 @@ function love.load()
 	if config.secret then playSE("welcome") end
 end
 
-local io_thread
-
-function loadReplayList()
-	replays = {}
-	replay_tree = {{name = "All"}}
-	dict_ref = {}
-	loaded_replays = false
-	collectgarbage("collect")
-
-	--proper disposal to avoid some memory problems
-	if io_thread then
-		io_thread:release()
-		love.thread.getChannel( 'replay' ):clear()
-		love.thread.getChannel( 'loaded_replays' ):clear()
-	end
-
-	io_thread = love.thread.newThread( replay_load_code )
-	for key, value in pairs(recursionStringValueExtract(game_modes, "is_directory")) do
-		if not dict_ref[value.name] then
-			dict_ref[value.name] = #replay_tree + 1
-			replay_tree[#replay_tree + 1] = {name = value.name}
-		end
-	end
-	io_thread:start()
-end
 
 mouse_idle = 0
 TAS_mode = false
-loaded_replays = false
 local system_cursor_type = "arrow"
 local screenshot_images = {}
 
@@ -568,9 +542,9 @@ function love.keypressed(key, scancode)
 		print("The old way of framestepping is deprecated!")
 	-- load state tool
 	elseif scancode == "f4" and TAS_mode and (scene.title == "Replay") then
-		love.thread.getChannel("savestate"):push( "save" )
+		scene:onInputPress({input="save_state"})
 	elseif scancode == "f5" and TAS_mode and (scene.title == "Replay") then
-		love.thread.getChannel("savestate"):push( "load" )
+		scene:onInputPress({input="load_state"})
 	-- secret sound playing :eyes:
 	elseif scancode == "f8" and scene.title == "Title" then
 		config.secret = not config.secret
@@ -679,13 +653,21 @@ end
 ---@param axis number
 ---@param value number
 function love.joystickaxis(joystick, axis, value)
-	local input_pressed = nil
 	local result_inputs = {}
+	local joystick_input_table = nil
+	local joystick_name = joystick:getName()
+	if config.input and config.input.joysticks and config.input.joysticks[joystick_name] then
+		joystick_input_table = config.input.joysticks[joystick_name]
+	end
 	if math.abs(value) >= 1 then
-		if config.input and config.input.joysticks and config.input.joysticks[joystick:getName()] then
-			result_inputs = multipleInputs(config.input.joysticks[joystick:getName()],"axes-"..axis.."-"..(value >= 1 and "positive" or "negative"))
+		if type(joystick_input_table) == "table" then
+			result_inputs = multipleInputs(joystick_input_table, "axes-"..axis.."-"..(value >= 1 and "positive" or "negative"))
 			for _, input in pairs(result_inputs) do
 				scene:onInputPress({input=input, type="joyaxis", name=joystick:getName(), axis=axis, value=value})
+			end
+			local opposite_direction_inputs = multipleInputs(joystick_input_table, "axes-"..axis.."-"..(value <= -1 and "positive" or "negative"))
+			for _, input in pairs(opposite_direction_inputs) do
+				scene:onInputRelease({input=input, type="joyaxis", name=joystick:getName(), axis=axis, value=value})
 			end
 			-- scene:onInputPress({input=input_pressed, type="joyaxis", name=joystick:getName(), axis=axis, value=value})
 		end
@@ -693,8 +675,8 @@ function love.joystickaxis(joystick, axis, value)
 			scene:onInputPress({type="joyaxis", name=joystick:getName(), axis=axis, value=value})
 		end
 	else
-		if config.input and config.input.joysticks and config.input.joysticks[joystick:getName()] then
-			for input_type, v in pairs(config.input.joysticks[joystick:getName()]) do
+		if type(joystick_input_table) == "table" then
+			for input_type, v in pairs(joystick_input_table) do
 				if "axes-"..axis.."-".."negative" == v then
 					table.insert(result_inputs, input_type)
 				end
@@ -703,11 +685,11 @@ function love.joystickaxis(joystick, axis, value)
 				end
 			end
 			for _, input in pairs(result_inputs) do
-				scene:onInputRelease({input=input, type="joyaxis", name=joystick:getName(), axis=axis, value=value})
+				scene:onInputRelease({input=input, type="joyaxis", name=joystick_name, axis=axis, value=value})
 			end
 		end
 		if #result_inputs == 0 then
-			scene:onInputRelease({type="joyaxis", name=joystick:getName(), axis=axis, value=value})
+			scene:onInputRelease({type="joyaxis", name=joystick_name, axis=axis, value=value})
 		end
 	end
 end
@@ -838,13 +820,52 @@ function love.mousereleased(x, y, button, istouch, presses)
 	scene:onInputRelease({type="mouse", x=local_x, y=local_y, button=button, istouch=istouch, presses=presses})
 end
 
-function love.mousemoved(x, y, dx, dy)
+---@param x number
+---@param y number
+---@param dx number
+---@param dy number
+---@param istouch boolean
+function love.mousemoved(x, y, dx, dy, istouch)
 	mouse_idle = 0
-	local screen_x, screen_y = love.graphics.getDimensions()
-	local scale_factor = math.min(screen_x / 640, screen_y / 480)
 	local local_x, local_y = getScaledDimensions(x, y)
 	local local_dx, local_dy = getScaledDimensions(dx, dy)
-	scene:onInputPress({type="mouse_move", x=local_x, y=local_y, dx=local_dx, dy=local_dy})
+	scene:onInputMove({type="mouse", x=local_x, y=local_y, dx=local_dx, dy=local_dy, istouch=istouch})
+end
+
+---@param id lightuserdata
+---@param x number
+---@param y number
+---@param dx number
+---@param dy number
+---@param pressure number
+function love.touchpressed(id, x, y, dx, dy, pressure)
+	local local_x, local_y = getScaledDimensions(x, y)
+	local local_dx, local_dy = getScaledDimensions(dx, dy)
+	scene:onInputPress({type="touch", id=id, x=local_x, y=local_y, dx=local_dx, dy=local_dy, pressure=pressure})
+end
+
+---@param id lightuserdata
+---@param x number
+---@param y number
+---@param dx number
+---@param dy number
+---@param pressure number
+function love.touchmoved(id, x, y, dx, dy, pressure)
+	local local_x, local_y = getScaledDimensions(x, y)
+	local local_dx, local_dy = getScaledDimensions(dx, dy)
+	scene:onInputMove({type="touch", id=id, x=local_x, y=local_y, dx=local_dx, dy=local_dy, pressure=pressure})
+end
+
+---@param id lightuserdata
+---@param x number
+---@param y number
+---@param dx number
+---@param dy number
+---@param pressure number
+function love.touchreleased(id, x, y, dx, dy, pressure)
+	local local_x, local_y = getScaledDimensions(x, y)
+	local local_dx, local_dy = getScaledDimensions(dx, dy)
+	scene:onInputRelease({type="touch", id=id, x=local_x, y=local_y, dx=local_dx, dy=local_dy, pressure=pressure})
 end
 
 function love.focus(f)
@@ -903,7 +924,7 @@ function love.run()
 			for name, a,b,c,d,e,f in love.event.poll() do
 				if name == "quit" then
 					if not love.quit or not love.quit() then
-						if io_thread then io_thread:release() end
+						if disposeReplayThread then disposeReplayThread() end
 						return a or 0
 					end
 				end

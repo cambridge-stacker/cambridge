@@ -60,6 +60,12 @@ ConfigScene.options = {
 		display_name = "Debug Level",
 		options = {"Off", "Min", "Max"},
 		description = "How much debug info do you want displayed?\nMin: Lua memory usage data\nMax: Memory usage, GPU stats data and 2 true hashes stored in replays"
+	},
+	{
+		config_name = "stretch_background",
+		display_name = "Stretch Background",
+		options = {"Off", "On"},
+		description = "Whether to fit the background image to 4:3 aspect ratio, or the aspect ratio of the game window"
 	}
 }
 local optioncount = #ConfigScene.options

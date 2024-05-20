@@ -46,7 +46,7 @@ function GameScene:update()
 		self.game.pause_time = self.game.pause_time + love.timer.getDelta() / (1/60)
 	else
 		if self.frame_steps > 0 then
-			self.game.ineligible = true
+			self.game.toolassisted = true
 			self.frame_steps = self.frame_steps - 1
 		end
 		local inputs = {}
@@ -75,7 +75,7 @@ function GameScene:render()
 			formatTime(self.game.pause_time)
 		), 0, 0, 635, "right")
 	end
-	if TAS_mode or self.game.ineligible then
+	if TAS_mode or self.game.toolassisted then
 		love.graphics.setFont(font_3x5_4)
 		love.graphics.setColor(1, 1, 1, 0.2)
 		love.graphics.printf(
@@ -102,8 +102,7 @@ function GameScene:onInputPress(e)
 		switchBGM(nil)
 		self.game:onExit()
 		sortReplays()
-		scene = e.input == "retry" and GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs) or
-				config.visualsettings.mode_select_type == 1 and ModeSelectScene() or RevModeSelectScene()
+		scene = e.input == "retry" and GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs) or TitleScene.menu_screens[1]()
 		scene.safety_frames = 2
 	elseif e.input == "frame_step" and TAS_mode then
 		self.frame_steps = self.frame_steps + 1
@@ -124,11 +123,7 @@ function GameScene:onInputPress(e)
 	elseif e.input == "mode_exit" then
 		switchBGM(nil)
 		self.game:onExit()
-		if config.visualsettings.mode_select_type == 1 then
-			scene = ModeSelectScene()
-		else
-			scene = RevModeSelectScene()
-		end
+		scene = TitleScene.menu_screens[1]()
 		scene.safety_frames = 2
 	elseif e.input and string.sub(e.input, 1, 5) ~= "menu_" and e.input ~= "frame_step" then
 		self.inputs[e.input] = true

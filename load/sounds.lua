@@ -25,6 +25,7 @@ sound_paths = {
 		triple = "res/se/triple.wav",
 		quad = "res/se/quad.wav"
 	},
+	error = "res/se/error.wav",
 	screenshot = "res/se/screenshot.wav",
 	fall = "res/se/fall.wav",
 	ready = "res/se/ready.wav",
@@ -72,6 +73,14 @@ function loadSound(path, sound, subsound)
 	end
 end
 
+---@param sound string
+---@param tbl table
+function loadSoundsFromTable(sound, tbl)
+	for key, value in pairs(tbl) do
+		loadSound(value, sound, key)
+	end
+end
+
 -- Replace each sound effect string with its love audiosource counterpart, but only if it exists. This lets the game handle missing SFX.
 function generateSoundTable()
 	if config.sound_sources == nil then config.sound_sources = 1 end
@@ -100,6 +109,9 @@ local function playRawSE(audio_source)
 end
 
 local function playRawSEOnce(audio_source)
+	if type(audio_source) == "table" then
+		error("Tried to play a table.")
+	end
 	audio_source:setVolume(config.sfx_volume)
 	if audio_source:isPlaying() then
 		return
@@ -108,6 +120,7 @@ local function playRawSEOnce(audio_source)
 end
 
 function playSE(sound, subsound)
+	if config and config.sfx_volume <= 0 then return end
 	if sound ~= nil then
 		if sounds[sound] then
 			if subsound ~= nil then
@@ -122,20 +135,24 @@ function playSE(sound, subsound)
 		end
 	end
 	if type(buffer_sounds[sound]) == "table" then
-		if type(buffer_sounds[sound][subsound]) == "table" then
-			sounds_played[sound][subsound] = sounds_played[sound][subsound] + 1
-			local index = Mod1(sounds_played[sound][subsound], config.sound_sources)
-			playRawSE(buffer_sounds[sound][subsound][index])
+		if subsound ~= nil then
+			if type(buffer_sounds[sound][subsound]) == "table" then
+				sounds_played[sound][subsound] = sounds_played[sound][subsound] + 1
+				local index = Mod1(sounds_played[sound][subsound], config.sound_sources)
+				playRawSE(buffer_sounds[sound][subsound][index])
+				return
+			end
+		else
+			sounds_played[sound] = sounds_played[sound] + 1
+			local index = Mod1(sounds_played[sound], config.sound_sources)
+			playRawSE(buffer_sounds[sound][index])
 			return
 		end
-		sounds_played[sound] = sounds_played[sound] + 1
-		local index = Mod1(sounds_played[sound], config.sound_sources)
-		playRawSE(buffer_sounds[sound][index])
-		return
 	end
 end
 
 function playSEOnce(sound, subsound)
+	if config and config.sfx_volume <= 0 then return end
 	if sound ~= nil then
 		if sounds[sound] then
 			if subsound ~= nil then
@@ -150,13 +167,16 @@ function playSEOnce(sound, subsound)
 		end
 	end
 	if type(buffer_sounds[sound]) == "table" then
-		if type(buffer_sounds[sound][subsound]) == "table" then
-			local index = Mod1(sounds_played[sound][subsound], config.sound_sources)
-			playRawSEOnce(buffer_sounds[sound][subsound][index])
+		if subsound ~= nil then
+			if type(buffer_sounds[sound][subsound]) == "table" then
+				local index = Mod1(sounds_played[sound][subsound], config.sound_sources)
+				playRawSEOnce(buffer_sounds[sound][subsound][index])
+				return
+			end
+		else
+			local index = Mod1(sounds_played[sound], config.sound_sources)
+			playRawSEOnce(buffer_sounds[sound][index])
 			return
 		end
-		local index = Mod1(sounds_played[sound], config.sound_sources)
-		playRawSEOnce(buffer_sounds[sound][index])
-		return
 	end
 end

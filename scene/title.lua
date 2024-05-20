@@ -6,7 +6,7 @@ TitleScene.restart_message = false
 local enter_pressed = not (config and config.input)
 local menu_frames = 0
 
-local main_menu_screens = {
+TitleScene.menu_screens = {
 	ModeSelectScene,
 	HighscoresScene,
 	ReplaySelectScene,
@@ -64,9 +64,9 @@ function TitleScene:new()
 	self.text = ""
 	self.text_flag = false
 	if config.visualsettings.mode_select_type == 1 then
-		main_menu_screens[1] = ModeSelectScene
+		TitleScene.menu_screens[1] = ModeSelectScene
 	else
-		main_menu_screens[1] = RevModeSelectScene
+		TitleScene.menu_screens[1] = RevModeSelectScene
 	end
 	DiscordRPC:update({
 		details = "In menus",
@@ -104,6 +104,7 @@ function TitleScene:render()
 	love.graphics.setColor(1, 1, 1, 1 - self.snow_bg_opacity)
 	drawBackground("title_no_icon") -- title, title_night
 
+	love.graphics.setColor(1, 1, 1, 1)
 	if not enter_pressed then
 		love.graphics.setFont(font_3x5_3)
 		love.graphics.printf("Welcome To Cambridge: The Next Open-Source Stacker!", 0, 240, 640, "center")
@@ -122,7 +123,7 @@ function TitleScene:render()
 	if enter_pressed then
 		x, y = 490, 192
 	else
-		x, y = 256, 140
+		x, y = 272, 140
 	end
 	for _, b in ipairs(block_offsets) do
 		drawSizeIndependentImage(
@@ -163,7 +164,7 @@ function TitleScene:render()
 	love.graphics.rectangle("fill", math.min(20, -120 * self.main_menu_state + (menu_frames * 24) - 20), 278 + 20 * self.main_menu_state, 160, 22)
 
 	love.graphics.setColor(1, 1, 1, 1)
-	for i, screen in pairs(main_menu_screens) do
+	for i, screen in pairs(self.menu_screens) do
 		local b = cursorHighlight(40,280 + 20 * i,120,20)
 		love.graphics.setColor(1,1,b,1)
 		love.graphics.printf(screen.title, math.min(40, -120 * i + (menu_frames * 24)), 280 + 20 * i, 120, "left")
@@ -171,20 +172,11 @@ function TitleScene:render()
 end
 
 function TitleScene:changeOption(rel)
-	local len = #main_menu_screens
+	local len = #self.menu_screens
 	self.main_menu_state = (self.main_menu_state + len + rel - 1) % len + 1
 end
 
 function TitleScene:onInputPress(e)
-	if e.type == "mouse" and menu_frames > 10 * #main_menu_screens then
-		if e.x > 40 and e.x < 160 then
-			if e.y > 300 and e.y < 300 + #main_menu_screens * 20 then
-				self.main_menu_state = math.floor((e.y - 280) / 20)
-				playSE("main_decide")
-				scene = main_menu_screens[self.main_menu_state]()
-			end
-		end
-	end
 	if not enter_pressed then
 		if e.scancode == "return" or e.scancode == "kpenter" or e.input == "menu_decide" then
 			enter_pressed = true
@@ -194,9 +186,18 @@ function TitleScene:onInputPress(e)
 		end
 		return
 	end
+	if e.type == "mouse" and menu_frames > 10 * #self.menu_screens then
+		if e.x > 40 and e.x < 160 then
+			if e.y > 300 and e.y < 300 + #self.menu_screens * 20 then
+				self.main_menu_state = math.floor((e.y - 280) / 20)
+				playSE("main_decide")
+				scene = self.menu_screens[self.main_menu_state]()
+			end
+		end
+	end
 	if e.input == "menu_decide" then
 		playSE("main_decide")
-		scene = main_menu_screens[self.main_menu_state]()
+		scene = self.menu_screens[self.main_menu_state]()
 	elseif e.input == "menu_up" then
 		self:changeOption(-1)
 		playSE("cursor")

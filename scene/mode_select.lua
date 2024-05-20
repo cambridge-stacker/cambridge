@@ -278,6 +278,13 @@ function ModeSelectScene:render()
 			360, (260 - self.menu_ruleset_height) + 20 * idx, 160, "left")
 		end
 	end
+	if self.game_mode_folder[self.menu_state.mode]
+	and self.game_mode_folder[self.menu_state.mode].ruleset_override then
+		love.graphics.setColor(0, 0, 0, 0.75)
+		love.graphics.rectangle("fill", 330, 80, 240, 380, 5, 5)
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.printf("This mode overrides the chosen ruleset!", 340, 240, 220, "center")
+	end
 
 	if self.reload_time_remaining and self.reload_time_remaining > 0 then
 		love.graphics.setColor(1, 1, 1, self.reload_time_remaining / 60)
