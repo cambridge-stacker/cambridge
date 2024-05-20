@@ -1,1 +1,1 @@
-version = "dev-source (0.4.x-pre)"
+version = "dev-source (v0.4.x-dev)"
