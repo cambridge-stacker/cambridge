@@ -262,14 +262,13 @@ function HighscoreScene:render()
 			if slot_y > -20 + self.menu_list_y and
 			   slot_y < 360 + self.menu_list_y then
 				local text_alpha = fadeoutAtEdges((-self.menu_list_y - 170) + slot_y, 170, 20)
+				love.graphics.setColor(1, 1, 1, text_alpha)
 				for name, value in pairs(slot) do
 					local idx = self.highscore_index[name]
-					love.graphics.setColor(1, 1, 1, text_alpha)
 					local formatted_string = toFormattedValue(value)
 					local column_x = self.highscore_column_positions[idx]
 					drawWrappingText(tostring(formatted_string), -20 + column_x, 120 + slot_y - self.menu_list_y, self.highscore_column_widths[name], "left")
 				end
-				love.graphics.setColor(1, 1, 1, text_alpha)
 				love.graphics.printf(tostring(key), 20, 120 + slot_y - self.menu_list_y, 100)
 			end
 		end
