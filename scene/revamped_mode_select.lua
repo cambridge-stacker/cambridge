@@ -566,6 +566,7 @@ function ModeSelectScene:refreshHighscores()
 	self.highscore_column_widths = HighscoresScene.getHighscoreColumnWidths(hash, font_3x5_2)
 	self.highscore_column_positions = HighscoresScene.getHighscoreColumnPositions(self.highscore_column_widths, self.highscore_index, 320)
 	if self.mode_highscore ~= prev_highscores then
+		self.key_id = 1
 		self.sort_type = ""
 		self.key_sort_string = ""
 		for key, slot in pairs(self.mode_highscore) do
