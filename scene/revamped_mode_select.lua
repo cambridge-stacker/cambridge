@@ -552,6 +552,7 @@ function ModeSelectScene:refreshHighscores()
 	else
 		hash = hash .. self.ruleset_folder[self.menu_state.ruleset].hash
 	end
+	local prev_highscores = self.mode_highscore
 	self.mode_highscore = highscores[hash]
 	if type(self.mode_highscore) ~= "table" then
 		return
@@ -566,9 +567,11 @@ function ModeSelectScene:refreshHighscores()
 	self.highscore_column_positions = HighscoresScene.getHighscoreColumnPositions(self.highscore_column_widths, self.highscore_index, 320)
 	self.sort_type = ""
 	self.key_sort_string = ""
-	for key, slot in pairs(self.mode_highscore) do
-		self.menu_slot_positions[key] = key * 20
-		self.interpolated_menu_slot_positions[key] = 0
+	if self.mode_highscore ~= prev_highscores then
+		for key, slot in pairs(self.mode_highscore) do
+			self.menu_slot_positions[key] = key * 20
+			self.interpolated_menu_slot_positions[key] = 0
+		end
 	end
 end
 
