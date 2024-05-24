@@ -565,9 +565,9 @@ function ModeSelectScene:refreshHighscores()
 	end
 	self.highscore_column_widths = HighscoresScene.getHighscoreColumnWidths(hash, font_3x5_2)
 	self.highscore_column_positions = HighscoresScene.getHighscoreColumnPositions(self.highscore_column_widths, self.highscore_index, 320)
-	self.sort_type = ""
-	self.key_sort_string = ""
 	if self.mode_highscore ~= prev_highscores then
+		self.sort_type = ""
+		self.key_sort_string = ""
 		for key, slot in pairs(self.mode_highscore) do
 			self.menu_slot_positions[key] = key * 20
 			self.interpolated_menu_slot_positions[key] = 0
