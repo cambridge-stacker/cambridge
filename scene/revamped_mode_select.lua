@@ -98,7 +98,7 @@ function ModeSelectScene:update()
 		end
 		return
 	end
-	if type(self.mode_highscore) == "table" then
+	if type(self.mode_highscore) == "table" and self.index_count >= 1 then
 		self.auto_sort_clock = self.auto_sort_clock + 1
 	end
 	if self.auto_sort_clock > self.auto_sort_delay then
