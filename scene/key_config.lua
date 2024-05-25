@@ -132,7 +132,6 @@ function KeyConfigScene:new()
 
 	if not config.input then
 		config.input = {}
-		self.configurable_inputs = configurable_system_inputs
 	end
 	if config.input.keys then
 		self.reconfiguration = true
@@ -140,6 +139,8 @@ function KeyConfigScene:new()
 		for input_name, key in pairs(config.input.keys) do
 			self.set_inputs[input_name] = self:formatKey(key)
 		end
+	else
+		self.configurable_inputs = configurable_system_inputs
 	end
 
 	self.menu_state = 1
