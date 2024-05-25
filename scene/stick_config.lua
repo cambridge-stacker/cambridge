@@ -276,7 +276,7 @@ function StickConfigScene:onInputPress(e)
 					playSE("mode_decide")
 					self.rebinding = false
 				else
-					playSE("erase", "single")
+					playSE("error")
 				end
 				if not self.reconfiguration then
 					self.input_state = self.input_state + 1
@@ -298,7 +298,7 @@ function StickConfigScene:onInputPress(e)
 						playSE("mode_decide")
 						self.rebinding = false
 					else
-						playSE("erase", "single")
+						playSE("error")
 					end
 					if not self.reconfiguration then
 						self.input_state = self.input_state + 1
@@ -317,7 +317,7 @@ function StickConfigScene:onInputPress(e)
 						playSE("mode_decide")
 						self.rebinding = false
 					else
-						playSE("erase", "single")
+						playSE("error")
 					end
 					if not self.reconfiguration then
 						self.input_state = self.input_state + 1

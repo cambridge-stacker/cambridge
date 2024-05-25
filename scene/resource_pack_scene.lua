@@ -298,7 +298,7 @@ function ResourcePackScene:onInputPress(e)
 		if cursorHoverArea(360, 60, 240, 300) and self.selected_resource_packs_count > 7 then
 			self.right_menu_scrollbar.value = self.right_menu_scrollbar.value + (e.y / self.selected_resource_packs_count)
 		end
-	elseif e.type ~= "mouse_move" then
+	else
 		self.mouse_control = false
 	end
 	if e.input == "hold" then

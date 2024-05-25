@@ -46,7 +46,7 @@ function GameScene:update()
 		self.game.pause_time = self.game.pause_time + love.timer.getDelta() / (1/60)
 	else
 		if self.frame_steps > 0 then
-			self.game.ineligible = true
+			self.game.toolassisted = true
 			self.frame_steps = self.frame_steps - 1
 		end
 		local inputs = {}
@@ -75,7 +75,7 @@ function GameScene:render()
 			formatTime(self.game.pause_time)
 		), 0, 0, 635, "right")
 	end
-	if TAS_mode or self.game.ineligible then
+	if TAS_mode or self.game.toolassisted then
 		love.graphics.setFont(font_3x5_4)
 		love.graphics.setColor(1, 1, 1, 0.2)
 		love.graphics.printf(

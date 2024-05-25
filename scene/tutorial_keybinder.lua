@@ -199,7 +199,7 @@ function KeyConfigScene:onInputPress(e)
 			end
 		elseif e.scancode == "tab" then
 			self.failed_input_assignment_time = 120
-			playSE("erase", "single")
+			playSE("error")
 			return
 		-- all other keys can be configured
 		elseif self:rebindKey(e.scancode) then
@@ -230,7 +230,7 @@ function KeyConfigScene:onInputPress(e)
 			self.input_state = self.input_state + 1
 		else
 			self.failed_input_assignment_time = 120
-			playSE("erase", "single")
+			playSE("error")
 		end
 	end
 end

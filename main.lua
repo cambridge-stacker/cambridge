@@ -21,12 +21,11 @@ function love.load()
 	require "load.save"
 	require "load.bigint"
 	require "load.modules"
+	require "load.replays"
 	require "load.version"
 	loadSave()
 	require "funcs"
 	require "scene"
-
-	require "threaded_replay_code"
 	
 	--config["side_next"] = false
 	--config["reverse_rotate"] = true
@@ -53,35 +52,9 @@ function love.load()
 	if config.secret then playSE("welcome") end
 end
 
-local io_thread
-
-function loadReplayList()
-	replays = {}
-	replay_tree = {{name = "All"}}
-	dict_ref = {}
-	loaded_replays = false
-	collectgarbage("collect")
-
-	--proper disposal to avoid some memory problems
-	if io_thread then
-		io_thread:release()
-		love.thread.getChannel( 'replay' ):clear()
-		love.thread.getChannel( 'loaded_replays' ):clear()
-	end
-
-	io_thread = love.thread.newThread( replay_load_code )
-	for key, value in pairs(recursionStringValueExtract(game_modes, "is_directory")) do
-		if not dict_ref[value.name] then
-			dict_ref[value.name] = #replay_tree + 1
-			replay_tree[#replay_tree + 1] = {name = value.name}
-		end
-	end
-	io_thread:start()
-end
 
 mouse_idle = 0
 TAS_mode = false
-loaded_replays = false
 local system_cursor_type = "arrow"
 local screenshot_images = {}
 
@@ -806,13 +779,52 @@ function love.mousereleased(x, y, button, istouch, presses)
 	scene:onInputRelease({type="mouse", x=local_x, y=local_y, button=button, istouch=istouch, presses=presses})
 end
 
-function love.mousemoved(x, y, dx, dy)
+---@param x number
+---@param y number
+---@param dx number
+---@param dy number
+---@param istouch boolean
+function love.mousemoved(x, y, dx, dy, istouch)
 	mouse_idle = 0
-	local screen_x, screen_y = love.graphics.getDimensions()
-	local scale_factor = math.min(screen_x / 640, screen_y / 480)
 	local local_x, local_y = getScaledDimensions(x, y)
 	local local_dx, local_dy = getScaledDimensions(dx, dy)
-	scene:onInputPress({type="mouse_move", x=local_x, y=local_y, dx=local_dx, dy=local_dy})
+	scene:onInputMove({type="mouse", x=local_x, y=local_y, dx=local_dx, dy=local_dy, istouch=istouch})
+end
+
+---@param id lightuserdata
+---@param x number
+---@param y number
+---@param dx number
+---@param dy number
+---@param pressure number
+function love.touchpressed(id, x, y, dx, dy, pressure)
+	local local_x, local_y = getScaledDimensions(x, y)
+	local local_dx, local_dy = getScaledDimensions(dx, dy)
+	scene:onInputPress({type="touch", id=id, x=local_x, y=local_y, dx=local_dx, dy=local_dy, pressure=pressure})
+end
+
+---@param id lightuserdata
+---@param x number
+---@param y number
+---@param dx number
+---@param dy number
+---@param pressure number
+function love.touchmoved(id, x, y, dx, dy, pressure)
+	local local_x, local_y = getScaledDimensions(x, y)
+	local local_dx, local_dy = getScaledDimensions(dx, dy)
+	scene:onInputMove({type="touch", id=id, x=local_x, y=local_y, dx=local_dx, dy=local_dy, pressure=pressure})
+end
+
+---@param id lightuserdata
+---@param x number
+---@param y number
+---@param dx number
+---@param dy number
+---@param pressure number
+function love.touchreleased(id, x, y, dx, dy, pressure)
+	local local_x, local_y = getScaledDimensions(x, y)
+	local local_dx, local_dy = getScaledDimensions(dx, dy)
+	scene:onInputRelease({type="touch", id=id, x=local_x, y=local_y, dx=local_dx, dy=local_dy, pressure=pressure})
 end
 
 function love.focus(f)
@@ -871,7 +883,7 @@ function love.run()
 			for name, a,b,c,d,e,f in love.event.poll() do
 				if name == "quit" then
 					if not love.quit or not love.quit() then
-						if io_thread then io_thread:release() end
+						if disposeReplayThread then disposeReplayThread() end
 						return a or 0
 					end
 				end

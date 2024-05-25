@@ -222,11 +222,11 @@ function KeyConfigScene:render()
 	love.graphics.printf("Function keys (F1, F2, etc.), and tab can't be changed", 0, 40, 640, "left")
 end
 
-function KeyConfigScene:formatKey(key)
-	if love.keyboard.getKeyFromScancode(key) == key then
-		return "key ".. key
+function KeyConfigScene:formatKey(scancode)
+	if love.keyboard.getKeyFromScancode(scancode) == scancode then
+		return "key ".. scancode
 	else
-		return "scancode " .. love.keyboard.getKeyFromScancode(key) .. ", key (" .. key .. ")"
+		return "key " .. love.keyboard.getKeyFromScancode(scancode) .. ", scancode (" .. scancode .. ")"
 	end
 end
 
@@ -286,7 +286,7 @@ function KeyConfigScene:onInputPress(e)
 						playSE("mode_decide")
 						self.key_rebinding = false
 					else
-						playSE("erase", "single")
+						playSE("error")
 					end
 				end
 				config.input.keys = self.new_input
@@ -328,7 +328,7 @@ function KeyConfigScene:onInputPress(e)
 		elseif self:rebindKey(e.scancode) then
 			self.input_state = self.input_state + 1
 		else
-			playSE("erase", "single")
+			playSE("error")
 		end
 	elseif e.type == "mouse" then
 		if self.configurable_inputs == nil then

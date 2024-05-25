@@ -25,6 +25,10 @@ function HighscoreScene:new()
 	self.auto_menu_offset = 0
 	self.index_count = 0
 
+	if #self.hash_table == 0 then
+		self.empty_highscores = true
+	end
+
 	DiscordRPC:update({
 		details = "In menus",
 		state = "Peeking their own highscores",
@@ -80,11 +84,16 @@ function HighscoreScene.removeEmpty()
 end
 
 ---@return table, number
-function HighscoreScene.getHighscoreIndexing(hash)
+function HighscoreScene.getHighscoreIndexing(reference)
 	local count = 0
 	local index_sorting = {}
 	local highscore_index = {}
-	local highscore_reference = highscores[hash]
+	local highscore_reference
+	if type(reference) == "table" then
+		highscore_reference = reference
+	else
+		highscore_reference = highscores[reference]
+	end
 	if highscore_reference == nil then
 		return {}, 0
 	end
@@ -119,11 +128,11 @@ function HighscoreScene.getHighscoreColumnWidths(hash, font, width_limit)
 	end
 	local highscore_indexing = HighscoreScene.getHighscoreIndexing(hash)
 	for name, idx in pairs(highscore_indexing) do
-		highscore_column_widths[name] = font:getWidth(name)
+		highscore_column_widths[name] = font:getWidth(tostring(name))
 	end
 	for key, value in pairs(highscore_reference) do
 		for k2, v2 in pairs(value) do
-			highscore_column_widths[k2] = math.max(highscore_column_widths[k2], font:getWidth(v2))
+			highscore_column_widths[k2] = math.max(highscore_column_widths[k2], font:getWidth(tostring(v2)))
 		end
 	end
 	for key, value in pairs(highscore_column_widths) do
@@ -200,6 +209,16 @@ function HighscoreScene:render()
 	love.graphics.setColor(1, 1, highlight, 1)
 	love.graphics.printf("<-", 20, 40, 50, "center")
 	love.graphics.setColor(1, 1, 1, 1)
+	if self.empty_highscores then
+		love.graphics.setFont(font_3x5_3)
+		love.graphics.printf("There's no recorded highscores!", 0, 200, 640, "center")
+		love.graphics.setFont(font_3x5_2)
+		love.graphics.printf(
+			"Go play some modes, then come back!\n" ..
+			"Press or click anything to leave this menu.",
+			0, 240, 640, "center")
+		return
+	end
 
 	love.graphics.setFont(font_8x11)
 	if self.hash ~= nil then
@@ -243,14 +262,13 @@ function HighscoreScene:render()
 			if slot_y > -20 + self.menu_list_y and
 			   slot_y < 360 + self.menu_list_y then
 				local text_alpha = fadeoutAtEdges((-self.menu_list_y - 170) + slot_y, 170, 20)
+				love.graphics.setColor(1, 1, 1, text_alpha)
 				for name, value in pairs(slot) do
 					local idx = self.highscore_index[name]
-					love.graphics.setColor(1, 1, 1, text_alpha)
 					local formatted_string = toFormattedValue(value)
 					local column_x = self.highscore_column_positions[idx]
 					drawWrappingText(tostring(formatted_string), -20 + column_x, 120 + slot_y - self.menu_list_y, self.highscore_column_widths[name], "left")
 				end
-				love.graphics.setColor(1, 1, 1, text_alpha)
 				love.graphics.printf(tostring(key), 20, 120 + slot_y - self.menu_list_y, 100)
 			end
 		end
@@ -273,7 +291,8 @@ function HighscoreScene:render()
 end
 
 function HighscoreScene:onInputPress(e)
-	if (self.display_warning or self.display_error) and e.input then
+	if self.empty_highscores then
+		playSE("menu_cancel")
 		scene = TitleScene()
 	elseif e.type == "wheel" then
 		if e.y ~= 0 then

@@ -16,6 +16,8 @@ function ReplaySelectScene:new()
 	unloadModules()
 	initModules()
 
+	self.safety_frames = 0
+
 	self.replay_count = #(love.filesystem.getDirectoryItems("replays"))
 	if not loaded_replays and not loading_replays then
 		loading_replays = true
@@ -87,6 +89,7 @@ function sortReplays()
 end
 
 function ReplaySelectScene:update()
+	self.safety_frames = self.safety_frames - 1
 	if not loaded_replays then
 		self.state_string = love.thread.getChannel('load_state'):peek()
 		local replay = love.thread.getChannel('replay'):pop()
@@ -241,16 +244,27 @@ function ReplaySelectScene:render()
 		local replay = replays[pointer]
 		if replay then
 			local idx = 0
-			love.graphics.setFont(font_3x5_4)
-			love.graphics.printf("Mode: " .. replay["mode"], 0, 120, 640, "center")
-			love.graphics.setFont(font_3x5_3)
-			love.graphics.printf(os.date("Timestamp: %c", replay["timestamp"]), 0, 160, 640, "center")
+			if replay.ineligible then
+				love.graphics.setFont(font_3x5_2)
+				love.graphics.setColor(1, 1, 0, 1)
+				love.graphics.printf("This replay is ineligible for leaderboards", 0, 80, 640, "center")
+				love.graphics.setColor(1, 1, 1, 1)
+				idx = idx + 1
+			end
 			if replay.toolassisted then
 				love.graphics.setFont(font_3x5_2)
 				love.graphics.setColor(1, 1, 0, 1)
-				love.graphics.printf("This replay either used built-in TAS or has ineligible flag set", 0, 100, 640, "center")
+				love.graphics.printf("This replay has likely used in-game TAS", 0, 80, 640, "center")
 				love.graphics.setColor(1, 1, 1, 1)
+				idx = idx + 1
 			end
+			if replay_tree[self.menu_state.submenu].name == "All" then
+				love.graphics.setFont(font_3x5_4)
+				love.graphics.printf("Mode: " .. replay["mode"], 0, 80 + idx * 20, 640, "center")
+				idx = idx + 2
+			end
+			love.graphics.setFont(font_3x5_3)
+			love.graphics.printf(os.date("Timestamp: %c", replay["timestamp"]), 0, 80 + idx * 20, 640, "center")
 			if replay.cambridge_version then
 				idx = idx + 1.5
 				local version_text_color = {1, 1, 1, 1}
@@ -258,50 +272,49 @@ function ReplaySelectScene:render()
 					version_text_color = {1, 0, 0, 1}
 				end
 				love.graphics.setFont(font_3x5_2)
-				love.graphics.printf({"Cambridge version for this replay: ", version_text_color, replay.cambridge_version}, 0, 160 + idx * 20, 640, "center")
+				love.graphics.printf({"Cambridge version for this replay: ", version_text_color, replay.cambridge_version}, 0, 80 + idx * 20, 640, "center")
 			end
 			if replay.ruleset_override then
 				idx = idx + 1
 				love.graphics.setFont(font_3x5_2)
 				love.graphics.setColor(1, 1, 0, 1)
-				love.graphics.printf("This mode overrides the ruleset.", 0, 160 + idx * 20, 640, "center")
+				love.graphics.printf("This mode overrides the ruleset.", 0, 80 + idx * 20, 640, "center")
 				love.graphics.setColor(1, 1, 1, 1)
 			end
 			if replay.pause_count and replay.pause_time then
-				idx = idx + 1.5
+				idx = idx + 1
 				love.graphics.setFont(font_3x5_2)
-				love.graphics.printf(("Pause count: %d, Time Paused: %s"):format(replay.pause_count, formatTime(replay.pause_time)), 0, 160 + idx * 20, 640, "center")
+				love.graphics.printf(("Pause count: %d, Time Paused: %s"):format(replay.pause_count, formatTime(replay.pause_time)), 0, 80 + idx * 20, 640, "center")
 			end
 			if replay.sha256_table then
 				if config.visualsettings.debug_level > 2 then
 					idx = idx + 1
 					love.graphics.setFont(font_3x5)
-					love.graphics.printf(("SHA256 replay hashes:\n   Mode: %s\nRuleset: %s"):format(replay.sha256_table.mode, replay.sha256_table.ruleset), 0, 160 + idx * 20, 640, "center")
+					love.graphics.printf(("SHA256 replay hashes:\n   Mode: %s\nRuleset: %s"):format(replay.sha256_table.mode, replay.sha256_table.ruleset), 0, 80 + idx * 20, 640, "center")
 					idx = idx + 1.5
-					love.graphics.printf(("SHA256 comparison hashes:\n   Mode: %s\nRuleset: %s"):format(self.replay_sha_table.mode, self.replay_sha_table.ruleset), 0, 160 + idx * 20, 640, "center")
+					love.graphics.printf(("SHA256 comparison hashes:\n   Mode: %s\nRuleset: %s"):format(self.replay_sha_table.mode, self.replay_sha_table.ruleset), 0, 80 + idx * 20, 640, "center")
+					idx = idx + 0.5
 				end
 			end
-			if replay.highscore_data then
-				if next(replay.highscore_data) == nil then
-					love.graphics.setFont(font_3x5_3)
-					love.graphics.printf("Level: ".. replay["level"], 0, 190 + idx * 20, 640, "center")
-				else
-					love.graphics.setFont(font_3x5_2)
-					love.graphics.printf("In-replay highscore data:", 0, 190 + idx * 20, 640, "center")
-				end
-				for key, value in pairs(replay.highscore_data) do
-					idx = idx + 0.8
-					love.graphics.printf(key..": "..value, 0, 200 + idx * 20, 640, "center")
-					idx = idx + self.highscores_idx_offset[key]
-				end
-				idx = idx - 1
-			else
+			if next(self.highscores_indexing) == nil then
 				love.graphics.setFont(font_3x5_3)
-				love.graphics.printf("Legacy replay\nLevel: "..replay["level"], 0, 190, 640, "center")
+				love.graphics.printf("Level: ".. replay["level"], 0, 100 + idx * 20, 640, "center")
+			else
+				love.graphics.setFont(font_3x5_2)
+				love.graphics.printf("In-replay highscore data:", 0, 100 + idx * 20, 640, "center")
+				for key, value in pairs(self.highscores_indexing) do
+					local text_content = key..": "..tostring(replay.highscore_data[key])
+					if self.highscores_data_comparison and replay.highscore_data[key] ~= self.highscores_data_comparison[key] then
+						text_content = {key..": ", self.highscores_data_comparison[key] or "nil",
+						{1, 0, 0, 1}, " -", tostring(replay.highscore_data[key]), "- "}
+					end
+					love.graphics.printf(text_content, 0, 110 + (idx + self.highscores_idx_offset[value]) * 20, 640, "center")
+				end
+				idx = idx + self.highscores_idx_offset[#self.highscores_idx_offset]
 			end
 			love.graphics.setFont(font_3x5_2)
 			love.graphics.printf("Enter or LMB or ".. (config.input.keys.menu_decide or "???") ..": Start\nDel or Backspace or RMB or " ..
-						(config.input.keys.menu_back or "???")..": Return", 0, 250 + idx * 20, 640, "center")
+			(config.input.keys.menu_back or "???")..": Return\n Generic 1: Verify highscore data", 0, 140 + idx * 20, 640, "center")
 		end
 	else
 		if #replay_tree[self.menu_state.submenu] == 0 then
@@ -355,6 +368,44 @@ function ReplaySelectScene:render()
 	end
 end
 
+function ReplaySelectScene.indexModeFromReplay(replay)
+	for key, value in pairs(recursionStringValueExtract(game_modes, "is_directory")) do
+		if value.name == replay["mode"] or value.hash == replay["mode_hash"] then
+			return value
+		end
+	end
+end
+
+function ReplaySelectScene.indexRulesetFromReplay(replay)
+	for key, value in pairs(recursionStringValueExtract(rulesets, "is_directory")) do
+		if value.name == replay["ruleset"] or value.hash == replay["ruleset_hash"] then
+			return value
+		end
+	end
+end
+
+---@param highscore_data table
+---@param font love.Font
+---@return table
+function ReplaySelectScene:generateHighscoreRowOffsets(highscore_data, font)
+	local highscores_idx_offset = {}
+	for key, value in pairs(self.highscores_indexing) do
+		local idx = 0
+		local _, wrappedtext = font:getWrap(value..": "..tostring(highscore_data[value]), 640)
+		if self.highscores_data_comparison then
+			_, wrappedtext = font:getWrap(key..": "..tostring(self.highscores_data_comparison[key]).." -"..tostring(highscore_data[key]).."- ", 640)
+		end
+		for _ in pairs(wrappedtext) do
+			idx = idx + 0.8
+		end
+		highscores_idx_offset[value] = idx
+	end
+	for i = 2, #highscores_idx_offset do
+		highscores_idx_offset[i] = highscores_idx_offset[i] + highscores_idx_offset[i-1]
+	end
+	return highscores_idx_offset
+end
+
 function ReplaySelectScene:startReplay()
 	if self.menu_state.submenu == 0 then
 		self.menu_state.submenu = self.menu_state.replay
@@ -372,36 +423,19 @@ function ReplaySelectScene:startReplay()
 	current_submenu = self.menu_state.submenu
 	current_replay = self.menu_state.replay
 	-- Get game mode and ruleset
-	local mode
-	local rules
 	local pointer = replay_tree[self.menu_state.submenu][self.menu_state.replay]
-	for key, value in pairs(recursionStringValueExtract(game_modes, "is_directory")) do
-		if value.name == replays[pointer]["mode"] then
-			mode = value
-			break
-		end
-		if value.hash == replays[pointer]["mode_hash"] then
-			mode = value
-			break
-		end
-	end
-	for key, value in pairs(recursionStringValueExtract(rulesets, "is_directory")) do
-		if value.name == replays[pointer]["ruleset"] then
-			rules = value
-			break
-		end
-		if value.hash == replays[pointer]["ruleset_hash"] then
-			rules = value
-			break
-		end
-	end
-	if mode == nil or (rules == nil and not replays[pointer].ruleset_override) then
+	local replay = replays[pointer]
+	local mode = self.indexModeFromReplay(replay)
+	local rules = self.indexRulesetFromReplay(replay)
+	if mode == nil or (rules == nil and not replay.ruleset_override) then
 		self.display_error = true
 		return
 	end
 
-	if replays[pointer]["highscore_data"] and not self.chosen_replay then
+	if replay["highscore_data"] and not self.chosen_replay then
 		self.chosen_replay = true
+		self.highscores_data_comparison = nil
+		self.highscores_data_matching = nil
 		self.auto_menu_offset = 0
 		self.replay_sha_table = {mode = sha2.sha256(binser.serialize(mode)), ruleset = sha2.sha256(binser.serialize(rules))}
 		playSE("main_decide")
@@ -409,16 +443,8 @@ function ReplaySelectScene:startReplay()
 		self.das_up = nil
 		self.das_left = nil
 		self.das_right = nil
-		self.highscores_idx_offset = {}
-		for key, value in pairs(replays[pointer]["highscore_data"]) do
-			local idx = 0
-			local _, ftext = love.graphics.getFont():getWrap(key..": "..value, 640)
-			for _ in pairs(ftext) do
-				idx = idx + 0.8
-			end
-			idx = idx - 0.8
-			self.highscores_idx_offset[key] = idx
-		end
+		self.highscores_indexing = HighscoresScene.getHighscoreIndexing({replay["highscore_data"]})
+		self.highscores_idx_offset = self:generateHighscoreRowOffsets(replay["highscore_data"], font_3x5_2)
 		return
 	end
 
@@ -427,14 +453,62 @@ function ReplaySelectScene:startReplay()
 
 	-- TODO compare replay versions to current versions for Cambridge, ruleset, and mode
 	scene = ReplayScene(
-		deepcopy(replays[pointer]), --This has to be done to avoid serious glitches with it.
+		deepcopy(replay), --This has to be done to avoid serious glitches with it.
 		mode,
 		rules
 	)
 end
 
+function ReplaySelectScene:verifyHighscoreData()
+	love.graphics.clear()
+	drawBackground(0)
+	love.graphics.setFont(font_3x5_4)
+	love.graphics.printf("Please wait...\nVerifying highscore data...", 0, 160, 640, "center")
+	love.graphics.present()
+	current_submenu = self.menu_state.submenu
+	current_replay = self.menu_state.replay
+	-- Get game mode and ruleset
+	local pointer = replay_tree[self.menu_state.submenu][self.menu_state.replay]
+	local replay = replays[pointer]
+	local mode = self.indexModeFromReplay(replay)
+	local rules = self.indexRulesetFromReplay(replay)
+
+	local prev_scene = scene
+	scene = ReplayScene(
+		deepcopy(replay), --This has to be done to avoid serious glitches with it.
+		mode,
+		rules
+	)
+	local game_scene = scene
+	self.safety_frames = 2
+	local prev_sfx_volume = config.sfx_volume
+	local inactivity_frames = 0
+	while inactivity_frames < 300 do
+		config.sfx_volume = 0
+		game_scene:update()
+		game_scene.game.save_replay = false
+		if game_scene.game.game_over or game_scene.game.completed then
+			inactivity_frames = inactivity_frames + 1
+		end
+	end
+	config.sfx_volume = prev_sfx_volume
+	saveConfig()
+	game_scene.game:onExit()
+	switchBGM(nil)
+	local highscore_data = game_scene.game:getHighscoreData()
+	scene = prev_scene
+	if not equals(replay["highscore_data"], highscore_data) then
+		self.highscores_data_comparison = highscore_data
+		self.highscores_indexing = HighscoresScene.getHighscoreIndexing({replay["highscore_data"], highscore_data})
+		self.highscores_idx_offset = self:generateHighscoreRowOffsets(replay["highscore_data"], font_3x5_2)
+		playSE("error")
+	else
+		self.highscores_data_matching = true
+	end
+end
 
 function ReplaySelectScene:onInputPress(e)
+	if self.safety_frames > 0 then return end
 	if (self.display_warning or self.display_error) and e.input then
 		scene = TitleScene()
 	elseif e.type == "mouse" and loaded_replays then
@@ -477,6 +551,8 @@ function ReplaySelectScene:onInputPress(e)
 		if e.y ~= 0 then
 			self:changeOption(-e.y)
 		end
+	elseif e.input == "generic_1" and self.chosen_replay then
+		self:verifyHighscoreData()
 	elseif e.input == "menu_decide" then
 		self:startReplay()
 	elseif self.chosen_replay then
