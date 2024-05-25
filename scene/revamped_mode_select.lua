@@ -50,6 +50,7 @@ function ModeSelectScene:new()
 	self.auto_ruleset_offset = 0
 	self.start_frames, self.starting = 0, false
 	self.safety_frames = 0
+	HighscoresScene.removeEmpty()
 	self:refreshHighscores()
 	DiscordRPC:update({
 		details = "In menus",
