@@ -19,7 +19,7 @@ bgm_paths = {
 		track4 = "res/bgm/a3_track4.mp3",
 		track5 = "res/bgm/a3_track5.mp3",
 		track6 = "res/bgm/a3_track6.mp3",
-		credit_roll = "res/bgm/a3_credit_roll.mp3",
+		credit_roll = "res/bgm/tgm_credit_roll.mp3",
 	},
 	pacer_test = "res/bgm/pacer_test.mp3",
 }
