@@ -12,6 +12,15 @@ bgm_paths = {
 	credit_roll = {
 		gm3 = "res/bgm/tgm_credit_roll.mp3",
 	},
+	a3 = {
+		track1 = "res/bgm/a3_track1.mp3",
+		track2 = "res/bgm/a3_track2.mp3",
+		track3 = "res/bgm/a3_track3.mp3",
+		track4 = "res/bgm/a3_track4.mp3",
+		track5 = "res/bgm/a3_track5.mp3",
+		track6 = "res/bgm/a3_track6.mp3",
+		credit_roll = "res/bgm/a3_credit_roll.mp3",
+	},
 	pacer_test = "res/bgm/pacer_test.mp3",
 }
 
