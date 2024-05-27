@@ -4,9 +4,14 @@ random = love.math.random
 math.random = love.math.random
 math.randomseed = love.math.setRandomSeed
 
+-- This translates and scales the screen into specified dimensions.
+---@type function
+local scaleToResolution
+
 function love.load()
 	love.graphics.setDefaultFilter("linear", "nearest")
 	require "load.fonts"
+	scaleToResolution(640, 480)
 	love.graphics.setFont(font_3x5_4)
 	love.graphics.printf("Please wait...\nLoading...", 160, 160, 320, "center")
 	love.graphics.present()
@@ -52,6 +57,15 @@ function love.load()
 	if config.secret then playSE("welcome") end
 end
 
+function scaleToResolution(width, height)
+	local screen_width, screen_height = love.graphics.getDimensions()
+	local scale_factor = math.min(screen_width / width, screen_height / height)
+	love.graphics.translate(
+		(screen_width - scale_factor * width) / 2,
+		(screen_height - scale_factor * height) / 2
+	)
+	love.graphics.scale(scale_factor)
+end
 
 mouse_idle = 0
 TAS_mode = false
@@ -300,14 +314,7 @@ function love.draw()
 	love.graphics.push()
 
 	-- get offset matrix
-	local width = love.graphics.getWidth()
-	local height = love.graphics.getHeight()
-	local scale_factor = math.min(width / 640, height / 480)
-	love.graphics.translate(
-		(width - scale_factor * 640) / 2,
-		(height - scale_factor * 480) / 2
-	)
-	love.graphics.scale(scale_factor)
+	scaleToResolution(640, 480)
 		
 	scene:render()
 
@@ -351,12 +358,7 @@ function love.draw()
 	love.graphics.setCanvas()
 	love.graphics.setColor(1,1,1,1)
 	love.graphics.draw(GLOBAL_CANVAS)
-	
-	love.graphics.translate(
-		(width - scale_factor * 640) / 2,
-		(height - scale_factor * 480) / 2
-	)
-	love.graphics.scale(scale_factor)
+	scaleToResolution(640, 480)
 	drawScreenshotPreviews()
 	love.graphics.setColor(1, 1, 1, 1)
 	if config.visualsettings.debug_level > 2 then
