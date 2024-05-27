@@ -36,7 +36,8 @@ sound_paths = {
 	cool = "res/se/cool.wav",
 	game_clear = "res/se/game_clear.wav",
 	game_over = "res/se/game_over.wav",
-	level_change = "res/se/level_change.wav",
+	excellent = "res/se/excellent.wav",
+	next_section = "res/se/next_section.wav",
 	grade_up = "res/se/grade_up.wav",
 	-- a secret sound!
 	welcome = "res/se/welcomeToCambridge.wav",

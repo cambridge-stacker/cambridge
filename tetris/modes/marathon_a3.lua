@@ -314,7 +314,7 @@ end
 function MarathonA3Game:playSectionChangeSound(old_level, new_level)
 	if math.floor(old_level / 100) < math.floor(new_level / 100) and not self.clear then
 		-- play section change SE
-		playSE("level_change")
+		playSE("next_section")
 
 		if self.bgm_muted then
 			--play the next BGM when BGM is muted and entering a new section.
@@ -596,7 +596,7 @@ function MarathonA3Game:onGameComplete()
 	switchBGM(nil)
 
 	if self.game_over_frames == 0 then
-		playSE("game_clear")
+		playSE("excellent")
 	end
 
 	-- 5 frames text zoom out (1.05 -> 0.85, 1.2 -> 1)
