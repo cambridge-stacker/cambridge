@@ -200,8 +200,7 @@ function ModeSelectScene:render()
 		for key, slot in pairs(self.mode_highscore) do
 			self.interpolated_menu_slot_positions[key] = interpolateNumber(self.interpolated_menu_slot_positions[key], self.menu_slot_positions[key])
 			local slot_y = self.interpolated_menu_slot_positions[key]
-			if slot_y > -20 and
-			   slot_y < 220 then
+			if slot_y < 220 then
 				local text_alpha = fadeoutAtEdges(-100 + slot_y, 100, 20)
 				love.graphics.setColor(1, 1, 1, text_alpha)
 				love.graphics.printf(tostring(key), 280, 100 + slot_y, 30, "left")
