@@ -297,6 +297,7 @@ function loadResources()
 		end
 		previous_bg_index = bg_index
 	end
+
 	loadImageTable(backgrounds, backgrounds_paths)
 	loadImageTable(blocks, blocks_paths)
 	loadImageTable(misc_graphics, misc_graphics_paths)
@@ -323,6 +324,7 @@ function loadResources()
 		createBackgroundIfExists(value, string.gsub(value, "_", "-"))
 	end
 	--#endregion
+	resetAppendedSoundPaths()
 	generateSoundTable()
 	generateBGMTable()
 
