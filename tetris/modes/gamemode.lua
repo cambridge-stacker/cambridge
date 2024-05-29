@@ -45,6 +45,8 @@ function GameMode:new(secret_inputs, properties)
 	self.game_over = false
 	self.clear = false
 	self.completed = false
+	self.bgm_track_no = 1
+	self.bgm_muted = false
 	-- configurable parameters
 	self.lock_drop = false
 	self.lock_hard_drop = false
@@ -242,6 +244,8 @@ function GameMode:update(inputs, ruleset)
 	-- advance one frame
 	if self:advanceOneFrame(inputs, ruleset) == false then return end
 
+	self:manageBGM()
+
 	self:chargeDAS(inputs, self:getDasLimit(), self:getARR())
 
 	-- set attempt flags
@@ -415,6 +419,14 @@ function GameMode:advanceOneFrame(inputs, ruleset)
 	end
 end
 
+function GameMode:manageBGM()
+	if self.frames == 1 then
+		switchBGMLoop(self.bgm_track_no)
+	end
+end
+
+
+
 -- event functions
 function GameMode:whilePieceActive() end
 function GameMode:onAttemptPieceMove(piece, grid) end
@@ -444,25 +456,65 @@ end
 
 function GameMode:onGameOver()
 	switchBGM(nil)
-	pitchBGM(1)
-	local alpha = 0
-	local animation_length = 120
-	if self.game_over_frames < animation_length then
-		-- Show field for a bit, then fade out.
-		alpha = 2048 ^ (self.game_over_frames/animation_length - 1)
-	elseif self.game_over_frames < 2 * animation_length then
-		-- Keep field hidden for a short time, then pop it back in (for screenshots).
-		alpha = 1
+
+	if not self.clear then
+		-- Only a normal play top-out shows the game over animation.
+		-- A top-out during the credit roll does not show the game over animation.
+		local max_height = self.grid.height
+		if self.game_over_frames < max_height then
+			local dimmed_height = max_height - self.game_over_frames
+			local dimmed_line = self.grid.grid[dimmed_height]
+
+			if dimmed_line ~= nil then
+				-- double check for safety
+				for x = 1, self.grid.width do
+					self.grid.grid[dimmed_height][x].colour = "A"
+				end
+			end
+		end
+
+		if self.game_over_frames == max_height then
+			-- play game_over SE once
+			playSE("game_over")
+		end
+
+		if self.game_over_frames >= max_height then
+			-- draw game_over text afterward.
+			love.graphics.setFont(font_8x11)
+			love.graphics.printf("GAME OVER", 64, 208, 160, "center")
+		end
 	end
-	love.graphics.setColor(0, 0, 0, alpha)
-	love.graphics.rectangle(
-		"fill", 64, 80,
-		16 * self.grid.width, 16 * (self.grid.height - 4)
-	)
 end
 
 function GameMode:onGameComplete()
-	self:onGameOver()
+	-- same game_over_frames are used upon game completion.
+	switchBGM(nil)
+
+	if self.game_over_frames == 0 then
+		playSE("excellent")
+	end
+
+	-- 5 frames text zoom out (1.05 -> 0.85, 1.2 -> 1)
+	-- 4 frames(y) -> 2 frames(w) color loop
+	local exc_text_scale = 1.05 - math.min(0.2, 0.05 * self.game_over_frames)
+	local clear_text_scale = 1.2 - math.min(0.2, 0.05 * self.game_over_frames)
+
+	local exc_text_color = self.game_over_frames % 6 < 4 and { 1, 1, 0, 1 } or { 1, 1, 1, 1 }
+
+    love.graphics.push()
+	love.graphics.setFont(font_8x11)
+	love.graphics.setColor(exc_text_color[1], exc_text_color[2], exc_text_color[3], exc_text_color[4])
+    love.graphics.scale(exc_text_scale, exc_text_scale)
+	love.graphics.printf("EXCELLENT", 60/exc_text_scale, 140/exc_text_scale, 200, "center")
+	love.graphics.pop()
+
+	love.graphics.push()
+	love.graphics.setFont(font_3x5_3)
+	love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.scale(clear_text_scale, clear_text_scale)
+	love.graphics.printf(self.name, -37/clear_text_scale, 194/clear_text_scale, 360, "center")
+	love.graphics.printf("ALL CLEAR", 63/clear_text_scale, 216/clear_text_scale, 160, "center")
+    love.graphics.pop()
 end
 
 function GameMode:onExit()

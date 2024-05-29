@@ -36,12 +36,6 @@ function MarathonA3Game:new()
 
 	self.randomizer = History6RollsRandomizer()
 
-	self.SGnames = {
-		"9", "8", "7", "6", "5", "4", "3", "2", "1",
-		"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
-		"GM"
-	}
-
 	self.additive_gravity = false
 	self.lock_drop = true
 	self.lock_hard_drop = true
@@ -53,8 +47,6 @@ function MarathonA3Game:new()
 
 	self.grade_up_timer = 0
 
-	self.bgm_level = 1
-	self.bgm_muted = false
 	self.noti_counter_stop = true
 
 	self.torikan_passed = false
@@ -189,14 +181,10 @@ function MarathonA3Game:advanceOneFrame()
 		-- only self.frames starts increasing
 		self.frames = self.frames + 1
 	end
-	if self.frames == 1 then
-		-- Play BGM from the first frame
-		switchBGMLoop("a3", "track" .. self.bgm_level)
-	end
 
 	-- bgm muted when temp speed levels hit certain levels and conditions.
 	local temp_speed_levels = self.section_cool and self.speed_level + 100 or self.speed_level
-	if not self.bgm_muted and bgm_mute_speed_levels[self.bgm_level] <= temp_speed_levels and temp_speed_levels % 100 >= 85 then
+	if not self.bgm_muted and bgm_mute_speed_levels[self.bgm_track_no] <= temp_speed_levels and temp_speed_levels % 100 >= 85 then
 		self.bgm_muted = true
 		switchBGM(nil)
 	end
@@ -317,10 +305,10 @@ function MarathonA3Game:playSectionChangeSound(old_level, new_level)
 		playSE("next_section")
 
 		if self.bgm_muted then
-			--play the next BGM when BGM is muted and entering a new section.
+			-- play the next BGM when BGM is muted and entering a new section.
 			self.bgm_muted = false
-			self.bgm_level = self.bgm_level + 1
-			switchBGMLoop("a3", "track" .. self.bgm_level)
+			self.bgm_track_no = self.bgm_track_no + 1
+			switchBGMLoop(self.bgm_track_no)
 		end
 	end
 end
@@ -587,74 +575,6 @@ function MarathonA3Game:drawScoringInfo()
 	-- draw playtime
 	love.graphics.setFont(font_8x11)
 	love.graphics.printf(formatTime(self.frames), 64, 420, 160, "center")
-end
-
-
-function MarathonA3Game:onGameComplete()
-	-- custom game complete animation
-	-- same game_over_frames are used upon game completion.
-	switchBGM(nil)
-
-	if self.game_over_frames == 0 then
-		playSE("excellent")
-	end
-
-	-- 5 frames text zoom out (1.05 -> 0.85, 1.2 -> 1)
-	-- 4 frames(y) -> 2 frames(w) color loop
-	local exc_text_scale = 1.05 - math.min(0.2, 0.05 * self.game_over_frames)
-	local clear_text_scale = 1.2 - math.min(0.2, 0.05 * self.game_over_frames)
-
-	local exc_text_color = self.game_over_frames % 6 < 4 and { 1, 1, 0, 1 } or { 1, 1, 1, 1 }
-
-	-- Using images instead of text might help create a more natural zoom-out animation...
-    love.graphics.push()
-	love.graphics.setFont(font_8x11)
-	love.graphics.setColor(exc_text_color[1], exc_text_color[2], exc_text_color[3], exc_text_color[4])
-    love.graphics.scale(exc_text_scale, exc_text_scale)
-	love.graphics.printf("EXCELLENT", 60/exc_text_scale, 140/exc_text_scale, 200, "center")
-	love.graphics.pop()
-
-	love.graphics.push()
-	love.graphics.setFont(font_3x5_3)
-	love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.scale(clear_text_scale, clear_text_scale)
-	love.graphics.printf("Marathon A3", 63/clear_text_scale, 194/clear_text_scale, 160, "center")
-	love.graphics.printf("ALL CLEAR", 63/clear_text_scale, 216/clear_text_scale, 160, "center")
-    love.graphics.pop()
-end
-
-
-function MarathonA3Game:onGameOver()
-	-- custom game over animation
-	switchBGM(nil)
-
-	if not self.clear then
-		-- Only a normal play top-out shows the game over animation.
-		-- A top-out during the credit roll does not show the game over animation.
-		local max_height = self.grid.height
-		if self.game_over_frames < max_height then
-			local dimmed_height = max_height - self.game_over_frames
-			local dimmed_line = self.grid.grid[dimmed_height]
-
-			if dimmed_line ~= nil then
-				-- double check for safety
-				for x = 1, self.grid.width do
-					self.grid.grid[dimmed_height][x].colour = "A"
-				end
-			end
-		end
-
-		if self.game_over_frames == max_height then
-			-- play game_over SE once
-			playSE("game_over")
-		end
-
-		if self.game_over_frames >= max_height then
-			-- draw game_over text afterward.
-			love.graphics.setFont(font_8x11)
-			love.graphics.printf("GAME OVER", 64, 208, 160, "center")
-		end
-	end
 end
 
 function MarathonA3Game:getHighscoreData()
