@@ -59,9 +59,9 @@ extended_bgs = {}
 local bgpath = "res/backgrounds/%s"
 
 -- helper method to populate backgrounds
-local function createBackgroundIfExists(name, file_name)
-	local formatted_bgpath = bgpath:format(tostring(file_name))
-
+local function createBackgroundIfExists(name, path)
+	local char_pos = path:gsub("\\", "/"):reverse():find("/")
+	local file_name = path:sub(-char_pos+1)
 	-- see if background is an extension of another background
 	if extended_bgs[file_name] ~= nil then
 		local copy_bg = extended_bgs[file_name]
@@ -70,18 +70,18 @@ local function createBackgroundIfExists(name, file_name)
 		return true
 	end
 
-	--loadImageTable already deals with loading images.
-	if backgrounds[name] ~= nil then
-		return true
-	end
 	-- try creating video background
-	if love.filesystem.getInfo(formatted_bgpath .. ".ogv") then
-		local tempBgPath = formatted_bgpath .. ".ogv"
+	local video_path = path .. ".ogv"
+	if love.filesystem.getInfo(video_path) then
 		backgrounds[name] = love.graphics.newVideo(
-			tempBgPath, {["audio"] = false}
+			video_path, {["audio"] = false}
 		)
 		-- you can set audio to true, but the video will not loop
 		-- properly if audio extends beyond video frames
+		return true
+	end
+	--loadImageTable already deals with loading images.
+	if backgrounds[name] ~= nil then
 		return true
 	end
 	return false
@@ -314,14 +314,8 @@ function loadResources()
 	if pcall(loadExtendedBgs) then end
 
 	-- create section backgrounds
-	local section = 0
-	while (createBackgroundIfExists(section, section*100)) do
-		section = section + 1
-	end
-
-	-- create named backgrounds
-	for index, value in ipairs(named_backgrounds) do
-		createBackgroundIfExists(value, string.gsub(value, "_", "-"))
+	for key, value in pairs(backgrounds_paths) do
+		createBackgroundIfExists(key, value)
 	end
 	--#endregion
 	resetAppendedSoundPaths()
