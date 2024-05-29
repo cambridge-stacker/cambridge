@@ -49,10 +49,6 @@ backgrounds_paths = {
 	options_input = "res/backgrounds/options-input",
 	options_game = "res/backgrounds/options-game",
 }
-named_backgrounds = {
-	"title", "title_no_icon", "title_night",
-	"snow", "options_input", "options_game"
-}
 current_playing_bgs = {}
 extended_bgs = {}
 
