@@ -47,9 +47,6 @@ Music
 
 1. Second Reality opening scene music (1993).
 2. The FitnessGram™ Pacer Test.
-3. Forest by FSM team & < e s c p > (https://escp-music.bandcamp.com, CC BY 4.0)
-4. The Complex by Kevin MacLeod (incompetech.com, CC BY 3.0)
-5. Gabber by Glitch (https://soundcloud.com/glitch, CC BY 3.0)
 
 All background music is (currently) only unofficially included. In later releases they may be replaced with specifically licensed music as applicable.
 
