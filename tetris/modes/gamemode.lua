@@ -503,7 +503,7 @@ function GameMode:onGameComplete()
 
     love.graphics.push()
 	love.graphics.setFont(font_8x11)
-	love.graphics.setColor(exc_text_color[1], exc_text_color[2], exc_text_color[3], exc_text_color[4])
+	love.graphics.setColor(exc_text_color)
     love.graphics.scale(exc_text_scale, exc_text_scale)
 	love.graphics.printf("EXCELLENT", 60/exc_text_scale, 140/exc_text_scale, 200, "center")
 	love.graphics.pop()
