@@ -34,6 +34,12 @@ function MarathonA3Game:new()
 	self.section_times = { [0] = 0 }
 	self.section_cool = false
 
+	self.bgm_info_table = { 
+		{sound = 1, subsound = nil, start = 0, stop = 485},
+		{sound = 2, subsound = nil, start = 500, stop = 785},
+		{sound = 3, subsound = nil, start = 800, stop = -1}
+	}
+
 	self.randomizer = History6RollsRandomizer()
 
 	self.additive_gravity = false
@@ -126,10 +132,6 @@ function MarathonA3Game:getGravity()
 	end
 end
 
--- 1-based index. Returns nil if the index is out of bounds
--- attempt to compare nil with number cause game crash.
-local bgm_mute_speed_levels = {485, 785, 99999999}
-
 function MarathonA3Game:advanceOneFrame()
 	if self.clear then
 		self.roll_frames = self.roll_frames + 1
@@ -154,7 +156,7 @@ function MarathonA3Game:advanceOneFrame()
 				return false
 			end
 		elseif self.roll_frames == 0 then
-			switchBGM("a3", "credit_roll")
+			switchBGM("credit_roll", "gm3")
 		elseif self.roll_frames > 3238 then
 			-- roll completed
 			local old_aggregate_grade = self:getAggregateGrade()
@@ -180,13 +182,6 @@ function MarathonA3Game:advanceOneFrame()
 		-- Game started, self.ready_frames is set and remains fixed at 0
 		-- only self.frames starts increasing
 		self.frames = self.frames + 1
-	end
-
-	-- bgm muted when temp speed levels hit certain levels and conditions.
-	local temp_speed_levels = self.section_cool and self.speed_level + 100 or self.speed_level
-	if not self.bgm_muted and bgm_mute_speed_levels[self.bgm_track_no] <= temp_speed_levels and temp_speed_levels % 100 >= 85 then
-		self.bgm_muted = true
-		switchBGM(nil)
 	end
 
 	return true
@@ -303,13 +298,6 @@ function MarathonA3Game:playSectionChangeSound(old_level, new_level)
 	if math.floor(old_level / 100) < math.floor(new_level / 100) and not self.clear then
 		-- play section change SE
 		playSE("next_section")
-
-		if self.bgm_muted then
-			-- play the next BGM when BGM is muted and entering a new section.
-			self.bgm_muted = false
-			self.bgm_track_no = self.bgm_track_no + 1
-			switchBGMLoop(self.bgm_track_no)
-		end
 	end
 end
 
@@ -539,7 +527,7 @@ function MarathonA3Game:drawScoringInfo()
 	if self.coolregret_timer > 0 then
 		local coolregret_color = self.coolregret_timer % 6 < 4 and { 1, 1, 0, 1 } or { 1, 1, 1, 1 }
 
-		love.graphics.setColor(coolregret_color[1], coolregret_color[2], coolregret_color[3], coolregret_color[4])
+		love.graphics.setColor(coolregret_color)
 		love.graphics.printf(self.coolregret_message, 64, 400, 160, "center")
 		love.graphics.setColor(1, 1, 1, 1)
 		
@@ -553,7 +541,7 @@ function MarathonA3Game:drawScoringInfo()
 	-- draw grade value
 	if self.grade_up_timer > 0 then
 		local grade_up_color = self.grade_up_timer % 6 < 4 and { 1, 0, 0, 1 } or { 1, 1, 1, 1 }
-		love.graphics.setColor(grade_up_color[1], grade_up_color[2], grade_up_color[3], grade_up_color[4])
+		love.graphics.setColor(grade_up_color)
 		love.graphics.printf(self:getLetterGrade(), 240, 140, 90, "left")
 		self.grade_up_timer = self.grade_up_timer - 1
 	else
@@ -584,6 +572,23 @@ function MarathonA3Game:getHighscoreData()
 		frames = self.frames,
 	}
 end
+
+function MarathonA3Game:getLevelForBGM()
+	local temp_speed_level = 0
+
+	-- If the player has achieved a section cool and is at the threshold for changing the BGM,
+	-- add 100 to self.speed_level to change the BGM early.
+	if self.section_cool then
+		if 385 <= self.speed_level and self.speed_level < 400 then
+			temp_speed_level = 100
+		elseif 685 <= self.speed_level and self.speed_level < 700 then
+			temp_speed_level = 100
+		end
+	end
+
+	return self.speed_level + temp_speed_level
+end
+
 
 function MarathonA3Game:getSectionEndLevel()
 	if self.level >= 900 then return 999
