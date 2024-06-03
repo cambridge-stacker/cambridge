@@ -31,17 +31,13 @@ local configurable_system_inputs = {
 	"menu_right",
 	"menu_up",
 	"menu_down",
-	-- "screenshot"
-}
-local hardcoded_system_inputs = {
-	"menu_back", menu_back = "escape (except in gameplay)",
-	"tas_mode", tas_mode = "f1",
-	"configure_inputs", configure_inputs = "f2",
-	"save_state", save_state = "f4",
-	"load_state", load_state = "f5",
-	"secret", secret = "???",
-	"fullscreen", fullscreen = "f11",
-	"screenshot", screenshot = "f12",
+	"configure_inputs",
+	"fullscreen",
+	"screenshot",
+	"tas_mode",
+	"save_state",
+	"load_state",
+	"secret",
 }
 local input_naming = {
 	--System Inputs
@@ -130,6 +126,10 @@ function KeyConfigScene:new()
 	self.set_inputs = newSetInputs()
 	self.new_input = {}
 
+	self.list_y = 0
+	self.final_list_y = 0
+	self.spacing = 18
+
 	if not config.input then
 		config.input = {}
 	end
@@ -141,6 +141,7 @@ function KeyConfigScene:new()
 		end
 	else
 		self.configurable_inputs = configurable_system_inputs
+		self.keybinds_limit = 6
 	end
 
 	self.menu_state = 1
@@ -155,6 +156,13 @@ end
 
 function KeyConfigScene:update()
 	self.safety_frames = self.safety_frames - 1
+	if self.final_list_y / self.spacing > self.input_state - 5 then
+		self.final_list_y = (self.input_state - 5) * self.spacing
+	end
+	if self.final_list_y / self.spacing < self.input_state - 10 then
+		self.final_list_y = (self.input_state - 10) * self.spacing
+	end
+	self.final_list_y = math.max(self.final_list_y, 0)
 end
 
 function KeyConfigScene:render()
@@ -187,40 +195,41 @@ function KeyConfigScene:render()
 		love.graphics.setColor(1,1,b,1)
 		love.graphics.printf("System Inputs", 80, 220, 200, "left")
 		return
+	elseif self.reconfiguration then
+		love.graphics.setFont(font_8x11)
+		love.graphics.print("KEY CONFIG", 80, 43)
+		local b = cursorHighlight(20, 40, 50, 30)
+		love.graphics.setColor(1, 1, b, 1)
+		love.graphics.printf("<-", font_3x5_4, 20, 40, 50, "center")
+		love.graphics.setColor(1, 1, 1, 1)
 	end
+	self.list_y = interpolateNumber(self.list_y, -self.final_list_y)
 	love.graphics.setFont(font_3x5_2)
 	for i, input in ipairs(self.configurable_inputs) do
+		local b = 1
+		local alpha = fadeoutAtEdges(self.list_y + (i-1) * self.spacing - 180, 180, self.spacing)
 		if i == self.input_state then
-			love.graphics.setColor(1, 1, 0, 1)
+			b = 0
 		end
-		love.graphics.printf(input_naming[input], 40, 50 + i * 18, 200, "left")
-		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.setColor(1, 1, b, alpha)
+		love.graphics.printf(input_naming[input] or "null", 40, self.list_y + 70 + i * self.spacing, 200, "left")
+		love.graphics.setColor(1, 1, 1, alpha)
 		if self.set_inputs[input] then
-			love.graphics.printf(self.set_inputs[input], 240, 50 + i * 18, 300, "left")
+			love.graphics.printf(self.set_inputs[input], 240, self.list_y + 70 + i * self.spacing, 300, "left")
 		end
 	end
-	if self.configurable_inputs == configurable_system_inputs then
-		local offset_y = #configurable_system_inputs * 18 + 75
-		love.graphics.setColor(1, 1, 1, 1)
-		love.graphics.printf("- Hardcoded, executed first:", 20, offset_y, 300, "left")
-		for i, input in ipairs(hardcoded_system_inputs) do
-			love.graphics.printf(input_naming[input], 40, offset_y + i * 18, 200, "left")
-			love.graphics.printf(hardcoded_system_inputs[input], 240, offset_y + i * 18, 300, "left")
-		end
-	end
+	love.graphics.setColor(1, 1, 1, 1)
 	local string_press_key = "Press key input for " .. (input_naming[self.configurable_inputs[self.input_state]] or "???")
-	if self.input_state > #self.configurable_inputs then
+	if self.keybinds_limit and self.input_state > self.keybinds_limit then
 		love.graphics.print("Press enter to confirm, delete/backspace to retry" .. (config.input and ", escape to cancel" or ""))
 		return
 	elseif self.reconfiguration then
 		if self.key_rebinding then
 			love.graphics.printf(string_press_key .. ", tab to erase.", 0, 0, 640, "left")
 		end
-		love.graphics.printf("Press escape to exit while not rebinding. Auto-saves after you rebound a key.", 0, 20, 640, "left")
 	else
 		love.graphics.printf(string_press_key .. ", tab to skip.", 0, 0, 640, "left")
 	end
-	love.graphics.printf("Function keys (F1, F2, etc.), and tab can't be changed", 0, 40, 640, "left")
 end
 
 function KeyConfigScene:formatKey(scancode)
@@ -308,7 +317,7 @@ function KeyConfigScene:onInputPress(e)
 					self.key_rebinding = true
 				end
 			end
-		elseif self.input_state > #self.configurable_inputs then
+		elseif self.input_state > self.keybinds_limit then
 			if e.scancode == "return" then
 				-- save new input, then load next scene
 				local had_config = config.input ~= nil
@@ -344,6 +353,11 @@ function KeyConfigScene:onInputPress(e)
 			if cursorHoverArea(80,220,200,50) then
 				playSE("main_decide")
 				self.configurable_inputs = configurable_system_inputs
+			end
+		else
+			if cursorHoverArea(20, 40, 50, 30) then
+				playSE("menu_cancel")
+				self.configurable_inputs = nil
 			end
 		end
 	end
