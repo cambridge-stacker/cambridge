@@ -922,6 +922,10 @@ function love.run()
 			local real_frame_duration = finish_delay_time - last_time
 			time_accumulator = time_accumulator + real_frame_duration - FRAME_DURATION
 			last_time = finish_delay_time
+
+			if time_accumulator > 0.2 + FRAME_DURATION then
+				time_accumulator = 0
+			end
 		end
 	end
 end
