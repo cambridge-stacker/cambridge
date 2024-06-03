@@ -88,6 +88,17 @@ local mutually_exclusive_inputs = {
 	menu_down = {"menu_left", "menu_up", "menu_right"},
 }
 
+--A list of inputs that shouldn't have the same keybinds with anything
+local first_execution_inputs = {
+	"configure_inputs",
+	"fullscreen",
+	"screenshot",
+	"tas_mode",
+	"save_state",
+	"load_state",
+	"secret",
+}
+
 function KeyConfigScene:mutexCheck(input, keybind)
 	for key, value in pairs(mutually_exclusive_inputs) do
 		if key == input then
@@ -105,6 +116,11 @@ function KeyConfigScene:mutexCheck(input, keybind)
 			if self.new_input[key] == keybind then
 				return true
 			end
+		end
+	end
+	for key, value in pairs(first_execution_inputs) do
+		if self.new_input[value] == keybind and input ~= value then
+			return true
 		end
 	end
 	return false
