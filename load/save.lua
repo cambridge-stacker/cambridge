@@ -82,6 +82,27 @@ local function migrateInputConfig()
 		end
 	end
 end
+function inputVersioning()
+	if not config.input.version then
+		config.input.version = 1
+		local keys = config.input.keys
+		keys.menu_left = keys.menu_left or keys.left
+		keys.menu_right = keys.menu_right or keys.right
+		keys.menu_up = keys.menu_up or keys.up
+		keys.menu_down = keys.menu_down or keys.down
+	end
+	if config.input.version < 2 then
+		config.input.version = 2
+		local keys = config.input.keys
+		keys.tas_mode = "f1"
+		keys.configure_inputs = "f2"
+		keys.save_state = "f4"
+		keys.load_state = "f5"
+		keys.secret = "f8"
+		keys.fullscreen = "f11"
+		keys.screenshot = "f12"
+	end
+end
 
 function initConfig()
 	if not config.das then config.das = 10 end
@@ -134,25 +155,7 @@ function initConfig()
 			if inputUpdaterConditions(config.input.keys) or config.input.joysticks.menu_decide ~= nil then
 				migrateInputConfig()
 			end
-			if not config.input.version then
-				config.input.version = 1
-				local keys = config.input.keys
-				keys.menu_left = keys.menu_left or keys.left
-				keys.menu_right = keys.menu_right or keys.right
-				keys.menu_up = keys.menu_up or keys.up
-				keys.menu_down = keys.menu_down or keys.down
-			end
-			if config.input.version < 2 then
-				config.input.version = 2
-				local keys = config.input.keys
-				keys.tas_mode = "f1"
-				keys.configure_inputs = "f2"
-				keys.save_state = "f4"
-				keys.load_state = "f5"
-				keys.secret = "f8"
-				keys.fullscreen = "f11"
-				keys.screenshot = "f12"
-			end
+			inputVersioning()
 		end
 		if config.current_mode then current_mode = config.current_mode end
 		if config.current_ruleset then current_ruleset = config.current_ruleset end
