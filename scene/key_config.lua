@@ -226,7 +226,7 @@ function KeyConfigScene:render()
 		love.graphics.setColor(1,1,b,1)
 		love.graphics.printf("System Inputs", 80, 220, 200, "left")
 		return
-	elseif self.reconfiguration then
+	else
 		love.graphics.setFont(font_8x11)
 		love.graphics.print("KEY CONFIG", 80, 43)
 		local b = cursorHighlight(20, 40, 50, 30)
