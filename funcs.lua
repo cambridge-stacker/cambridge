@@ -299,8 +299,6 @@ end
 ---Interpolates using expDecay if Smooth Scrolling option is enabled in visual settings.
 ---@param a number
 ---@param b number
----@param decay number
----@param dt number
 ---@return number
 function interpolateNumber(a, b, decay, dt)
 	if config.visualsettings["smooth_scroll"] == 2 then
