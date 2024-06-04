@@ -11,7 +11,6 @@ local scaleToResolution
 function love.load()
 	love.graphics.setDefaultFilter("linear", "nearest")
 	require "load.fonts"
-	scaleToResolution(640, 480)
 	love.graphics.setFont(font_3x5_4)
 	love.graphics.printf("Please wait...\nLoading...", 160, 160, 320, "center")
 	love.graphics.present()
