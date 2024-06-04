@@ -199,17 +199,17 @@ end
 function KeyConfigScene:render()
 	love.graphics.setColor(1, 1, 1, 1)
 	drawBackground("options_input")
+	love.graphics.setFont(font_8x11)
+	love.graphics.print("KEY CONFIG", 80, 43)
+
+	if self.reconfiguration or self.configurable_inputs then
+		local b = cursorHighlight(20, 40, 50, 30)
+		love.graphics.setColor(1, 1, b, 1)
+		love.graphics.printf("<-", font_3x5_4, 20, 40, 50, "center")
+		love.graphics.setColor(1, 1, 1, 1)
+	end
+
 	if self.reconfiguration and not self.configurable_inputs then
-
-		love.graphics.setFont(font_8x11)
-		love.graphics.print("KEY CONFIG", 80, 43)
-
-		if config.input then
-			local b = cursorHighlight(20, 40, 50, 30)
-			love.graphics.setColor(1, 1, b, 1)
-			love.graphics.printf("<-", font_3x5_4, 20, 40, 50, "center")
-			love.graphics.setColor(1, 1, 1, 1)
-		end
 
 		love.graphics.setFont(font_3x5_2)
 		love.graphics.print("Which controls do you want to configure?", 80, 90)
@@ -226,14 +226,8 @@ function KeyConfigScene:render()
 		love.graphics.setColor(1,1,b,1)
 		love.graphics.printf("System Inputs", 80, 220, 200, "left")
 		return
-	else
-		love.graphics.setFont(font_8x11)
-		love.graphics.print("KEY CONFIG", 80, 43)
-		local b = cursorHighlight(20, 40, 50, 30)
-		love.graphics.setColor(1, 1, b, 1)
-		love.graphics.printf("<-", font_3x5_4, 20, 40, 50, "center")
-		love.graphics.setColor(1, 1, 1, 1)
 	end
+
 	self.list_y = interpolateNumber(self.list_y, -self.final_list_y)
 	love.graphics.setFont(font_3x5_2)
 	for i, input in ipairs(self.configurable_inputs) do
@@ -249,6 +243,7 @@ function KeyConfigScene:render()
 			love.graphics.printf(self.set_inputs[input], 240, self.list_y + 70 + i * self.spacing, 300, "left")
 		end
 	end
+
 	love.graphics.setColor(1, 1, 1, 1)
 	local string_press_key = "Press key input for " .. (input_naming[self.configurable_inputs[self.input_state]] or "???")
 	if self.keybinds_limit and self.input_state > self.keybinds_limit then
@@ -393,7 +388,7 @@ function KeyConfigScene:onInputPress(e)
 		end
 	elseif e.type == "mouse" then
 		if self.configurable_inputs == nil then
-			if cursorHoverArea(20, 40, 50, 30) then
+			if cursorHoverArea(20, 40, 50, 30) and not self.reconfiguration then
 				playSE("menu_cancel")
 				scene = InputConfigScene()
 			end
@@ -401,11 +396,13 @@ function KeyConfigScene:onInputPress(e)
 				playSE("main_decide")
 				self.input_state = 1
 				self.configurable_inputs = configurable_game_inputs
+				self.keybinds_limit = #configurable_game_inputs
 			end
 			if cursorHoverArea(80,210,200,50) then
 				playSE("main_decide")
 				self.input_state = 1
 				self.configurable_inputs = configurable_system_inputs
+				self.keybinds_limit = 6
 			end
 		else
 			if cursorHoverArea(20, 40, 50, 30) then
