@@ -49,7 +49,7 @@ function ModeSelectScene:new()
 	self.auto_mode_offset = 0
 	self.auto_ruleset_offset = 0
 	self.start_frames, self.starting = 0, false
-	self.safety_frames = 0
+	self.safety_frames = 2
 	HighscoresScene.removeEmpty()
 	self:refreshHighscores()
 	DiscordRPC:update({
@@ -175,8 +175,8 @@ function ModeSelectScene:render()
 
 	local mode_selected, ruleset_selected = self.menu_state.mode, self.menu_state.ruleset
 
-	self.menu_mode_y = interpolateNumber(self.menu_mode_y / 20, mode_selected) * 20
-	self.menu_ruleset_x = interpolateNumber(self.menu_ruleset_x / 120, ruleset_selected) * 120
+	self.menu_mode_y = interpolateNumber(self.menu_mode_y, mode_selected * 20)
+	self.menu_ruleset_x = interpolateNumber(self.menu_ruleset_x, ruleset_selected * 120)
 
 	love.graphics.setColor(1, 1, 1, 0.5)
 	love.graphics.rectangle("fill", 20, 259 + (mode_selected * 20) - self.menu_mode_y, 240, 22)

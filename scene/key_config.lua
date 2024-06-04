@@ -162,7 +162,7 @@ function KeyConfigScene:new()
 
 	self.menu_state = 1
 
-	self.safety_frames = 0
+	self.safety_frames = 2
 
 	DiscordRPC:update({
 		details = "In settings",
@@ -175,10 +175,25 @@ function KeyConfigScene:update()
 	if self.final_list_y / self.spacing > self.input_state - 5 then
 		self.final_list_y = (self.input_state - 5) * self.spacing
 	end
-	if self.final_list_y / self.spacing < self.input_state - 10 then
-		self.final_list_y = (self.input_state - 10) * self.spacing
+	if self.final_list_y / self.spacing < self.input_state - 15 then
+		self.final_list_y = (self.input_state - 15) * self.spacing
 	end
 	self.final_list_y = math.max(self.final_list_y, 0)
+	if self.das_up or self.das_down then
+		self.das = self.das + 1
+	else
+		self.das = 0
+	end
+	if self.das >= 15 then
+		local change = 0
+		if self.das_up then
+			change = -1
+		elseif self.das_down then
+			change = 1
+		end
+		self:changeOption(change)
+		self.das = self.das - 4
+	end
 end
 
 function KeyConfigScene:render()
@@ -204,10 +219,10 @@ function KeyConfigScene:render()
 
 		love.graphics.setFont(font_3x5_3)
 		love.graphics.setColor(1, 1, 1, 1)
-		local b = cursorHighlight(80,170,200,50)
+		local b = cursorHighlight(80,160,200,50)
 		love.graphics.setColor(1,1,b,1)
 		love.graphics.printf("Game Inputs", 80, 170, 200, "left")
-		local b = cursorHighlight(80,220,200,50)
+		local b = cursorHighlight(80,210,200,50)
 		love.graphics.setColor(1,1,b,1)
 		love.graphics.printf("System Inputs", 80, 220, 200, "left")
 		return
@@ -277,13 +292,32 @@ function KeyConfigScene:refreshInputStates()
 	end
 end
 
+function KeyConfigScene:changeOption(rel)
+	local len
+	local old_value
+	if self.configurable_inputs == nil then
+		old_value = self.menu_state
+		self.menu_state = Mod1(self.menu_state + rel, 2)
+		if old_value ~= self.menu_state then
+			playSE("cursor")
+		end
+	else
+		len = #self.configurable_inputs
+		old_value = self.input_state
+		self.input_state = Mod1(self.input_state + rel, len)
+		if old_value ~= self.input_state then
+			playSE("cursor")
+		end
+	end
+end
+
 function KeyConfigScene:onInputPress(e)
 	if self.safety_frames > 0 then
 		return
 	end
 	self.safety_frames = 2
 	if e.type == "key" then
-		-- function keys, and tab are reserved and can't be remapped
+		-- tab is reserved and can't be remapped
 		if self.configurable_inputs == nil then
 			if e.scancode == "return" or e.scancode == "kpenter" then
 				self.input_state = 1
@@ -295,12 +329,12 @@ function KeyConfigScene:onInputPress(e)
 				scene = InputConfigScene()
 			end
 			if e.scancode == "up" then
-				self.menu_state = Mod1(self.menu_state - 1, 2)
-				playSE("cursor")
+				self:changeOption(-1)
+				self.das_up = true
 			end
 			if e.scancode == "down" then
-				self.menu_state = Mod1(self.menu_state + 1, 2)
-				playSE("cursor")
+				self:changeOption(1)
+				self.das_down = true
 			end
 		elseif self.reconfiguration then
 			if self.key_rebinding then
@@ -322,11 +356,11 @@ function KeyConfigScene:onInputPress(e)
 					playSE("menu_cancel")
 					self.configurable_inputs = nil
 				elseif e.scancode == "up" then
-					playSE("cursor")
-					self.input_state = Mod1(self.input_state - 1, #self.configurable_inputs)
+					self:changeOption(-1)
+					self.das_up = true
 				elseif e.scancode == "down" then
-					playSE("cursor")
-					self.input_state = Mod1(self.input_state + 1, #self.configurable_inputs)
+					self:changeOption(1)
+					self.das_down = true
 				elseif e.scancode == "return" or e.scancode == "kpenter" then
 					playSE("main_decide")
 					self.set_inputs[self.configurable_inputs[self.input_state]] = "<press a key>"
@@ -362,12 +396,14 @@ function KeyConfigScene:onInputPress(e)
 				playSE("menu_cancel")
 				scene = InputConfigScene()
 			end
-			if cursorHoverArea(80,170,200,50) then
+			if cursorHoverArea(80,160,200,50) then
 				playSE("main_decide")
+				self.input_state = 1
 				self.configurable_inputs = configurable_game_inputs
 			end
-			if cursorHoverArea(80,220,200,50) then
+			if cursorHoverArea(80,210,200,50) then
 				playSE("main_decide")
+				self.input_state = 1
 				self.configurable_inputs = configurable_system_inputs
 			end
 		else
@@ -375,6 +411,16 @@ function KeyConfigScene:onInputPress(e)
 				playSE("menu_cancel")
 				self.configurable_inputs = nil
 			end
+		end
+	end
+end
+
+function KeyConfigScene:onInputRelease(e)
+	if e.type == "key" then
+		if e.scancode == "up" then
+			self.das_up = false
+		elseif e.scancode == "down" then
+			self.das_down = false
 		end
 	end
 end
