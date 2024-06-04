@@ -279,27 +279,37 @@ function cursorHoverArea(x,y,w,h)
 	return (mouse_x > x and mouse_x < x+w and mouse_y > y and mouse_y < y+h)
 end
 
----Interpolates in a smooth fashion if Smooth Scrolling option is enabled in visual settings. 
----@param input number
----@param destination number
+---@param a number
+---@param b number
+---@param t number
 ---@return number
-function interpolateNumber(input, destination, division_factor)
-	division_factor = division_factor or 4
+function math.lerp(a, b, t)
+	return a + (b - a) * t
+end
+
+---@param a number
+---@param b number
+---@param decay number
+---@param dt number
+---@return number
+function expDecay(a, b, decay, dt)
+	return b+(a-b)*math.exp(-decay*dt)
+end
+
+---Interpolates using expDecay if Smooth Scrolling option is enabled in visual settings.
+---@param a number
+---@param b number
+---@param decay number
+---@param dt number
+---@return number
+function interpolateNumber(a, b, decay, dt)
 	if config.visualsettings["smooth_scroll"] == 2 then
-		return destination
+		return b
 	end
-	if destination > input then
-		input = input + (destination - input) / division_factor
-		if input > destination - 0.02 then
-			input = destination
-		end
-	elseif destination < input then
-		input = input + (destination - input) / division_factor
-		if input < destination + 0.02 then
-			input = destination
-		end
-	end
-	return input
+	-- higher -> faster
+	decay = decay or 17.260924347109
+	dt = dt or love.timer.getDelta()
+	return expDecay(a, b, decay, dt)
 end
 
 ---note: if you input just a string here, it'll output an input. it ignores tables within input table
