@@ -37,7 +37,7 @@ local function inputUpdaterConditions(input_table)
 	return true
 end
 
-local function updateInputConfig()
+local function migrateInputConfig()
 	if inputUpdaterConditions(config.input.keys) then
 		local new_key_inputs = {}
 		for key, value in pairs(config.input.keys) do
@@ -132,7 +132,7 @@ function initConfig()
 				config.input.joysticks = {}
 			end
 			if inputUpdaterConditions(config.input.keys) or config.input.joysticks.menu_decide ~= nil then
-				updateInputConfig()
+				migrateInputConfig()
 			end
 			if not config.input.version then
 				config.input.version = 1
@@ -160,7 +160,7 @@ function initConfig()
 			current_folder_selections = config.current_folder_selections
 		end
 		scene = TitleScene()
-		--if updateInputConfig still fails
+		--if migrateInputConfig still fails
 		if inputUpdaterConditions(config.input.keys) then
 			config.input.keys = nil
 			scene = InputConfigScene()
