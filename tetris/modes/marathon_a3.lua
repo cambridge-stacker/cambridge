@@ -34,13 +34,13 @@ function MarathonA3Game:new()
 	self.section_times = { [0] = 0 }
 	self.section_cool = false
 
-	self.randomizer = History6RollsRandomizer()
-
-self.SGnames = {
-		"9", "8", "7", "6", "5", "4", "3", "2", "1",
-		"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
-		"GM"
+	self.bgm_info_table = { 
+		{sound = 1, subsound = nil, start = 0, stop = 485},
+		{sound = 2, subsound = nil, start = 500, stop = 785},
+		{sound = 3, subsound = nil, start = 800, stop = -1}
 	}
+
+	self.randomizer = History6RollsRandomizer()
 
 	self.additive_gravity = false
 	self.lock_drop = true
@@ -50,6 +50,10 @@ self.SGnames = {
 
 	self.coolregret_message = "COOL!!"
 	self.coolregret_timer = 0
+
+	self.grade_up_timer = 0
+
+	self.noti_counter_stop = true
 
 	self.torikan_passed = false
 end
@@ -131,23 +135,55 @@ end
 function MarathonA3Game:advanceOneFrame()
 	if self.clear then
 		self.roll_frames = self.roll_frames + 1
+		
 		if self.roll_frames < 0 then
-			if self.roll_frames + 1 == 0 then
-				switchBGM("credit_roll", "gm3")
+			-- game clear, before roll started(roll ready frames)
+			if (self.roll_frames % 5 == 0) then
+				-- Slowly clear the grid starting from the bottom.
+				for i = -145, -30, 5 do
+					if self.roll_frames == i then
+						local rowsToClear = (150 + i) / 5
+						self.grid:clearBottomRows(rowsToClear)
+					end
+				end
 			end
-			return false
+
+			if self.lcd > 0 then
+				-- perform the last line clear process during roll ready frames.
+				return true
+			else
+				-- halt gameplay until the roll starts.
+				return false
+			end
+		elseif self.roll_frames == 0 then
+			switchBGM("credit_roll", "gm3")
 		elseif self.roll_frames > 3238 then
+			-- roll completed
+			local old_aggregate_grade = self:getAggregateGrade()
+
 			if self:qualifiesForMRoll() then
 				self.roll_points = self.roll_points + 160
 			else
 				self.roll_points = self.roll_points + 50
 			end
+			
+			local new_aggregate_grade = self:getAggregateGrade()
+
+			-- play "grade up" SE when the aggregate grade increases via roll completed
+			if old_aggregate_grade < new_aggregate_grade then
+				self.grade_up_timer = 120
+				playSEOnce("grade_up")
+			end
+
 			switchBGM(nil)
 			self.completed = true
 		end
 	elseif self.ready_frames == 0 then
+		-- Game started, self.ready_frames is set and remains fixed at 0
+		-- only self.frames starts increasing
 		self.frames = self.frames + 1
 	end
+
 	return true
 end
 
@@ -157,6 +193,10 @@ function MarathonA3Game:onPieceEnter()
 		self.level = self.level + 1
 		self.speed_level = self.speed_level + 1
 		self.torikan_passed = self.level >= 500 and true or false
+	elseif (self.level % 100 == 99 or self.level == 998) and not self.clear and self.noti_counter_stop then
+		-- Play a counter stop notification sound once until line clear
+		playSE("bell")
+		self.noti_counter_stop = false
 	end
 end
 
@@ -164,15 +204,25 @@ local cleared_row_levels = {1, 2, 4, 6}
 
 function MarathonA3Game:onLineClear(cleared_row_count)
 	local advanced_levels = cleared_row_levels[cleared_row_count]
+	self.noti_counter_stop = true
 	self:updateSectionTimes(self.level, self.level + advanced_levels)
+	self:playSectionChangeSound(self.level, self.level + advanced_levels)
+	
 	if not self.clear then
 		self.level = math.min(self.level + advanced_levels, 999)
 		self.speed_level = self.speed_level + advanced_levels
+		
 	end
 	if self.level == 999 and not self.clear then
+		-- game clear condition is met.
+		-- reduce the line clear delay for a smoother grid clear animation.
+		-- Set ARE = 1 for next blocks appear immediately after the roll starts.
 		self.clear = true
-		self.grid:clear()
 		self.roll_frames = -150
+		self.lcd = 4
+		self.are = 1
+		switchBGM(nil)
+		playSE("game_clear")
 	end
 	if not self.torikan_passed and self.level >= 500 and self.frames >= 25200 then
 	self.level = 500
@@ -219,7 +269,10 @@ function MarathonA3Game:updateSectionTimes(old_level, new_level)
 		end
 
 		if self.section_cool then
+			-- play "grade up" SE when the aggregate grade increases via section cool
 			self.section_cool_grade = self.section_cool_grade + 1
+			self.grade_up_timer = 120
+			playSEOnce("grade_up")
 		end
 
 		self.section_cool = false
@@ -233,6 +286,7 @@ function MarathonA3Game:updateSectionTimes(old_level, new_level)
 			self.section_cool = true
 			self.coolregret_message = "COOL!!"
 			self.coolregret_timer = 300
+			playSE("cool")
 			table.insert(self.section_cools, 1)
 		else
 			table.insert(self.section_cools, 0)
@@ -240,8 +294,23 @@ function MarathonA3Game:updateSectionTimes(old_level, new_level)
 	end
 end
 
+function MarathonA3Game:playSectionChangeSound(old_level, new_level)
+	if math.floor(old_level / 100) < math.floor(new_level / 100) and not self.clear then
+		-- play section change SE
+		playSE("next_section")
+	end
+end
+
 function MarathonA3Game:updateScore(level, drop_bonus, cleared_lines)
+	local old_aggregate_grade = self:getAggregateGrade()
 	self:updateGrade(cleared_lines)
+	local new_aggregate_grade = self:getAggregateGrade()
+
+	if old_aggregate_grade < new_aggregate_grade then
+		-- Play "grade up" SE when the aggregate grade(not the internal grade) increases via line clear 
+		self.grade_up_timer = 120
+		playSEOnce("grade_up")
+	end
 	if not self.clear then
 		if cleared_lines > 0 then
 			self.combo = self.combo + (cleared_lines - 1) * 2
@@ -339,12 +408,14 @@ function MarathonA3Game:updateGrade(cleared_lines)
 	if cleared_lines == 0 then return
 	else
 		if self.clear then
+			-- during credit roll
 			if self:qualifiesForMRoll() then
 				self.roll_points = self.roll_points + mroll_points[cleared_lines]
 			else
 				self.roll_points = self.roll_points + roll_points[cleared_lines]
 			end
 		else
+			-- during normal play
 			self.grade_points = self.grade_points + (
 				math.ceil(
 					grade_point_bonuses[self.grade + 1][cleared_lines] *
@@ -352,6 +423,7 @@ function MarathonA3Game:updateGrade(cleared_lines)
 				) * (1 + math.floor(self.level / 250))
 			)
 			if self.grade_points >= 100 and self.grade < 31 then
+				-- internal grade up
 				self.grade_points = 0
 				self.grade = self.grade + 1
 			end
@@ -389,7 +461,8 @@ function MarathonA3Game:getLetterGrade()
 end
 
 function MarathonA3Game:drawGrid()
-	if self.clear and not (self.completed or self.game_over) then
+	-- Set the invisible flag after the grid is completely cleared.
+	if (self.clear and self.roll_frames > -30) and not (self.completed or self.game_over) then
 		if self:qualifiesForMRoll() then
 			self.grid:drawInvisible(self.mRollOpacityFunction)
 		else
@@ -428,13 +501,15 @@ end
 
 function MarathonA3Game:drawScoringInfo()
 	love.graphics.setColor(1, 1, 1, 1)
-
 	love.graphics.setFont(font_3x5_2)
-	love.graphics.print(
-		self.das.direction .. " " ..
-		self.das.frames .. " " ..
-		strTrueValues(self.prev_inputs)
+
+	-- draw input display
+	love.graphics.printf(
+		self.das.direction .. " " .. self.das.frames .. " " .. strTrueValues(self.prev_inputs), 
+		0, 0, 635, "left"
 	)
+
+	-- draw labels
 	love.graphics.printf("NEXT", 64, 40, 40, "left")
 	love.graphics.printf("GRADE", 240, 120, 40, "left")
 	love.graphics.printf("SCORE", 240, 200, 40, "left")
@@ -447,50 +522,45 @@ function MarathonA3Game:drawScoringInfo()
 	-- draw section time data
 	local current_section = self.level >= 999 and 11 or math.floor(self.level / 100) + 1
 	self:drawSectionTimesWithSecondary(current_section, 10)
-	--[[
 
-	section_x = 530
-	section_70_x = 440
+	-- draw cool or regret message
+	if self.coolregret_timer > 0 then
+		local coolregret_color = self.coolregret_timer % 6 < 4 and { 1, 1, 0, 1 } or { 1, 1, 1, 1 }
 
-	for section, time in pairs(self.section_times) do
-		if section > 0 then
-			love.graphics.printf(formatTime(time), section_x, 40 + 20 * section, 90, "left")
-		end
+		love.graphics.setColor(coolregret_color)
+		love.graphics.printf(self.coolregret_message, 64, 400, 160, "center")
+		love.graphics.setColor(1, 1, 1, 1)
+		
+		self.coolregret_timer = self.coolregret_timer - 1
 	end
 
-	for section, time in pairs(self.secondary_section_times) do
-		if section > 0 then
-			love.graphics.printf(formatTime(time), section_70_x, 40 + 20 * section, 90, "left")
-		end
-	end
-
-	local current_x
-	if #self.section_times < #self.secondary_section_times then
-		current_x = section_x
-	else
-		current_x = section_70_x
-	end
-
-	if not self.clear then love.graphics.printf(formatTime(self.frames - self.section_start_time), current_x, 40 + 20 * current_section, 90, "left") end
-	]]--
-
-	if(self.coolregret_timer > 0) then
-				love.graphics.printf(self.coolregret_message, 64, 400, 160, "center")
-				self.coolregret_timer = self.coolregret_timer - 1
-		end
-
+	-- draw score value
 	love.graphics.setFont(font_3x5_3)
 	love.graphics.printf(self.score, 240, 220, 90, "left")
-	if self.roll_frames > 3238 then love.graphics.setColor(1, 0.5, 0, 1)
-	elseif self.level >= 999 then love.graphics.setColor(0, 1, 0, 1) end
-	love.graphics.printf(self:getLetterGrade(), 240, 140, 90, "left")
+
+	-- draw grade value
+	if self.grade_up_timer > 0 then
+		local grade_up_color = self.grade_up_timer % 6 < 4 and { 1, 0, 0, 1 } or { 1, 1, 1, 1 }
+		love.graphics.setColor(grade_up_color)
+		love.graphics.printf(self:getLetterGrade(), 240, 140, 90, "left")
+		self.grade_up_timer = self.grade_up_timer - 1
+	else
+		if self.roll_frames > 3238 then love.graphics.setColor(1, 0.5, 0, 1)
+		elseif self.level >= 999 then love.graphics.setColor(0, 1, 0, 1) end
+		love.graphics.printf(self:getLetterGrade(), 240, 140, 90, "left")
+	end
+
+	-- draw level value
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.printf(self.level, 240, 340, 40, "right")
 	love.graphics.printf(self:getSectionEndLevel(), 240, 370, 40, "right")
+
+	-- draw secret grade value
 	if sg >= 5 then
 		love.graphics.printf(self.SGnames[sg], 240, 450, 180, "left")
 	end
 
+	-- draw playtime
 	love.graphics.setFont(font_8x11)
 	love.graphics.printf(formatTime(self.frames), 64, 420, 160, "center")
 end
@@ -503,13 +573,30 @@ function MarathonA3Game:getHighscoreData()
 	}
 end
 
+function MarathonA3Game:getLevelForBGM()
+	local temp_speed_level = 0
+
+	-- If the player has achieved a section cool and is at the threshold for changing the BGM,
+	-- add 100 to self.speed_level to change the BGM early.
+	if self.section_cool then
+		if 385 <= self.speed_level and self.speed_level < 400 then
+			temp_speed_level = 100
+		elseif 685 <= self.speed_level and self.speed_level < 700 then
+			temp_speed_level = 100
+		end
+	end
+
+	return self.speed_level + temp_speed_level
+end
+
+
 function MarathonA3Game:getSectionEndLevel()
 	if self.level >= 900 then return 999
 	else return math.floor(self.level / 100 + 1) * 100 end
 end
 
 function MarathonA3Game:getBackground()
-	return math.floor(self.speed_level / 100)
+	return math.floor(self.level / 100)
 end
 
 return MarathonA3Game

@@ -22,6 +22,13 @@ function SurvivalA3Game:new()
 	self.combo = 1
 	self.randomizer = History6RollsRandomizer()
 
+	self.bgm_info_table = { 
+		{ sound = 3, subsound = nil, start = 0, stop = 485 },
+		{ sound = 4, subsound = nil, start = 500, stop = 685 },
+		{ sound = 5, subsound = nil, start = 700, stop = 985 },
+		{ sound = 6, subsound = nil, start = 1000, stop = -1 }
+	}
+
 	self.SGnames = {
 		"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
 		"M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9",
