@@ -25,6 +25,13 @@ function HighscoreScene:new()
 	self.auto_menu_offset = 0
 	self.index_count = 0
 
+	self.highscore_length = 0
+
+	self.scrollbar = newSlider(10, 290, 300, 0, 1, 0, function(value)
+			self.scrollbar_percentage = value
+			self.list_pointer = math.floor((self.highscore_length -17) * value + 0.5) + 1
+		end, { width = 10, orientation = "vertical" })
+
 	if #self.hash_table == 0 then
 		self.empty_highscores = true
 	end
@@ -37,6 +44,14 @@ function HighscoreScene:new()
 end
 
 function HighscoreScene:update()
+	local mouse_x, mouse_y = getScaledDimensions(love.mouse.getPosition())
+	if self.highscore_length > 15 then
+		local old_value = self.list_pointer
+		self.scrollbar:update(mouse_x, mouse_y)
+		if old_value ~= self.list_pointer then
+			playSE("cursor")
+		end
+	end
 	if self.auto_menu_offset ~= 0 then
 		self:changeOption(self.auto_menu_offset < 0 and -1 or 1)
 		if self.auto_menu_offset > 0 then self.auto_menu_offset = self.auto_menu_offset - 1 end
@@ -166,6 +181,8 @@ function HighscoreScene:selectHash()
 	self.key_references = {}
 	self.hash = self.hash_table[self.hash_id]
 	self.hash_highscore = highscores[self.hash]
+	self.highscore_length = #self.hash_highscore
+	self.scrollbar.value = 1
 	self.highscore_index, self.index_count = self.getHighscoreIndexing(self.hash)
 	self.highscore_column_widths = self.getHighscoreColumnWidths(self.hash, font_3x5_2)
 	self.highscore_column_positions = self.getHighscoreColumnPositions(self.highscore_column_widths, self.highscore_index, 100)
@@ -231,6 +248,10 @@ function HighscoreScene:render()
 
 	love.graphics.setFont(font_3x5_2)
 	if type(self.hash_highscore) == "table" then
+		if self.highscore_length > 15 then
+			self.scrollbar:draw()
+		end
+		love.graphics.setColor(1, 1, 1, 1)
 		self.menu_list_y = interpolateNumber(self.menu_list_y / 20, self.list_pointer) * 20
 		love.graphics.printf("num", 20, 100, 100)
 		if #self.hash_highscore > 17 then
@@ -366,6 +387,7 @@ function HighscoreScene:back()
 		self.menu_slot_positions = {}
 		self.interpolated_menu_slot_positions = {}
 		self.index_count = 0
+		self.highscore_length = 0
 	else
 		scene = TitleScene()
 	end
@@ -404,13 +426,14 @@ function HighscoreScene:changeOption(rel)
 			playSE("cursor")
 		end
 	else
-		len = #self.hash_highscore
+		len = self.highscore_length
 		len = math.max(len-16, 1)
 		old_value = self.list_pointer
 		self.list_pointer = Mod1(self.list_pointer + rel, len)
 		if old_value ~= self.list_pointer then
 			playSE("cursor")
 		end
+		self.scrollbar.value = 1 - ((self.list_pointer-0.5) / len)
 	end
 end
 return HighscoreScene
