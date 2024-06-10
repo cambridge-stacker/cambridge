@@ -338,7 +338,7 @@ function love.draw()
 	if config.visualsettings.debug_level > 1 then
 		bottom_right_corner_y_offset = bottom_right_corner_y_offset + 18
 		love.graphics.printf(
-			string.format("Lua memory use: %.1fKB", collectgarbage("count")),
+			string.format("Lua memory use: %.1fMB", collectgarbage("count")/1000),
 			0, 480 - bottom_right_corner_y_offset, 635, "right"
 		)
 	end
