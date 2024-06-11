@@ -388,7 +388,7 @@ function KeyConfigScene:onInputPress(e)
 		end
 	elseif e.type == "mouse" then
 		if self.configurable_inputs == nil then
-			if cursorHoverArea(20, 40, 50, 30) and not self.reconfiguration then
+			if cursorHoverArea(20, 40, 50, 30) and self.reconfiguration then
 				playSE("menu_cancel")
 				scene = InputConfigScene()
 			end
