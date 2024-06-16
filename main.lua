@@ -459,31 +459,7 @@ function love.filedropped(file)
 			final_directory = "replays/"
 		elseif msgbox_choice == 2 then
 			local replay_data = binser.d(data)[1]
-			local info_string = "Replay file view:\n"
-			info_string = info_string .. "Mode: " .. replay_data["mode"] .. " (" .. (replay_data["mode_hash"] or "???") .. ")\n"
-			info_string = info_string .. "Ruleset: " .. replay_data["ruleset"] .. " (" .. (replay_data["ruleset_hash"] or "???") .. ")\n"
-			info_string = info_string .. os.date("Timestamp: %c\n", replay_data["timestamp"])
-			if replay_data.cambridge_version then
-				if replay_data.cambridge_version ~= version then
-					info_string = info_string .. "Warning! The versions don't match!\nStuff may break, so, start at your own risk.\n"
-				end
-				info_string = info_string .. "Cambridge version for this replay: "..replay_data.cambridge_version.."\n"
-			end
-			if replay_data.pause_count and replay_data.pause_time then
-				info_string = info_string .. ("Pause count: %d\nTime Paused: %s\n"):format(replay_data.pause_count, formatTime(replay_data.pause_time))
-			end
-			if replay_data.sha256_table then
-				info_string = info_string .. ("SHA256 replay hashes:\nMode: %s\nRuleset: %s\n"):format(replay_data.sha256_table.mode, replay_data.sha256_table.ruleset)
-			end
-			if replay_data.highscore_data then
-				info_string = info_string .. "In-replay highscore data:\n\n"
-				for key, value in pairs(replay_data["highscore_data"]) do
-					info_string = info_string .. stringWrapByLength((key..": ".. toFormattedValue(value)), 75) .. "\n"
-				end
-			else
-				info_string = info_string .. "Legacy replay\nLevel: "..replay_data["level"]
-			end
-			love.window.showMessageBox(love.window.getTitle(), info_string, "info")
+			displayReplayInfoBox(replay_data)
 			return
 		end
 	else
