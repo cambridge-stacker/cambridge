@@ -543,6 +543,7 @@ function ReplaySelectScene:verifyHighscoreData()
 		playSE("error")
 	else
 		self.highscores_data_matching = true
+		playSE("mode_decide")
 	end
 end
 
