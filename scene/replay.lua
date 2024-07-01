@@ -239,6 +239,9 @@ function ReplayScene:onInputPress(e)
 		self.replay_speed = 1
 		self.game.save_replay = config.gamesettings.save_replay == 1
 		self.game.replay_inputs = self.retry_replay.inputs
+		if self.show_invisible then
+			self.game.ineligible = true
+		end
 		self.paused = true
 		pitchBGM(1)
 	elseif e.input == "hold" then
