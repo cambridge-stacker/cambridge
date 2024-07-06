@@ -28,6 +28,7 @@ ReplaySelectScene = require "scene.replay_select"
 KeyConfigScene = require "scene.key_config"
 StickConfigScene = require "scene.stick_config"
 InputConfigScene = require "scene.input_config"
+AbstractConfigScene = require "scene.config" -- this is an abstract scene
 GameConfigScene = require "scene.game_config"
 VisualConfigScene = require "scene.visual_config"
 AudioConfigScene = require "scene.audio_config"

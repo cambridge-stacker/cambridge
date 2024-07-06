@@ -117,31 +117,9 @@ function initConfig()
 
 	if config.resource_packs_applied == nil then config.resource_packs_applied = {} end
 
-	if not config.gamesettings then config.gamesettings = {} end
-	for _, option in ipairs(GameConfigScene.options) do
-		if not config.gamesettings[option.config_name] then
-			config.gamesettings[option.config_name] = 1
-		end
-	end
-	if not config.visualsettings then config.visualsettings = {} end
-	for _, option in ipairs(VisualConfigScene.options) do
-		if not config.visualsettings[option.config_name] then
-			config.visualsettings[option.config_name] = 1
-		end
-	end
-	if not config.audiosettings then config.audiosettings = {} end
-	for _, option in ipairs(AudioConfigScene.options) do
-		if not config.audiosettings[option.config_name] then
-			if option.type ~= "options" then
-				config.audiosettings[option.config_name] = (option.max - option.min) / 2 + option.min
-			else
-				config.audiosettings[option.config_name] = 1
-			end
-			if option.rounding_type and option.rounding_type == "floor" then
-				config.audiosettings[option.config_name] = math.floor(config.audiosettings[option.config_name])
-			end
-		end
-	end
+	GameConfigScene:setDefaultConfigs()
+	VisualConfigScene:setDefaultConfigs()
+	AudioConfigScene:setDefaultConfigs()
 
 	config.sound_sources = config.audiosettings.sound_sources
 
