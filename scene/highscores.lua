@@ -45,7 +45,7 @@ end
 
 function HighscoreScene:update()
 	local mouse_x, mouse_y = getScaledDimensions(love.mouse.getPosition())
-	if self.highscore_length > 15 then
+	if self.highscore_length > 17 then
 		local old_value = self.list_pointer
 		self.scrollbar:update(mouse_x, mouse_y)
 		if old_value ~= self.list_pointer then
@@ -249,7 +249,7 @@ function HighscoreScene:render()
 
 	love.graphics.setFont(font_3x5_2)
 	if type(self.hash_highscore) == "table" then
-		if self.highscore_length > 15 then
+		if self.highscore_length > 17 then
 			self.scrollbar:draw()
 		end
 		love.graphics.setColor(1, 1, 1, 1)
