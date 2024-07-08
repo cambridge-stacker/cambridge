@@ -389,7 +389,7 @@ function ResourcePackScene:onInputPress(e)
 	if e.scancode == "tab" then
 		self.selection_type = Mod1(self.selection_type + 1, 4)
 	end
-	if e.scancode == "escape" or e.input == "menu_back" or (self.selection_type == 4 and e.input == "menu_decide") then
+	if e.input == "menu_back" or (self.selection_type == 4 and e.input == "menu_decide") then
 		self:exitScene()
 	end
 end
