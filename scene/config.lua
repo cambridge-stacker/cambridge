@@ -174,7 +174,7 @@ function ConfigScene:onInputPress(e)
 				end
 			end
 		end
-		if cursorHoverArea(20, 40, 50, 30) then
+		if not e.button or cursorHoverArea(20, 40, 50, 30) then
 			playSE("mode_decide")
 			saveConfig()
 			scene = SettingsScene()
