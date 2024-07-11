@@ -67,7 +67,7 @@ TuningScene.options = {
 	{
 		config_name = "menu_arr",
 		display_name = "ARR in menus",
-		description = "This changes how quickly you scroll.",
+		description = "This changes how quickly you auto-repeat a directional press in menus.",
 		format = "%d frames",
 		sound_effect_name = "cursor",
 		min = 1,
@@ -75,10 +75,22 @@ TuningScene.options = {
 		type = "slider",
 		default = 4,
 	},
+	{
+		config_name = "mode_dynamic_arr",
+		display_name = "Dyn. Select Mode ARR",
+		description = "Dynamic Select Mode Auto Repeat Rate. The one menu that doesn't follow your menu ARR settings if it's on.",
+		sound_effect_name = "cursor",
+		type = "options",
+		options = {"On", "Off"},
+		default = 1,
+	},
 }
 
 function TuningScene:new()
 	self.spacing = 30
+	config.tunings.das = config.das
+	config.tunings.arr = config.arr
+	config.tunings.dcd = config.dcd
 	self.super.new(self, 200)
 	DiscordRPC:update({
 		details = "In settings",

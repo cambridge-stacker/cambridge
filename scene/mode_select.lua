@@ -83,6 +83,9 @@ function ModeSelectScene:menuDASInput(input, input_string, das, arr_mul)
 end
 
 function ModeSelectScene:getMenuARR(number)
+	if config.tunings.mode_dynamic_arr == 2 then
+		return config.menu_arr
+	end
 	if number < 60 then
 		if (number / 30) > #menu_ARR then
 			return #menu_ARR
@@ -114,10 +117,10 @@ function ModeSelectScene:update()
 		if self.auto_menu_offset > 0 then self.auto_menu_offset = self.auto_menu_offset - 1 end
 		if self.auto_menu_offset < 0 then self.auto_menu_offset = self.auto_menu_offset + 1 end
 	end
-	if self:menuDASInput(self.das_up, "up", 12) then
+	if self:menuDASInput(self.das_up, "up", config.menu_das) then
 		self:changeOption(-1)
 	end
-	if self:menuDASInput(self.das_down, "down", 12) then
+	if self:menuDASInput(self.das_down, "down", config.menu_das) then
 		self:changeOption(1)
 	end
 
