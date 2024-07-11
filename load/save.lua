@@ -105,9 +105,13 @@ function inputVersioning()
 end
 
 function initConfig()
-	if not config.das then config.das = 10 end
-	if not config.arr then config.arr = 2 end
-	if not config.dcd then config.dcd = 0 end
+	if not config.tunings then
+		config.tunings = {
+			das = config.das,
+			arr = config.arr,
+			dcd = config.dcd,
+		}
+	end
 	if not config.master_volume then config.master_volume = 1 end
 	if not config.sfx_volume then config.sfx_volume = 0.5 end
 	if not config.bgm_volume then config.bgm_volume = 0.5 end
@@ -120,6 +124,7 @@ function initConfig()
 	GameConfigScene:setDefaultConfigs()
 	VisualConfigScene:setDefaultConfigs()
 	AudioConfigScene:setDefaultConfigs()
+	TuningScene:setDefaultConfigs()
 
 	config.sound_sources = config.audiosettings.sound_sources
 
