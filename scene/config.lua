@@ -186,11 +186,11 @@ function ConfigScene:onCancel() end
 function ConfigScene:onInputPress(e)
 	local highlighted_option = self.options[self.highlight]
 	if e.input == "menu_decide" or (e.type == "mouse" and e.button == 1) then
-		for i, option in ipairs(ConfigScene.options) do
+		for i, option in ipairs(self.options) do
 			if option.type == "options" then
 				for j, setting in ipairs(option.options) do
 					if cursorHoverArea(100 + 110 * j, self.option_pos_y[i], 90, 20) then
-						self.main_menu_state = math.floor((e.y - 280) / 20)
+						self.main_menu_state = i
 						playSE("cursor_lr")
 						config.gamesettings[option.config_name] = Mod1(j, #option.options)
 					end
