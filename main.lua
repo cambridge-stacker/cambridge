@@ -20,6 +20,7 @@ function love.load()
 	require "load.filesystem"
 	require "load.rpc"
 	require "load.graphics"
+	require "load.resources"
 	require "load.sounds"
 	require "load.bgm"
 	require "load.save"
