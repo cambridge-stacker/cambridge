@@ -57,7 +57,8 @@ function ConfigScene:new(width)
 		assert((option.min or 0) < (option.max or 1), "the min value is higher than max value!")
 		if option.type == "slider" then
 			self.sliders[option.config_name] = newSlider(350 + (self.options_width / 2), y + 9,
-			450 - (self.options_width / 2), config[self.config_type][option.config_name], option.min, option.max, option.setter,
+			450 - (self.options_width / 2), config[self.config_type][option.config_name], option.min, option.max,
+			option.setter or function (v) config[self.config_type][option.config_name] = v end,
 			{width=20, knob="circle", track="roundrect"})
 		end
 	end
@@ -158,10 +159,11 @@ function ConfigScene:drawNumber(idx, option)
 end
 
 function ConfigScene:drawOptions(idx, option)
+	local initial_pos_x = self.options_width - 50
 	for j, setting in ipairs(option.options) do
-		local b = cursorHighlight(100 + 110 * j, self.option_pos_y[idx], 100, 20)
+		local b = cursorHighlight(initial_pos_x + 110 * j, self.option_pos_y[idx], 100, 20)
 		love.graphics.setColor(1, 1, b, config[self.config_type][option.config_name] == j and 1 or 0.5)
-		love.graphics.printf(setting, 100 + 110 * j, self.option_pos_y[idx], 100, "center")
+		love.graphics.printf(setting, initial_pos_x + 110 * j, self.option_pos_y[idx], 100, "center")
 	end
 end
 
@@ -194,8 +196,9 @@ function ConfigScene:onInputPress(e)
 	if e.input == "menu_decide" or (e.type == "mouse" and e.button == 1) then
 		for i, option in ipairs(self.options) do
 			if option.type == "options" then
+				local initial_pos_x = self.options_width - 50
 				for j, setting in ipairs(option.options) do
-					if cursorHoverArea(100 + 110 * j, self.option_pos_y[i], 90, 20) then
+					if cursorHoverArea(initial_pos_x + 110 * j, self.option_pos_y[i], 90, 20) then
 						self.main_menu_state = i
 						playSE("cursor_lr")
 						config[self.config_type][option.config_name] = Mod1(j, #option.options)
