@@ -112,6 +112,8 @@ function initConfig()
 			dcd = config.dcd,
 		}
 	end
+	if not config.menu_das then config.menu_das = 15 end
+	if not config.menu_arr then config.menu_arr = 4 end
 	if not config.master_volume then config.master_volume = 1 end
 	if not config.sfx_volume then config.sfx_volume = 0.5 end
 	if not config.bgm_volume then config.bgm_volume = 0.5 end

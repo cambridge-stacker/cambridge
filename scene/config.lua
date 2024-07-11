@@ -89,7 +89,7 @@ function ConfigScene:update()
 	else
 		self.horizontal_das = 0
 	end
-	if self.vertical_das >= 15 then
+	if self.vertical_das >= config.menu_das then
 		local change = 0
 		if self.das_up then
 			change = -1
@@ -97,16 +97,16 @@ function ConfigScene:update()
 			change = 1
 		end
 		self:changeHighlight(change)
-		self.vertical_das = self.vertical_das - 4
+		self.vertical_das = self.vertical_das - config.menu_arr
 	end
-	if self.horizontal_das >= 15 then
+	if self.horizontal_das >= config.menu_das then
 		local highlighted_option = self.options[self.highlight]
 		if self.das_left then
 			self:changeValue(-highlighted_option.increase_by)
 		elseif self.das_right then
 			self:changeValue(highlighted_option.increase_by)
 		end
-		self.horizontal_das = self.horizontal_das - 4
+		self.horizontal_das = self.horizontal_das - config.menu_arr
 	end
 end
 

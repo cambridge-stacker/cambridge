@@ -12,6 +12,7 @@ TuningScene.options = {
 	{
 		config_name = "das",
 		display_name = "Delayed Auto Shift (DAS)",
+		description = "Set it too fast, and you'd slip. Set it too slow, you'd feel sluggish.",
 		format = "%d frames",
 		sound_effect_name = "cursor",
 		min = 0,
@@ -26,6 +27,7 @@ TuningScene.options = {
 	{
 		config_name = "arr",
 		display_name = "Auto Repeat Rate (ARR)",
+		description = "This changes how fast you move pieces, only if",
 		format = "%d frames",
 		sound_effect_name = "cursor",
 		min = 0,
@@ -51,6 +53,28 @@ TuningScene.options = {
 			config.tunings.dcd = math.floor(v)
 		end
 	},
+	{
+		config_name = "menu_das",
+		display_name = "DAS in menus",
+		description = "Delayed Auto Shift, in menus.\nSet it too fast, and you'd slip. Set it too slow, you'd feel sluggish.",
+		format = "%d frames",
+		sound_effect_name = "cursor",
+		min = 3,
+		max = 20,
+		type = "slider",
+		default = 15,
+	},
+	{
+		config_name = "menu_arr",
+		display_name = "ARR in menus",
+		description = "This changes how quickly you scroll.",
+		format = "%d frames",
+		sound_effect_name = "cursor",
+		min = 1,
+		max = 8,
+		type = "slider",
+		default = 4,
+	},
 }
 
 function TuningScene:new()
@@ -72,9 +96,14 @@ function TuningScene:render()
 	love.graphics.print("TUNING SETTINGS", 80, 43)
 
 	love.graphics.setFont(font_3x5_2)
-	love.graphics.print("These settings will only apply to modes\nthat do not use their own tunings.", 80, 80)
+	love.graphics.print("These settings will only apply to modes that do not use their\nown tunings. Menu tunings are separate from gameplay tunings.", 80, 80)
 
 	self:renderSettings()
+end
+
+function TuningScene:onConfirm()
+	config.menu_das = config.tunings.menu_das
+	config.menu_arr = config.tunings.menu_arr
 end
 
 return TuningScene

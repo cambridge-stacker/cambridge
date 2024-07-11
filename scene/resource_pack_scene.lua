@@ -114,7 +114,7 @@ function ResourcePackScene:update()
 	else
 		self.das = 0
 	end
-	if self.das >= 15 then
+	if self.das >= config.menu_das then
 		local change = 0
 		if self.das_up then
 			change = -1
@@ -122,7 +122,7 @@ function ResourcePackScene:update()
 			change = 1
 		end
 		self:changeVerticalOption(change)
-		self.das = self.das - 4
+		self.das = self.das - config.menu_arr
 	end
 end
 

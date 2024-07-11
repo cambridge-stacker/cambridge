@@ -62,7 +62,7 @@ function HighscoreScene:update()
 	else
 		self.das = 0
 	end
-	if self.das >= 15 then
+	if self.das >= config.menu_das then
 		local change = 0
 		local horizontal = self.das_left or self.das_right
 		if self.das_up or self.das_left then
@@ -75,7 +75,7 @@ function HighscoreScene:update()
 		else
 			self:scrollList(change)
 		end
-		self.das = self.das - 4
+		self.das = self.das - config.menu_arr
 	end
 end
 

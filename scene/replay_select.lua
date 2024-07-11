@@ -136,7 +136,7 @@ function ReplaySelectScene:update()
 		if self.auto_menu_offset > 0 then self.auto_menu_offset = self.auto_menu_offset - 1 end
 		if self.auto_menu_offset < 0 then self.auto_menu_offset = self.auto_menu_offset + 1 end
 	end
-	if self.das >= 15 then
+	if self.das >= config.menu_das then
 		local change = 0
 		if self.das_up then
 			change = -1
@@ -148,7 +148,7 @@ function ReplaySelectScene:update()
 			change = 9
 		end
 		self:changeOption(change)
-		self.das = self.das - 4
+		self.das = self.das - config.menu_arr
 	end
 
 	DiscordRPC:update({
