@@ -66,7 +66,9 @@ function loadResources()
 		end
 	end
 
+
 	if not initial_load or #config.resource_packs_applied > 0 then
+		loadStandardFonts()
 		love.graphics.setCanvas()
 		love.graphics.clear()
 		love.graphics.setColor(1, 1, 1, 1)
