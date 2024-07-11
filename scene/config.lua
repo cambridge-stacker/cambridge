@@ -198,7 +198,7 @@ function ConfigScene:onInputPress(e)
 					if cursorHoverArea(100 + 110 * j, self.option_pos_y[i], 90, 20) then
 						self.main_menu_state = i
 						playSE("cursor_lr")
-						config.gamesettings[option.config_name] = Mod1(j, #option.options)
+						config[self.config_type][option.config_name] = Mod1(j, #option.options)
 					end
 				end
 			end
