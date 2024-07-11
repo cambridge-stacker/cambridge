@@ -92,75 +92,25 @@ function ConfigScene:render()
 	drawBackground("options_game")
 
 	love.graphics.setFont(font_8x11)
+	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.print("AUDIO SETTINGS", 80, 43)
 	local b = cursorHighlight(20, 40, 50, 30)
-	love.graphics.setColor(1, 1, b, 1)
-	love.graphics.printf("<-", font_3x5_4, 20, 40, 50, "center")
-	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_2)
 	love.graphics.print("(THIS WILL NOT BE STORED IN REPLAYS)", 80, 80)
 
 	self:renderSettings()
 end
 
-function ConfigScene:renderOptions(idx, option)
-	for j, setting in ipairs(option.options) do
-		local b = cursorHighlight(100 + 110 * j, self.option_pos_y[idx], 100, 20)
-		love.graphics.setColor(1, 1, b, config.audiosettings[option.config_name] == j and 1 or 0.5)
-		love.graphics.printf(setting, 100 + 110 * j, self.option_pos_y[idx], 100, "center")
+function ConfigScene:onConfirm()
+	if config.sound_sources ~= config.audiosettings.sound_sources then
+		config.sound_sources = config.audiosettings.sound_sources
+		--why is this necessary???
+		generateSoundTable()
 	end
 end
 
-function ConfigScene:changeValue(by)
-	local option = self.options[self.highlight]
-	if option.type == "slider" then
-		local sld = self.sliders[option.config_name]
-		sld.value = math.max(0, math.min(sld.max, (sld:getValue() + by - sld.min))) / (sld.max - sld.min)
-		local x, y = getScaledDimensions(love.mouse.getPosition())
-		sld:update(x, y)
-	end
-	if option.type == "options" then
-		config.audiosettings[option.config_name] = Mod1(config.audiosettings[option.config_name]+by, #option.type)
-	end
-end
-
-function ConfigScene:onInputPress(e)
-	local option = self.options[self.highlight]
-	if e.input == "menu_decide" or (e.type == "mouse" and e.button == 1 and e.x > 20 and e.y > 40 and e.x < 70 and e.y < 70) then
-		if config.sound_sources ~= config.audiosettings.sound_sources then
-			config.sound_sources = config.audiosettings.sound_sources
-			--why is this necessary???
-			generateSoundTable()
-		end
-		playSE("mode_decide")
-		saveConfig()
-		scene = SettingsScene()
-	elseif e.input == "menu_up" then
-		self:changeHighlight(-1)
-		self.das_up = true
-	elseif e.input == "menu_down" then
-		self:changeHighlight(1)
-		self.das_down = true
-	elseif e.input == "menu_left" then
-		self:changeValue(-option.increase_by)
-		playSE(option.sound_effect_name or "cursor_lr")
-	elseif e.input == "menu_right" then
-		self:changeValue(option.increase_by)
-		playSE(option.sound_effect_name or "cursor_lr")
-	elseif e.input == "menu_back" then
-		playSE("menu_cancel")
-		loadSave()
-		love.audio.setVolume(config.master_volume)
-		scene = SettingsScene()
-	end
-end
-
-function ConfigScene:onInputRelease(e)
-	if e.input == "menu_up" then
-		self.das_up = false
-	elseif e.input == "menu_down" then
-		self.das_down = false
-	end
+function ConfigScene:onCancel()
+	love.audio.setVolume(config.master_volume)
 end
 
 return ConfigScene

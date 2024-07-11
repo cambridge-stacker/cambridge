@@ -51,6 +51,7 @@ function ConfigScene:new()
 	self.sliders = {}
 	local y = 100
 	for idx, option in ipairs(self.options) do
+		option.increase_by = option.increase_by or 1
 		y = y + (self.spacing or 20)
 		table.insert(self.option_pos_y, y)
 		assert((option.min or 0) < (option.max or 1), "the min value is higher than max value!")
@@ -59,6 +60,9 @@ function ConfigScene:new()
 		end
 	end
 	--#endregion
+
+	self.vertical_das = 0
+	self.horizontal_das = 0
 
 	DiscordRPC:update({
 		details = "In settings",
@@ -73,12 +77,17 @@ function ConfigScene:update()
 		slider:update(x, y)
 	end
 	--#endregion
-	if self.das_up or self.das_down or self.das_left or self.das_right then
-		self.das = self.das + 1
+	if self.das_up or self.das_down then
+		self.vertical_das = self.vertical_das + 1
 	else
-		self.das = 0
+		self.vertical_das = 0
 	end
-	if self.das >= 15 then
+	if self.das_left or self.das_right then
+		self.horizontal_das = self.horizontal_das + 1
+	else
+		self.horizontal_das = 0
+	end
+	if self.vertical_das >= 15 then
 		local change = 0
 		if self.das_up then
 			change = -1
@@ -86,7 +95,16 @@ function ConfigScene:update()
 			change = 1
 		end
 		self:changeHighlight(change)
-		self.das = self.das - 4
+		self.vertical_das = self.vertical_das - 4
+	end
+	if self.horizontal_das >= 15 then
+		local highlighted_option = self.options[self.highlight]
+		if self.das_left then
+			self:changeValue(-highlighted_option.increase_by)
+		elseif self.das_right then
+			self:changeValue(highlighted_option.increase_by)
+		end
+		self.horizontal_das = self.horizontal_das - 4
 	end
 end
 
@@ -158,7 +176,12 @@ function ConfigScene:changeValue(by)
 			config[self.config_type][option.config_name] = new_value
 		end
 	end
+	playSE(option.sound_effect_name or "cursor_lr")
 end
+
+function ConfigScene:onConfirm() end
+
+function ConfigScene:onCancel() end
 
 function ConfigScene:onInputPress(e)
 	local highlighted_option = self.options[self.highlight]
@@ -166,7 +189,7 @@ function ConfigScene:onInputPress(e)
 		for i, option in ipairs(ConfigScene.options) do
 			if option.type == "options" then
 				for j, setting in ipairs(option.options) do
-					if cursorHoverArea(100 + 110 * j, 100 + i * 20, 90, 20) then
+					if cursorHoverArea(100 + 110 * j, self.option_pos_y[i], 90, 20) then
 						self.main_menu_state = math.floor((e.y - 280) / 20)
 						playSE("cursor_lr")
 						config.gamesettings[option.config_name] = Mod1(j, #option.options)
@@ -177,6 +200,7 @@ function ConfigScene:onInputPress(e)
 		if not e.button or cursorHoverArea(20, 40, 50, 30) then
 			playSE("mode_decide")
 			saveConfig()
+			self:onConfirm()
 			scene = SettingsScene()
 		end
 	elseif e.input == "menu_up" then
@@ -186,16 +210,15 @@ function ConfigScene:onInputPress(e)
 		self:changeHighlight(1)
 		self.das_down = true
 	elseif e.input == "menu_left" then
-		-- yes, this is ugly, but it works
-		self:changeValue(-(highlighted_option.increase_by or 1))
-		playSE(highlighted_option.sound_effect_name or "cursor_lr")
+		self:changeValue(-highlighted_option.increase_by)
+		self.das_left = true
 	elseif e.input == "menu_right" then
-		self:changeValue(highlighted_option.increase_by or 1)
-		playSE(highlighted_option.sound_effect_name or "cursor_lr")
+		self:changeValue(highlighted_option.increase_by)
+		self.das_right = true
 	elseif e.input == "menu_back" then
 		playSE("menu_cancel")
 		loadSave()
-		love.audio.setVolume(config.master_volume)
+		self:onCancel()
 		scene = SettingsScene()
 	end
 end
@@ -205,6 +228,10 @@ function ConfigScene:onInputRelease(e)
 		self.das_up = false
 	elseif e.input == "menu_down" then
 		self.das_down = false
+	elseif e.input == "menu_left" then
+		self.das_left = false
+	elseif e.input == "menu_right" then
+		self.das_right = false
 	end
 end
 
