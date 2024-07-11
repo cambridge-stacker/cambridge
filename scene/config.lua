@@ -208,8 +208,8 @@ function ConfigScene:onInputPress(e)
 		end
 		if not e.button or cursorHoverArea(20, 40, 50, 30) then
 			playSE("mode_decide")
-			saveConfig()
 			self:onConfirm()
+			saveConfig()
 			scene = SettingsScene()
 		end
 	elseif e.input == "menu_up" then
