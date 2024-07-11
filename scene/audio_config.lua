@@ -79,8 +79,7 @@ local optioncount = #ConfigScene.options
 
 function ConfigScene:new()
 	self.spacing = 25
-	ConfigScene.super.new(self)
-	self.options_width = 170
+	ConfigScene.super.new(self, 170)
 	DiscordRPC:update({
 		details = "In settings",
 		state = "Changing audio settings",

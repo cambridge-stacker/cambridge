@@ -41,9 +41,9 @@ function ConfigScene:setDefaultConfigs()
 	end
 end
 
-function ConfigScene:new()
+function ConfigScene:new(width)
 	self.highlight = 1
-	self.options_width = 150
+	self.options_width = width or 150
 	self.option_pos_y = {}
 
 	--#region Init option positions and sliders
@@ -56,7 +56,9 @@ function ConfigScene:new()
 		table.insert(self.option_pos_y, y)
 		assert((option.min or 0) < (option.max or 1), "the min value is higher than max value!")
 		if option.type == "slider" then
-			self.sliders[option.config_name] = newSlider(420, y + 9, 360, config[self.config_type][option.config_name], option.min, option.max, option.setter, {width=20, knob="circle", track="roundrect"})
+			self.sliders[option.config_name] = newSlider(350 + (self.options_width / 2), y + 9,
+			450 - (self.options_width / 2), config[self.config_type][option.config_name], option.min, option.max, option.setter,
+			{width=20, knob="circle", track="roundrect"})
 		end
 	end
 	--#endregion
@@ -142,13 +144,17 @@ end
 function ConfigScene:drawSlider(idx, option)
 	love.graphics.setColor(1, 1, 1, 0.75)
 	self.sliders[option.config_name]:draw()
+	local pos_x = 90 + self.options_width
+	local width = 510 - self.options_width
 	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.printf(string.format(option.format,self.sliders[option.config_name]:getValue()), 240, self.option_pos_y[idx], 360, "center")
+	love.graphics.printf(string.format(option.format,self.sliders[option.config_name]:getValue()), pos_x, self.option_pos_y[idx], width, "center")
 end
 
 function ConfigScene:drawNumber(idx, option)
+	local pos_x = 90 + self.options_width
+	local width = 510 - self.options_width
 	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.printf(string.format(option.format,self.sliders[option.config_name]:getValue()), 240, self.option_pos_y[idx], 360, "center")
+	love.graphics.printf(string.format(option.format,self.sliders[option.config_name]:getValue()), pos_x, self.option_pos_y[idx], width, "center")
 end
 
 function ConfigScene:drawOptions(idx, option)
