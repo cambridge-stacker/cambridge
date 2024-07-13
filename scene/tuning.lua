@@ -27,7 +27,7 @@ TuningScene.options = {
 	{
 		config_name = "arr",
 		display_name = "Auto Repeat Rate (ARR)",
-		description = "This changes how fast you move pieces, only if",
+		description = "This changes how fast you move pieces, only if modes doesn't use its own ARR.",
 		format = "%d frames",
 		sound_effect_name = "cursor",
 		min = 0,
@@ -42,6 +42,8 @@ TuningScene.options = {
 	{
 		config_name = "dcd",
 		display_name = "DAS Cut Delay (DCD)",
+		description = "When you rotate, softdrop, or hard drop a piece, the auto-shift delay is increased "..
+		              "by specified amount of frames if the mode allows that configuration, or the amount the modes forces on.",
 		format = "%d frames",
 		sound_effect_name = "cursor",
 		min = 0,
