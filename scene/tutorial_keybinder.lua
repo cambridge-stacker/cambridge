@@ -92,12 +92,8 @@ local function newSetInputs()
 end
 
 function KeyConfigScene:new()
-	if (require("tetris.modes.marathon_a3") == nil) then
-		error("Missing mode: marathon_a3. It's required.")
-	end
-	if (require("tetris.rulesets.standard") == nil) then
-		error("Missing ruleset: standard. It's required.")
-	end
+	assert(require "tetris.modes.marathon_a3", "Missing mode: marathon_a3. It's required.")
+	assert(require "tetris.rulesets.standard", "Missing ruleset: standard. It's required.")
 	self.input_state = 1
 	self.visual_input_state = 1
 

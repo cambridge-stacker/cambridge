@@ -129,9 +129,7 @@ end
 
 ---@param audio_source love.Source
 local function playRawSE(audio_source)
-	if type(audio_source) == "table" then
-		error("Tried to play a table.")
-	end
+	assert(type(audio_source) ~= "table", "Tried to play a table.")
 	audio_source:setVolume(config.sfx_volume)
 	if audio_source:isPlaying() then
 		audio_source:stop()
@@ -141,9 +139,7 @@ end
 
 ---@param audio_source love.Source
 local function playRawSEOnce(audio_source)
-	if type(audio_source) == "table" then
-		error("Tried to play a table.")
-	end
+	assert(type(audio_source) ~= "table", "Tried to play a table.")
 	audio_source:setVolume(config.sfx_volume)
 	if audio_source:isPlaying() then
 		return

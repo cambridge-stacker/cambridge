@@ -23,9 +23,7 @@ end
 
 function saveToFile(filename, data)
 	local is_successful, message = love.filesystem.write(filename..".tmp", data) --temporary file.
-	if not is_successful then
-		error("Failed to save file: "..filename..". Error message: "..message)
-	end
+	assert("Failed to save file: "..filename..". Error message: "..message)
 	love.filesystem.remove(filename..".tmp") --cleanup.
 	love.filesystem.write(filename, data)
 end
