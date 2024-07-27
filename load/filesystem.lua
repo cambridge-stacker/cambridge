@@ -25,12 +25,12 @@ function saveToFile(filename, data)
 	local is_successful, message = love.filesystem.write(filename..".tmp", data) --temporary file.
 	assert(is_successful, "Failed to save file: "..filename..". Error message: "..(message or "nil"))
 	love.filesystem.remove(filename..".tmp") --cleanup.
-	love.filesystem.write(filename, data)
+	assert(love.filesystem.write(filename, data))
 end
 
 function copyFile(source_path, destination_path)
 	local file = love.filesystem.read(source_path)
-	love.filesystem.write(destination_path, file)
+	assert(love.filesystem.write(destination_path, file))
 end
 
 ---@param source_directory string
