@@ -193,20 +193,25 @@ function ConfigScene:onCancel() end
 
 function ConfigScene:onInputPress(e)
 	local highlighted_option = self.options[self.highlight]
-	if e.input == "menu_decide" or (e.type == "mouse" and e.button == 1) then
+	if e.input == "menu_decide" then
+		playSE("mode_decide")
+		self:onConfirm()
+		saveConfig()
+		scene = SettingsScene()
+	elseif e.type == "mouse" and e.button == 1 then
 		for i, option in ipairs(self.options) do
 			if option.type == "options" then
 				local initial_pos_x = self.options_width - 50
 				for j, setting in ipairs(option.options) do
 					if cursorHoverArea(initial_pos_x + 110 * j, self.option_pos_y[i], 90, 20) then
 						self.main_menu_state = i
-						playSE("cursor_lr")
+						playSE(option.sound_effect_name or "cursor_lr")
 						config[self.config_type][option.config_name] = Mod1(j, #option.options)
 					end
 				end
 			end
 		end
-		if not e.button or cursorHoverArea(20, 40, 50, 30) then
+		if cursorHoverArea(20, 40, 50, 30) then
 			playSE("mode_decide")
 			self:onConfirm()
 			saveConfig()
