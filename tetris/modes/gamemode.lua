@@ -58,6 +58,7 @@ function GameMode:new(secret_inputs, properties)
 	self.draw_section_times = false
 	self.draw_secondary_section_times = false
 	self.big_mode = false
+	self.half_block_mode = false
 	self.irs = true
 	self.ihs = true
 	self.square_mode = false
