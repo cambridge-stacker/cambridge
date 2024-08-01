@@ -61,7 +61,6 @@ end
 
 local menu_DAS_hold = {["up"] = 0, ["down"] = 0, ["left"] = 0, ["right"] = 0}
 local menu_DAS_frames = {["up"] = 0, ["down"] = 0, ["left"] = 0, ["right"] = 0}
-local menu_ARR = {[0] = 8, 6, 5, 4, 3, 2, 2, 2, 1}
 function ModeSelectScene:menuDASInput(input, input_string, das, arr_mul)
 	local result = false
 	arr_mul = arr_mul or 1
@@ -84,14 +83,7 @@ function ModeSelectScene:getMenuARR(number)
 	if config.tunings.mode_dynamic_arr == 2 then
 		return config.menu_arr
 	end
-	if number < 60 then
-		if (number / 30) > #menu_ARR then
-			return #menu_ARR
-		else
-			return menu_ARR[math.floor(number / 30)]
-		end
-	end
-	return math.ceil(32 / math.sqrt(number))
+	return 32 / (number ^ 0.45)
 end
 
 function ModeSelectScene:update()
@@ -131,16 +123,16 @@ function ModeSelectScene:update()
 		if self.auto_ruleset_offset > 0 then self.auto_ruleset_offset = self.auto_ruleset_offset - 1 end
 		if self.auto_ruleset_offset < 0 then self.auto_ruleset_offset = self.auto_ruleset_offset + 1 end
 	end
-	if self:menuDASInput(self.das_up, "up", config.menu_das) then
+	if self:menuDASInput(self.das_up, "up", config.menu_das, config.menu_arr / 4) then
 		self:changeMode(-1)
 	end
-	if self:menuDASInput(self.das_down, "down", config.menu_das) then
+	if self:menuDASInput(self.das_down, "down", config.menu_das, config.menu_arr / 4) then
 		self:changeMode(1)
 	end
-	if self:menuDASInput(self.das_left, "left", config.menu_das, 2) then
+	if self:menuDASInput(self.das_left, "left", config.menu_das, config.menu_arr / 2) then
 		self:changeRuleset(-1)
 	end
-	if self:menuDASInput(self.das_right, "right", config.menu_das, 2) then
+	if self:menuDASInput(self.das_right, "right", config.menu_das, config.menu_arr / 2) then
 		self:changeRuleset(1)
 	end
 	DiscordRPC:update({
