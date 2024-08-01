@@ -27,7 +27,7 @@ TuningScene.options = {
 	{
 		config_name = "arr",
 		display_name = "Auto Repeat Rate (ARR)",
-		description = "This changes how fast you move pieces, only if modes doesn't use its own ARR.",
+		description = "This changes how fast you move pieces, only if modes doesn't use its own ARR. Higher -> Slower, Lower -> Faster.",
 		format = "%d frames",
 		sound_effect_name = "cursor",
 		min = 0,
@@ -69,7 +69,7 @@ TuningScene.options = {
 	{
 		config_name = "menu_arr",
 		display_name = "ARR in menus",
-		description = "This changes how quickly you auto-repeat a directional press in menus.",
+		description = "This changes how quickly you auto-repeat a directional press in menus. Higher -> Slower, Lower -> Faster.",
 		format = "%d frames",
 		sound_effect_name = "cursor",
 		min = 1,
@@ -80,7 +80,7 @@ TuningScene.options = {
 	{
 		config_name = "mode_dynamic_arr",
 		display_name = "Dyn. Select Mode ARR",
-		description = "Dynamic Select Mode Auto Repeat Rate. The one menu that doesn't follow your menu ARR settings if it's on.",
+		description = "Dynamic Select Mode Auto Repeat Rate. The one menu that gradually decreases auto repeat delay if it's on.",
 		sound_effect_name = "cursor",
 		type = "options",
 		options = {"On", "Off"},
