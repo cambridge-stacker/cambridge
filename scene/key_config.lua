@@ -78,6 +78,9 @@ local input_naming = {
 --A list of inputs that shouldn't have the same keybinds with the other.
 local mutually_exclusive_inputs = {
 	menu_decide = "menu_back",
+	mode_exit = {"retry", "pause"},
+	pause = {"mode_exit", "retry"},
+	retry = {"mode_exit", "pause"},
 	left = {"right", "up", "down"},
 	right = {"left", "up", "down"},
 	up = {"down", "left", "right"},
@@ -105,22 +108,22 @@ function KeyConfigScene:mutexCheck(input, keybind)
 			if type(value) == "table" then
 				for k2, v2 in pairs(value) do
 					if self.new_input[v2] == keybind then
-						return true
+						return true, v2
 					end
 				end
 			end
 			if self.new_input[value] == keybind then
-				return true
+				return true, value
 			end
 		elseif value == input then
 			if self.new_input[key] == keybind then
-				return true
+				return true, key
 			end
 		end
 	end
 	for key, value in pairs(first_execution_inputs) do
 		if self.new_input[value] == keybind and input ~= value then
-			return true
+			return true, value
 		end
 	end
 	return false
@@ -157,12 +160,14 @@ function KeyConfigScene:new()
 		end
 	else
 		self.configurable_inputs = configurable_system_inputs
+		self.set_inputs[self.configurable_inputs[1]] = "<press a key, or tab to skip>"
 		self.keybinds_limit = 6
 	end
 
 	self.menu_state = 1
 
 	self.safety_frames = 2
+	self.error_time = 0
 
 	DiscordRPC:update({
 		details = "In settings",
@@ -172,6 +177,7 @@ end
 
 function KeyConfigScene:update()
 	self.safety_frames = self.safety_frames - 1
+	self.error_time = self.error_time - love.timer.getDelta()
 	if self.final_list_y / self.spacing > self.input_state - 5 then
 		self.final_list_y = (self.input_state - 5) * self.spacing
 	end
@@ -202,7 +208,7 @@ function KeyConfigScene:render()
 	love.graphics.setFont(font_8x11)
 	love.graphics.print("KEY CONFIG", 80, 43)
 
-	if self.reconfiguration or self.configurable_inputs then
+	if self.reconfiguration then
 		local b = cursorHighlight(20, 40, 50, 30)
 		love.graphics.setColor(1, 1, b, 1)
 		love.graphics.printf("<-", font_3x5_4, 20, 40, 50, "center")
@@ -231,30 +237,30 @@ function KeyConfigScene:render()
 	self.list_y = interpolateNumber(self.list_y, -self.final_list_y)
 	love.graphics.setFont(font_3x5_2)
 	for i, input in ipairs(self.configurable_inputs) do
-		local b = 1
+		local g, b = 1, 1
 		local alpha = fadeoutAtEdges(self.list_y + (i-1) * self.spacing - 180, 180, self.spacing)
 		if i == self.input_state then
 			b = 0
+			if self.error_time > 0 then
+				g = 0
+			end
+		end
+		if self.keybinds_limit and i > self.keybinds_limit then
+			alpha = alpha / 2
 		end
 		love.graphics.setColor(1, 1, b, alpha)
 		love.graphics.printf(input_naming[input] or "null", 40, self.list_y + 70 + i * self.spacing, 200, "left")
-		love.graphics.setColor(1, 1, 1, alpha)
+		
+		love.graphics.setColor(1, g, g, alpha)
 		if self.set_inputs[input] then
-			love.graphics.printf(self.set_inputs[input], 240, self.list_y + 70 + i * self.spacing, 300, "left")
+			love.graphics.printf(self.set_inputs[input], 220, self.list_y + 70 + i * self.spacing, 420, "left")
 		end
 	end
 
 	love.graphics.setColor(1, 1, 1, 1)
-	local string_press_key = "Press key input for " .. (input_naming[self.configurable_inputs[self.input_state]] or "???")
 	if self.keybinds_limit and self.input_state > self.keybinds_limit then
 		love.graphics.print("Press enter to confirm, delete/backspace to retry" .. (config.input and ", escape to cancel" or ""))
 		return
-	elseif self.reconfiguration then
-		if self.key_rebinding then
-			love.graphics.printf(string_press_key .. ", tab to erase.", 0, 0, 640, "left")
-		end
-	else
-		love.graphics.printf(string_press_key .. ", tab to skip.", 0, 0, 640, "left")
 	end
 end
 
@@ -272,12 +278,15 @@ function KeyConfigScene:rebindKey(key)
 		self.set_inputs[self.configurable_inputs[self.input_state]] = "erased"
 		return true
 	end
-	if self:mutexCheck(self.configurable_inputs[self.input_state], key) then
-		self.set_inputs[self.configurable_inputs[self.input_state]] = "<press an other key>"
+	local is_invalid, existing_keybind = self:mutexCheck(self.configurable_inputs[self.input_state], key)
+	if is_invalid then
+		self.set_inputs[self.configurable_inputs[self.input_state]] = ("<press other key, conflicts with %s>"):format(input_naming[existing_keybind])
+		self.error_time = buffer_sounds.error[1]:getDuration("seconds") or 0.5
 		return false
 	end
 	self.set_inputs[self.configurable_inputs[self.input_state]] = self:formatKey(key)
 	self.new_input[self.configurable_inputs[self.input_state]] = key
+	self.error_time = 0
 	return true
 end
 
@@ -336,13 +345,11 @@ function KeyConfigScene:onInputPress(e)
 				if e.scancode == "tab" then
 					self:rebindKey(nil) --this is done on purpose
 					self.key_rebinding = false
+				elseif self:rebindKey(e.scancode) then
+					playSE("mode_decide")
+					self.key_rebinding = false
 				else
-					if self:rebindKey(e.scancode) then
-						playSE("mode_decide")
-						self.key_rebinding = false
-					else
-						playSE("error")
-					end
+					playSE("error")
 				end
 				config.input.keys = self.new_input
 				saveConfig()
@@ -358,7 +365,7 @@ function KeyConfigScene:onInputPress(e)
 					self.das_down = true
 				elseif e.scancode == "return" or e.scancode == "kpenter" then
 					playSE("main_decide")
-					self.set_inputs[self.configurable_inputs[self.input_state]] = "<press a key>"
+					self.set_inputs[self.configurable_inputs[self.input_state]] = "<press a key, or tab to erase>"
 					self.key_rebinding = true
 				end
 			end
@@ -380,9 +387,11 @@ function KeyConfigScene:onInputPress(e)
 		elseif e.scancode == "tab" then
 			self.set_inputs[self.configurable_inputs[self.input_state]] = "skipped"
 			self.input_state = self.input_state + 1
+			self.set_inputs[self.configurable_inputs[self.input_state]] = "<press a key, or tab to skip>"
 		-- all other keys can be configured
 		elseif self:rebindKey(e.scancode) then
 			self.input_state = self.input_state + 1
+			self.set_inputs[self.configurable_inputs[self.input_state]] = "<press a key, or tab to skip>"
 		else
 			playSE("error")
 		end
@@ -396,18 +405,11 @@ function KeyConfigScene:onInputPress(e)
 				playSE("main_decide")
 				self.input_state = 1
 				self.configurable_inputs = configurable_game_inputs
-				self.keybinds_limit = #configurable_game_inputs
 			end
 			if cursorHoverArea(80,210,200,50) then
 				playSE("main_decide")
 				self.input_state = 1
 				self.configurable_inputs = configurable_system_inputs
-				self.keybinds_limit = 6
-			end
-		else
-			if cursorHoverArea(20, 40, 50, 30) then
-				playSE("menu_cancel")
-				self.configurable_inputs = nil
 			end
 		end
 	end
