@@ -51,7 +51,7 @@ function ModeSelectScene:new()
 	self.auto_menu_offset = 0
 	self.auto_menu_state = "mode"
 	self.start_frames, self.starting = 0, false
-	self.safety_frames = 0
+	self.safety_frames = 2
 	DiscordRPC:update({
 		details = "In menus",
 		state = "Choosing a mode",
@@ -81,14 +81,10 @@ function ModeSelectScene:menuDASInput(input, input_string, das, arr_mul)
 end
 
 function ModeSelectScene:getMenuARR(number)
-	if number < 60 then
-		if (number / 30) > #menu_ARR then
-			return #menu_ARR
-		else
-			return menu_ARR[math.floor(number / 30)]
-		end
+	if config.tunings.mode_dynamic_arr == 2 then
+		return config.menu_arr
 	end
-	return math.ceil(32 / math.sqrt(number))
+	return 32 / (number ^ 0.45)
 end
 
 function ModeSelectScene:update()
@@ -112,10 +108,10 @@ function ModeSelectScene:update()
 		if self.auto_menu_offset > 0 then self.auto_menu_offset = self.auto_menu_offset - 1 end
 		if self.auto_menu_offset < 0 then self.auto_menu_offset = self.auto_menu_offset + 1 end
 	end
-	if self:menuDASInput(self.das_up, "up", 12) then
+	if self:menuDASInput(self.das_up, "up", config.menu_das, config.menu_arr / 4) then
 		self:changeOption(-1)
 	end
-	if self:menuDASInput(self.das_down, "down", 12) then
+	if self:menuDASInput(self.das_down, "down", config.menu_das, config.menu_arr / 4) then
 		self:changeOption(1)
 	end
 

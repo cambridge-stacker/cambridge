@@ -11,7 +11,6 @@ local scaleToResolution
 function love.load()
 	love.graphics.setDefaultFilter("linear", "nearest")
 	require "load.fonts"
-	scaleToResolution(640, 480)
 	love.graphics.setFont(font_3x5_4)
 	love.graphics.printf("Please wait...\nLoading...", 160, 160, 320, "center")
 	love.graphics.present()
@@ -21,6 +20,7 @@ function love.load()
 	require "load.filesystem"
 	require "load.rpc"
 	require "load.graphics"
+	require "load.resources"
 	require "load.sounds"
 	require "load.bgm"
 	require "load.save"
@@ -82,11 +82,11 @@ end
 ---@param a number
 function drawT48Cursor(x, y, a)
 	if a <= 0 then return end
-    love.graphics.setColor(1,1,1,a)
-    love.graphics.polygon("fill", x + 5, y + 0, x + 0, y + 10, x + 5, y + 8, x + 8, y + 20, x + 12, y + 18, x + 10, y + 7, x + 15, y + 5)
-    love.graphics.setColor(0,0,0,a)
-    love.graphics.polygon("line", x + 5, y + 0, x + 0, y + 10, x + 5, y + 8, x + 8, y + 20, x + 12, y + 18, x + 10, y + 7, x + 15, y + 5)
-    love.graphics.setColor(1,1,1,a)
+	love.graphics.setColor(1,1,1,a)
+	love.graphics.polygon("fill", x + 5, y + 0, x + 0, y + 10, x + 5, y + 8, x + 8, y + 20, x + 12, y + 18, x + 10, y + 7, x + 15, y + 5)
+	love.graphics.setColor(0,0,0,a)
+	love.graphics.polygon("line", x + 5, y + 0, x + 0, y + 10, x + 5, y + 8, x + 8, y + 20, x + 12, y + 18, x + 10, y + 7, x + 15, y + 5)
+	love.graphics.setColor(1,1,1,a)
 end
 
 ---@param image love.ImageData
@@ -348,7 +348,7 @@ function love.draw()
 	if config.visualsettings.debug_level > 1 then
 		bottom_right_corner_y_offset = bottom_right_corner_y_offset + 18
 		love.graphics.printf(
-			string.format("Lua memory use: %.1fKB", collectgarbage("count")),
+			string.format("Lua memory use: %.1fMB", collectgarbage("count")/1000),
 			0, 480 - bottom_right_corner_y_offset, 635, "right"
 		)
 	end
@@ -378,6 +378,53 @@ function love.draw()
 			0, 480 - bottom_right_corner_y_offset, 635, "right"
 		)
 	end
+end
+
+local function onInputPress(e)
+	if scene.title == "Key Config" then
+		scene:onInputPress(e)
+	elseif e.input == "fullscreen" then
+		config["fullscreen"] = not config["fullscreen"]
+		saveConfig()
+		love.window.setFullscreen(config["fullscreen"])
+	elseif e.input == "tas_mode" then
+		TAS_mode = not TAS_mode
+		return
+	elseif e.input == "configure_inputs" and scene.title ~= "Input Config" and scene.title ~= "Game" and scene.title ~= "Replay" then
+		scene = InputConfigScene()
+		switchBGM(nil)
+		loadSave()
+	-- load state tool
+	elseif e.input == "save_state" and TAS_mode and (scene.title == "Replay") then
+		scene:onInputPress({input="save_state"})
+	elseif e.input == "load_state" and TAS_mode and (scene.title == "Replay") then
+		scene:onInputPress({input="load_state"})
+	-- secret sound playing :eyes:
+	elseif e.input == "secret" and scene.title == "Title" then
+		config.secret = not config.secret
+		saveConfig()
+		scene.restart_message = true
+		if config.secret then playSE("mode_decide")
+		else playSE("erase", "single") end
+	elseif e.input == "screenshot" then
+		local ss_name = os.date("ss/%Y-%m-%d_%H-%M-%S.png")
+		local info = love.filesystem.getInfo("ss", "directory")
+		if not info then
+			love.filesystem.remove("ss")
+			love.filesystem.createDirectory("ss")
+		end
+		print("Saving screenshot as "..love.filesystem.getSaveDirectory().."/"..ss_name)
+		local image = GLOBAL_CANVAS:newImageData()
+		image:encode("png", ss_name)
+		screenshotFunction(image)
+		image:release()
+	else
+		scene:onInputPress(e)
+	end
+end
+
+local function onInputRelease(e)
+	scene:onInputRelease(e)
 end
 
 local function multipleInputs(input_table, input)
@@ -422,35 +469,24 @@ function love.filedropped(file)
 			final_directory = "replays/"
 		elseif msgbox_choice == 2 then
 			local replay_data = binser.d(data)[1]
-			local info_string = "Replay file view:\n"
-			info_string = info_string .. "Mode: " .. replay_data["mode"] .. " (" .. (replay_data["mode_hash"] or "???") .. ")\n"
-			info_string = info_string .. "Ruleset: " .. replay_data["ruleset"] .. " (" .. (replay_data["ruleset_hash"] or "???") .. ")\n"
-			info_string = info_string .. os.date("Timestamp: %c\n", replay_data["timestamp"])
-			if replay_data.cambridge_version then
-				if replay_data.cambridge_version ~= version then
-					info_string = info_string .. "Warning! The versions don't match!\nStuff may break, so, start at your own risk.\n"
-				end
-				info_string = info_string .. "Cambridge version for this replay: "..replay_data.cambridge_version.."\n"
-			end
-			if replay_data.pause_count and replay_data.pause_time then
-				info_string = info_string .. ("Pause count: %d\nTime Paused: %s\n"):format(replay_data.pause_count, formatTime(replay_data.pause_time))
-			end
-			if replay_data.sha256_table then
-				info_string = info_string .. ("SHA256 replay hashes:\nMode: %s\nRuleset: %s\n"):format(replay_data.sha256_table.mode, replay_data.sha256_table.ruleset)
-			end
-			if replay_data.highscore_data then
-				info_string = info_string .. "In-replay highscore data:\n\n"
-				for key, value in pairs(replay_data["highscore_data"]) do
-					info_string = info_string .. stringWrapByLength((key..": ".. toFormattedValue(value)), 75) .. "\n"
-				end
-			else
-				info_string = info_string .. "Legacy replay\nLevel: "..replay_data["level"]
-			end
-			love.window.showMessageBox(love.window.getTitle(), info_string, "info")
+			displayReplayInfoBox(replay_data)
 			return
 		end
+	elseif raw_file_directory:sub(-4) == ".zip" then
+		msgbox_choice = love.window.showMessageBox(love.window.getTitle(),
+		"What option do you select for "..filename.."?\n"..
+		"Directory: Treat the zip archive as directory\n"..
+		"Res. Packs: Add the zip file to resource pack folder\n\nPress ESC to abort.", {"Directory", "Res. Packs", escapebutton = 0}, "info")
+		if msgbox_choice == 0 then
+			return
+		end
+		if msgbox_choice == 1 then
+			return love.directorydropped(raw_file_directory)
+		elseif msgbox_choice == 2 then
+			final_directory = "resourcepacks/"
+		end
 	else
-		love.window.showMessageBox(love.window.getTitle(), "This file ("..filename..") is not a Lua nor replay file.", "warning")
+		love.window.showMessageBox(love.window.getTitle(), "This file ("..filename..") is not one of these file types: .lua, .crp, .zip", "warning")
 		return
 	end
 	local do_write = 2
@@ -478,9 +514,7 @@ function love.directorydropped(dir)
 		return
 	end
 	local success = love.filesystem.mount(dir, "directory_dropped")
-	if not success then
-		error("Unsuccessful mount on "..dir.."!")
-	end
+	assert(success, "Unsuccessful mount on "..dir.."!")
 	copyDirectoryRecursively("directory_dropped", "", true)
 	love.filesystem.unmount(dir)
 end
@@ -488,90 +522,34 @@ end
 ---@param key string|nil
 ---@param scancode string|nil
 function love.keypressed(key, scancode)
-	-- global hotkeys
-	if scancode == "f11" then
-		config["fullscreen"] = not config["fullscreen"]
-		saveConfig()
-		love.window.setFullscreen(config["fullscreen"])
-	elseif scancode == "f1" then
-		TAS_mode = not TAS_mode
-	elseif scancode == "f2" and scene.title ~= "Input Config" and scene.title ~= "Game" and scene.title ~= "Replay" then
-		scene = InputConfigScene()
-		switchBGM(nil)
-		loadSave()
-	elseif scancode == "f3" then
-		print("The old way of framestepping is deprecated!")
-	-- load state tool
-	elseif scancode == "f4" and TAS_mode and (scene.title == "Replay") then
-		scene:onInputPress({input="save_state"})
-	elseif scancode == "f5" and TAS_mode and (scene.title == "Replay") then
-		scene:onInputPress({input="load_state"})
-	-- secret sound playing :eyes:
-	elseif scancode == "f8" and scene.title == "Title" then
-		config.secret = not config.secret
-		saveConfig()
-		scene.restart_message = true
-		if config.secret then playSE("mode_decide")
-		else playSE("erase", "single") end
-	-- f12 is reserved for saving screenshots
-	elseif scancode == "f12" then
-		local ss_name = os.date("ss/%Y-%m-%d_%H-%M-%S.png")
-		local info = love.filesystem.getInfo("ss", "directory")
-		if not info then
-			love.filesystem.remove("ss")
-			love.filesystem.createDirectory("ss")
+	local result_inputs = {}
+	if config.input and config.input.keys then
+		result_inputs = multipleInputs(config.input.keys, scancode)
+		for _, input in pairs(result_inputs) do
+			onInputPress({input=input, type="key", key=key, scancode=scancode})
+			key = nil
+			scancode = nil
 		end
-		print("Saving screenshot as "..love.filesystem.getSaveDirectory().."/"..ss_name)
-		local image = GLOBAL_CANVAS:newImageData()
-		image:encode("png", ss_name)
-		screenshotFunction(image)
-		image:release()
-	-- function keys are reserved
-	elseif string.match(scancode, "^f[1-9]$") or string.match(scancode, "^f[1-9][0-9]+$") then
-		return	
-	-- escape is reserved for menu_back except in modes
-	elseif scancode == "escape" and not scene.game then
-		scene:onInputPress({input="menu_back", type="key", key=key, scancode=scancode})
-	-- pass any other key to the scene, with its configured mapping
-	else
-		local result_inputs = {}
-		if config.input and config.input.keys then
-			result_inputs = multipleInputs(config.input.keys, scancode)
-			for _, input in pairs(result_inputs) do
-				scene:onInputPress({input=input, type="key", key=key, scancode=scancode})
-				key = nil
-				scancode = nil
-			end
-		end
-		if #result_inputs == 0 then
-			scene:onInputPress({type="key", key=key, scancode=scancode})
-		end
+	end
+	if #result_inputs == 0 then
+		onInputPress({type="key", key=key, scancode=scancode})
 	end
 end
 
 ---@param key string|nil
 ---@param scancode string|nil
 function love.keyreleased(key, scancode)
-	-- escape is reserved for menu_back
-	if scancode == "escape" then
-		scene:onInputRelease({input="menu_back", type="key", key=key, scancode=scancode})
-	-- function keys are reserved
-	elseif string.match(scancode, "^f[1-9]$") or string.match(scancode, "^f[1-9][0-9]+$") then
-		return	
-	-- handle all other keys; tab is reserved, but the input config scene keeps it from getting configured as a game input, so pass tab to the scene here
-	else
-		local result_inputs = {}
-		if config.input and config.input.keys then
-			result_inputs = multipleInputs(config.input.keys, scancode)
-			for _, input in pairs(result_inputs) do
-				scene:onInputRelease({input=input, type="key", key=key, scancode=scancode})
-				key = nil
-				scancode = nil
-			end
+	local result_inputs = {}
+	if config.input and config.input.keys then
+		result_inputs = multipleInputs(config.input.keys, scancode)
+		for _, input in pairs(result_inputs) do
+			onInputRelease({input=input, type="key", key=key, scancode=scancode})
+			key = nil
+			scancode = nil
 		end
-		if #result_inputs == 0 then
-			scene:onInputRelease({type="key", key=key, scancode=scancode})
-		end
+	end
+	if #result_inputs == 0 then
+		onInputRelease({type="key", key=key, scancode=scancode})
 	end
 end
 
@@ -940,6 +918,10 @@ function love.run()
 			local real_frame_duration = finish_delay_time - last_time
 			time_accumulator = time_accumulator + real_frame_duration - FRAME_DURATION
 			last_time = finish_delay_time
+
+			if time_accumulator > 0.2 + FRAME_DURATION then
+				time_accumulator = 0
+			end
 		end
 	end
 end

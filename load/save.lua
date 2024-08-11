@@ -37,7 +37,7 @@ local function inputUpdaterConditions(input_table)
 	return true
 end
 
-local function updateInputConfig()
+local function migrateInputConfig()
 	if inputUpdaterConditions(config.input.keys) then
 		local new_key_inputs = {}
 		for key, value in pairs(config.input.keys) do
@@ -82,11 +82,38 @@ local function updateInputConfig()
 		end
 	end
 end
+function inputVersioning()
+	if not config.input.version then
+		config.input.version = 1
+		local keys = config.input.keys
+		keys.menu_left = keys.menu_left or keys.left
+		keys.menu_right = keys.menu_right or keys.right
+		keys.menu_up = keys.menu_up or keys.up
+		keys.menu_down = keys.menu_down or keys.down
+	end
+	if config.input.version < 2 then
+		config.input.version = 2
+		local keys = config.input.keys
+		keys.tas_mode = "f1"
+		keys.configure_inputs = "f2"
+		keys.save_state = "f4"
+		keys.load_state = "f5"
+		keys.secret = "f8"
+		keys.fullscreen = "f11"
+		keys.screenshot = "f12"
+	end
+end
 
 function initConfig()
-	if not config.das then config.das = 10 end
-	if not config.arr then config.arr = 2 end
-	if not config.dcd then config.dcd = 0 end
+	if not config.tunings then
+		config.tunings = {
+			das = config.das,
+			arr = config.arr,
+			dcd = config.dcd,
+		}
+	end
+	if not config.menu_das then config.menu_das = 15 end
+	if not config.menu_arr then config.menu_arr = 4 end
 	if not config.master_volume then config.master_volume = 1 end
 	if not config.sfx_volume then config.sfx_volume = 0.5 end
 	if not config.bgm_volume then config.bgm_volume = 0.5 end
@@ -96,31 +123,10 @@ function initConfig()
 
 	if config.resource_packs_applied == nil then config.resource_packs_applied = {} end
 
-	if not config.gamesettings then config.gamesettings = {} end
-	for _, option in ipairs(GameConfigScene.options) do
-		if not config.gamesettings[option.config_name] then
-			config.gamesettings[option.config_name] = 1
-		end
-	end
-	if not config.visualsettings then config.visualsettings = {} end
-	for _, option in ipairs(VisualConfigScene.options) do
-		if not config.visualsettings[option.config_name] then
-			config.visualsettings[option.config_name] = 1
-		end
-	end
-	if not config.audiosettings then config.audiosettings = {} end
-	for _, option in ipairs(AudioConfigScene.options) do
-		if not config.audiosettings[option.config_name] then
-			if option.type ~= "options" then
-				config.audiosettings[option.config_name] = (option.max - option.min) / 2 + option.min
-			else
-				config.audiosettings[option.config_name] = 1
-			end
-			if option.rounding_type and option.rounding_type == "floor" then
-				config.audiosettings[option.config_name] = math.floor(config.audiosettings[option.config_name])
-			end
-		end
-	end
+	GameConfigScene:setDefaultConfigs()
+	VisualConfigScene:setDefaultConfigs()
+	AudioConfigScene:setDefaultConfigs()
+	TuningScene:setDefaultConfigs()
 
 	config.sound_sources = config.audiosettings.sound_sources
 
@@ -132,16 +138,9 @@ function initConfig()
 				config.input.joysticks = {}
 			end
 			if inputUpdaterConditions(config.input.keys) or config.input.joysticks.menu_decide ~= nil then
-				updateInputConfig()
+				migrateInputConfig()
 			end
-			if not config.input.version then
-				config.input.version = 1
-				local keys = config.input.keys
-				keys.menu_left = keys.menu_left or keys.left
-				keys.menu_right = keys.menu_right or keys.right
-				keys.menu_up = keys.menu_up or keys.up
-				keys.menu_down = keys.menu_down or keys.down
-			end
+			inputVersioning()
 		end
 		if config.current_mode then current_mode = config.current_mode end
 		if config.current_ruleset then current_ruleset = config.current_ruleset end
@@ -149,7 +148,7 @@ function initConfig()
 			current_folder_selections = config.current_folder_selections
 		end
 		scene = TitleScene()
-		--if updateInputConfig still fails
+		--if migrateInputConfig still fails
 		if inputUpdaterConditions(config.input.keys) then
 			config.input.keys = nil
 			scene = InputConfigScene()

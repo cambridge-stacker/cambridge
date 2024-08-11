@@ -58,6 +58,7 @@ function GameMode:new(secret_inputs, properties)
 	self.draw_section_times = false
 	self.draw_secondary_section_times = false
 	self.big_mode = false
+	self.half_block_mode = false
 	self.irs = true
 	self.ihs = true
 	self.square_mode = false
@@ -217,14 +218,11 @@ function GameMode:addReplayInput(inputs)
 end
 
 function GameMode:update(inputs, ruleset)
-	if self.game_over or self.completed then
-		if self.save_replay and self.game_over_frames == 0 then
-			self:saveReplay()
-
-			-- ensure replays are only saved once per game, incase self.game_over_frames == 0 for longer than one frame
-			self.save_replay = false
-		end
-		self.game_over_frames = self.game_over_frames + 1
+	if self.completed then
+		self:updateOnGameComplete()
+		return
+	elseif self.game_over then
+		self:updateOnGameOver()
 		return
 	end
 
@@ -440,6 +438,28 @@ end
 
 function GameMode:onHardDrop(dropped_row_count)
 	self:onSoftDrop(dropped_row_count * 2)
+end
+
+function GameMode:updateOnGameOver()
+	if self.save_replay and self.game_over_frames == 0 then
+		self:saveReplay()
+
+		-- ensure replays are only saved once per game, incase self.game_over_frames == 0 for longer than one frame
+		self.save_replay = false
+	end
+	self.game_over_frames = self.game_over_frames + 1
+end
+
+function GameMode:updateOnGameComplete()
+	return self:updateOnGameOver()
+end
+
+function GameMode:drawOnGameOver()
+	self:onGameOver() -- legacy, to not break anythin'
+end
+
+function GameMode:drawOnGameComplete()
+	self:onGameComplete() -- legacy, to not break anythin'
 end
 
 function GameMode:onGameOver()
@@ -944,6 +964,7 @@ function GameMode:drawScoringInfo()
 		love.graphics.printf("NEXT", 64, 40, 40, "left")
 	end
 
+	love.graphics.setFont(font_3x5)
 	love.graphics.print(
 		self.das.direction .. " " ..
 		self.das.frames .. " " ..
@@ -1118,9 +1139,9 @@ function GameMode:draw(paused)
 	end
 
 	if self.completed then
-		self:onGameComplete()
+		self:drawOnGameComplete()
 	elseif self.game_over then
-		self:onGameOver()
+		self:drawOnGameOver()
 	end
 end
 

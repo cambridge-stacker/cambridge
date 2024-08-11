@@ -267,6 +267,34 @@ function ModPackScene:exitScene()
 	collectgarbage("collect")
 end
 
+function ModPackScene:changeVerticalOption(rel)
+	if self.selection_type == 0 then
+		self.selection_type = 1
+		return
+	end
+	
+	local length = (self.selection_type == 2 and self.selected_mod_packs_count or self.unselected_mod_packs_count)
+	if length < 1 then
+		length = 1
+	end
+	if self.selection_type == 1 then
+		if self.left_selection_index + rel > length then
+			self.selection_type = 3
+			return
+		end
+		self.left_selection_index = math.max(self.left_selection_index + rel, 1)
+	elseif self.selection_type == 2 then
+		if self.right_selection_index + rel > length then
+			self.selection_type = 4
+			return
+		end
+		self.right_selection_index = math.max(self.right_selection_index + rel, 1)
+	elseif self.selection_type > 2 and rel == -1 then
+		self.selection_type = self.selection_type - 2
+	end
+end
+
+
 function ModPackScene:onInputPress(e)
 	if e.type == "mouse" then
 		self.mouse_control = true
@@ -323,8 +351,7 @@ function ModPackScene:onInputPress(e)
 	end
 	if e.input == "hold" then
 		self.hold_swap = true
-	end
-	if e.input == "menu_decide" then
+	elseif e.input == "menu_decide" then
 		if self.selection_type == 1 and self.unselected_mod_packs_count > 0 then
 			table.insert(config.mod_packs_applied, 1, self.unselected_mod_packs[self.left_selection_index])
 			self.left_selection_index = math.max(self.left_selection_index - 1, 1)
@@ -337,35 +364,13 @@ function ModPackScene:onInputPress(e)
 			playSE("main_decide")
 			love.system.openURL("file://" .. love.filesystem.getSaveDirectory() .. "/modpacks/")
 		end
-	end
-	local dividend = (self.selection_type == 2 and self.selected_mod_packs_count or self.unselected_mod_packs_count)
-	if dividend < 1 then
-		dividend = 1
-	end
-	local prev_right_selection_index = self.right_selection_index
-	if e.input == "menu_up" or e.input == "menu_down" then
-		if self.selection_type == 0 then
-			self.selection_type = 1
-			return
-		end
-		local inc_or_dec = (e.input == "menu_down" and 1 or -1)
-		if self.selection_type == 1 then
-			if self.left_selection_index + inc_or_dec > dividend then
-				self.selection_type = 3
-				return
-			end
-			self.left_selection_index = math.max(self.left_selection_index + inc_or_dec, 1)
-		elseif self.selection_type == 2 then
-			if self.right_selection_index + inc_or_dec > dividend then
-				self.selection_type = 4
-				return
-			end
-			self.right_selection_index = math.max(self.right_selection_index + inc_or_dec, 1)
-		elseif self.selection_type > 2 and e.input == "menu_up" then
-			self.selection_type = self.selection_type - 2
-		end
-	end
-	if e.input == "menu_left" then
+	elseif e.input == "menu_up" then
+		self:changeVerticalOption(-1)
+		self.das_up = true
+	elseif e.input == "menu_down" then
+		self:changeVerticalOption(1)
+		self.das_down = true
+	elseif e.input == "menu_left" then
 		if self.selection_type == 0 then
 			self.selection_type = 1
 			return
@@ -373,8 +378,7 @@ function ModPackScene:onInputPress(e)
 		if self.selection_type % 2 == 0 then
 			self.selection_type = self.selection_type - 1
 		end
-	end
-	if e.input == "menu_right" then
+	elseif e.input == "menu_right" then
 		if self.selection_type == 0 then
 			self.selection_type = 1
 			return
@@ -387,6 +391,7 @@ function ModPackScene:onInputPress(e)
 		self:linkSelectedPack(self.right_selection_index)
 		return
 	end
+	local prev_right_selection_index = self.right_selection_index
 	if self.hold_swap and prev_right_selection_index ~= self.right_selection_index then
 		local old_index = prev_right_selection_index
 		local new_index = self.right_selection_index
@@ -395,7 +400,7 @@ function ModPackScene:onInputPress(e)
 	if e.scancode == "tab" then
 		self.selection_type = Mod1(self.selection_type + 1, 4)
 	end
-	if e.scancode == "escape" or e.input == "menu_back" or (self.selection_type == 4 and e.input == "menu_decide") then
+	if e.input == "menu_back" or (self.selection_type == 4 and e.input == "menu_decide") then
 		self:exitScene()
 	end
 end

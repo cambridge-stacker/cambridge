@@ -92,12 +92,8 @@ local function newSetInputs()
 end
 
 function KeyConfigScene:new()
-	if (require("tetris.modes.marathon_a3") == nil) then
-		error("Missing mode: marathon_a3. It's required.")
-	end
-	if (require("tetris.rulesets.standard") == nil) then
-		error("Missing ruleset: standard. It's required.")
-	end
+	assert(require "tetris.modes.marathon_a3", "Missing mode: marathon_a3. It's required.")
+	assert(require "tetris.rulesets.standard", "Missing ruleset: standard. It's required.")
 	self.input_state = 1
 	self.visual_input_state = 1
 
@@ -131,7 +127,7 @@ function KeyConfigScene:update()
 		if not self.transitioned then
 			self.transitioned = true
 			if self.input_state == 3 then
-				self.nested_scene = GameScene(require("tetris.modes.marathon_a3"), require("tetris.rulesets.standard_exp"), {})
+				self.nested_scene = GameScene(require("tetris.modes.marathon_a3"), require("tetris.rulesets.standard"), {})
 			end
 		end
 	end
@@ -194,6 +190,7 @@ function KeyConfigScene:onInputPress(e)
 			if e.scancode == "return" then
 				if not config.input then config.input = {} end
 				config.input.keys = self.new_input
+				inputVersioning()
 				saveConfig()
 				scene = TitleScene.menu_screens[1]()
 			end

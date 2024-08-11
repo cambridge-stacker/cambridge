@@ -90,13 +90,15 @@ function sortReplays()
 end
 
 function ReplaySelectScene:update()
+	local last_time = love.timer.getTime()
 	self.safety_frames = self.safety_frames - 1
 	self.frames_since_error = self.frames_since_error + 1
 	if not loaded_replays then
 		self.state_string = love.thread.getChannel('load_state'):peek()
 		local replay = love.thread.getChannel('replay'):pop()
-		local load = love.thread.getChannel( 'loaded_replays' ):pop()
-		while replay do
+		local load = love.thread.getChannel( 'loaded_replays' ):peek()
+		local overtime
+		while replay and not overtime do
 			replays_loaded = replays_loaded + 1
 			local mode_name = replay.mode
 			replays[#replays+1] = replay
@@ -104,9 +106,13 @@ function ReplaySelectScene:update()
 				table.insert(replay_tree[dict_ref[mode_name] ], #replays)
 			end
 			table.insert(replay_tree[1], #replays)
-			replay = love.thread.getChannel('replay'):pop()
+			overtime = love.timer.getTime() - last_time > 0.6/getTargetFPS()
+			if not overtime then
+				replay = love.thread.getChannel('replay'):pop()
+			end
 		end
-		if load then
+		if load and replay == nil then
+			love.thread.getChannel( 'loaded_replays' ):pop()
 			loaded_replays = true
 			loading_replays = false
 			local function padnum(d) return ("%03d%s"):format(#d, d) end
@@ -136,7 +142,7 @@ function ReplaySelectScene:update()
 		if self.auto_menu_offset > 0 then self.auto_menu_offset = self.auto_menu_offset - 1 end
 		if self.auto_menu_offset < 0 then self.auto_menu_offset = self.auto_menu_offset + 1 end
 	end
-	if self.das >= 15 then
+	if self.das >= config.menu_das then
 		local change = 0
 		if self.das_up then
 			change = -1
@@ -148,7 +154,7 @@ function ReplaySelectScene:update()
 			change = 9
 		end
 		self:changeOption(change)
-		self.das = self.das - 4
+		self.das = self.das - config.menu_arr
 	end
 
 	DiscordRPC:update({
@@ -543,6 +549,7 @@ function ReplaySelectScene:verifyHighscoreData()
 		playSE("error")
 	else
 		self.highscores_data_matching = true
+		playSE("mode_decide")
 	end
 end
 

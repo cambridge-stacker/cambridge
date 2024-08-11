@@ -60,7 +60,10 @@ function ReplayScene:new(replay, game_mode, ruleset)
 end
 
 function ReplayScene:replayCutoff()
-	self.retry_replay["inputs"][self.replay_index]["frames"] = self.relative_frames
+	self.retry_replay["inputs"][self.replay_index]["frames"] = self.relative_frames - 1
+	if self.retry_replay["inputs"][self.replay_index]["frames"] <= 0 then
+		self.retry_replay["inputs"][self.replay_index] = nil
+	end
 	for i = self.replay_index + 1, #self.retry_replay["inputs"] do
 		self.retry_replay.inputs[i] = nil
 	end
@@ -236,6 +239,9 @@ function ReplayScene:onInputPress(e)
 		self.replay_speed = 1
 		self.game.save_replay = config.gamesettings.save_replay == 1
 		self.game.replay_inputs = self.retry_replay.inputs
+		if self.show_invisible then
+			self.game.ineligible = true
+		end
 		self.paused = true
 		pitchBGM(1)
 	elseif e.input == "hold" then
