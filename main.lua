@@ -467,7 +467,7 @@ function love.filedropped(file)
 		msgbox_choice = love.window.showMessageBox(love.window.getTitle(),
 		"What option do you select for "..filename.."?\n"..
 		"Directory: Treat the zip archive as directory\n"..
-		"Res. Packs: Add the zip file to resource pack folder\n\nPress ESC to abort.", {"Directory", "Res. Packs", escapebutton = 0}, "info")
+		"Res. Packs: Add the zip file to resource packs folder\n\nPress ESC to abort.", {"Directory", "Res. Packs", escapebutton = 0}, "info")
 		if msgbox_choice == 0 then
 			return
 		end
