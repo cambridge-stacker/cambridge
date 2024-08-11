@@ -463,8 +463,21 @@ function love.filedropped(file)
 			displayReplayInfoBox(replay_data)
 			return
 		end
+	elseif raw_file_directory:sub(-4) == ".zip" then
+		msgbox_choice = love.window.showMessageBox(love.window.getTitle(),
+		"What option do you select for "..filename.."?\n"..
+		"Directory: Treat the zip archive as directory\n"..
+		"Res. Packs: Add the zip file to resource pack folder\n\nPress ESC to abort.", {"Directory", "Res. Packs", escapebutton = 0}, "info")
+		if msgbox_choice == 0 then
+			return
+		end
+		if msgbox_choice == 1 then
+			return love.directorydropped(raw_file_directory)
+		elseif msgbox_choice == 2 then
+			final_directory = "resourcepacks/"
+		end
 	else
-		love.window.showMessageBox(love.window.getTitle(), "This file ("..filename..") is not a Lua nor replay file.", "warning")
+		love.window.showMessageBox(love.window.getTitle(), "This file ("..filename..") is not one of these file types: .lua, .crp, .zip", "warning")
 		return
 	end
 	local do_write = 2
