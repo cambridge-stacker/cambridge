@@ -11,7 +11,10 @@ function GameScene:new(game_mode, ruleset, inputs)
 	self.retry_mode = game_mode
 	self.retry_ruleset = ruleset
 	self.secret_inputs = inputs
-	self.sha_tbl = {mode = sha2.sha256(binser.s(game_mode)), ruleset = sha2.sha256(binser.s(ruleset))}
+	self.sha_tbl = {
+		mode = sha2.sha256(getModuleSource(game_mode)),
+		ruleset = sha2.sha256(getModuleSource(ruleset))
+	}
 	self.game = game_mode(self.secret_inputs)
 	self.game.secret_inputs = inputs
 	self.ruleset = ruleset(self.game)

@@ -1,3 +1,5 @@
+---@type string[]
+local module_sources = {}
 
 ---@param tbl table
 ---@param directory string
@@ -16,8 +18,14 @@ function recursivelyLoadRequireFileTable(tbl, directory, blacklisted_string)
 			if not (type(tbl[#tbl]) == "table" and type(tbl[#tbl].__call) == "function") then
 				error("Add a return to "..directory.."/"..name..".\nMust be a table with __call function.", 1)
 			end
+			module_sources[tbl[#tbl]] = love.filesystem.read(directory.."/"..name)
 		end
 	end
+end
+
+---This may return an empty string if a module isn't identified.
+function getModuleSource(module)
+	return module_sources[module] or ""
 end
 
 function unloadModules()
@@ -63,6 +71,7 @@ function recursivelyTagModules(init, tbl, tag_tbl)
 end
 
 function initModules()
+	module_source = {}
 	game_modes = {}
 	recursivelyLoadRequireFileTable(game_modes, "tetris/modes", "gamemode.lua")
 	rulesets = {}

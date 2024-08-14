@@ -462,7 +462,10 @@ function ReplaySelectScene:startReplay()
 		self.highscores_data_matching = nil
 		self.error_msg = nil
 		self.auto_menu_offset = 0
-		self.replay_sha_table = {mode = sha2.sha256(binser.serialize(mode)), ruleset = sha2.sha256(binser.serialize(rules))}
+		self.replay_sha_table = {
+			mode = sha2.sha256(getModuleSource(mode)),
+			ruleset = sha2.sha256(getModuleSource(rules))
+		}
 		playSE("main_decide")
 		self.das_down = nil
 		self.das_up = nil
