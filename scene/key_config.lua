@@ -168,6 +168,11 @@ function KeyConfigScene:new()
 
 	self.safety_frames = 2
 	self.error_time = 0
+	if buffer_sounds and buffer_sounds.error and buffer_sounds.error[1] then
+		self.error_duration = buffer_sounds.error[1]:getDuration("seconds")
+	else
+		self.error_duration = 0.5
+	end
 
 	DiscordRPC:update({
 		details = "In settings",
@@ -281,7 +286,7 @@ function KeyConfigScene:rebindKey(key)
 	local is_invalid, existing_keybind = self:mutexCheck(self.configurable_inputs[self.input_state], key)
 	if is_invalid then
 		self.set_inputs[self.configurable_inputs[self.input_state]] = ("<press other key, conflicts with %s>"):format(input_naming[existing_keybind])
-		self.error_time = buffer_sounds.error[1]:getDuration("seconds") or 0.5
+		self.error_time = self.error_duration
 		return false
 	end
 	self.set_inputs[self.configurable_inputs[self.input_state]] = self:formatKey(key)
@@ -350,6 +355,7 @@ function KeyConfigScene:onInputPress(e)
 					self.key_rebinding = false
 				else
 					playSE("error")
+					return
 				end
 				config.input.keys = self.new_input
 				saveConfig()
