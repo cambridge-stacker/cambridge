@@ -28,12 +28,12 @@ local configurable_inputs = {
 }
 
 local input_naming = {
-	menu_decide = "Menu Decision",
+	menu_decide = "Menu Decide",
 	menu_back = "Menu Back",
-	left = "Move Left",
-	right = "Move Right",
-	up = "Hard Drop (Up)",
-	down = "Soft Drop (Down)",
+	left = "Generic Left",
+	right = "Generic Right",
+	up = "Generic Up",
+	down = "Generic Down",
 	rotate_left = "Rotate CCW [1]",
 	rotate_left2 = "Rotate CCW [2]",
 	rotate_right = "Rotate CW [1]",
@@ -53,10 +53,17 @@ local input_naming = {
 --A list of inputs that shouldn't have the same keybinds with the other.
 local mutually_exclusive_inputs = {
 	menu_decide = "menu_back",
+	mode_exit = {"retry", "pause"},
+	pause = {"mode_exit", "retry"},
+	retry = {"mode_exit", "pause"},
 	left = {"right", "up", "down"},
 	right = {"left", "up", "down"},
 	up = {"down", "left", "right"},
 	down = {"left", "up", "right"},
+	menu_left = {"menu_right", "menu_up", "menu_down"},
+	menu_right = {"menu_left", "menu_up", "menu_down"},
+	menu_up = {"menu_down", "menu_left", "menu_right"},
+	menu_down = {"menu_left", "menu_up", "menu_right"},
 }
 
 function StickConfigScene:mutexCheck(input, binding)
@@ -65,16 +72,16 @@ function StickConfigScene:mutexCheck(input, binding)
 			if type(value) == "table" then
 				for k2, v2 in pairs(value) do
 					if self.new_input[v2] == binding then
-						return true
+						return true, v2
 					end
 				end
 			end
 			if self.new_input[value] == binding then
-				return true
+				return true, value
 			end
 		elseif value == input then
 			if self.new_input[key] == binding then
-				return true
+				return true, key
 			end
 		end
 	end
@@ -89,24 +96,39 @@ local function newSetInputs()
 	return set_inputs
 end
 
+local null_joystick_name = ""
+
 function StickConfigScene:new()
 	self.input_state = 1
 	self.set_inputs = newSetInputs()
 	self.new_input = {}
 	self.axis_timer = 0
-	self.joystick_name = ""
+	self.joystick_name = null_joystick_name
+
+	self.list_y = 0
+	self.final_list_y = 0
+	self.spacing = 18
 
 	if not config.input then config.input = {} end
 
 	self.safety_frames = 0
+	self.error_time = 0
 
 	DiscordRPC:update({
 		details = "In settings",
 		state = "Changing joystick config",
 	})
 end
+
+local directions = {
+	["u"] = "up",
+	["d"] = "down",
+	["l"] = "left",
+	["r"] = "right",
+}
+
 --too many impl details and substrings
-function StickConfigScene:formatBinding(binding)
+function StickConfigScene.formatBinding(binding)
 	local substring = binding:sub(binding:find("-") + 1, #binding)
 	local mid_substring = binding:sub(1, binding:find("-") - 1)
 	if mid_substring == "buttons" then
@@ -115,7 +137,7 @@ function StickConfigScene:formatBinding(binding)
 		local secondmid_substring = substring:sub(1, substring:find("-") - 1)
 		local second_substring = substring:sub(substring:find("-") + 1)
 		return "Hat " ..
-		secondmid_substring .. " " .. second_substring
+		secondmid_substring .. " " .. (directions[second_substring] or second_substring)
 	elseif mid_substring == "axes" then
 		local second_substring = substring:sub(1, substring:find("-") - 1)
 		return "Axis " ..
@@ -126,46 +148,82 @@ end
 
 function StickConfigScene:update()
 	self.safety_frames = self.safety_frames - 1
+	self.error_time = self.error_time - love.timer.getDelta()
+	if self.final_list_y / self.spacing > self.input_state - 5 then
+		self.final_list_y = (self.input_state - 5) * self.spacing
+	end
+	if self.final_list_y / self.spacing < self.input_state - 15 then
+		self.final_list_y = (self.input_state - 15) * self.spacing
+	end
+	self.final_list_y = math.max(self.final_list_y, 0)
+	if self.das_up or self.das_down then
+		self.das = self.das + 1
+	else
+		self.das = 0
+	end
+	if self.das >= config.menu_das then
+		local change = 0
+		if self.das_up then
+			change = -1
+		elseif self.das_down then
+			change = 1
+		end
+		self:changeOption(change)
+		self.das = self.das - config.menu_arr
+	end
 end
 
 function StickConfigScene:render()
 	love.graphics.setColor(1, 1, 1, 1)
 	drawBackground("options_input")
 
-	if self.joystick_name == "" then
-		local b = cursorHighlight(20, 40, 50, 30)
-		love.graphics.setColor(1, 1, b, 1)
-		love.graphics.setFont(font_3x5_4)
-		love.graphics.printf("<-", 20, 40, 50, "center")
-		love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.setFont(font_8x11)
+	love.graphics.print("JOYSTICK CONFIG", 80, 43)
+
+	local b = cursorHighlight(20, 40, 50, 30)
+	love.graphics.setColor(1, 1, b, 1)
+	love.graphics.setFont(font_3x5_4)
+	love.graphics.printf("<-", 20, 40, 50, "center")
+	love.graphics.setColor(1, 1, 1, 1)
+
+	if self.joystick_name == null_joystick_name then
 		love.graphics.setFont(font_3x5_3)
 		love.graphics.printf("Interact with a joystick to map inputs.", 160, 240, 320, "center")
-		return
 	end
+	self.list_y = interpolateNumber(self.list_y, -self.final_list_y)
 	love.graphics.setFont(font_3x5_2)
 	for i, input in ipairs(configurable_inputs) do
-		if i == self.input_state then
-			love.graphics.setColor(1, 1, 0, 1)
+		local g, b = 1, 1
+		local alpha = fadeoutAtEdges(self.list_y + (i-1) * self.spacing - 180, 180, self.spacing)
+		if self.joystick_name == null_joystick_name then
+			alpha = alpha / 2
 		end
-		love.graphics.printf(input_naming[input], 40, 50 + i * 18, 200, "left")
-		love.graphics.setColor(1, 1, 1, 1)
+		if i == self.input_state then
+			b = 0
+			if self.error_time > 0 then
+				g = 0
+			end
+		end
+		love.graphics.setColor(1, 1, b, alpha)
+		love.graphics.printf(input_naming[input] or "null", 40, self.list_y + 70 + i * self.spacing, 200, "left")
+		
+		love.graphics.setColor(1, g, g, alpha)
 		if self.set_inputs[input] then
-			love.graphics.printf(self.set_inputs[input], 240, 50 + i * 18, 300, "left")
+			love.graphics.printf(self.set_inputs[input], 240, self.list_y + 70 + i * self.spacing, 400, "left")
 		end
 	end
-	local string_press_joystick = "Press joystick input for " .. input_naming[configurable_inputs[self.input_state]]
+	if self.joystick_name == null_joystick_name then
+		return
+	end
 	if self.input_state > #configurable_inputs then
 		love.graphics.print("Press enter to confirm, delete/backspace to retry" .. (config.input and ", escape to cancel" or ""))
 		return
-	elseif self.reconfiguration then
-		if self.rebinding then
-			love.graphics.printf(string_press_joystick .. ", tab to erase.", 0, 0, 640, "left")
-		end
-		love.graphics.printf("Press escape to exit and save while not rebinding.", 0, 20, 640, "left")
-	else
-		love.graphics.printf(string_press_joystick .. ", tab to skip.", 0, 0, 640, "left")
+	elseif self.reconfiguration and not self.rebinding then
+		love.graphics.printf("Press escape to exit and save, arrow keys to move selection.", 0, 0, 640, "left")
+	elseif self.rebinding or not self.reconfiguration then
+		local tab_string = self.reconfiguration and "erase" or "skip"
+		love.graphics.printf("Press tab key on keyboard to ".. tab_string ..".", 0, 0, 640, "left")
 	end
-	love.graphics.printf("Current joystick name: "..self.joystick_name, 0, 40, 640, "left")
 
 	self.axis_timer = self.axis_timer + 1
 end
@@ -177,11 +235,13 @@ function StickConfigScene:rebind(binding)
 		self.set_inputs[input_type] = "erased"
 		return true
 	end
-	if self:mutexCheck(input_type, binding) then
-		self.set_inputs[input_type] = "<provide an other joystick input>"
+	local is_invalid, existing_bind = self:mutexCheck(input_type, binding)
+	if is_invalid then
+		self.set_inputs[input_type] = ("<%s conflicts with %s>"):format(self.formatBinding(binding), input_naming[existing_bind])
+		self.error_time = buffer_sounds.error[1]:getDuration("seconds") or 0.5
 		return false
 	end
-	self.set_inputs[input_type] = self:formatBinding(binding)
+	self.set_inputs[input_type] = self.formatBinding(binding)
 	self.new_input[input_type] = binding
 	if input_type == "left" or input_type == "right" or input_type == "up" or input_type == "down" then
 		self.new_input["menu_"..input_type] = binding
@@ -197,7 +257,7 @@ end
 
 function StickConfigScene:onInputPress(e)
 	if e.type == "mouse" then
-		if e.x > 20 and e.y > 40 and e.x < 70 and e.y < 70 and self.joystick_name == "" then
+		if cursorHoverArea(20, 40, 50, 30) then
 			playSE("menu_cancel")
 			scene = InputConfigScene()
 		end
@@ -210,6 +270,10 @@ function StickConfigScene:onInputPress(e)
 		-- function keys, escape, and tab are reserved and can't be remapped
 		if e.scancode == "escape" then
 			if self.reconfiguration then
+				self.new_input.menu_left = self.new_input.left
+				self.new_input.menu_right = self.new_input.right
+				self.new_input.menu_up = self.new_input.up
+				self.new_input.menu_down = self.new_input.down
 				config.input.joysticks[self.joystick_name] = self.new_input
 				saveConfig()
 			end
@@ -253,7 +317,7 @@ function StickConfigScene:onInputPress(e)
 			self.input_state = self.input_state + 1
 		end
 	elseif string.sub(e.type, 1, 3) == "joy" then
-		if self.joystick_name == "" then
+		if self.joystick_name == null_joystick_name then
 			self.joystick_name = e.name
 			if config.input.joysticks[e.name] == nil then
 				config.input.joysticks[e.name] = {}
@@ -261,16 +325,12 @@ function StickConfigScene:onInputPress(e)
 			self.reconfiguration = true
 			self.new_input = config.input.joysticks[e.name]
 			for input_name, binding in pairs(config.input.joysticks[e.name]) do
-				self.set_inputs[input_name] = self:formatBinding(binding)
+				self.set_inputs[input_name] = self.formatBinding(binding)
 			end
 			return
 		end
 		if self.input_state <= #configurable_inputs and (not self.reconfiguration or self.rebinding) then
 			if e.type == "joybutton" then
-				-- if not self.new_input[e.name].buttons then
-				-- 	self.new_input[e.name].buttons = {}
-				-- end
-				-- if self.new_input[e.name].buttons[e.button] then return end
 				local input_result = "buttons-" .. e.button
 				if self:rebind(input_result) then
 					playSE("mode_decide")
@@ -283,15 +343,6 @@ function StickConfigScene:onInputPress(e)
 				end
 			elseif e.type == "joyaxis" then
 				if (e.axis ~= self.last_axis or self.axis_timer > 30) and math.abs(e.value) >= 1 then
-					-- if not self.new_input[e.name].axes then
-					-- 	self.new_input[e.name].axes = {}
-					-- end
-					-- if not self.new_input[e.name].axes[e.axis] then
-					-- 	self.new_input[e.name].axes[e.axis] = {}
-					-- end
-					-- if (
-					-- 	self.new_input[e.name].axes[e.axis][e.value >= 1 and "positive" or "negative"]
-					-- ) then return end
 
 					local input_result = "axes-" .. e.axis .. "-" .. (e.value >= 1 and "positive" or "negative")
 					if self:rebind(input_result) then
@@ -302,16 +353,13 @@ function StickConfigScene:onInputPress(e)
 					end
 					if not self.reconfiguration then
 						self.input_state = self.input_state + 1
+						self.set_inputs[configurable_inputs[self.input_state]] = "<provide joystick input>"
 					end
 					self.last_axis = e.axis
 					self.axis_timer = 0
 				end
 			elseif e.type == "joyhat" then
 				if e.direction ~= "c" then
-					self.set_inputs[configurable_inputs[self.input_state]] =
-						"Hat " ..
-						e.hat .. " " .. e.direction ..
-						" " .. string.sub(e.name, 1, 10) .. (string.len(e.name) > 10 and "..." or "")
 					local input_result = "hat-" .. e.hat .. "-" .. e.direction
 					if self:rebind(input_result) then
 						playSE("mode_decide")
@@ -321,6 +369,7 @@ function StickConfigScene:onInputPress(e)
 					end
 					if not self.reconfiguration then
 						self.input_state = self.input_state + 1
+						self.set_inputs[configurable_inputs[self.input_state]] = "<provide joystick input>"
 					end
 				end
 			end
