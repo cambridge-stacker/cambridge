@@ -30,11 +30,13 @@ end
 
 function unloadModules()
 	--module reload.
+	module_sources = {}
 	for key, value in pairs(package.loaded) do
 		if string.sub(key, 1, 7) == "tetris." then
 			package.loaded[key] = nil
 		end
 	end
+	collectgarbage("collect")
 end
 
 ---This shouldn't run more than once on the same table.
