@@ -145,10 +145,7 @@ end
 function ConfigScene:drawSlider(idx, option)
 	love.graphics.setColor(1, 1, 1, 0.75)
 	self.sliders[option.config_name]:draw()
-	local pos_x = 90 + self.options_width
-	local width = 510 - self.options_width
-	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.printf(string.format(option.format,self.sliders[option.config_name]:getValue()), pos_x, self.option_pos_y[idx], width, "center")
+	self:drawNumber(idx, option)
 end
 
 function ConfigScene:drawNumber(idx, option)
