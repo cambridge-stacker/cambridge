@@ -24,6 +24,7 @@ local splashtext = {
 	"Trans rights!",
 	"20G gravity!",
 	"3next 1hold!",
+	"4next 2hold..?",
 	"Also try Techmino!",
 	"Also try Nullpomino!",
 	"Now with new funky mode!",
@@ -41,7 +42,16 @@ local splashtext = {
 	"No soundtrack required!",
 	"Batteries not included!",
 	"Also try MoB!",
-	
+	"Also try EBG!",
+	"Also try TGM!",
+	"Also try TAP!",
+	"Also try Ti!",
+	"Also try Cambridge!",
+	"O-spin double!",
+	"I-spin quad!",
+	"COOL !!",
+	"Let's go better next time!",
+	"Stacker? I barely even know her!"
 }
 local splash = ""
 local mainmenuidle = {
