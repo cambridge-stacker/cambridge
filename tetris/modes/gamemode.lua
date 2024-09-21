@@ -217,6 +217,10 @@ function GameMode:addReplayInput(inputs)
 	end
 end
 
+function GameMode:canPieceMove(inputs)
+	return not (inputs.up and self.lock_on_hard_drop and not self.hard_drop_locked)
+end
+
 function GameMode:update(inputs, ruleset)
 	if self.completed then
 		self:updateOnGameComplete()
@@ -283,9 +287,7 @@ function GameMode:update(inputs, ruleset)
 
 		ruleset:processPiece(
 			inputs, self.piece, self.grid, self:getGravity(), self.prev_inputs,
-			(
-				inputs.up and self.lock_on_hard_drop and not self.hard_drop_locked
-			) and "none" or self.move,
+			self:canPieceMove(inputs) and self.move or "none",
 			self:getLockDelay(), self:getDropSpeed(),
 			self.drop_locked, self.hard_drop_locked,
 			self.enable_hard_drop, self.additive_gravity, self.classic_lock
@@ -903,8 +905,8 @@ function GameMode:drawNextQueue(ruleset)
 	end
 	local function drawPiece(piece, skin, offsets, pos_x, pos_y)
 		for index, offset in pairs(offsets) do
-			local x = offset.x + ruleset:getDrawOffset(piece, rotation).x + ruleset.spawn_positions[piece].x
-			local y = offset.y + ruleset:getDrawOffset(piece, rotation).y + 4.7
+			local x = offset.x + ruleset:getDrawOffset(piece).x + ruleset.spawn_positions[piece].x
+			local y = offset.y + ruleset:getDrawOffset(piece).y + 4.7
 			drawSizeIndependentImage(blocks[skin][colourscheme[piece]], pos_x+x*16, pos_y+y*16, 0, 16, 16)
 		end
 	end
