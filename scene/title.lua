@@ -50,6 +50,10 @@ function TitleScene:new()
 	self.press_enter_text = "Press Enter"
 	self.joystick_names = {}
 	self.joystick_menu_decide_binds = {}
+	self.menu_screen_offsets = {}
+	for key, value in pairs(self.menu_screens) do
+		self.menu_screen_offsets[key] = 0
+	end
 	if config and config.input then
 		if config.input.keys then
 			if not (
@@ -177,6 +181,12 @@ function TitleScene:render()
 		return
 	end
 
+	if menu_frames > 60 then
+		for key, value in pairs(self.menu_screen_offsets) do
+			self.menu_screen_offsets[key] = interpolateNumber(value, self.main_menu_state == key and 10 or 0)
+		end
+	end
+
 	love.graphics.setColor(1, 1, 1, 0.5)
 	love.graphics.rectangle("fill", math.min(20, -120 * self.main_menu_state + (menu_frames * 24) - 20), 278 + 20 * self.main_menu_state, 160, 22)
 
@@ -184,7 +194,7 @@ function TitleScene:render()
 	for i, screen in pairs(self.menu_screens) do
 		local b = cursorHighlight(40,280 + 20 * i,120,20)
 		love.graphics.setColor(1,1,b,1)
-		love.graphics.printf(screen.title, math.min(40, -120 * i + (menu_frames * 24)), 280 + 20 * i, 120, "left")
+		love.graphics.printf(screen.title, math.min(40, -120 * i + (menu_frames * 24)) + self.menu_screen_offsets[i], 280 + 20 * i, 120, "left")
 	end
 end
 

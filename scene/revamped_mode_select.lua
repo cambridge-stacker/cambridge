@@ -7,9 +7,9 @@ function ModeSelectScene:new()
 	initModules()
 	if highscores == nil then highscores = {} end
 	self.game_mode_folder = game_modes
-	self.game_mode_selections = {game_modes}
+	self.game_mode_selections = {{index = 0, folder = game_modes, positions = {}, offset = 0, root = true}}
 	self.ruleset_folder = rulesets
-	self.ruleset_folder_selections = {rulesets}
+	self.ruleset_folder_selections = {{index = 0, folder = rulesets, positions = {}, offset = 0, root = true}}
 	self.menu_state = {}
 	if #self.game_mode_folder == 0 or #self.ruleset_folder == 0 then
 		self.display_warning = true
@@ -142,6 +142,27 @@ function ModeSelectScene:update()
 	})
 end
 
+function ModeSelectScene:getInterpolatedSelectionSegmentPos(selections, sel_idx, seg_idx, offset)
+	local selection = selections[sel_idx]
+	if not selection.positions[seg_idx] then
+		if selection.root == true then
+			selection.positions[seg_idx] = seg_idx * 20 + offset
+		else
+			selection.positions[seg_idx] = offset
+		end
+	end
+	local result_y = seg_idx * 20 + offset
+	local next_selection = selections[sel_idx+1]
+	if next_selection and seg_idx + selection.index > next_selection.index then
+		for i = #selections, sel_idx+1, -1 do
+			local sel2 = selections[i]
+			result_y = result_y + math.max(#sel2.folder, 1) * 20
+		end
+	end
+	selection.positions[seg_idx] = interpolateNumber(selection.positions[seg_idx], result_y)
+	return selection.positions[seg_idx]
+end
+
 function ModeSelectScene:render()
 	drawBackground(0)
 
@@ -168,14 +189,16 @@ function ModeSelectScene:render()
 		return
 	end
 
+	local latest_mode_selection = self.game_mode_selections[#self.game_mode_selections]
+	local latest_ruleset_selection = self.ruleset_folder_selections[#self.ruleset_folder_selections]
 	local mode_selected, ruleset_selected = self.menu_state.mode, self.menu_state.ruleset
 
-	self.menu_mode_y = interpolateNumber(self.menu_mode_y, mode_selected * 20)
-	self.menu_ruleset_x = interpolateNumber(self.menu_ruleset_x, ruleset_selected * 120)
+	self.menu_mode_y = interpolateNumber(self.menu_mode_y, (mode_selected + latest_mode_selection.index) * 20)
+	self.menu_ruleset_x = interpolateNumber(self.menu_ruleset_x, (ruleset_selected + latest_ruleset_selection.index) * 120)
 
 	love.graphics.setColor(1, 1, 1, 0.5)
-	love.graphics.rectangle("fill", 20, 259 + (mode_selected * 20) - self.menu_mode_y, 240, 22)
-	love.graphics.rectangle("fill", 260 + (ruleset_selected * 120) - self.menu_ruleset_x, 439, 120, 22)
+	love.graphics.rectangle("fill", 20, 259 + (mode_selected + latest_mode_selection.index) * 20 - self.menu_mode_y, 240, 22)
+	love.graphics.rectangle("fill", 260 + (ruleset_selected + latest_ruleset_selection.index) * 120 - self.menu_ruleset_x, 439, 120, 22)
 	love.graphics.setColor(1, 1, 1, 1)
 
 
@@ -239,63 +262,72 @@ function ModeSelectScene:render()
 			 360 - self.menu_ruleset_x, 420, 60 + font_3x5_2:getWidth(ruleset_path_name), "left")
 	end
 	love.graphics.setFont(font_3x5_2)
+
+	for sel_idx, selection in ipairs(self.game_mode_selections) do
+		local offset = selection.index * 20
+		for idx, mode in ipairs(selection.folder) do
+			local pos_y = self:getInterpolatedSelectionSegmentPos(self.game_mode_selections, sel_idx, idx, offset)
+			if(pos_y >= self.menu_mode_y - 200 and
+			   pos_y <= self.menu_mode_y + 200) then
+				local b = 1
+				if mode.is_directory then
+					b = 0.4
+				end
+				local highlight = cursorHighlight(
+					0,
+					(260 - self.menu_mode_y) + pos_y,
+					260,
+					20)
+				local r = mode.is_tag and 0 or 1
+				if highlight < 0.5 then
+					r = 1-highlight
+					b = highlight
+				end
+				if idx == self.menu_state.mode and self.starting then
+					b = self.start_frames % 10 > 4 and 0 or 1
+				end
+				love.graphics.setColor(r, 1, b, fadeoutAtEdges(
+					-self.menu_mode_y + pos_y + 20,
+					160,
+					20) * (sel_idx / #self.game_mode_selections))
+				drawWrappingText(mode.name,
+				40 + (sel_idx - #self.game_mode_selections) * 10, (260 - self.menu_mode_y) + pos_y, 200, "left")
+			end
+		end
+	end
+	for sel_idx, selection in ipairs(self.ruleset_folder_selections) do
+		local offset = selection.index * 120
+		for idx, ruleset in ipairs(selection.folder) do
+			if(idx >= (self.menu_ruleset_x - offset) / 120 - 3 and
+			   idx <= (self.menu_ruleset_x - offset) / 120 + 3) then
+				local b = 1
+				if ruleset.is_directory then
+					b = 0.4
+				end
+				local highlight = cursorHighlight(
+					260 - self.menu_ruleset_x + 120 * idx, 440,
+					120, 20)
+				local r = ruleset.is_tag and 0 or 1
+				if highlight < 0.5 then
+					r = 1-highlight
+					b = highlight
+				end
+				love.graphics.setColor(r, 1, b, fadeoutAtEdges(
+					-self.menu_ruleset_x + 120 * idx + offset,
+					240,
+					120) * (sel_idx / #self.ruleset_folder_selections)
+				)
+				drawWrappingText(ruleset.name,
+				260 - self.menu_ruleset_x + 120 * idx + offset, 440 - (sel_idx - #self.ruleset_folder_selections) * 10, 120, "center")
+			end
+		end
+	end
+	love.graphics.setColor(1, 1, 1, 1)
 	if #self.game_mode_folder == 0 then
-		love.graphics.printf("No modes in this folder!", 40, 280 - self.menu_mode_y, 260, "left")
+		love.graphics.printf("No modes in this folder!", 40, 280 - self.menu_mode_y + latest_mode_selection.index * 20, 260, "left")
 	end
 	if #self.ruleset_folder == 0 then
-		love.graphics.printf("Empty folder!", 380 - self.menu_ruleset_x, 440, 120, "center")
-	end
-	for idx, mode in ipairs(self.game_mode_folder) do
-		if(idx >= self.menu_mode_y / 20 - 10 and
-		   idx <= self.menu_mode_y / 20 + 10) then
-			local b = 1
-			if mode.is_directory then
-				b = 0.4
-			end
-			local highlight = cursorHighlight(
-				0,
-				(260 - self.menu_mode_y) + 20 * idx,
-				260,
-				20)
-			local r = mode.is_tag and 0 or 1
-			if highlight < 0.5 then
-				r = 1-highlight
-				b = highlight
-			end
-			if idx == self.menu_state.mode and self.starting then
-				b = self.start_frames % 10 > 4 and 0 or 1
-			end
-			love.graphics.setColor(r, 1, b, fadeoutAtEdges(
-				-self.menu_mode_y + 20 * idx + 20,
-				160,
-				20))
-			drawWrappingText(mode.name,
-			40, (260 - self.menu_mode_y) + 20 * idx, 200, "left")
-		end
-	end
-	for idx, ruleset in ipairs(self.ruleset_folder) do
-		if(idx >= self.menu_ruleset_x / 120 - 3 and
-		   idx <= self.menu_ruleset_x / 120 + 3) then
-			local b = 1
-			if ruleset.is_directory then
-				b = 0.4
-			end
-			local highlight = cursorHighlight(
-				260 - self.menu_ruleset_x + 120 * idx, 440,
-				120, 20)
-			local r = ruleset.is_tag and 0 or 1
-			if highlight < 0.5 then
-				r = 1-highlight
-				b = highlight
-			end
-			love.graphics.setColor(r, 1, b, fadeoutAtEdges(
-				-self.menu_ruleset_x + 120 * idx,
-				240,
-				120)
-			)
-			drawWrappingText(ruleset.name,
-			260 - self.menu_ruleset_x + 120 * idx, 440, 120, "center")
-		end
+		love.graphics.printf("Empty folder!", 380 - self.menu_ruleset_x + latest_ruleset_selection.index * 120, 440, 120, "center")
 	end
 	if self.game_mode_folder[self.menu_state.mode]
 	and self.game_mode_folder[self.menu_state.mode].ruleset_override then
@@ -349,13 +381,11 @@ function ModeSelectScene:menuGoBack(menu_type)
 	local selection = table.remove(current_folder_selections[menu_type], #current_folder_selections[menu_type])
 	self.menu_state[menu_type] = selection
 	if menu_type == "mode" and #self.game_mode_selections > 1 then
-		self.menu_mode_y = selection * 20 - 20
 		self.game_mode_selections[#self.game_mode_selections] = nil
-		self.game_mode_folder = self.game_mode_selections[#self.game_mode_selections]
+		self.game_mode_folder = self.game_mode_selections[#self.game_mode_selections].folder
 	elseif menu_type == "ruleset" and #self.ruleset_folder_selections > 1 then
-		self.menu_ruleset_x = selection * 120 - 120
 		self.ruleset_folder_selections[#self.ruleset_folder_selections] = nil
-		self.ruleset_folder = self.ruleset_folder_selections[#self.ruleset_folder_selections]
+		self.ruleset_folder = self.ruleset_folder_selections[#self.ruleset_folder_selections].folder
 	end
 	if not self:getHighscoreConditions() then
 		self.mode_highscore = nil
@@ -367,15 +397,21 @@ function ModeSelectScene:menuGoForward(menu_type, is_load)
 		table.insert(current_folder_selections[menu_type], self.menu_state[menu_type])
 	end
 	if menu_type == "mode" and type(self.game_mode_folder[self.menu_state.mode]) == "table" then
-		self.menu_mode_y = -20
 		self.game_mode_folder = self.game_mode_folder[self.menu_state.mode]
-		self.game_mode_selections[#self.game_mode_selections+1] = self.game_mode_folder
+		self.game_mode_selections[#self.game_mode_selections+1] = {
+			index = self.menu_state.mode + self.game_mode_selections[#self.game_mode_selections].index,
+			folder = self.game_mode_folder,
+			positions = {},
+		}
 		self.menu_state.mode = 1
 		return true
 	elseif menu_type == "ruleset" and type(self.ruleset_folder[self.menu_state.ruleset]) == "table" then
-		self.menu_ruleset_x = -20
 		self.ruleset_folder = self.ruleset_folder[self.menu_state.ruleset]
-		self.ruleset_folder_selections[#self.ruleset_folder_selections+1] = self.ruleset_folder
+		self.ruleset_folder_selections[#self.ruleset_folder_selections+1] = {
+			index = self.menu_state.ruleset + self.ruleset_folder_selections[#self.ruleset_folder_selections].index - 1,
+			folder = self.ruleset_folder,
+			positions = {}
+		}
 		self.menu_state.ruleset = 1
 		return true
 	end
