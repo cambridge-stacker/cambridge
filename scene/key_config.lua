@@ -402,11 +402,11 @@ function KeyConfigScene:onInputPress(e)
 			playSE("error")
 		end
 	elseif e.type == "mouse" then
+		if cursorHoverArea(20, 40, 50, 30) and self.reconfiguration then
+			playSE("menu_cancel")
+			scene = InputConfigScene()
+		end
 		if self.configurable_inputs == nil then
-			if cursorHoverArea(20, 40, 50, 30) and self.reconfiguration then
-				playSE("menu_cancel")
-				scene = InputConfigScene()
-			end
 			if cursorHoverArea(80,160,200,50) then
 				playSE("main_decide")
 				self.input_state = 1
