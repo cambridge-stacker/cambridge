@@ -239,29 +239,6 @@ function ModeSelectScene:render()
 
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_2)
-	local mode_path_name = ""
-	if #self.game_mode_selections > 1 then
-		for index, value in ipairs(self.game_mode_selections) do
-			mode_path_name = mode_path_name..(value.name or "modes").." > "
-		end
-		love.graphics.printf(
-			self.game_mode_folder.is_tag and
-			"Tag: ".. self.game_mode_folder.name or
-			"Path: "..mode_path_name:sub(1, -3),
-			 40, 220 - self.menu_mode_y, 200, "left")
-	end
-	local ruleset_path_name = ""
-	if #self.ruleset_folder_selections > 1 then
-		for index, value in ipairs(self.ruleset_folder_selections) do
-			ruleset_path_name = ruleset_path_name..(value.name or "rulesets").." > "
-		end
-		love.graphics.printf(
-			self.ruleset_folder.is_tag and
-			"Tag: ".. self.ruleset_folder.name or
-			"Path: "..ruleset_path_name:sub(1, -3),
-			 360 - self.menu_ruleset_x, 420, 60 + font_3x5_2:getWidth(ruleset_path_name), "left")
-	end
-	love.graphics.setFont(font_3x5_2)
 
 	for sel_idx, selection in ipairs(self.game_mode_selections) do
 		local offset = selection.index * 20
