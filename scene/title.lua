@@ -183,7 +183,7 @@ function TitleScene:render()
 
 	if menu_frames > 60 then
 		for key, value in pairs(self.menu_screen_offsets) do
-			self.menu_screen_offsets[key] = interpolateNumber(value, self.main_menu_state == key and 10 or 0)
+			self.menu_screen_offsets[key] = interpolateNumber(value, (self.main_menu_state == key or cursorHoverArea(40,280 + 20 * key,120,20)) and 10 or 0)
 		end
 	end
 
