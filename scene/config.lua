@@ -24,7 +24,7 @@ local config_option
 ---@type settings_config_option[]
 ConfigScene.options = {
 	-- Option types: slider, options, number
-	-- Format if type is options:	{name in config, displayed name, type, description, options}
+	-- Format if type is options:	{name in config, displayed name, type, description, default, options}
 	-- Format if otherwise:      	{name in config, displayed name, type, description, default, min, max, increase by, string format, sound effect name, setter function}
 }
 
