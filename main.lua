@@ -65,6 +65,7 @@ function scaleToResolution(width, height)
 		(screen_height - scale_factor * height) / 2
 	)
 	love.graphics.scale(scale_factor)
+	return scale_factor
 end
 
 mouse_idle = 0
@@ -314,7 +315,7 @@ function love.draw()
 	love.graphics.push()
 
 	-- get offset matrix
-	scaleToResolution(640, 480)
+	local scale_factor = scaleToResolution(640, 480)
 		
 	scene:render()
 
@@ -327,20 +328,24 @@ function love.draw()
 	end
 
 	local bottom_right_corner_y_offset = 0
+	local bottom_right_corner_x_offset = (love.graphics.getWidth() / scale_factor) / 2 - 320
+	if config and config.visualsettings and config.visualsettings.stretch_background == 1 then
+		bottom_right_corner_x_offset = 0
+	end
 	love.graphics.setFont(font_3x5_2)
 	love.graphics.setColor(1, 1, 1, 1)
 	if config.visualsettings.display_gamemode == 1 or scene.title == "Title" then
 		bottom_right_corner_y_offset = bottom_right_corner_y_offset + 20
 		love.graphics.printf(
 			string.format("(%g) %.2f fps - %s", getTargetFPS(), 1.0 / avg_delta, version),
-			0, 480 - bottom_right_corner_y_offset, 635, "right"
+			0, 480 - bottom_right_corner_y_offset, 635 + bottom_right_corner_x_offset, "right"
 		)
 	end
 	if config.visualsettings.debug_level > 1 then
 		bottom_right_corner_y_offset = bottom_right_corner_y_offset + 18
 		love.graphics.printf(
 			string.format("Lua memory use: %.1fMB", collectgarbage("count")/1000),
-			0, 480 - bottom_right_corner_y_offset, 635, "right"
+			0, 480 - bottom_right_corner_y_offset, 635 + bottom_right_corner_x_offset, "right"
 		)
 	end
 
@@ -366,7 +371,7 @@ function love.draw()
 		local stats = love.graphics.getStats()
 		love.graphics.printf(
 			string.format("GPU stats:\nDraw calls: %d\nTexture Memory: %dKB\n"..(stats.textures and "Textures" or "Images").." loaded: %d\nFonts loaded: %d\nBatched draw calls: %d", stats.drawcalls + 1, stats.texturememory / 1024, (stats.images or stats.textures), stats.fonts, stats.drawcallsbatched),
-			0, 480 - bottom_right_corner_y_offset, 635, "right"
+			0, 480 - bottom_right_corner_y_offset, 635 + bottom_right_corner_x_offset, "right"
 		)
 	end
 end
