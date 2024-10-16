@@ -24,7 +24,7 @@ local config_option
 ---@type settings_config_option[]
 ConfigScene.options = {
 	-- Option types: slider, options, number
-	-- Format if type is options:	{name in config, displayed name, type, description, options}
+	-- Format if type is options:	{name in config, displayed name, type, description, default, options}
 	-- Format if otherwise:      	{name in config, displayed name, type, description, default, min, max, increase by, string format, sound effect name, setter function}
 }
 
@@ -145,10 +145,7 @@ end
 function ConfigScene:drawSlider(idx, option)
 	love.graphics.setColor(1, 1, 1, 0.75)
 	self.sliders[option.config_name]:draw()
-	local pos_x = 90 + self.options_width
-	local width = 510 - self.options_width
-	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.printf(string.format(option.format,self.sliders[option.config_name]:getValue()), pos_x, self.option_pos_y[idx], width, "center")
+	self:drawNumber(idx, option)
 end
 
 function ConfigScene:drawNumber(idx, option)
