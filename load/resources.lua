@@ -109,7 +109,7 @@ function loadResources()
 	loadImageTable(blocks, blocks_paths)
 	loadImageTable(misc_graphics, misc_graphics_paths)
 
-	--#region Backgrounds stuff. Warning: Code duplication
+	--#region Backgrounds stuff.
 
 	local function loadExtendedBgs()
 		--Dynamic reloading, ey?
