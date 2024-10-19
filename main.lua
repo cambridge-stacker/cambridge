@@ -3,6 +3,7 @@
 random = love.math.random
 math.random = love.math.random
 math.randomseed = love.math.setRandomSeed
+local GLOBAL_STATE = "INIT"
 
 -- This translates and scales the screen into specified dimensions.
 ---@type function
@@ -95,11 +96,15 @@ local function screenshotFunction(image)
 	screenshot_images[#screenshot_images+1] = {image = love.graphics.newImage(image), time = 0, y_position = #screenshot_images * 260}
 end
 
-local last_time = 0
-local function getDeltaTime()
+local last_render_time = 0
+local render_dt = 0
+--- Measures the time between two frames.
+--- Calling this changes getDeltaTime() on the render side.
+local function stepRenderTime()
 	local time = love.timer.getTime()
-	local dt = time - last_time
-	last_time = time
+	local dt = time - last_render_time
+	render_dt = dt
+	last_render_time = time
 	return dt
 end
 local time_table = {}
@@ -118,6 +123,15 @@ local function getAvgDelta()
 		last_fps = acc / #time_table
 	end
 	return last_fps
+end
+
+-- This gets different deltas depending on what part is in, whether it's in update, or render.
+function getDeltaTime()
+	if GLOBAL_STATE == "RENDER" then
+		return render_dt
+	else
+		return love.timer.getDelta()
+	end
 end
 
 --What a mess trying to do something with it
@@ -862,9 +876,12 @@ function love.run()
 		end
 		
 		if scene and scene.update and love.timer then
+			GLOBAL_STATE = "UPDATE"
 			scene:update()
 			if time_accumulator < FRAME_DURATION or TARGET_FPS == math.huge then
+				stepRenderTime()
 				if love.graphics and love.graphics.isActive() and love.draw then
+					GLOBAL_STATE = "RENDER"
 					love.graphics.origin()
 					love.graphics.clear(love.graphics.getBackgroundColor())
 					love.draw()

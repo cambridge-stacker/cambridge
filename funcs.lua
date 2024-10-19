@@ -291,7 +291,7 @@ function interpolateNumber(a, b, decay, dt)
 	end
 	-- higher -> faster
 	decay = decay or 17.260924347109
-	dt = dt or love.timer.getDelta()
+	dt = dt or getDeltaTime()
 	return expDecay(a, b, decay, dt)
 end
 
