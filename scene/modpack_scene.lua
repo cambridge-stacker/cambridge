@@ -9,11 +9,11 @@ function ModPackScene:new()
 	self.prev_scene = scene
 	self.valid_mod_packs = {}
 	self.mod_pack_index = {}
-    DiscordRPC:update({
-        details = "In settings",
-        state = "Choosing mod packs",
-        largeImageKey = "settings-input"
-    })
+	DiscordRPC:update({
+		details = "In settings",
+		state = "Choosing mod packs",
+		largeImageKey = "settings-input"
+	})
 	if not love.filesystem.getInfo("modpacks", "directory") then
 		love.filesystem.createDirectory("modpacks")
 	end
