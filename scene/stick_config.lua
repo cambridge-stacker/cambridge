@@ -168,7 +168,8 @@ function StickConfigScene:update()
 		elseif self.das_down then
 			change = 1
 		end
-		self:changeOption(change)
+		playSE("cursor")
+		self.input_state = Mod1(self.input_state + change, #configurable_inputs)
 		self.das = self.das - config.menu_arr
 	end
 end
@@ -265,22 +266,21 @@ function StickConfigScene:onInputPress(e)
 	if self.safety_frames > 0 then
 		return
 	end
-	self.safety_frames = 2
-	if e.type == "key" then
+	if e.input == "menu_back" and (self.type == "key" or not self.rebinding) then
+		if self.reconfiguration then
+			self.new_input.menu_left = self.new_input.left
+			self.new_input.menu_right = self.new_input.right
+			self.new_input.menu_up = self.new_input.up
+			self.new_input.menu_down = self.new_input.down
+			config.input.joysticks[self.joystick_name] = self.new_input
+			saveConfig()
+		end
+		playSE("menu_cancel")
+		scene = InputConfigScene()
+	elseif e.input and self.joystick_name ~= null_joystick_name and (self.type == "key" or not self.rebinding) then
 		-- function keys, escape, and tab are reserved and can't be remapped
-		if e.scancode == "escape" then
-			if self.reconfiguration then
-				self.new_input.menu_left = self.new_input.left
-				self.new_input.menu_right = self.new_input.right
-				self.new_input.menu_up = self.new_input.up
-				self.new_input.menu_down = self.new_input.down
-				config.input.joysticks[self.joystick_name] = self.new_input
-				saveConfig()
-			end
-			playSE("menu_cancel")
-			scene = InputConfigScene()
-		elseif self.input_state > #configurable_inputs then
-			if e.scancode == "return" then
+		if self.input_state > #configurable_inputs then
+			if e.scancode == "return" or e.input == "menu_decide" then
 				-- save new input, then load next scene
 				local had_config = config.input ~= nil
 				if not config.input then config.input = {} end
@@ -298,18 +298,24 @@ function StickConfigScene:onInputPress(e)
 				if e.scancode == "tab" then
 					self:rebind(nil) --this is done on purpose
 					self.rebinding = false
+					self.safety_frames = 2
 				end
 			else
-				if e.scancode == "up" or e.direction == "u" then
+				if e.input == "menu_up" or e.direction == "u" then
 					playSE("cursor")
 					self.input_state = Mod1(self.input_state - 1, #configurable_inputs)
-				elseif e.scancode == "down" or e.direction == "d" then
+					self.das_up = true
+					self.safety_frames = 2
+				elseif e.input == "menu_down" or e.direction == "d" then
 					playSE("cursor")
 					self.input_state = Mod1(self.input_state + 1, #configurable_inputs)
-				elseif e.scancode == "return" then
+					self.das_down = true
+					self.safety_frames = 2
+				elseif e.input == "menu_decide" then
 					playSE("main_decide")
 					self.set_inputs[configurable_inputs[self.input_state]] = "<provide joystick input>"
 					self.rebinding = true
+					self.safety_frames = 2
 				end
 			end
 		elseif e.scancode == "tab" then
@@ -318,6 +324,7 @@ function StickConfigScene:onInputPress(e)
 		end
 	elseif string.sub(e.type, 1, 3) == "joy" then
 		if self.joystick_name == null_joystick_name then
+			self.safety_frames = 2
 			self.joystick_name = e.name
 			if config.input.joysticks[e.name] == nil then
 				config.input.joysticks[e.name] = {}
@@ -330,6 +337,7 @@ function StickConfigScene:onInputPress(e)
 			return
 		end
 		if self.input_state <= #configurable_inputs and (not self.reconfiguration or self.rebinding) then
+			self.safety_frames = 2
 			if e.type == "joybutton" then
 				local input_result = "buttons-" .. e.button
 				if self:rebind(input_result) then
@@ -374,6 +382,14 @@ function StickConfigScene:onInputPress(e)
 				end
 			end
 		end
+	end
+end
+
+function StickConfigScene:onInputRelease(e)
+	if e.input == "menu_up" or e.direction == "u" then
+		self.das_up = false
+	elseif e.input == "menu_down" or e.direction == "d" then
+		self.das_down = false
 	end
 end
 
