@@ -223,7 +223,14 @@ function KeyConfigScene:render()
 	if self.reconfiguration and not self.configurable_inputs then
 
 		love.graphics.setFont(font_3x5_2)
-		love.graphics.print("Which controls do you want to configure?", 80, 90)
+		if self.wrong_type then
+			if self.error_time > 0 then
+				love.graphics.setColor(1, 0, 0, 1)
+			end
+			love.graphics.print("Use your keyboard on key config, or press Menu Back binding.", 80, 90)
+		else
+			love.graphics.print("Which controls do you want to configure?", 80, 90)
+		end
 
 		love.graphics.setColor(1, 1, 1, 0.5)
 		love.graphics.rectangle("fill", 75, 118 + 50 * self.menu_state, 200, 33)
@@ -321,11 +328,27 @@ function KeyConfigScene:changeOption(rel)
 end
 
 function KeyConfigScene:onInputPress(e)
+	if string.sub(e.type, 1, 3) == "joy" then
+		if e.input == "menu_back" then
+			if self.configurable_inputs == nil then
+				playSE("menu_cancel")
+				scene = InputConfigScene()
+			else
+				playSE("menu_cancel")
+				self.configurable_inputs = nil
+			end
+		elseif self.safety_frames < 2 then
+			self.error_time = self.error_duration
+			self.wrong_type = true
+			playSE("error")
+		end
+	end
 	if self.safety_frames > 0 then
 		return
 	end
 	self.safety_frames = 2
 	if e.type == "key" then
+		self.wrong_type = false
 		-- tab is reserved and can't be remapped
 		if self.configurable_inputs == nil then
 			if e.scancode == "return" or e.scancode == "kpenter" then
