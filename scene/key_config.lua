@@ -129,6 +129,23 @@ function KeyConfigScene:mutexCheck(input, keybind)
 	return false
 end
 
+local unerasable_inputs_list = {
+	configure_inputs = true,
+	menu_decide = true,
+	menu_back = true,
+	menu_left = true,
+	menu_right = true,
+	menu_up = true,
+	menu_down = true,
+}
+
+function KeyConfigScene:isInputUnerasable(input)
+	if unerasable_inputs_list[input] then
+		return true
+	end
+	return false
+end
+
 local function newSetInputs()
 	local set_inputs = {}
 	for i, input in ipairs(configurable_game_inputs) do
@@ -194,6 +211,12 @@ function KeyConfigScene:update()
 		self.das = self.das + 1
 	else
 		self.das = 0
+	end
+	if self.configurable_inputs then
+		local input = self.configurable_inputs[self.input_state]
+		if string.match(self.set_inputs[input], "tab") and self:isInputUnerasable(self.configurable_inputs[self.input_state]) then
+			self.set_inputs[input] = "<press a key>"
+		end
 	end
 	if self.das >= config.menu_das then
 		local change = 0
@@ -285,6 +308,11 @@ function KeyConfigScene:formatKey(scancode)
 end
 
 function KeyConfigScene:rebindKey(key)
+	if self:isInputUnerasable(self.configurable_inputs[self.input_state]) and key == nil then
+		self.set_inputs[self.configurable_inputs[self.input_state]] = "<press other key, you can't erase it>"
+		self.error_time = self.error_duration
+		return false
+	end
 	if key == nil then
 		self.new_input[self.configurable_inputs[self.input_state]] = nil
 		self.set_inputs[self.configurable_inputs[self.input_state]] = "erased"
@@ -371,9 +399,10 @@ function KeyConfigScene:onInputPress(e)
 		elseif self.reconfiguration then
 			if self.key_rebinding then
 				if e.scancode == "tab" then
-					self:rebindKey(nil) --this is done on purpose
-					self.key_rebinding = false
-				elseif self:rebindKey(e.scancode) then
+					--this is done on purpose
+					e.scancode = nil
+				end
+				if self:rebindKey(e.scancode) then
 					playSE("mode_decide")
 					self.key_rebinding = false
 				else
@@ -414,9 +443,15 @@ function KeyConfigScene:onInputPress(e)
 				self.new_input = {}
 			end
 		elseif e.scancode == "tab" then
-			self.set_inputs[self.configurable_inputs[self.input_state]] = "skipped"
+			local input = self.configurable_inputs[self.input_state]
+			if self:isInputUnerasable(self.configurable_inputs[self.input_state]) then
+				self.set_inputs[input] = "<press other key, you can't erase it>"
+				playSE("error")
+				return
+			end
+			self.set_inputs[input] = "skipped"
 			self.input_state = self.input_state + 1
-			self.set_inputs[self.configurable_inputs[self.input_state]] = "<press a key, or tab to skip>"
+			self.set_inputs[input] = "<press a key, or tab to skip>"
 		-- all other keys can be configured
 		elseif self:rebindKey(e.scancode) then
 			self.input_state = self.input_state + 1
