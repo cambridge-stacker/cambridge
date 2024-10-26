@@ -214,7 +214,8 @@ function KeyConfigScene:update()
 	end
 	if self.configurable_inputs then
 		local input = self.configurable_inputs[self.input_state]
-		if string.match(self.set_inputs[input], "tab") and self:isInputUnerasable(self.configurable_inputs[self.input_state]) then
+		if self:isInputUnerasable(self.configurable_inputs[self.input_state]) and
+		   type(self.set_inputs[input]) == "string" and string.match(self.set_inputs[input], "tab") then
 			self.set_inputs[input] = "<press a key>"
 		end
 	end
