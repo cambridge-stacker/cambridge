@@ -51,6 +51,32 @@ function insertReplay(replay)
 	table.insert(replay_tree[branch_index], #replays)
 end
 
+function refreshReplayTree()
+	replay_tree = {{name = "All"}}
+	dict_ref = {}
+	for key, value in pairs(recursionStringValueExtract(game_modes, "is_directory")) do
+		if not dict_ref[value.name] then
+			dict_ref[value.name] = #replay_tree + 1
+			replay_tree[#replay_tree + 1] = {name = value.name}
+		end
+	end
+	for ptr, replay in pairs(replays) do
+		local mode_name = replay.mode
+		if dict_ref[mode_name] ~= nil and mode_name ~= "znil" then
+			table.insert(replay_tree[dict_ref[mode_name] ], ptr)
+		end
+		local branch_index = 0
+		for index, value in ipairs(replay_tree) do
+			if value.name == "All" then
+				branch_index = index
+				break
+			end
+		end
+		table.insert(replay_tree[branch_index], ptr)
+	end
+	sortReplays()
+end
+
 function sortReplays()
 	if not replay_tree then return end
 	local function padnum(d) return ("%03d%s"):format(#d, d) end
@@ -118,7 +144,6 @@ replay_load_code = [[
 			love.thread.getChannel('replay'):push(new_replay)
 		end
 	end
-	love.thread.getChannel( 'replay_tree' ):push( replay_tree )
 	love.thread.getChannel( 'loaded_replays' ):push( true )
 	print("Loaded replays.")
 ]]

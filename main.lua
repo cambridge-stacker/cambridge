@@ -502,12 +502,14 @@ function love.filedropped(file)
 	if do_write == 2 then
 		love.filesystem.createDirectory(final_directory)
 		love.filesystem.write(final_directory..filename, data)
-		if final_directory ~= "replays/" then
-			loaded_replays = false
-		elseif loaded_replays then
-			local replay = binser.deserialize(data)[1]
-			insertReplay(replay)
-			sortReplays()
+		if loaded_replays then
+			if final_directory == "replays/" then
+				local replay = binser.deserialize(data)[1]
+				insertReplay(replay)
+				sortReplays()
+			else
+				refreshReplayTree()
+			end
 		end
 	end
 end
