@@ -12,7 +12,7 @@ local current_replay = 1
 local loading_replays
 
 function ReplaySelectScene:new()
-	-- fully reload custom modules
+	-- fully refresh custom modules
 
 	self.safety_frames = 0
 	self.frames_since_error = 0
@@ -158,6 +158,11 @@ function ReplaySelectScene:render()
 		love.graphics.print("SELECT MODE TO REPLAY", 40, 35)
 	end
 
+	if self.refresh_time_remaining and self.refresh_time_remaining > 0 then
+		love.graphics.setColor(1, 1, 1, self.refresh_time_remaining / 60)
+		love.graphics.printf("Replay tree refreshed!", font_3x5_2, 0, 10, 640, "center")
+		self.refresh_time_remaining = self.refresh_time_remaining - 1
+	end
 	if self.display_warning then
 		love.graphics.setFont(font_3x5_3)
 		love.graphics.printf(
@@ -559,6 +564,19 @@ function ReplaySelectScene:onInputPress(e)
 		if e.y ~= 0 then
 			self:changeOption(-e.y)
 		end
+	elseif e.scancode == "lctrl" or e.scancode == "rctrl" then
+		self.ctrl_held = true
+	elseif e.scancode == "r" and self.ctrl_held then
+		unloadModules()
+		initModules()
+		refreshReplayTree()
+		self.height_offset = 0
+		self.menu_state = {
+			submenu = current_submenu,
+			replay = current_replay,
+		}
+		self.refresh_time_remaining = 90
+		playSE("ihs")
 	elseif e.input == "generic_1" and self.chosen_replay then
 		self:verifyHighscoreData()
 	elseif e.input == "menu_decide" then
