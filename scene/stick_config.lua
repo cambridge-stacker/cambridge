@@ -100,6 +100,7 @@ local null_joystick_name = ""
 
 function StickConfigScene:new()
 	self.input_state = 1
+	self.erase_timer = -1
 	self.set_inputs = newSetInputs()
 	self.new_input = {}
 	self.axis_timer = 0
@@ -216,14 +217,23 @@ function StickConfigScene:render()
 	if self.joystick_name == null_joystick_name then
 		return
 	end
+	if self.erase_timer == 0 then
+		self:rebind(nil)
+		self.rebinding = false
+	elseif self.erase_timer == 30 then
+		self.set_inputs[configurable_inputs[self.input_state]] = "<erasing binding...>"
+	end
+	if self.erase_timer >= 0 then
+		self.erase_timer = self.erase_timer - 1
+	end
 	if self.input_state > #configurable_inputs then
 		love.graphics.print("Press enter to confirm, delete/backspace to retry" .. (config.input and ", escape to cancel" or ""))
 		return
 	elseif self.reconfiguration and not self.rebinding then
-		love.graphics.printf("Press escape to exit and save, arrow keys to move selection.", 0, 0, 640, "left")
+		love.graphics.printf("Press escape or ".. self.formatBinding(config.input.joysticks[self.joystick_name].menu_decide) .." to exit and save, Up or Down to move selection.", 0, 0, 640, "left")
 	elseif self.rebinding or not self.reconfiguration then
 		local tab_string = self.reconfiguration and "erase" or "skip"
-		love.graphics.printf("Press tab key on keyboard to ".. tab_string ..".", 0, 0, 640, "left")
+		love.graphics.printf("Press tab key on keyboard, or hold for 1 second to ".. tab_string ..".", 0, 0, 640, "left")
 	end
 
 	self.axis_timer = self.axis_timer + 1
@@ -313,8 +323,9 @@ function StickConfigScene:onInputPress(e)
 					self.safety_frames = 2
 				elseif e.input == "menu_decide" then
 					playSE("main_decide")
-					self.set_inputs[configurable_inputs[self.input_state]] = "<provide joystick input>"
+					self.set_inputs[configurable_inputs[self.input_state]] = "<release to start binding, or hold to erase>"
 					self.rebinding = true
+					self.erase_timer = 60
 					self.safety_frames = 2
 				end
 			end
@@ -390,6 +401,9 @@ function StickConfigScene:onInputRelease(e)
 		self.das_up = false
 	elseif e.input == "menu_down" or e.direction == "d" then
 		self.das_down = false
+	elseif e.input == "menu_decide" and self.rebinding then
+		self.set_inputs[configurable_inputs[self.input_state]] = "<provide joystick input>"
+		self.erase_timer = -1
 	end
 end
 
