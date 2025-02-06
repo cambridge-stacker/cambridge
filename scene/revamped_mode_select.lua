@@ -43,6 +43,8 @@ function ModeSelectScene:new()
 	self.interpolated_menu_slot_positions = {}
 	--#endregion
 	self.secret_inputs = {}
+	self.secret_sequences = {}
+	self.input_timers = {}
 	self.das_x, self.das_y = 0, 0
 	self.menu_mode_y = 20
 	self.menu_ruleset_x = 20
@@ -88,6 +90,15 @@ end
 
 function ModeSelectScene:update()
 	switchBGM(nil)
+	for key, value in pairs(self.input_timers) do
+		self.input_timers[key] = value - 1
+	end
+	if self.input_timers["reload"] == 0 then
+		unloadModules()
+		scene = ModeSelectScene()
+		scene.reload_time_remaining = 90
+		playSE("ihs")
+	end
 	self.safety_frames = self.safety_frames - 1
 	if self.starting then
 		self.start_frames = self.start_frames + 1
@@ -309,6 +320,10 @@ function ModeSelectScene:render()
 		love.graphics.printf("Modules reloaded!", 0, 10, 640, "center")
 		self.reload_time_remaining = self.reload_time_remaining - 1
 	end
+	if self.input_timers["reload"] and self.input_timers["reload"] > 0 then
+		love.graphics.setColor(1, 1, 1, 1 - self.input_timers["reload"] / 60)
+		love.graphics.printf("Keep holding Generic 1 to reload modules...", 0, 10, 640, "center")
+	end
 end
 
 function ModeSelectScene:indirectStartMode()
@@ -394,14 +409,8 @@ function ModeSelectScene:onInputPress(e)
 	if self.safety_frames > 0 then
 		return
 	end
-	if e.scancode == "lctrl" or e.scancode == "rctrl" then
-		self.ctrl_held = true
-	end
-	if e.scancode == "r" and self.ctrl_held then
-		unloadModules()
-		scene = ModeSelectScene()
-		scene.reload_time_remaining = 90
-		playSE("ihs")
+	if e.input == "generic_1" then
+		self.input_timers["reload"] = 60
 	end
 	if (e.input or e.scancode) and (self.display_warning or #self.game_mode_folder == 0 or #self.ruleset_folder == 0) then
 		if self.display_warning then
@@ -506,8 +515,8 @@ function ModeSelectScene:onInputPress(e)
 end
 
 function ModeSelectScene:onInputRelease(e)
-	if e.scancode == "lctrl" or e.scancode == "rctrl" then
-		self.ctrl_held = false
+	if e.input == "generic_1" then
+		self.input_timers["reload"] = nil
 	end
 	if e.input == "menu_up" then
 		self.das_up = nil
