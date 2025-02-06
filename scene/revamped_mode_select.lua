@@ -720,6 +720,7 @@ function ModeSelectScene:changeMode(rel)
 	playSE("cursor")
 	self.menu_state.mode = Mod1(self.menu_state.mode + rel, len)
 	self:refreshHighscores()
+	self.secret_sequence = {}
 end
 
 function ModeSelectScene:changeRuleset(rel)
