@@ -43,7 +43,8 @@ function ModeSelectScene:new()
 	self.interpolated_menu_slot_positions = {}
 	--#endregion
 	self.secret_inputs = {}
-	self.secret_sequences = {}
+	self.secret_sequence = {}
+	self.sequencing_start_frames = 0
 	self.input_timers = {}
 	self.das_x, self.das_y = 0, 0
 	self.menu_mode_y = 20
@@ -92,12 +93,28 @@ function ModeSelectScene:update()
 	switchBGM(nil)
 	for key, value in pairs(self.input_timers) do
 		self.input_timers[key] = value - 1
+		if value < 0 then
+			self.input_timers[key] = nil
+		end
 	end
 	if self.input_timers["reload"] == 0 then
 		unloadModules()
 		scene = ModeSelectScene()
 		scene.reload_time_remaining = 90
 		playSE("ihs")
+	end
+	if self.input_timers["secret_sequencing"] == 0 then
+		self.is_sequencing = true
+		self.first_input = true
+	end
+	if self.input_timers["stop_sequencing"] == 0 then
+		self.is_sequencing = false
+	end
+
+	if self.is_sequencing then
+		self.sequencing_start_frames = math.min(self.sequencing_start_frames + 1, 20)
+	else
+		self.sequencing_start_frames = math.max(self.sequencing_start_frames - 1, 0)
 	end
 	self.safety_frames = self.safety_frames - 1
 	if self.starting then
@@ -315,14 +332,71 @@ function ModeSelectScene:render()
 		love.graphics.setColor(1, 1, 1, 1)
 		love.graphics.printf("This mode overrides the chosen ruleset!", 0, 440, 640, "center")
 	end
-	if self.reload_time_remaining and self.reload_time_remaining > 0 then
-		love.graphics.setColor(1, 1, 1, self.reload_time_remaining / 60)
-		love.graphics.printf("Modules reloaded!", 0, 10, 640, "center")
-		self.reload_time_remaining = self.reload_time_remaining - 1
+	local sequencing_start_frames = self.sequencing_start_frames
+	if sequencing_start_frames > 0 then
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.printf("Secret sequence: " .. self:getSequenceShorthand(), 10, -95 + sequencing_start_frames * 5, 620, "left")
 	end
-	if self.input_timers["reload"] and self.input_timers["reload"] > 0 then
-		love.graphics.setColor(1, 1, 1, 1 - self.input_timers["reload"] / 60)
-		love.graphics.printf("Keep holding Generic 1 to reload modules...", 0, 10, 640, "center")
+	local function drawStateOppositePositionFromTagline(timer, string, decay_time)
+		if timer then
+			love.graphics.setColor(1, 1, 1, 1 - timer / decay_time)
+			love.graphics.printf(string, 0, 10, 640, "center")
+		end
+	end
+	drawStateOppositePositionFromTagline(60 - (self.reload_time_remaining or 0), "Modules reloaded!", 60)
+	if self.reload_time_remaining then self.reload_time_remaining = self.reload_time_remaining - 1 end
+	drawStateOppositePositionFromTagline(self.input_timers["reload"], "Keep holding Generic 1 to reload modules...", 60)
+	drawStateOppositePositionFromTagline(self.input_timers["secret_sequencing"], "Keep holding Generic 2 to input secret sequences...", 40)
+	drawStateOppositePositionFromTagline(self.input_timers["stop_sequencing"], "Keep holding to stop sequencing...", 40)
+	love.graphics.setColor(1, 1, 1, 1)
+end
+
+local INPUT_SHORTHANDS = {
+	left = "<-",
+	right = "->",
+	up = "^",
+	down = "v",
+	rotate_left = "L1",
+	rotate_left2 = "L2",
+	rotate_right = "R1",
+	rotate_right2 = "R2",
+	rotate_180 = "180",
+	hold = "H",
+	generic_1 = "G1",
+	generic_2 = "G2",
+	generic_3 = "G3",
+	generic_4 = "G4",
+}
+function ModeSelectScene:getSequenceShorthand()
+	local shorthands = {}
+	for index, value in ipairs(self.secret_sequence) do
+		if INPUT_SHORTHANDS[value] then
+			table.insert(shorthands, INPUT_SHORTHANDS[value])
+		else
+			table.insert(shorthands, value)
+		end
+	end
+	return table.concat(shorthands, " ")
+end
+
+function ModeSelectScene:injectSecretSequenceOnMatch(mode)
+	if type(mode.sequences) == "table" then
+		for name, sequence in pairs(mode.sequences) do
+			if type(sequence) == "table" then
+				local matches_required = #sequence
+				local matches_found = 0
+				for k2, v2 in pairs(self.secret_sequence) do
+					if sequence[matches_found+1] == v2 then
+						matches_found = matches_found + 1
+					elseif matches_found < matches_required then
+						matches_found = sequence[1] == v2 and 1 or 0
+					end
+				end
+				if matches_found >= matches_required then
+					self.secret_inputs[name] = true
+				end
+			end
+		end
 	end
 end
 
@@ -353,6 +427,7 @@ function ModeSelectScene:startMode()
 	config.current_ruleset = current_ruleset
 	config.current_folder_selections = current_folder_selections
 	saveConfig()
+	self:injectSecretSequenceOnMatch(self.game_mode_folder[self.menu_state.mode])
 	scene = GameScene(
 		self.game_mode_folder[self.menu_state.mode],
 		self.ruleset_folder[self.menu_state.ruleset],
@@ -405,12 +480,22 @@ function ModeSelectScene:exitScene()
 	scene = TitleScene()
 end
 
+local SYSTEM_INPUTS = {
+	menu_decide = true,
+	menu_back = true,
+	menu_left = true,
+	menu_right = true,
+	menu_up = true,
+	menu_down = true,
+	mode_exit = true,
+	retry = true,
+	pause = true,
+	frame_step = true,
+}
+
 function ModeSelectScene:onInputPress(e)
 	if self.safety_frames > 0 then
 		return
-	end
-	if e.input == "generic_1" then
-		self.input_timers["reload"] = 60
 	end
 	if (e.input or e.scancode) and (self.display_warning or #self.game_mode_folder == 0 or #self.ruleset_folder == 0) then
 		if self.display_warning then
@@ -420,6 +505,8 @@ function ModeSelectScene:onInputPress(e)
 		else
 			self:menuGoBack("ruleset")
 		end
+	elseif self.is_sequencing and e.type ~= "wheel" then
+		self.input_timers["stop_sequencing"] = 60
 	elseif e.input == "menu_back" then
 		local has_started = self.starting
 		if self.starting then
@@ -485,7 +572,7 @@ function ModeSelectScene:onInputPress(e)
 			end
 		end
 	elseif self.starting then return
-	elseif e.type == "wheel" then
+	elseif e.type == "wheel" and not self.is_sequencing then
 		if #self.ruleset_folder == 0 or #self.game_mode_folder == 0 then
 			return
 		end
@@ -512,11 +599,26 @@ function ModeSelectScene:onInputPress(e)
 	elseif e.input then
 		self.secret_inputs[e.input] = true
 	end
+	if not self.is_sequencing then
+		if e.input == "generic_1" then
+			self.input_timers["reload"] = 60
+		elseif e.input == "generic_2" then
+			self.input_timers["secret_sequencing"] = 60
+		end
+	end
 end
 
 function ModeSelectScene:onInputRelease(e)
-	if e.input == "generic_1" then
+	if self.is_sequencing then
+		self.input_timers["stop_sequencing"] = nil
+		if not self.first_input and not SYSTEM_INPUTS[e.input] then
+			table.insert(self.secret_sequence, e.input)
+		end
+		self.first_input = false
+	elseif e.input == "generic_1" then
 		self.input_timers["reload"] = nil
+	elseif e.input == "generic_2" then
+		self.input_timers["secret_sequencing"] = nil
 	end
 	if e.input == "menu_up" then
 		self.das_up = nil
