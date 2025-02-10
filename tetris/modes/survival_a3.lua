@@ -180,7 +180,7 @@ function SurvivalA3Game:updateSectionTimes(old_level, new_level)
 		section_time = self.frames - self.section_start_time
 		table.insert(self.section_times, section_time)
 		self.section_start_time = self.frames
-		if section_time <= frameTime(1,00) then
+		if section_time <= (section <= 2 and frameTime(1,00) or frameTime(0,50)) then
 			self.grade = self.grade + 1
 		else
 			self.coolregret_message = "REGRET!!"
