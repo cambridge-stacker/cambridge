@@ -129,6 +129,23 @@ function KeyConfigScene:mutexCheck(input, keybind)
 	return false
 end
 
+local unerasable_inputs_list = {
+	configure_inputs = true,
+	menu_decide = true,
+	menu_back = true,
+	menu_left = true,
+	menu_right = true,
+	menu_up = true,
+	menu_down = true,
+}
+
+function KeyConfigScene:isInputUnerasable(input)
+	if unerasable_inputs_list[input] then
+		return true
+	end
+	return false
+end
+
 local function newSetInputs()
 	local set_inputs = {}
 	for i, input in ipairs(configurable_game_inputs) do
@@ -195,6 +212,13 @@ function KeyConfigScene:update()
 	else
 		self.das = 0
 	end
+	if self.configurable_inputs then
+		local input = self.configurable_inputs[self.input_state]
+		if self:isInputUnerasable(self.configurable_inputs[self.input_state]) and
+		   type(self.set_inputs[input]) == "string" and string.match(self.set_inputs[input], "tab") then
+			self.set_inputs[input] = "<press a key>"
+		end
+	end
 	if self.das >= config.menu_das then
 		local change = 0
 		if self.das_up then
@@ -223,7 +247,14 @@ function KeyConfigScene:render()
 	if self.reconfiguration and not self.configurable_inputs then
 
 		love.graphics.setFont(font_3x5_2)
-		love.graphics.print("Which controls do you want to configure?", 80, 90)
+		if self.wrong_type then
+			if self.error_time > 0 then
+				love.graphics.setColor(1, 0, 0, 1)
+			end
+			love.graphics.print("Use your keyboard on key config, or press Menu Back binding.", 80, 90)
+		else
+			love.graphics.print("Which controls do you want to configure?", 80, 90)
+		end
 
 		love.graphics.setColor(1, 1, 1, 0.5)
 		love.graphics.rectangle("fill", 75, 118 + 50 * self.menu_state, 200, 33)
@@ -278,6 +309,11 @@ function KeyConfigScene:formatKey(scancode)
 end
 
 function KeyConfigScene:rebindKey(key)
+	if self:isInputUnerasable(self.configurable_inputs[self.input_state]) and key == nil then
+		self.set_inputs[self.configurable_inputs[self.input_state]] = "<press other key, you can't erase it>"
+		self.error_time = self.error_duration
+		return false
+	end
 	if key == nil then
 		self.new_input[self.configurable_inputs[self.input_state]] = nil
 		self.set_inputs[self.configurable_inputs[self.input_state]] = "erased"
@@ -321,11 +357,27 @@ function KeyConfigScene:changeOption(rel)
 end
 
 function KeyConfigScene:onInputPress(e)
+	if string.sub(e.type, 1, 3) == "joy" then
+		if e.input == "menu_back" then
+			if self.configurable_inputs == nil then
+				playSE("menu_cancel")
+				scene = InputConfigScene()
+			else
+				playSE("menu_cancel")
+				self.configurable_inputs = nil
+			end
+		elseif self.safety_frames < 2 then
+			self.error_time = self.error_duration
+			self.wrong_type = true
+			playSE("error")
+		end
+	end
 	if self.safety_frames > 0 then
 		return
 	end
 	self.safety_frames = 2
 	if e.type == "key" then
+		self.wrong_type = false
 		-- tab is reserved and can't be remapped
 		if self.configurable_inputs == nil then
 			if e.scancode == "return" or e.scancode == "kpenter" then
@@ -348,9 +400,10 @@ function KeyConfigScene:onInputPress(e)
 		elseif self.reconfiguration then
 			if self.key_rebinding then
 				if e.scancode == "tab" then
-					self:rebindKey(nil) --this is done on purpose
-					self.key_rebinding = false
-				elseif self:rebindKey(e.scancode) then
+					--this is done on purpose
+					e.scancode = nil
+				end
+				if self:rebindKey(e.scancode) then
 					playSE("mode_decide")
 					self.key_rebinding = false
 				else
@@ -391,9 +444,15 @@ function KeyConfigScene:onInputPress(e)
 				self.new_input = {}
 			end
 		elseif e.scancode == "tab" then
-			self.set_inputs[self.configurable_inputs[self.input_state]] = "skipped"
+			local input = self.configurable_inputs[self.input_state]
+			if self:isInputUnerasable(self.configurable_inputs[self.input_state]) then
+				self.set_inputs[input] = "<press other key, you can't erase it>"
+				playSE("error")
+				return
+			end
+			self.set_inputs[input] = "skipped"
 			self.input_state = self.input_state + 1
-			self.set_inputs[self.configurable_inputs[self.input_state]] = "<press a key, or tab to skip>"
+			self.set_inputs[input] = "<press a key, or tab to skip>"
 		-- all other keys can be configured
 		elseif self:rebindKey(e.scancode) then
 			self.input_state = self.input_state + 1
@@ -402,11 +461,11 @@ function KeyConfigScene:onInputPress(e)
 			playSE("error")
 		end
 	elseif e.type == "mouse" then
+		if cursorHoverArea(20, 40, 50, 30) and self.reconfiguration then
+			playSE("menu_cancel")
+			scene = InputConfigScene()
+		end
 		if self.configurable_inputs == nil then
-			if cursorHoverArea(20, 40, 50, 30) and self.reconfiguration then
-				playSE("menu_cancel")
-				scene = InputConfigScene()
-			end
 			if cursorHoverArea(80,160,200,50) then
 				playSE("main_decide")
 				self.input_state = 1

@@ -6,6 +6,15 @@ TuningScene.config_type = "tunings"
 require 'load.save'
 require 'libs.simple-slider'
 
+local function curryTimingFormatFunction(format_condition, condition)
+	return function (input)
+		if input == condition then
+			return format_condition
+		end
+		return string.format("%d ms (%d frame%s)", input * (1000 / getTargetFPS()), input, input > 1 and "s" or "")
+	end
+end
+
 ---@type settings_config_option[]
 TuningScene.options = {
 	-- Serves as a reference for the options available in the menu. Format: {name in config, name as displayed if applicable, slider name}
@@ -13,7 +22,7 @@ TuningScene.options = {
 		config_name = "das",
 		display_name = "Delayed Auto Shift (DAS)",
 		description = "Set it too fast, and you'd slip. Set it too slow, you'd feel sluggish.",
-		format = "%d frames",
+		format = curryTimingFormatFunction("No delay", 0),
 		sound_effect_name = "cursor",
 		min = 0,
 		max = 20,
@@ -28,7 +37,7 @@ TuningScene.options = {
 		config_name = "arr",
 		display_name = "Auto Repeat Rate (ARR)",
 		description = "This changes how fast you move pieces, only if modes doesn't use its own ARR. Higher -> Slower, Lower -> Faster.",
-		format = "%d frames",
+		format = curryTimingFormatFunction("Instant", 0),
 		sound_effect_name = "cursor",
 		min = 0,
 		max = 6,
@@ -44,7 +53,7 @@ TuningScene.options = {
 		display_name = "DAS Cut Delay (DCD)",
 		description = "When you rotate, softdrop, or hard drop a piece, the auto-shift delay is increased "..
 		              "by specified amount of frames if the mode allows that configuration, or the amount the modes forces on.",
-		format = "%d frames",
+		format = curryTimingFormatFunction("Disabled (0 frames)", 0),
 		sound_effect_name = "cursor",
 		min = 0,
 		max = 6,
@@ -59,7 +68,7 @@ TuningScene.options = {
 		config_name = "menu_das",
 		display_name = "DAS in menus",
 		description = "Delayed Auto Shift, in menus.\nSet it too fast, and you'd slip. Set it too slow, you'd feel sluggish.",
-		format = "%d frames",
+		format = curryTimingFormatFunction("No delay", 0),
 		sound_effect_name = "cursor",
 		min = 3,
 		max = 20,
@@ -70,7 +79,7 @@ TuningScene.options = {
 		config_name = "menu_arr",
 		display_name = "ARR in menus",
 		description = "This changes how quickly you auto-repeat a directional press in menus. Higher -> Slower, Lower -> Faster.",
-		format = "%d frames",
+		format = curryTimingFormatFunction("SLIPPERY (16ms/1f)", 1),
 		sound_effect_name = "cursor",
 		min = 1,
 		max = 8,

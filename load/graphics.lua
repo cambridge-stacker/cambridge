@@ -37,6 +37,23 @@ function loadImageTable(image_table, path_table)
 	end
 end
 
+---@param image love.Texture
+---@param origin_x integer
+---@param origin_y integer
+---@param draw_width integer
+---@param draw_height integer
+function drawSizeIndependentImage(image, origin_x, origin_y, r, draw_width, draw_height, offset_x, offset_y, ...)
+	offset_x = offset_x or 0
+	offset_y = offset_y or 0
+	local width, height = image:getDimensions()
+	local width_scale_factor = width / draw_width
+	local height_scale_factor = height / draw_height
+	love.graphics.draw(image, origin_x, origin_y, r, 1/width_scale_factor, 1/height_scale_factor, offset_x*width_scale_factor, offset_y*height_scale_factor, ...)
+end
+
+--- this exists for less unnecessary typing
+drawImage = drawSizeIndependentImage
+
 backgrounds = {}
 backgrounds_paths = {
 	title = "res/backgrounds/title",

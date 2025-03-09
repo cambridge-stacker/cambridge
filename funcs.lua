@@ -169,21 +169,6 @@ function clamp(x, min, max)
 	return x < min and min or (x > max and max or x)
 end
 
-
----@param image love.Texture
----@param origin_x integer
----@param origin_y integer
----@param draw_width integer
----@param draw_height integer
-function drawSizeIndependentImage(image, origin_x, origin_y, r, draw_width, draw_height, offset_x, offset_y, ...)
-	offset_x = offset_x or 0
-	offset_y = offset_y or 0
-	local width, height = image:getDimensions()
-	local width_scale_factor = width / draw_width
-	local height_scale_factor = height / draw_height
-	love.graphics.draw(image, origin_x, origin_y, r, 1/width_scale_factor, 1/height_scale_factor, offset_x*width_scale_factor, offset_y*height_scale_factor, ...)
-end
-
 ---@param h number
 ---@param s number
 ---@param v number
@@ -306,7 +291,7 @@ function interpolateNumber(a, b, decay, dt)
 	end
 	-- higher -> faster
 	decay = decay or 17.260924347109
-	dt = dt or love.timer.getDelta()
+	dt = dt or getDeltaTime()
 	return expDecay(a, b, decay, dt)
 end
 
@@ -333,27 +318,28 @@ end
 ---@param align "center"|"justify"|"left"|"right"
 function drawWrappingText(text, x, y, limit, align, ...)
 	local cur_font = love.graphics.getFont()
+	local font_height = cur_font:getHeight()
 	local text_str = getStringFromTable(text)
 	local string_width = cur_font:getWidth(text_str)
 	local offset_x = 0
 	if string_width > limit then
-		local new_canvas = love.graphics.newCanvas(limit, cur_font:getHeight())
+		local screen_width, screen_height = love.graphics.getDimensions()
+		local scale_factor = math.min(screen_width / 640, screen_height / 480)
 		local max_offset = string_width - limit + 4
 		offset_x = (0.5 + clamp(math.sin(love.timer.getTime() / (1 + max_offset / 250)) * 2, -1, 1) / 2) * max_offset
 		love.graphics.push("all")
-		love.graphics.origin()
 		love.graphics.setLineWidth(2)
-		love.graphics.setCanvas(new_canvas)
-		love.graphics.printf(text, -offset_x, 0, math.max(string_width, limit), align)
+		local left_x, left_y = love.graphics.transformPoint(x, y)
+		love.graphics.setScissor(left_x, left_y, limit*scale_factor, cur_font:getHeight()*scale_factor)
+		love.graphics.printf(text, x-offset_x, y, math.max(string_width, limit), align)
 		if offset_x > 0 then
-			love.graphics.line(1, 0, 1, cur_font:getHeight())
+			love.graphics.line(x+1, y, x+1, y+font_height)
 		end
 		if offset_x < max_offset then
-			love.graphics.line(limit - 1, 0, limit - 1, cur_font:getHeight())
+			love.graphics.line(x+limit - 1, y, x+limit - 1, y+font_height)
 		end
 		love.graphics.pop()
-		love.graphics.draw(new_canvas, x, y, ...)
-		new_canvas:release()
+		love.graphics.setScissor()
 	else
 		love.graphics.printf(text, x, y, limit, align, ...)
 	end

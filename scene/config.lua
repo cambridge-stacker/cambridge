@@ -15,7 +15,7 @@ require 'libs.simple-slider'
 ---@field increase_by number?
 ---@field min number?
 ---@field max number?
----@field format string?
+---@field format string|function?
 ---@field sound_effect_name string?
 ---@field setter function?
 ---@field type "slider"|"options"|"number"
@@ -24,7 +24,7 @@ local config_option
 ---@type settings_config_option[]
 ConfigScene.options = {
 	-- Option types: slider, options, number
-	-- Format if type is options:	{name in config, displayed name, type, description, options}
+	-- Format if type is options:	{name in config, displayed name, type, description, default, options}
 	-- Format if otherwise:      	{name in config, displayed name, type, description, default, min, max, increase by, string format, sound effect name, setter function}
 }
 
@@ -152,7 +152,13 @@ function ConfigScene:drawNumber(idx, option)
 	local pos_x = 90 + self.options_width
 	local width = 510 - self.options_width
 	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.printf(string.format(option.format,self.sliders[option.config_name]:getValue()), pos_x, self.option_pos_y[idx], width, "center")
+	local formatted_string = option
+	if type(option.format) == "function" then
+		formatted_string = option.format(config[self.config_type][option.config_name])
+	elseif type(option.format) == "string" then
+		formatted_string = string.format(option.format, config[self.config_type][option.config_name])
+	end
+	love.graphics.printf(formatted_string, pos_x, self.option_pos_y[idx], width, "center")
 end
 
 function ConfigScene:drawOptions(idx, option)

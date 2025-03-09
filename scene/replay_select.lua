@@ -12,9 +12,7 @@ local current_replay = 1
 local loading_replays
 
 function ReplaySelectScene:new()
-	-- fully reload custom modules
-	unloadModules()
-	initModules()
+	-- fully refresh custom modules
 
 	self.safety_frames = 0
 	self.frames_since_error = 0
@@ -32,6 +30,8 @@ function ReplaySelectScene:new()
 		})
 		return
 	end
+	unloadModules()
+	initModules()
 	self.display_error = false
 	if #replays == 0 then
 		self.display_warning = true
@@ -52,41 +52,6 @@ function ReplaySelectScene:new()
 		state = "Choosing a replay",
 		largeImageKey = "ingame-000"
 	})
-end
-
-function insertReplay(replay)
-	for key, value in pairs(replay) do
-		replay[key] = toFormattedValue(value)
-	end
-	if replay.highscore_data then
-		for key, value in pairs(replay.highscore_data) do
-			replay.highscore_data[key] = toFormattedValue(value)
-		end
-	end
-	local mode_name = replay.mode
-	replays[#replays+1] = replay
-	if dict_ref[mode_name] ~= nil and mode_name ~= "znil" then
-		table.insert(replay_tree[dict_ref[mode_name] ], #replays)
-	end
-	local branch_index = 0
-	for index, value in ipairs(replay_tree) do
-		if value.name == "All" then
-			branch_index = index
-			break
-		end
-	end
-	table.insert(replay_tree[branch_index], #replays)
-end
-function sortReplays()
-	if not replay_tree then return end
-	local function padnum(d) return ("%03d%s"):format(#d, d) end
-	table.sort(replay_tree, function(a,b)
-	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
-	for key, submenu in pairs(replay_tree) do
-		table.sort(submenu, function(a, b)
-			return replays[a]["timestamp"] > replays[b]["timestamp"]
-		end)
-	end
 end
 
 function ReplaySelectScene:update()
@@ -115,14 +80,7 @@ function ReplaySelectScene:update()
 			love.thread.getChannel( 'loaded_replays' ):pop()
 			loaded_replays = true
 			loading_replays = false
-			local function padnum(d) return ("%03d%s"):format(#d, d) end
-			table.sort(replay_tree, function(a,b)
-			return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
-			for key, submenu in pairs(replay_tree) do
-				table.sort(submenu, function(a, b)
-					return replays[a]["timestamp"] > replays[b]["timestamp"]
-				end)
-			end
+			sortReplays()
 			scene = ReplaySelectScene()
 		end
 		return -- It's there to avoid input response when loading.
@@ -200,6 +158,11 @@ function ReplaySelectScene:render()
 		love.graphics.print("SELECT MODE TO REPLAY", 40, 35)
 	end
 
+	if self.refresh_time_remaining and self.refresh_time_remaining > 0 then
+		love.graphics.setColor(1, 1, 1, self.refresh_time_remaining / 60)
+		love.graphics.printf("Replay tree refreshed!", font_3x5_2, 0, 10, 640, "center")
+		self.refresh_time_remaining = self.refresh_time_remaining - 1
+	end
 	if self.display_warning then
 		love.graphics.setFont(font_3x5_3)
 		love.graphics.printf(
@@ -601,6 +564,19 @@ function ReplaySelectScene:onInputPress(e)
 		if e.y ~= 0 then
 			self:changeOption(-e.y)
 		end
+	elseif e.scancode == "lctrl" or e.scancode == "rctrl" then
+		self.ctrl_held = true
+	elseif e.scancode == "r" and self.ctrl_held then
+		unloadModules()
+		initModules()
+		refreshReplayTree()
+		self.height_offset = 0
+		self.menu_state = {
+			submenu = current_submenu,
+			replay = current_replay,
+		}
+		self.refresh_time_remaining = 90
+		playSE("ihs")
 	elseif e.input == "generic_1" and self.chosen_replay then
 		self:verifyHighscoreData()
 	elseif e.input == "menu_decide" then
