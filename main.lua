@@ -386,7 +386,7 @@ function love.draw()
 end
 
 local function onInputPress(e)
-	if scene.title == "Key Config" then
+	if scene.title == "Key Config" or scene.title == "Stick Config" then
 		scene:onInputPress(e)
 	elseif e.input == "fullscreen" then
 		config["fullscreen"] = not config["fullscreen"]
@@ -666,12 +666,7 @@ function love.joystickhat(joystick, hat, direction)
 			local char = direction:sub(i, i)
 			local _, count = last_hat_direction:gsub(char, char)
 			if count == 0 then
-				local result_inputs = {}
-				for input_type, value in pairs(config.input.joysticks[joystick:getName()]) do
-					if "hat-"..hat.."-"..char == value then
-						table.insert(result_inputs, input_type)
-					end
-				end
+				local result_inputs = multipleInputs(config.input.joysticks[joystick:getName()], "hat-"..hat.."-"..char)
 				for _, input in pairs(result_inputs) do
 					onInputPress({input=input, type="joyhat", name=joystick:getName(), hat=hat, direction=char})
 				end
