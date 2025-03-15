@@ -21,7 +21,7 @@ local configurable_inputs = {
 }
 
 local input_naming = {
-	menu_decide = "Menu Decision",
+	menu_decide = "Menu Decide",
 	menu_back = "Menu Back",
 	left = "Move Left",
 	right = "Move Right",
@@ -37,8 +37,8 @@ local input_naming = {
 }
 
 local input_description = {
-	menu_decide = "Select menu.",
-	menu_back = "Go back by pressing a key.",
+	menu_decide = "Press to select menu",
+	menu_back = "Press to go back",
 	left = "Move a piece to the left",
 	right = "Move a piece to the right",
 	up = "Hard/Sonic Drop a piece",
@@ -91,11 +91,16 @@ local function newSetInputs()
 	return set_inputs
 end
 
+local null_joystick_name = ""
+
 function KeyConfigScene:new()
 	assert(require "tetris.modes.marathon_a3", "Missing mode: marathon_a3. It's required.")
 	assert(require "tetris.rulesets.standard", "Missing ruleset: standard. It's required.")
 	self.input_state = 1
 	self.visual_input_state = 1
+
+	self.axis_timer = 0
+	self.joystick_name = null_joystick_name
 
 	self.set_inputs = newSetInputs()
 	self.new_input = {}
@@ -147,8 +152,16 @@ function KeyConfigScene:render()
 
 	love.graphics.setColor(1, 1, 1)
 
-	love.graphics.printf(self.visual_input_state > #configurable_inputs and "You've now configured." or self.failed_input_assignment_time > 0 and "Inaccessible key." or input_description[configurable_inputs[self.visual_input_state]],
+	love.graphics.printf(self.visual_input_state > #configurable_inputs and "You've now configured." or self.failed_input_assignment_time > 0 and "Binding conflict, press something else." or input_description[configurable_inputs[self.visual_input_state]],
 	80, 200, 480, "center", 0, 1, math.min(1, math.abs(self.transition_time)))
+	love.graphics.setFont(font_3x5_2)
+	if self.input_mode == "key" then
+		love.graphics.printf("Input mode: Keyboard",
+		0, 440, 635, "right")
+	elseif self.input_mode == "joy" then
+		love.graphics.printf("Input mode: Controller\nName: "..self.joystick_name,
+		0, 420, 635, "right")
+	end
 end
 
 function KeyConfigScene:formatKey(key)
@@ -174,6 +187,26 @@ function KeyConfigScene:rebindKey(key)
 	return true
 end
 
+function KeyConfigScene:rebindStick(binding)
+	local input_type = configurable_inputs[self.input_state]
+	if binding == nil then
+		self.new_input[input_type] = nil
+		self.set_inputs[input_type] = "erased"
+		return true
+	end
+	local is_invalid, existing_bind = self:mutexCheck(input_type, binding)
+	if is_invalid then
+		self.set_inputs[input_type] = ("<%s conflicts with %s>"):format(self.formatBinding(binding), input_naming[existing_bind])
+		self.error_time = buffer_sounds.error[1]:getDuration("seconds") or 0.5
+		return false
+	end
+	self.new_input[input_type] = binding
+	if input_type == "left" or input_type == "right" or input_type == "up" or input_type == "down" then
+		self.new_input["menu_"..input_type] = binding
+	end
+	return true
+end
+
 function KeyConfigScene:refreshInputStates()
 	for input_name, key in pairs(self.new_input) do
 		self.set_inputs[input_name] = self:formatKey(key)
@@ -184,16 +217,30 @@ function KeyConfigScene:onInputPress(e)
 		return
 	end
 	self.safety_frames = 2
-	if e.type == "key" then
-		-- function keys, and tab are reserved and can't be remapped
-		if self.input_state > #configurable_inputs then
-			if e.scancode == "return" then
-				if not config.input then config.input = {} end
-				config.input.keys = self.new_input
-				inputVersioning()
-				saveConfig()
-				scene = TitleScene.menu_screens[1]()
+	if not self.input_mode then
+		if e.type == "key" then
+			self.input_mode = "key"
+		end
+		if string.sub(e.type, 1, 3) == "joy" then
+			self.input_mode = "joy"
+			if self.joystick_name == null_joystick_name then
+				self.joystick_name = e.name
+				config.input.joysticks = config.input.joysticks or {}
+				if config.input.joysticks[e.name] == nil then
+					config.input.joysticks[e.name] = {}
+				end
+				self.new_input = config.input.joysticks[e.name]
 			end
+		end
+	end
+	if e.type == "key" and self.input_mode == "key" then
+		-- tab is reserved and can't be remapped
+		if self.input_state > #configurable_inputs then
+			if not config.input then config.input = {} end
+			config.input.keys = self.new_input
+			inputVersioning()
+			saveConfig()
+			scene = self.nested_scene
 		elseif e.scancode == "tab" then
 			self.failed_input_assignment_time = 120
 			playSE("error")
@@ -209,6 +256,7 @@ function KeyConfigScene:onInputPress(e)
 				self.transitioned = false
 				self.transition_time = -3
 				self.nested_scene = TitleScene()
+				playSE("menu_cancel")
 			end
 			if self.input_state > 2 and self.input_state ~= 11 and self.input_state ~= 13 then
 				local input_copy = copy(e)
@@ -228,6 +276,80 @@ function KeyConfigScene:onInputPress(e)
 		else
 			self.failed_input_assignment_time = 120
 			playSE("error")
+		end
+	elseif string.sub(e.type, 1, 3) == "joy" and self.input_mode == "joy" then
+		if self.input_state <= #configurable_inputs and self.joystick_name == e.name then
+			self.safety_frames = 2
+			local is_bound = false
+			if e.type == "joybutton" then
+				local input_result = "buttons-" .. e.button
+				if self:rebindStick(input_result) then
+					is_bound = true
+					self.rebinding = false
+				else
+					self.failed_input_assignment_time = 120
+					playSE("error")
+				end
+			elseif e.type == "joyaxis" then
+				if (e.axis ~= self.last_axis or self.axis_timer > 30) and math.abs(e.value) >= 1 then
+
+					local input_result = "axes-" .. e.axis .. "-" .. (e.value >= 1 and "positive" or "negative")
+					if self:rebindStick(input_result) then
+						self.rebinding = false
+						is_bound = true
+					else
+						self.failed_input_assignment_time = 120
+						playSE("error")
+					end
+					self.last_axis = e.axis
+					self.axis_timer = 0
+				end
+			elseif e.type == "joyhat" then
+				if e.direction ~= "c" then
+					local input_result = "hat-" .. e.hat .. "-" .. e.direction
+					if self:rebindStick(input_result) then
+						self.rebinding = false
+						is_bound = true
+					else
+						self.failed_input_assignment_time = 120
+						playSE("error")
+					end
+				end
+			end
+			if is_bound then
+				self.transition_time = -1
+				if self.input_state == 1 then
+					self.nested_scene = TitleScene.menu_screens[1]()
+					playSE("main_decide")
+				end
+				if self.input_state == 2 then
+					self.transitioned = false
+					self.transition_time = -3
+					self.nested_scene = TitleScene()
+					playSE("menu_cancel")
+				end
+				if self.input_state > 2 and self.input_state ~= 11 and self.input_state ~= 13 then
+					local input_copy = copy(e)
+					input_copy.input = configurable_inputs[self.input_state]
+					self.nested_scene:onInputPress(input_copy)
+				elseif self.input_state == 11 then
+					self.nested_scene = GameScene(require("tetris.modes.marathon_a3"), require("tetris.rulesets.standard"), {})
+				elseif self.input_state == 13 then
+					local keys = self.new_input
+					keys.menu_left = keys.left
+					keys.menu_right = keys.right
+					keys.menu_up = keys.up
+					keys.menu_down = keys.down
+					self.nested_scene = TitleScene.menu_screens[1]()
+				end
+				self.input_state = self.input_state + 1
+			end
+		elseif self.joystick_name == e.name then
+			if not config.input then config.input = {} end
+			config.input.keys = {menu_decide = "return", menu_back = "escape", up = "up", down = "down", left = "left", right = "right"}
+			inputVersioning()
+			saveConfig()
+			scene = self.nested_scene
 		end
 	end
 end
