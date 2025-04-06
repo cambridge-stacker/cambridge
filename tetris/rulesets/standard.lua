@@ -5,6 +5,7 @@ local SRS = Ruleset:extend()
 
 SRS.name = "Guideline SRS"
 SRS.hash = "Standard"
+SRS.tagline = "The pure, by-the-book SRS you know and love!"
 SRS.softdrop_lock = false
 SRS.harddrop_lock = true
 
