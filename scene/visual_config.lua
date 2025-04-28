@@ -60,6 +60,14 @@ ConfigScene.options = {
 		default = 1,
 	},
 	{
+		config_name = "offset_obscured",
+		display_name = "On Queue Obscurity",
+		options = {"No offset", "Offset"},
+		description = "This option offsets the next piece position when the current piece would obscure the next piece. This is disabled on side next queue position. This checks piece's Y coordinate on default implementation.",
+		type = "options",
+		default = 1,
+	},
+	{
 		config_name = "mode_select_type",
 		display_name = "Mode Select Type",
 		options = {"Default", "Oshi's idea"},
