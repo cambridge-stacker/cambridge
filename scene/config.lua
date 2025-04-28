@@ -178,7 +178,12 @@ function ConfigScene:changeValue(by)
 		local x, y = getScaledDimensions(love.mouse.getPosition())
 		sld:update(x, y)
 	elseif option.type == "options" then
-		config[self.config_type][option.config_name] = Mod1(config[self.config_type][option.config_name]+by, #option.options)
+		local new_value = Mod1(config[self.config_type][option.config_name]+by, #option.options)
+		if option.setter then
+			option.setter(new_value)
+		else
+			config[self.config_type][option.config_name] = new_value
+		end
 	else
 		local new_value = Mod1(config[self.config_type][option.config_name] + by-option.min, option.max - option.min) + option.min
 		if option.setter then
