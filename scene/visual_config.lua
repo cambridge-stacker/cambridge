@@ -60,6 +60,17 @@ ConfigScene.options = {
 		default = 1,
 	},
 	{
+		config_name = "next_position",
+		display_name = "Next Position",
+		options = {"Top", "Side"},
+		setter = function (a)
+			config.side_next = a == 2
+			config.visualsettings.next_position = a
+		end,
+		type = "options",
+		default = 1,
+	},
+	{
 		config_name = "offset_obscured",
 		display_name = "On Queue Obscurity",
 		options = {"No offset", "Offset"},

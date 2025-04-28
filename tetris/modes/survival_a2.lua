@@ -154,7 +154,6 @@ function SurvivalA2Game:drawScoringInfo()
 	)
 	
 	love.graphics.setFont(font_3x5_2)
-	love.graphics.printf("NEXT", 64, 40, 40, "left")
 	if self:getLetterGrade() ~= "" then love.graphics.printf("GRADE", text_x, 120, 40, "left") end
 	love.graphics.printf("SCORE", text_x, 200, 40, "left")
 	love.graphics.printf("LEVEL", text_x, 320, 40, "left")

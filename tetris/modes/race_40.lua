@@ -118,7 +118,6 @@ function Race40Game:drawScoringInfo()
 	local text_x = config["side_next"] and 320 or 240
 
 	love.graphics.setFont(font_3x5_2)
-	love.graphics.printf("NEXT", 64, 40, 40, "left")
 	love.graphics.printf("LINES", text_x, 320, 40, "left")
 	love.graphics.printf("line/min", text_x, 160, 80, "left")
 	love.graphics.printf("piece/sec", text_x, 220, 80, "left")
