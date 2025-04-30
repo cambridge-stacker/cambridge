@@ -9,7 +9,7 @@ local GLOBAL_STATE = "INIT"
 ---@type function
 local scaleToResolution
 
-function love.load()
+function love.load(args)
 	love.graphics.setDefaultFilter("linear", "nearest")
 	require "load.fonts"
 	love.graphics.setFont(font_3x5_4)
@@ -33,6 +33,10 @@ function love.load()
 	require "funcs"
 	require "scene"
 	
+	if table.contains(args, "--tempIdentity") then
+		love.filesystem.setIdentity(love.filesystem.getIdentity() .. "-temp")
+		saveConfig()
+	end
 	--config["side_next"] = false
 	--config["reverse_rotate"] = true
 	--config["das_last_key"] = false
@@ -365,6 +369,10 @@ function love.draw()
 			local lx, ly = getScaledDimensions(love.mouse.getPosition())
 			drawT48Cursor(lx, ly, 9 - mouse_idle * 4)
 		end
+	end
+
+	if string.sub(love.filesystem.getIdentity(), -5) == "-temp" then
+		love.graphics.printf("TEMPORARY IDENTITY MODE", font_8x11_small, 0, 0, 640, "center")
 	end
 	
 	love.graphics.pop()
@@ -844,6 +852,18 @@ function getTargetFPS()
 	return TARGET_FPS
 end
 
+local function recursivelyDelete( item )
+	if love.filesystem.getInfo( item , "directory" ) then
+		for _, child in ipairs( love.filesystem.getDirectoryItems( item )) do
+			recursivelyDelete( item .. '/' .. child )
+			love.filesystem.remove( item .. '/' .. child )
+		end
+	elseif love.filesystem.getInfo( item ) then
+		love.filesystem.remove( item )
+	end
+	love.filesystem.remove( item )
+end
+
 -- custom run function; optimizes game by syncing draw/update calls
 function love.run()
 	if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
@@ -861,6 +881,9 @@ function love.run()
 				if name == "quit" then
 					if not love.quit or not love.quit() then
 						if disposeReplayThread then disposeReplayThread() end
+						if string.sub(love.filesystem.getIdentity(), -5) == "-temp" then
+							recursivelyDelete('')
+						end
 						return a or 0
 					end
 				end
