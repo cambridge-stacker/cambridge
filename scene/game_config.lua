@@ -76,6 +76,17 @@ LICP: Last Input Controlled Priority. First button is inactive unless opposing/l
 		default = 1,
 	},
 	{
+		config_name = "next_position",
+		display_name = "Next Position",
+		options = {"Top", "Side"},
+		setter = function (a)
+			config.side_next = a == 2
+			config.gamesettings.next_position = a
+		end,
+		type = "options",
+		default = 1,
+	},
+	{
 		config_name = "replay_name",
 		display_name = "Replay file name",
 		options = {"Full", "Date"},
