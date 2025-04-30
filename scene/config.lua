@@ -214,7 +214,12 @@ function ConfigScene:onInputPress(e)
 					if cursorHoverArea(initial_pos_x + 110 * j, self.option_pos_y[i], 90, 20) then
 						self.main_menu_state = i
 						playSE(option.sound_effect_name or "cursor_lr")
-						config[self.config_type][option.config_name] = Mod1(j, #option.options)
+						local new_value = Mod1(j, #option.options)
+						if option.setter then
+							option.setter(new_value)
+						else
+							config[self.config_type][option.config_name] = new_value
+						end
 					end
 				end
 			end
