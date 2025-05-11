@@ -68,7 +68,7 @@ function recursivelyTagModules(init, tbl, tag_tbl)
 	--#endregion
 
 	for key, value in ipairs(sorted_tags) do
-		table.insert(init, value)
+		table.insert(init, key, value)
 	end
 end
 
