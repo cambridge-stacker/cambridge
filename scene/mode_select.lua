@@ -8,14 +8,20 @@ current_folder_selections = {
 	mode = {},
 	ruleset = {},
 }
+current_tags = {
+	mode = {},
+	ruleset = {},
+}
 
 function ModeSelectScene:new()
 	-- reload custom modules
 	initModules()
-	self.game_mode_folder = game_modes
+	self.game_mode_tags = self:loadTags(game_modes, "mode")
 	self.game_mode_selections = {game_modes}
-	self.ruleset_folder = rulesets
+	self.game_mode_folder = self:getFromSelectedTags(self.game_mode_tags, "mode")
+	self.ruleset_tags = self:loadTags(rulesets, "ruleset")
 	self.ruleset_folder_selections = {rulesets}
+	self.ruleset_folder = self:getFromSelectedTags(self.ruleset_tags, "ruleset")
 	self.menu_state = {}
 	if #self.game_mode_folder == 0 or #self.ruleset_folder == 0 then
 		self.display_warning = true
@@ -62,6 +68,18 @@ function ModeSelectScene:new()
 		state = "Choosing a mode",
 		largeImageKey = "ingame-000"
 	})
+end
+
+function ModeSelectScene:loadTags(folder, tag_type)
+	local tags = {}
+	for key, value in ipairs(folder) do
+		for k2, v2 in pairs(current_tags[tag_type]) do
+			if (table.contains(value, v2.name) and value.is_tag) then
+				tags[k2] = value
+			end
+		end
+	end
+	return tags
 end
 
 local menu_DAS_hold = {["up"] = 0, ["down"] = 0, ["left"] = 0, ["right"] = 0}
@@ -223,8 +241,6 @@ function ModeSelectScene:render()
 			mode_path_name = mode_path_name..(value.name or "modes").." > "
 		end
 		love.graphics.printf(
-			self.game_mode_folder.is_tag and
-			"Tag: ".. self.game_mode_folder.name or
 			"Path: "..mode_path_name:sub(1, -3),
 			 40, 220 - self.menu_mode_height, 200, "left")
 	end
@@ -234,8 +250,6 @@ function ModeSelectScene:render()
 			ruleset_path_name = ruleset_path_name..(value.name or "rulesets").." > "
 		end
 		love.graphics.printf(
-			self.ruleset_folder.is_tag and
-			"Tag: " ..self.ruleset_folder.name or
 			"Path: "..ruleset_path_name:sub(1, -3),
 			 360, 220 - self.menu_ruleset_height, 200, "left")
 	end
@@ -272,6 +286,9 @@ function ModeSelectScene:render()
 				20))
 			drawWrappingText(mode.name,
 			40, (260 - self.menu_mode_height) + 20 * idx, 200, "left")
+			if table.contains(self.game_mode_tags, mode) then
+				love.graphics.rectangle("fill", 20, (259 - self.menu_mode_height) + 20 * idx, 10, 20)
+			end
 		end
 	end
 	for idx, ruleset in ipairs(self.ruleset_folder) do
@@ -298,6 +315,9 @@ function ModeSelectScene:render()
 			)
 			drawWrappingText(ruleset.name,
 			360, (260 - self.menu_ruleset_height) + 20 * idx, 160, "left")
+			if table.contains(self.ruleset_tags, ruleset) then
+				love.graphics.rectangle("fill", 340, (259 - self.menu_ruleset_height) + 20 * idx, 10, 20)
+			end
 		end
 	end
 	if self.game_mode_folder[self.menu_state.mode]
@@ -375,7 +395,36 @@ function ModeSelectScene:injectSecretSequenceOnMatch(mode)
 	end
 end
 
+function ModeSelectScene:handleTagSelection(select_type)
+	local selected_tag = false
+	local tag_select_type
+	if self.ruleset_folder[self.menu_state.ruleset].is_tag and select_type == "ruleset" then
+		tag_select_type = self.handleTagFolder(self.ruleset_folder, self.ruleset_tags, self.menu_state.ruleset)
+		self.ruleset_folder = self:getFromSelectedTags(self.ruleset_tags, "ruleset")
+		selected_tag = true
+	elseif self.game_mode_folder[self.menu_state.mode].is_tag then
+		tag_select_type = self.handleTagFolder(self.game_mode_folder, self.game_mode_tags, self.menu_state.mode)
+		self.game_mode_folder = self:getFromSelectedTags(self.game_mode_tags, "mode")
+		selected_tag = true
+	elseif self.ruleset_folder[self.menu_state.ruleset].is_tag and select_type == "mode" then
+		tag_select_type = self.handleTagFolder(self.ruleset_folder, self.ruleset_tags, self.menu_state.ruleset)
+		self.ruleset_folder = self:getFromSelectedTags(self.ruleset_tags, "ruleset")
+		selected_tag = true
+	end
+	if selected_tag then
+		if tag_select_type then
+			playSE("main_decide")
+		else
+			playSE("menu_cancel")
+		end
+	end
+	return selected_tag
+end
+
 function ModeSelectScene:indirectStartMode()
+	if self:handleTagSelection(self.menu_state.select) then
+		return
+	end
 	if self.game_mode_folder[self.menu_state.mode].is_directory then
 		playSE("main_decide")
 		self:menuGoForward("mode")
@@ -399,9 +448,11 @@ end
 function ModeSelectScene:startMode()
 	current_mode = self.menu_state.mode
 	current_ruleset = self.menu_state.ruleset
+	current_tags = {mode = self.game_mode_tags, ruleset = self.ruleset_tags}
 	config.current_mode = current_mode
 	config.current_ruleset = current_ruleset
 	config.current_folder_selections = current_folder_selections
+	config.current_tags = current_tags
 	saveConfig()
 	self:injectSecretSequenceOnMatch(self.game_mode_folder[self.menu_state.mode])
 	scene = GameScene(
@@ -425,6 +476,47 @@ function ModeSelectScene:menuGoBack(menu_type)
 	end
 end
 
+function ModeSelectScene.handleTagFolder(folder, tags, state)
+	local toggle = false
+	if folder[state].is_tag then
+		if tags[state] == nil then
+			tags[state] = folder[state]
+			toggle = true
+		else
+			tags[state] = nil
+		end
+	end
+	return toggle
+end
+
+
+function ModeSelectScene:getFromSelectedTags(selected_tags, select_type)
+	local root_folder = game_modes
+	if select_type == "ruleset" then
+		root_folder = rulesets
+	end
+	if next(selected_tags) == nil then
+		return select_type == "ruleset" and self.ruleset_folder_selections[#self.ruleset_folder_selections] or self.game_mode_selections[#self.game_mode_selections]
+	end
+	local result_folder = {}
+	for k, v in pairs(selected_tags) do
+		for k2, v2 in pairs(v) do
+			if not table.contains(result_folder, v2) and type(v2) == "table" then
+				table.insert(result_folder, v2)
+			end
+		end
+	end
+	local function padnum(d) return ("%03d%s"):format(#d, d) end
+	table.sort(result_folder, function(a,b)
+	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
+	for index, value in ipairs(root_folder) do
+		if value.is_tag and not value.tags then
+			table.insert(result_folder, index, value)
+		end
+	end
+	return result_folder
+end
+
 function ModeSelectScene:menuGoForward(menu_type, is_load)
 	if not is_load then
 		table.insert(current_folder_selections[menu_type], self.menu_state[menu_type])
@@ -446,9 +538,11 @@ end
 function ModeSelectScene:exitScene()
 	current_mode = self.menu_state.mode
 	current_ruleset = self.menu_state.ruleset
+	current_tags = {mode = self.game_mode_tags, ruleset = self.ruleset_tags}
 	config.current_mode = current_mode
 	config.current_ruleset = current_ruleset
 	config.current_folder_selections = current_folder_selections
+	config.current_tags = current_tags
 	scene = TitleScene()
 end
 
@@ -538,14 +632,11 @@ function ModeSelectScene:onInputPress(e)
 		end
 		self.auto_menu_offset = math.floor((e.y - 260)/20)
 		if self.auto_menu_offset == 0 and self.auto_menu_state == "mode" then
-			if self.game_mode_folder[self.menu_state.mode].is_directory then
-				playSE("main_decide")
-				self:menuGoForward("mode")
-				self.menu_state.mode = 1
-				return
-			end
 			self:indirectStartMode()
 		elseif self.ruleset_folder[self.menu_state.ruleset].is_directory and e.x > 320 and self.auto_menu_offset == 0 then
+			if self:handleTagSelection("ruleset") then
+				return
+			end
 			playSE("main_decide")
 			self:menuGoForward("ruleset")
 			self.menu_state.ruleset = 1
@@ -562,17 +653,6 @@ function ModeSelectScene:onInputPress(e)
 			self:changeOption(-e.y)
 		end
 	elseif e.input == "menu_decide" then
-		if self.menu_state.select == "mode" and self.game_mode_folder[self.menu_state.mode].is_directory then
-			playSE("main_decide")
-			self:menuGoForward("mode")
-			self.menu_state.mode = 1
-			return
-		elseif self.menu_state.select == "ruleset" and self.ruleset_folder[self.menu_state.ruleset].is_directory then
-			playSE("main_decide")
-			self:menuGoForward("ruleset")
-			self.menu_state.ruleset = 1
-			return
-		end
 		self:indirectStartMode()
 	elseif e.input == "menu_up" then
 		self.das_up = true
