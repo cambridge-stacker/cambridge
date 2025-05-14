@@ -368,6 +368,8 @@ function ModeSelectScene:render()
 	drawFadingTextNearHeader(self.input_timers["reload"], "Keep holding Generic 1 to reload modules...", 60)
 	drawFadingTextNearHeader(self.input_timers["secret_sequencing"], "Keep holding Generic 2 to input secret sequences...", 40)
 	drawFadingTextNearHeader(self.input_timers["stop_sequencing"], "Keep holding to stop sequencing...", 40)
+	drawFadingTextNearHeader(60 - (self.text_tag_deselect_timer or 0), "You've deselected all tags.", 60)
+	if self.text_tag_deselect_timer then self.text_tag_deselect_timer = self.text_tag_deselect_timer - 1 end
 	love.graphics.setColor(1, 1, 1, 1)
 end
 
@@ -489,11 +491,12 @@ end
 function ModeSelectScene.handleTagFolder(folder, tags, state)
 	local toggle = false
 	if folder[state].is_tag then
-		if tags[state] == nil then
-			tags[state] = folder[state]
+		local name = folder[state].name
+		if tags[name] == nil then
+			tags[name] = folder[state]
 			toggle = true
 		else
-			tags[state] = nil
+			tags[name] = nil
 		end
 	end
 	return toggle
@@ -702,6 +705,13 @@ function ModeSelectScene:onInputPress(e)
 			self.input_timers["reload"] = 60
 		elseif e.input == "generic_2" then
 			self.input_timers["secret_sequencing"] = 60
+		elseif e.input == "generic_3" then
+			self.game_mode_tags = {}
+			self.ruleset_tags = {}
+			self.game_mode_folder = self.game_mode_selections[#self.game_mode_selections]
+			self.ruleset_folder = self.ruleset_folder_selections[#self.ruleset_folder_selections]
+			playSE("ihs")
+			self.text_tag_deselect_timer = 60
 		end
 	end
 end
