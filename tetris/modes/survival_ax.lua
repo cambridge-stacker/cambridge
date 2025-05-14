@@ -10,7 +10,7 @@ local SurvivalAXGame = GameMode:extend()
 SurvivalAXGame.name = "Survival AX"
 SurvivalAXGame.hash = "SurvivalAX"
 SurvivalAXGame.tagline = "Can you clear the time hurdles when the game goes this fast?"
-
+SurvivalAXGame.tags = {"Cambridge"}
 
 function SurvivalAXGame:new()
 	SurvivalAXGame.super:new()

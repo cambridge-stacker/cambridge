@@ -11,7 +11,7 @@ local MarathonA1Game = GameMode:extend()
 MarathonA1Game.name = "Marathon A1"
 MarathonA1Game.hash = "MarathonA1"
 MarathonA1Game.tagline = "Can you score enough points to reach the title of Grand Master?"
-
+MarathonA1Game.tags = {"A1"}
 
 
 function MarathonA1Game:new()

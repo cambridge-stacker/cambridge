@@ -5,6 +5,7 @@ local PhantomManiaNGame = PhantomManiaGame:extend()
 PhantomManiaNGame.name = "Phantom Mania N"
 PhantomManiaNGame.hash = "PhantomManiaN"
 PhantomManiaNGame.tagline = "The old mode from Nullpomino, for Ti-ARS and SRS support."
+PhantomManiaNGame.tags = {"Cambridge"}
 
 function PhantomManiaNGame:new()
 	PhantomManiaNGame.super:new()

@@ -10,7 +10,7 @@ local MarathonA3Game = GameMode:extend()
 MarathonA3Game.name = "Marathon A3"
 MarathonA3Game.hash = "MarathonA3"
 MarathonA3Game.tagline = "The game gets faster way more quickly! Can you get all the Section COOLs?"
-
+MarathonA3Game.tags = {"A3"}
 
 
 
