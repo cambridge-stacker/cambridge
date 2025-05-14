@@ -357,17 +357,17 @@ function ModeSelectScene:render()
 		love.graphics.setColor(1, 1, 1, 1)
 		love.graphics.printf("Secret sequence: " .. self:getSequenceShorthand(), 10, -95 + sequencing_start_frames * 5, 620, "left")
 	end
-	local function drawStateOppositePositionFromTagline(timer, string, decay_time)
+	local function drawFadingTextNearHeader(timer, string, decay_time)
 		if timer then
 			love.graphics.setColor(1, 1, 1, 1 - timer / decay_time)
 			love.graphics.printf(string, 0, 10, 640, "center")
 		end
 	end
-	drawStateOppositePositionFromTagline(60 - (self.reload_time_remaining or 0), "Modules reloaded!", 60)
+	drawFadingTextNearHeader(60 - (self.reload_time_remaining or 0), "Modules reloaded!", 60)
 	if self.reload_time_remaining then self.reload_time_remaining = self.reload_time_remaining - 1 end
-	drawStateOppositePositionFromTagline(self.input_timers["reload"], "Keep holding Generic 1 to reload modules...", 60)
-	drawStateOppositePositionFromTagline(self.input_timers["secret_sequencing"], "Keep holding Generic 2 to input secret sequences...", 40)
-	drawStateOppositePositionFromTagline(self.input_timers["stop_sequencing"], "Keep holding to stop sequencing...", 40)
+	drawFadingTextNearHeader(self.input_timers["reload"], "Keep holding Generic 1 to reload modules...", 60)
+	drawFadingTextNearHeader(self.input_timers["secret_sequencing"], "Keep holding Generic 2 to input secret sequences...", 40)
+	drawFadingTextNearHeader(self.input_timers["stop_sequencing"], "Keep holding to stop sequencing...", 40)
 	love.graphics.setColor(1, 1, 1, 1)
 end
 
