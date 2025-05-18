@@ -111,7 +111,6 @@ function History6Rolls35PoolRandomizer:UpdateHistogram(shape)
 			self.droughts[v] = self.droughts[v] + 1
 		end
 	end
-	return true
 end
 
 function History6Rolls35PoolRandomizer:inHistory(piece)
