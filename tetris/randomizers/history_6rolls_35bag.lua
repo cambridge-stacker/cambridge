@@ -47,7 +47,7 @@ function History6Rolls35PoolRandomizer:generatePiece()
 		for i = 1, 6 do			 
 			index = love.math.random(#self.pool)
 			x = self.pool[index]
-			if not self:inHistory(x)
+			if not self:inHistory(x) then
 				break
 			end
 			didrerool=true -- checked leater
