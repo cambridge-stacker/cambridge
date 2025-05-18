@@ -14,7 +14,7 @@ function History6Rolls35PoolRandomizer:initialize()
 		"Z", "Z", "Z", "Z", "Z",
 		"O", "O", "O", "O", "O",
 	}
-	self.droughts = {  -- don't ask me why TI does this, but it does. :)
+	self.droughts = {  
 		I = 4,
 		T = 4,
 		L = 4,
@@ -40,7 +40,7 @@ function History6Rolls35PoolRandomizer:generatePiece()
 	didfirst = false -- did we just do the first piece
 	if self.first then
 		index = love.math.random(20) -- hack to pick non S Z O first try every time.
-		x = self.pool[index]	     -- not actually how thwe real thing works, but close enough.
+		x = self.pool[index]	     -- not actually how the real thing works, but close enough.
 		self.first = false
 		didfirst = true
 	else
@@ -50,31 +50,31 @@ function History6Rolls35PoolRandomizer:generatePiece()
 			if not self:inHistory(x) then
 				break
 			end
-			didrerool=true -- checked leater
-			self.pool[index]=self.GetMostDroughtedPiece()   -- update the bag
+			didrerool=true -- checked later
+			self.pool[index]=self:GetMostDroughtedPiece()   -- update the bag
 			index = love.math.random(#self.pool)		-- reroll in case we are about to fall out
 			x = self.pool[index]				-- yes, this burns an extra number from the rng most of the time.
 		end
 	end
-	highscore=self.CheckHighDroughtCount()  -- check drought count before updating histogram so we can implement the bug
-	self.UpdateHistory(x)			--  update the history even on first piece
-	self.UpdateHistogram(x)			-- update the histogram even on first piece
+	highscore=self:CheckHighDroughtCount()  -- check drought count before updating histogram so we can implement the bug
+	self:UpdateHistory(x)			--  update the history even on first piece
+	self:UpdateHistogram(x)			-- update the histogram even on first piece
 	-- we only update the bag sometimes, due to a bug in TI
 	if didfirst then
 		return x -- don't update for first piece, skip the other two tests. this is not the bug, as the first piece was not drawn from the bag.
 	end
 	-- we should always update the bag here, but we only update it in two cases.
-	if highscore < self.CheckHighDroughtCount() then
-		self.pool[index]=self.GetMostDroughtedPiece()  -- do update if the high drought count went up
+	if highscore < self:CheckHighDroughtCount() then
+		self.pool[index]=self:GetMostDroughtedPiece()  -- do update if the high drought count went up
 	end
 	if not didreroll then
-		self.pool[index]=self.GetMostDroughtedPiece() -- do update if there was no reroll.
+		self.pool[index]=self:GetMostDroughtedPiece() -- do update if there was no reroll.
 	end
 	-- if neither happened, the bag does NOT get updated now. to remove the bug, comment ouut both ifs and one of the updates above, so the bag always updates except for first piece
 	return x
 end
 
-function History6Rolls35PoolRandomizer:updateHistory(shape)
+function History6Rolls35PoolRandomizer:UpdateHistory(shape)
 	table.remove(self.history, 1)
 	table.insert(self.history, shape)
 end
@@ -92,7 +92,7 @@ function History6Rolls35PoolRandomizer:CheckHighDroughtCount()
 end
 function History6Rolls35PoolRandomizer:GetMostDroughtedPiece()
 
-	local highdrought
+	local highdrought 
 	local highdroughtcount = 0
 	for k, v in pairs(self.piece_index) do
 			if self.droughts[v] >= highdroughtcount then
