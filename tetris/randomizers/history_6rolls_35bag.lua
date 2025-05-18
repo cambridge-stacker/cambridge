@@ -67,7 +67,7 @@ function History6Rolls35PoolRandomizer:generatePiece()
 	if highscore < self.CheckHighDroughtCount() then
 		self.pool[index]=self.GetMostDroughtedPiece()  -- do update if the high drought count went up
 	end
-	if not didreroll
+	if not didreroll then
 		self.pool[index]=self.GetMostDroughtedPiece() -- do update if there was no reroll.
 	end
 	-- if neither happened, the bag does NOT get updated now. to remove the bug, comment ouut both ifs and one of the updates above, so the bag always updates except for first piece
