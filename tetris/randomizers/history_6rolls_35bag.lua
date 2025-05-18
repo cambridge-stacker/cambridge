@@ -14,7 +14,7 @@ function History6Rolls35PoolRandomizer:initialize()
 		"Z", "Z", "Z", "Z", "Z",
 		"O", "O", "O", "O", "O",
 	}
-	self.droughts = {  -- don't ask me why TI does this, bit it does. :)
+	self.droughts = {  -- don't ask me why TI does this, but it does. :)
 		I = 4,
 		T = 4,
 		L = 4,
