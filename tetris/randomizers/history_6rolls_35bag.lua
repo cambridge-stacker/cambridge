@@ -97,7 +97,7 @@ function History6Rolls35PoolRandomizer:getMostDroughtedPiece()
 	for k, v in pairs(self.piece_index) do
 			if self.droughts[v] >= high_drought_count then
 				high_drought = v
-				high_droughtcount = self.droughts[v]
+				high_drought_count = self.droughts[v]
 			end
 	end
 	return high_drought
