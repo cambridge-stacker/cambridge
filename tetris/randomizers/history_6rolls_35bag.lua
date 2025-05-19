@@ -88,7 +88,7 @@ function History6Rolls35PoolRandomizer:checkHighDroughtCount()
 				high_drought_count = self.droughts[v]
 			end
 	end
-	return highd_rought_count
+	return high_drought_count
 end
 function History6Rolls35PoolRandomizer:getMostDroughtedPiece()
 
