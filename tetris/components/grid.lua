@@ -242,8 +242,14 @@ function Grid:clearBlock(x, y)
 end
 
 function Grid:clearBottomRows(num)
-	for i = self.height, self.height - num + 1, -1 do
-		self:clearSpecificRow(i)
+	if num <= 0 then return end
+	if num >= self.height then self:clear() return end
+	for above_row = self.height, num + 1, -1 do
+		self.grid[above_row] = self.grid[above_row - num]
+		self.grid_age[above_row] = self.grid_age[above_row - num]
+	end
+	for row = 1, num do
+		self:clearSpecificRow(row)
 	end
 end
 
