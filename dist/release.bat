@@ -18,12 +18,16 @@ copy libs\discord-rpc* dist\other\libs
 
 copy SOURCES.md dist\windows
 copy LICENSE.md dist\windows
+copy CHANGELOG.md dist\windows
 copy SOURCES.md dist\win32
 copy LICENSE.md dist\win32
+copy CHANGELOG.md dist\win32
 copy SOURCES.md dist\win_aarch64
 copy LICENSE.md dist\win_aarch64
+copy CHANGELOG.md dist\win_aarch64
 copy SOURCES.md dist\other
 copy LICENSE.md dist\other
+copy CHANGELOG.md dist\other
 
 cd dist\windows
 tar -acf ..\cambridge_windows_x64.zip cambridge.exe *.dll libs *.md
