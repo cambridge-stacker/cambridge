@@ -15,9 +15,11 @@ SurvivalA3Game.tagline = "The blocks turn black and white! Can you make it to le
 function SurvivalA3Game:new(secret_inputs)
 	SurvivalA3Game.super:new(secret_inputs)
 
-	for key, value in pairs(secret_inputs) do
-		if value == true then
-			self.secret_erasure = true
+	if type(secret_inputs) == "table" then
+		for key, value in pairs(secret_inputs) do
+			if value == true then
+				self.secret_erasure = true
+			end
 		end
 	end
 

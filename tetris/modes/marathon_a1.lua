@@ -17,12 +17,13 @@ MarathonA1Game.tagline = "Can you score enough points to reach the title of Gran
 function MarathonA1Game:new(secret_inputs)
 	MarathonA1Game.super:new(secret_inputs)
 	
-	for key, value in pairs(secret_inputs) do
-		if value == true then
-			self.secret_erasure = true
+	if type(secret_inputs) == "table" then
+		for key, value in pairs(secret_inputs) do
+			if value == true then
+				self.secret_erasure = true
+			end
 		end
 	end
-
 	self.roll_frames = 0
 	self.combo = 1
 	self.bravos = 0

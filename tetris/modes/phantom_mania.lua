@@ -14,9 +14,11 @@ PhantomManiaGame.tagline = "The blocks disappear as soon as they're locked! Can 
 function PhantomManiaGame:new(secret_inputs)
 	PhantomManiaGame.super:new(secret_inputs)
 
-	for key, value in pairs(secret_inputs) do
-		if value == true then
-			self.secret_erasure = true
+	if type(secret_inputs) == "table" then
+		for key, value in pairs(secret_inputs) do
+			if value == true then
+				self.secret_erasure = true
+			end
 		end
 	end
 

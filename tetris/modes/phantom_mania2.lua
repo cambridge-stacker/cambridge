@@ -17,9 +17,11 @@ PhantomMania2Game.tagline = "The blocks disappear even faster now! Can you make 
 function PhantomMania2Game:new(secret_inputs)
 	PhantomMania2Game.super:new(secret_inputs)
 
-	for key, value in pairs(secret_inputs) do
-		if value == true then
-			self.secret_erasure = true
+	if type(secret_inputs) == "table" then
+		for key, value in pairs(secret_inputs) do
+			if value == true then
+				self.secret_erasure = true
+			end
 		end
 	end
 
