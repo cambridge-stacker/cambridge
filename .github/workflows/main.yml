@@ -3,6 +3,9 @@ on:
   push:
     tags:
       - '*'
+permissions:
+  contents: write
+  packages: write
 jobs:
   assembly:
     if: ${{ github.event_name == 'push' }}
@@ -93,5 +96,4 @@ jobs:
       - name: "Release"
         uses: softprops/action-gh-release@v1
         with:
-          generate_release_notes: true
           files: dist/cambridge_*
