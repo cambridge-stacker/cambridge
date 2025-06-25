@@ -17,9 +17,11 @@ MarathonA2Game.tagline = "The points don't matter! Can you reach the invisible r
 function MarathonA2Game:new(secret_inputs)
 	MarathonA2Game.super:new(secret_inputs)
 
-	for key, value in pairs(secret_inputs) do
-		if value == true then
-			self.secret_erasure = true
+	if type(secret_inputs) == "table" then
+		for key, value in pairs(secret_inputs) do
+			if value == true then
+				self.secret_erasure = true
+			end
 		end
 	end
 

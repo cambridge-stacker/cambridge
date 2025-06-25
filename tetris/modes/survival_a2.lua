@@ -17,9 +17,11 @@ SurvivalA2Game.tagline = "The game starts fast and only gets faster!"
 function SurvivalA2Game:new(secret_inputs)
 	SurvivalA2Game.super:new(secret_inputs)
 
-	for key, value in pairs(secret_inputs) do
-		if value == true then
-			self.secret_erasure = true
+	if type(secret_inputs) == "table" then
+		for key, value in pairs(secret_inputs) do
+			if value == true then
+				self.secret_erasure = true
+			end
 		end
 	end
 

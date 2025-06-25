@@ -17,9 +17,11 @@ MarathonA3Game.tagline = "The game gets faster way more quickly! Can you get all
 function MarathonA3Game:new(secret_inputs)
 	MarathonA3Game.super:new(secret_inputs)
 
-	for key, value in pairs(secret_inputs) do
-		if value == true then
-			self.secret_erasure = true
+	if type(secret_inputs) == "table" then
+		for key, value in pairs(secret_inputs) do
+			if value == true then
+				self.secret_erasure = true
+			end
 		end
 	end
 
