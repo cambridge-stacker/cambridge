@@ -10,7 +10,7 @@ ConfigScene.options = {
 	{
 		config_name = "manlock",
 		display_name = "Manual Locking",
-		options = {"Per ruleset", "Per gamemode", "Harddrop", "Softdrop"},
+		options = {"Per ruleset", "Per gamemode", "Hard Drop", "Soft Drop"},
 		type = "options",
 		default = 1,
 	},
@@ -88,7 +88,7 @@ LICP: Last Input Controlled Priority. First button is inactive unless opposing/l
 	},
 	{
 		config_name = "replay_name",
-		display_name = "Replay file name",
+		display_name = "Replay File Name",
 		options = {"Full", "Date"},
 		description = "Full: <mode_name> - <ruleset_name> - <date_time>.crp\nDate: <date_time>.crp",
 		type = "options",
