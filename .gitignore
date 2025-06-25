@@ -6,3 +6,4 @@ dist/**/cambridge.exe
 dist/**/libs
 dist/**/*.md
 dist/**/cambridge*.AppImage
+.vscode/
