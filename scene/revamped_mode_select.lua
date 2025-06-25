@@ -1,6 +1,6 @@
 local ModeSelectScene = Scene:extend()
 
-ModeSelectScene.title = "Mode list"
+ModeSelectScene.title = "Game Start"
 
 function ModeSelectScene:new()
 	-- reload custom modules
