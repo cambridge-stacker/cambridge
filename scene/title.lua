@@ -196,7 +196,6 @@ function TitleScene:render()
 		2, 2
 	)
 	]]
-	love.graphics.printf(splash, 460, 300, 250, "center", 0, 0.625, 0.625)
 
 	love.graphics.setFont(font_3x5_2)
 	love.graphics.setColor(1, 1, 1, self.snow_bg_opacity)
@@ -216,6 +215,7 @@ function TitleScene:render()
 		return
 	end
 
+	love.graphics.printf(splash, 448, 300, 180, "center")
 	love.graphics.setColor(1, 1, 1, 0.5)
 	love.graphics.rectangle("fill", math.min(20, -120 * self.main_menu_state + (menu_frames * 24) - 20), 278 + 20 * self.main_menu_state, 160, 22)
 
