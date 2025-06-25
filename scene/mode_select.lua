@@ -590,6 +590,7 @@ function ModeSelectScene:onInputPress(e)
 		if self.starting then
 			self.starting = false
 			self.start_frames = 0
+			self.secret_inputs = {}
 			return
 		end
 		playSE("menu_cancel")
@@ -707,7 +708,7 @@ function ModeSelectScene:onInputRelease(e)
 		self.das_up = nil
 	elseif e.input == "menu_down" then
 		self.das_down = nil
-	elseif e.input then
+	elseif e.input and not self.starting then
 		self.secret_inputs[e.input] = false
 	end
 end
