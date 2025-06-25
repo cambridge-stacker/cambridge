@@ -274,7 +274,7 @@ function KeyConfigScene:render()
 	love.graphics.setFont(font_3x5_2)
 	for i, input in ipairs(self.configurable_inputs) do
 		local g, b = 1, 1
-		local alpha = fadeoutAtEdges(self.list_y + (i-1) * self.spacing - 180, 180, self.spacing)
+		local alpha = fadeoutAtEdges(self.list_y + (i-1) * self.spacing - 180, 185, self.spacing)
 		if i == self.input_state then
 			b = 0
 			if self.error_time > 0 then

@@ -131,6 +131,14 @@ function ModeSelectScene:update()
 	if self.input_timers["stop_sequencing"] == 0 then
 		self.is_sequencing = false
 	end
+	if self.input_timers["reset_tags"] == 0 then
+		self.game_mode_tags = {}
+		self.ruleset_tags = {}
+		self.game_mode_folder = self.game_mode_selections[#self.game_mode_selections]
+		self.ruleset_folder = self.ruleset_folder_selections[#self.ruleset_folder_selections]
+		playSE("ihs")
+		self.text_tag_unselect_timer = 60
+	end
 
 	if self.is_sequencing then
 		self.sequencing_start_frames = math.min(self.sequencing_start_frames + 1, 20)
@@ -208,9 +216,16 @@ function ModeSelectScene:render()
 	if tagline_position ~= 3
 	and self.game_mode_folder[self.menu_state.mode]
 	and not self.game_mode_folder[self.menu_state.mode].is_directory then
-		love.graphics.printf(
-			"Tagline: "..(self.game_mode_folder[mode_selected].tagline or "Missing."),
+		if self.menu_state.select == "mode" then
+			love.graphics.printf(
+			self.game_mode_folder[mode_selected].name..": "..(self.game_mode_folder[mode_selected].tagline or "Missing."),
 			 10, tagline_y, 620, "left")
+		elseif self.menu_state.select == "ruleset" then
+			love.graphics.printf(
+			self.ruleset_folder[ruleset_selected].name..": "..(self.ruleset_folder[ruleset_selected].tagline or "Missing."),
+			 10, tagline_y, 620, "left")
+		end
+		
 	end
 
 	if self.menu_state.select == "mode" then
@@ -340,9 +355,10 @@ function ModeSelectScene:render()
 	end
 	drawFadingTextNearHeader(60 - (self.reload_time_remaining or 0), "Modules reloaded!", 60)
 	if self.reload_time_remaining then self.reload_time_remaining = self.reload_time_remaining - 1 end
-	drawFadingTextNearHeader(self.input_timers["reload"], "Keep holding Generic 1 to reload modules...", 60)
+	drawFadingTextNearHeader(self.input_timers["reload"], "Keep holding Generic 1 to reload modules...", 40)
 	drawFadingTextNearHeader(self.input_timers["secret_sequencing"], "Keep holding Generic 2 to input secret sequences...", 40)
 	drawFadingTextNearHeader(self.input_timers["stop_sequencing"], "Keep holding to stop sequencing...", 40)
+	drawFadingTextNearHeader(self.input_timers["reset_tags"], "Keep holding Generic 3 to reset all tag selections....", 40)
 	drawFadingTextNearHeader(60 - (self.text_tag_unselect_timer or 0), "You've unselected all tags.", 60)
 	if self.text_tag_unselect_timer then self.text_tag_unselect_timer = self.text_tag_unselect_timer - 1 end
 	love.graphics.setColor(1, 1, 1, 1)
@@ -581,6 +597,7 @@ function ModeSelectScene:onInputPress(e)
 		if self.starting then
 			self.starting = false
 			self.start_frames = 0
+			self.secret_inputs = {}
 			return
 		end
 		playSE("menu_cancel")
@@ -675,12 +692,7 @@ function ModeSelectScene:onInputPress(e)
 		elseif e.input == "generic_2" then
 			self.input_timers["secret_sequencing"] = 60
 		elseif e.input == "generic_3" then
-			self.game_mode_tags = {}
-			self.ruleset_tags = {}
-			self.game_mode_folder = self.game_mode_selections[#self.game_mode_selections]
-			self.ruleset_folder = self.ruleset_folder_selections[#self.ruleset_folder_selections]
-			playSE("ihs")
-			self.text_tag_unselect_timer = 60
+			self.input_timers["reset_tags"] = 60
 		end
 	end
 end
@@ -696,12 +708,14 @@ function ModeSelectScene:onInputRelease(e)
 		self.input_timers["reload"] = nil
 	elseif e.input == "generic_2" then
 		self.input_timers["secret_sequencing"] = nil
+	elseif e.input == "generic_3" then
+		self.input_timers["reset_tags"] = nil
 	end
 	if e.input == "menu_up" then
 		self.das_up = nil
 	elseif e.input == "menu_down" then
 		self.das_down = nil
-	elseif e.input then
+	elseif e.input and not self.starting then
 		self.secret_inputs[e.input] = false
 	end
 end

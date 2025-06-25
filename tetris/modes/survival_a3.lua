@@ -12,8 +12,15 @@ SurvivalA3Game.hash = "SurvivalA3"
 SurvivalA3Game.tagline = "The blocks turn black and white! Can you make it to level 1300?"
 
 
-function SurvivalA3Game:new()
-	SurvivalA3Game.super:new()
+function SurvivalA3Game:new(secret_inputs)
+	SurvivalA3Game.super:new(secret_inputs)
+
+	for key, value in pairs(secret_inputs) do
+		if value == true then
+			self.secret_erasure = true
+		end
+	end
+
 	self.grade = 0
 	self.garbage = 0
 	self.clear = false
@@ -107,6 +114,11 @@ function SurvivalA3Game:hitTorikan(old_level, new_level)
 end
 
 function SurvivalA3Game:advanceOneFrame()
+	if self.secret_erasure then
+		for i = 1, 3 do
+			self.grid:clearSpecificRow(i)
+		end
+	end
 	if self.clear then
 		self.roll_frames = self.roll_frames + 1
 		if self.roll_frames < 0 then
@@ -180,7 +192,7 @@ function SurvivalA3Game:updateSectionTimes(old_level, new_level)
 		local section_time = self.frames - self.section_start_time
 		table.insert(self.section_times, section_time)
 		self.section_start_time = self.frames
-		if section_time <= frameTime(1,00) then
+		if section_time <= (section <= 2 and frameTime(1,00) or frameTime(0,50)) then
 			self.grade = self.grade + 1
 		else
 			self.coolregret_message = "REGRET!!"

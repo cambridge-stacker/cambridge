@@ -48,7 +48,7 @@ ConfigScene.options = {
 	{
 		config_name = "mode_entry",
 		display_name = "Mode Entry",
-		options = {"Instant", "Animated"},
+		options = {"Instant", "Delayed"},
 		type = "options",
 		default = 1,
 	},

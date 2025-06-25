@@ -5,6 +5,7 @@ local CRS = Ruleset:extend()
 
 CRS.name = "Cambridge"
 CRS.hash = "Cambridge"
+CRS.tagline = "Cambridge's very own rotation system!"
 CRS.world = true
 
 CRS.spawn_positions = {

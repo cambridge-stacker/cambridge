@@ -12,6 +12,9 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	love.mouse.setVisible(true)
 	pitchBGM(1)
 	config.gamesettings = replay["gamesettings"]
+	if config.gamesettings.next_position then
+		config.side_next = config.gamesettings.next_position == 2
+	end
 	if replay["delayed_auto_shift"] then config.das = replay["delayed_auto_shift"] end
 	if replay["auto_repeat_rate"] then config.arr = replay["auto_repeat_rate"] end
 	if replay["das_cut_delay"] then config.dcd = replay["das_cut_delay"] end
