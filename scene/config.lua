@@ -244,6 +244,7 @@ function ConfigScene:onInputPress(e)
 		self.das_right = true
 	elseif e.input == "menu_back" then
 		playSE("menu_cancel")
+		createToast(self.title, "Reverted changes.")
 		loadSave()
 		self:onCancel()
 		scene = SettingsScene()
