@@ -73,6 +73,14 @@ ConfigScene.options = {
 		setter = function(v)
 			config.audiosettings.sound_sources = math.floor(v)
 		end,
+	},
+	{
+		config_name = "next_piece_sound",
+		display_name = "Next Piece Sound",
+		type = "options",
+		description = "A toggle for next piece sounds. Some modes override this.",
+		default = 1,
+		options = {"On", "Off"}
 	}
 }
 local optioncount = #ConfigScene.options
