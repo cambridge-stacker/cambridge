@@ -24,7 +24,7 @@ All assets needed are bundled with the executable.
 
 #### Bleeding edge
 
-If you want the bleeding edge version, download [this](https://github.com/cambridge-stacker/cambridge/archive/master.zip). Extract the ZIP to a folder of your choosing.
+If you want the bleeding edge version, download [this](https://github.com/cambridge-stacker/cambridge/archive/main.zip). Extract the ZIP to a folder of your choosing.
 
 If you're on Windows, you can double-click `start.bat` to run the game. If that doesn't work, open a Command Prompt where you extracted Cambridge and run:
 
