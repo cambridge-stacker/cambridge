@@ -5,6 +5,7 @@ local SRS = Ruleset:extend()
 
 SRS.name = "ACE-SRS"
 SRS.hash = "StandardACE"
+SRS.tagline = "SRS from TGM Ace!"
 SRS.world = true
 SRS.colourscheme = {
 	I = "C",
@@ -24,7 +25,7 @@ SRS.MANIPULATIONS_MAX = 128
 function SRS:onPieceRotate(piece, grid, upward)
 	piece.lock_delay = 0 -- rotate reset
 	if upward or piece:isDropBlocked(grid) then
-        piece.manipulations = piece.manipulations + 1
+		piece.manipulations = piece.manipulations + 1
 		if piece.manipulations >= self.MANIPULATIONS_MAX and piece:isDropBlocked(grid) then
 			piece.locked = true
 		end

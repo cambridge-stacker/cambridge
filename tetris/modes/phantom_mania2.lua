@@ -14,8 +14,15 @@ PhantomMania2Game.tagline = "The blocks disappear even faster now! Can you make 
 
 
 
-function PhantomMania2Game:new()
-	PhantomMania2Game.super:new()
+function PhantomMania2Game:new(secret_inputs)
+	PhantomMania2Game.super:new(secret_inputs)
+
+	for key, value in pairs(secret_inputs) do
+		if value == true then
+			self.secret_erasure = true
+		end
+	end
+
 	self.grade = 0
 	self.garbage = 0
 	self.clear = false
@@ -25,7 +32,7 @@ function PhantomMania2Game:new()
 	self.hold_age = 0
 	self.queue_age = 0
 	self.roll_points = 0
-	
+
 	self.SGnames = {
 		"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
 		"M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9",
@@ -112,6 +119,11 @@ function PhantomMania2Game:hitTorikan(old_level, new_level)
 end
 
 function PhantomMania2Game:advanceOneFrame()
+	if self.secret_erasure then
+		for i = 1, 3 do
+			self.grid:clearSpecificRow(i)
+		end
+	end
 	if self.clear then
 		self.roll_frames = self.roll_frames + 1
 		if self.roll_frames < 0 then
@@ -215,7 +227,7 @@ local regret_cutoffs = {
 function PhantomMania2Game:updateSectionTimes(old_level, new_level)
 	if math.floor(old_level / 100) < math.floor(new_level / 100) then
 		local section = math.floor(old_level / 100) + 1
-		section_time = self.frames - self.section_start_time
+		local section_time = self.frames - self.section_start_time
 		table.insert(self.section_times, section_time)
 		self.section_start_time = self.frames
 		if section_time <= cool_cutoffs[section] then
@@ -318,7 +330,7 @@ function PhantomMania2Game:drawScoringInfo()
 	love.graphics.printf("SCORE", text_x, 200, 40, "left")
 	love.graphics.printf("LEVEL", text_x, 320, 40, "left")
 	local sg = self.grid:checkSecretGrade()
-	if sg >= 5 then 
+	if sg >= 5 then
 		love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
 	end
 
@@ -338,7 +350,7 @@ function PhantomMania2Game:drawScoringInfo()
 	else
 		love.graphics.printf(math.floor(self.level / 100 + 1) * 100, text_x, 370, 50, "right")
 	end
-	
+
 	if sg >= 5 then
 		love.graphics.printf(self.SGnames[sg], 240, 450, 180, "left")
 	end

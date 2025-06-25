@@ -14,9 +14,15 @@ MarathonA3Game.tagline = "The game gets faster way more quickly! Can you get all
 
 
 
-function MarathonA3Game:new()
-	MarathonA3Game.super:new()
-	
+function MarathonA3Game:new(secret_inputs)
+	MarathonA3Game.super:new(secret_inputs)
+
+	for key, value in pairs(secret_inputs) do
+		if value == true then
+			self.secret_erasure = true
+		end
+	end
+
 	self.speed_level = 0
 	self.roll_frames = 0
 	self.combo = 1
@@ -33,7 +39,7 @@ function MarathonA3Game:new()
 	self.secondary_section_times = { [0] = 0 }
 	self.section_times = { [0] = 0 }
 	self.section_cool = false
-	
+
 	self.randomizer = History6RollsRandomizer()
 
 self.SGnames = {
@@ -41,16 +47,16 @@ self.SGnames = {
 		"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
 		"GM"
 	}
-	
+
 	self.additive_gravity = false
 	self.lock_drop = true
 	self.lock_hard_drop = true
 	self.enable_hold = true
 	self.next_queue_length = 3
-	
+
 	self.coolregret_message = "COOL!!"
 	self.coolregret_timer = 0
-	
+
 	self.torikan_passed = false
 end
 
@@ -129,6 +135,11 @@ function MarathonA3Game:getGravity()
 end
 
 function MarathonA3Game:advanceOneFrame()
+	if self.secret_erasure then
+		for i = 1, 3 do
+			self.grid:clearSpecificRow(i)
+		end
+	end
 	if self.clear then
 		self.roll_frames = self.roll_frames + 1
 		if self.roll_frames < 0 then
@@ -182,7 +193,7 @@ end
 
 local cool_cutoffs = {
 	frameTime(0,52), frameTime(0,52), frameTime(0,49), frameTime(0,45), frameTime(0,45),
-	frameTime(0,42), frameTime(0,42), frameTime(0,38), frameTime(0,38), 
+	frameTime(0,42), frameTime(0,42), frameTime(0,38), frameTime(0,38),
 }
 
 local regret_cutoffs = {
@@ -196,7 +207,7 @@ function MarathonA3Game:updateSectionTimes(old_level, new_level)
 	if math.floor(old_level / 100) < math.floor(new_level / 100) or
 	new_level >= 999 then
 		-- record new section
-		section_time = self.frames - self.section_start_time
+		local section_time = self.frames - self.section_start_time
 		table.insert(self.section_times, section_time)
 		if new_level < 999 then self.section_start_time = self.frames end
 
@@ -217,7 +228,7 @@ function MarathonA3Game:updateSectionTimes(old_level, new_level)
 		else
 			table.insert(self.section_regrets, 0)
 		end
-		
+
 		if self.section_cool then
 			self.section_cool_grade = self.section_cool_grade + 1
 		end
@@ -225,7 +236,7 @@ function MarathonA3Game:updateSectionTimes(old_level, new_level)
 		self.section_cool = false
 	elseif old_level % 100 < 70 and new_level % 100 >= 70 then
 		-- record section 70 time
-		section_70_time = self.frames - self.section_start_time
+		local section_70_time = self.frames - self.section_start_time
 		table.insert(self.secondary_section_times, section_70_time)
 
 		if section <= 9 and self.secondary_section_times[section] < cool_cutoffs[section] and
@@ -242,7 +253,7 @@ end
 
 function MarathonA3Game:updateScore(level, drop_bonus, cleared_lines)
 	self:updateGrade(cleared_lines)
-	if not self.clear then	
+	if not self.clear then
 		if cleared_lines > 0 then
 			self.combo = self.combo + (cleared_lines - 1) * 2
 			if cleared_lines > 1 then
@@ -429,23 +440,31 @@ end
 function MarathonA3Game:drawScoringInfo()
 	love.graphics.setColor(1, 1, 1, 1)
 
-	love.graphics.setFont(font_3x5_2)
+	love.graphics.setFont(font_3x5)
 	love.graphics.print(
 		self.das.direction .. " " ..
 		self.das.frames .. " " ..
 		strTrueValues(self.prev_inputs)
 	)
-	love.graphics.printf("NEXT", 64, 40, 40, "left")
-	love.graphics.printf("GRADE", 240, 120, 40, "left")
-	love.graphics.printf("SCORE", 240, 200, 40, "left")
-	love.graphics.printf("LEVEL", 240, 320, 40, "left")
+	
+	local text_x = config["side_next"] and 320 or 240
+
+	love.graphics.setFont(font_3x5_2)
+	if config["side_next"] then
+		love.graphics.printf("NEXT", 240, 72, 40, "left")
+	else
+		love.graphics.printf("NEXT", 64, 40, 40, "left")
+	end
+	love.graphics.printf("GRADE", text_x, 120, 40, "left")
+	love.graphics.printf("SCORE", text_x, 200, 40, "left")
+	love.graphics.printf("LEVEL", text_x, 320, 40, "left")
 	local sg = self.grid:checkSecretGrade()
 	if sg >= 5 then
 		love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
 	end
 
 	-- draw section time data
-	current_section = self.level >= 999 and 11 or math.floor(self.level / 100) + 1
+	local current_section = self.level >= 999 and 11 or math.floor(self.level / 100) + 1
 	self:drawSectionTimesWithSecondary(current_section, 10)
 	--[[
 
@@ -463,9 +482,9 @@ function MarathonA3Game:drawScoringInfo()
 			love.graphics.printf(formatTime(time), section_70_x, 40 + 20 * section, 90, "left")
 		end
 	end
-	
+
 	local current_x
-	if table.getn(self.section_times) < table.getn(self.secondary_section_times) then
+	if #self.section_times < #self.secondary_section_times then
 		current_x = section_x
 	else
 		current_x = section_70_x
@@ -480,13 +499,13 @@ function MarathonA3Game:drawScoringInfo()
 		end
 
 	love.graphics.setFont(font_3x5_3)
-	love.graphics.printf(self.score, 240, 220, 90, "left")
+	love.graphics.printf(self.score, text_x, 220, 90, "left")
 	if self.roll_frames > 3238 then love.graphics.setColor(1, 0.5, 0, 1)
 	elseif self.level >= 999 then love.graphics.setColor(0, 1, 0, 1) end
-	love.graphics.printf(self:getLetterGrade(), 240, 140, 90, "left")
+	love.graphics.printf(self:getLetterGrade(), text_x, 140, 90, "left")
 	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.printf(self.level, 240, 340, 40, "right")
-	love.graphics.printf(self:getSectionEndLevel(), 240, 370, 40, "right")
+	love.graphics.printf(self.level, text_x, 340, 40, "right")
+	love.graphics.printf(self:getSectionEndLevel(), text_x, 370, 40, "right")
 	if sg >= 5 then
 		love.graphics.printf(self.SGnames[sg], 240, 450, 180, "left")
 	end

@@ -5,6 +5,7 @@ local SRS = Ruleset:extend()
 
 SRS.name = "Guideline SRS"
 SRS.hash = "Standard"
+SRS.tagline = "The pure, by-the-book SRS you know and love!"
 SRS.softdrop_lock = false
 SRS.harddrop_lock = true
 
@@ -49,7 +50,7 @@ function SRS:attemptWallkicks(piece, new_piece, rot_dir, grid)
 	assert(piece.rotation ~= new_piece.rotation)
 
 	for idx, offset in pairs(kicks) do
-		kicked_piece = new_piece:withOffset(offset)
+		local kicked_piece = new_piece:withOffset(offset)
 		if grid:canPlacePiece(kicked_piece) then
 			piece:setRelativeRotation(rot_dir)
 			piece:setOffset(offset)
@@ -102,12 +103,12 @@ function SRS:onPieceRotate(piece, grid)
 	piece.lock_delay = 0 -- rotate reset
 	self:checkNewLow(piece)
 	piece.manipulations = piece.manipulations + 1
-    if piece.manipulations >= self.MANIPULATIONS_MAX then
+	if piece.manipulations >= self.MANIPULATIONS_MAX then
 		piece:moveInGrid({ x = 0, y = 1 }, 1, grid)
-        if piece:isDropBlocked(grid) then
-            piece.locked = true
-        end
-    end
+		if piece:isDropBlocked(grid) then
+			piece.locked = true
+		end
+	end
 end
 
 function SRS:canPieceRotate() return true end
