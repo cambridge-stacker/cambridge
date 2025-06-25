@@ -5,7 +5,7 @@ Cambridge
 
 Welcome to Cambridge, the next open-source falling-block game engine!
 
-The project is written and maintained by [joezeng](https://github.com/joezeng), [Milla](https://github.com/MillaBasset), [Oshisaure](https://github.com/oshisaure), and a team of contributors at the [Cambridge Discord][discord]!
+The project is written and maintained by [joezeng](https://github.com/joezeng), [Milla](https://github.com/MillaBasset), [Oshisaure](https://github.com/oshisaure), [Tetro48](https://github.com/Tetro48), and a team of contributors at the [Cambridge Discord][discord]!
 
 The [Discord server][discord] has been reopened!
 
@@ -78,6 +78,7 @@ listed in the file SOURCES.
 Credits
 -------
   
+- [Tetro48](https://github.com/Tetro48) for developing and maintaining the project since 2022!
 - [Milla Basset](https://github.com/MillaBasset) for reviving the project and maintaining it from 2020 to 2024!
 - [Lilla Oshisaure](https://www.youtube.com/user/LeSpyroshisaure) for development support and help!
 - [joezeng](https://github.com/joezeng) for the original project, and for offering to help with the expansion!
