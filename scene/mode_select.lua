@@ -216,9 +216,16 @@ function ModeSelectScene:render()
 	if tagline_position ~= 3
 	and self.game_mode_folder[self.menu_state.mode]
 	and not self.game_mode_folder[self.menu_state.mode].is_directory then
-		love.graphics.printf(
-			"Tagline: "..(self.game_mode_folder[mode_selected].tagline or "Missing."),
+		if self.menu_state.select == "mode" then
+			love.graphics.printf(
+			self.game_mode_folder[mode_selected].name..": "..(self.game_mode_folder[mode_selected].tagline or "Missing."),
 			 10, tagline_y, 620, "left")
+		elseif self.menu_state.select == "ruleset" then
+			love.graphics.printf(
+			self.ruleset_folder[ruleset_selected].name..": "..(self.ruleset_folder[ruleset_selected].tagline or "Missing."),
+			 10, tagline_y, 620, "left")
+		end
+		
 	end
 
 	if self.menu_state.select == "mode" then

@@ -5,6 +5,7 @@ local Ruleset = Object:extend()
 
 Ruleset.name = ""
 Ruleset.hash = ""
+Ruleset.tagline = "This is a ruleset!"
 
 -- Arika-type ruleset defaults
 Ruleset.world = false

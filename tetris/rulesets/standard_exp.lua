@@ -5,6 +5,7 @@ local SRS = Ruleset:extend()
 
 SRS.name = "SRS-X"
 SRS.hash = "StandardEXP"
+SRS.tagline = "Of Nullpomino/Heboris fame, this is essentially an inverted version of ARS-X functionality wise."
 SRS.world = true
 SRS.colourscheme = {
 	I = "C",
