@@ -12,8 +12,6 @@ PhantomMania2Game.hash = "PhantomMania2"
 PhantomMania2Game.tagline = "The blocks disappear even faster now! Can you make it to level 1300?"
 PhantomMania2Game.tags = {"Invisible Stack", "Survival", "Gimmick", "Cambridge"}
 
-
-
 function PhantomMania2Game:new()
 	PhantomMania2Game.super:new()
 	self.grade = 0

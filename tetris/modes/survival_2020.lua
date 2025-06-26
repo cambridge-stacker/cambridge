@@ -12,8 +12,6 @@ Survival2020Game.hash = "Survival2020"
 Survival2020Game.tagline = "A new time limit on the blocks! Can you handle being forced to perform under the total delay?"
 Survival2020Game.tags = {"Survival", "Cambridge"}
 
-
-
 function Survival2020Game:new()
 	Survival2020Game.super:new()
 	self.level = 0
