@@ -248,6 +248,7 @@ function Grid:clearBottomRows(num)
 		self.grid[above_row] = self.grid[above_row - num]
 		self.grid_age[above_row] = self.grid_age[above_row - num]
 		self.grid[above_row - num] = {}
+		self.grid_age[above_row - num] = {}
 		self:clearSpecificRow(above_row-num)
 	end
 end
