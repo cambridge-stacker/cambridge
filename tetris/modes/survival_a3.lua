@@ -10,7 +10,7 @@ local SurvivalA3Game = GameMode:extend()
 SurvivalA3Game.name = "Survival A3"
 SurvivalA3Game.hash = "SurvivalA3"
 SurvivalA3Game.tagline = "The blocks turn black and white! Can you make it to level 1300?"
-SurvivalA3Game.tags = {"Survival", "Arika", "20G Start"}
+SurvivalA3Game.tags = {"Survival", "Arika", "20G Start", "Gimmick"}
 
 function SurvivalA3Game:new(secret_inputs)
 	SurvivalA3Game.super:new(secret_inputs)
