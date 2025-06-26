@@ -270,7 +270,7 @@ function SakuraGame:new(secret_inputs)
 
 	self.randomizer = (
 		(
-			secret_inputs.rotate_left and secret_inputs.rotate_right
+			secret_inputs and secret_inputs.rotate_left and secret_inputs.rotate_right
 		) and History6RollsRandomizer() or SakuraRandomizer()
 	)
 	if type(secret_inputs) == "table" then
