@@ -1,3 +1,11 @@
+# v0.4.4.2:
+- (Highscores) frames are now formatted to time
+- Attempted to fix more crashes related to the lack of secret inputs
+- T.B.D
+
+# v0.4.4.1:
+- Fixed bugs related to 21h
+
 # v0.4.4:
 The changes shown here are not in chronological order.
 ## Major changes:
