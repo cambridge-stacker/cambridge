@@ -11,7 +11,7 @@ local SakuraGame = GameMode:extend()
 SakuraGame.name = "Sakura A3"
 SakuraGame.hash = "SakuraA3"
 SakuraGame.tagline = "Clear away the Gem Blocks as fast as possible!"
-SakuraGame.tags = {"Arika", "Puzzle", "A3"}
+SakuraGame.tags = {"Arika", "Puzzle"}
 
 local b = {
 	["r"] = { skin = "2tie", colour = "R" },
