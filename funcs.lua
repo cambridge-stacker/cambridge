@@ -65,7 +65,7 @@ end
 ---@param frames number
 function formatTime(frames)
 	-- returns a mm:ss:hh (h=hundredths) representation of the time in frames given 
-	if frames < 0 then return formatTime(0) end
+	if frames < 0 then frames = 0 end
 	local min, sec, hund
 	min  = math.floor(frames/3600)
 	sec  = math.floor(frames/60) % 60
