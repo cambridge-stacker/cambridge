@@ -10,9 +10,7 @@ local StrategyGame = GameMode:extend()
 StrategyGame.name = "Strategy"
 StrategyGame.hash = "Strategy"
 StrategyGame.tagline = "You have lots of time to think! Can you use it to place a piece fast?"
-
-
-
+StrategyGame.tags = {"Strategy", "Cambridge"}
 
 function StrategyGame:new()
 	StrategyGame.super:new()
