@@ -10,7 +10,7 @@ local SurvivalA1Game = MarathonA1Game:extend()
 SurvivalA1Game.name = "Survival A1"
 SurvivalA1Game.hash = "SurvivalA1"
 SurvivalA1Game.tagline = "A constant high-speed marathon!"
-SurvivalA1Game.tags = {"A1"}
+SurvivalA1Game.tags = {"Survival", "Arika", "A1"}
 
 function SurvivalA1Game:getGravity()
 	return 20

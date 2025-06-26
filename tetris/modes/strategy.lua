@@ -10,7 +10,7 @@ local StrategyGame = GameMode:extend()
 StrategyGame.name = "Strategy"
 StrategyGame.hash = "Strategy"
 StrategyGame.tagline = "You have lots of time to think! Can you use it to place a piece fast?"
-StrategyGame.tags = {"Cambridge"}
+StrategyGame.tags = {"Strategy", "Cambridge"}
 
 
 
