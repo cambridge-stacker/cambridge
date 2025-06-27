@@ -21,7 +21,10 @@ TuningScene.options = {
 	{
 		config_name = "das",
 		display_name = "Delayed Auto Shift (DAS)",
-		description = "How long to wait before automatically moving a piece while a direction is held.",
+		description = [[
+The amount of time between when a direction is pressed and when movements start repeating.
+Low values feel slippery, high values feel sluggish.
+Can be overridden by certain modes.]],
 		format = curryTimingFormatFunction("No delay", 0),
 		sound_effect_name = "cursor",
 		min = 0,
@@ -36,7 +39,10 @@ TuningScene.options = {
 	{
 		config_name = "arr",
 		display_name = "Auto Repeat Rate (ARR)",
-		description = "How long to wait between automatic piece movements.",
+		description = [[
+The amount of time between automatic movements after the initial DAS delay.
+Low values move faster, high values move slower.
+Can be overridden by certain modes.]],
 		format = curryTimingFormatFunction("Instant", 0),
 		sound_effect_name = "cursor",
 		min = 0,
@@ -51,8 +57,9 @@ TuningScene.options = {
 	{
 		config_name = "dcd",
 		display_name = "DAS Cut Delay (DCD)",
-		description = "When you rotate, softdrop, or hard drop a piece, the auto-shift delay is increased "..
-		              "by the specified amount of frames if the mode allows that configuration, or the amount the modes forces on.",
+		description = [[
+When a piece is rotated or dropped, DAS movement pauses for this amount of time.
+Certain modes may disable this behaviour.]],
 		format = curryTimingFormatFunction("Disabled (0 frames)", 0),
 		sound_effect_name = "cursor",
 		min = 0,
@@ -67,7 +74,7 @@ TuningScene.options = {
 	{
 		config_name = "menu_das",
 		display_name = "DAS in menus",
-		description = "How long to wait before automatically scrolling through menu options while a direction is held.",
+		description = "DAS delay when scrolling through menus. Low values feel slippery, high values feel sluggish.",
 		format = curryTimingFormatFunction("No delay", 0),
 		sound_effect_name = "cursor",
 		min = 3,
@@ -78,7 +85,7 @@ TuningScene.options = {
 	{
 		config_name = "menu_arr",
 		display_name = "ARR in menus",
-		description = "How long to wait between automatic menu scrolling actions.",
+		description = "ARR when scrolling through menu options. Low values are faster, high values are slower.",
 		format = curryTimingFormatFunction("SLIPPERY (16ms/1f)", 1),
 		sound_effect_name = "cursor",
 		min = 1,
@@ -89,7 +96,7 @@ TuningScene.options = {
 	{
 		config_name = "mode_dynamic_arr",
 		display_name = "Dyn. Select Mode ARR",
-		description = "Whether the mode selection menu should scroll faster and faster the longer a direction is held.",
+		description = "If enabled, when scrolling through the mode/ruleset list, speeds up the repeat rate more and more the longer you hold a direction.",
 		sound_effect_name = "cursor",
 		type = "options",
 		options = {"On", "Off"},
