@@ -210,7 +210,7 @@ function ModeSelectScene:render()
 
 	local sequencing_start_frames = self.sequencing_start_frames
 
-	local tagline_y = tagline_position == 1 and (5 - sequencing_start_frames * 5) or 420
+	local description_y = tagline_position == 1 and (5 - sequencing_start_frames * 5) or 420
 	local render_list_size = tagline_position == 2 and 18 or 20
 
 	if tagline_position ~= 3
@@ -218,12 +218,12 @@ function ModeSelectScene:render()
 	and not self.game_mode_folder[self.menu_state.mode].is_directory then
 		if self.menu_state.select == "mode" then
 			love.graphics.printf(
-			self.game_mode_folder[mode_selected].name..": "..(self.game_mode_folder[mode_selected].tagline or "Missing."),
-			 10, tagline_y, 620, "left")
+			self.game_mode_folder[mode_selected].name..": "..(self.game_mode_folder[mode_selected].description or "Missing."),
+			 10, description_y, 620, "left")
 		elseif self.menu_state.select == "ruleset" then
 			love.graphics.printf(
-			self.ruleset_folder[ruleset_selected].name..": "..(self.ruleset_folder[ruleset_selected].tagline or "Missing."),
-			 10, tagline_y, 620, "left")
+			self.ruleset_folder[ruleset_selected].name..": "..(self.ruleset_folder[ruleset_selected].description or "Missing."),
+			 10, description_y, 620, "left")
 		end
 		
 	end

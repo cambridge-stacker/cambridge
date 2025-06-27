@@ -9,7 +9,7 @@ local SurvivalA2Game = GameMode:extend()
 
 SurvivalA2Game.name = "Survival A2"
 SurvivalA2Game.hash = "SurvivalA2"
-SurvivalA2Game.tagline = "The game starts fast and only gets faster!"
+SurvivalA2Game.description = "The game starts fast and only gets faster!"
 SurvivalA2Game.tags = {"Survival", "Arika", "20G Start"}
 
 function SurvivalA2Game:new(secret_inputs)

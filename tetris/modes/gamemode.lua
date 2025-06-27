@@ -13,7 +13,7 @@ local GameMode = Object:extend()
 
 GameMode.name = ""
 GameMode.hash = ""
-GameMode.tagline = ""
+GameMode.description = ""
 GameMode.rollOpacityFunction = function(age) return 0 end
 
 ---@param secret_inputs table

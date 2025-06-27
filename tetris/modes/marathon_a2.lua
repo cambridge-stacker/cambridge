@@ -9,7 +9,7 @@ local MarathonA2Game = GameMode:extend()
 
 MarathonA2Game.name = "Marathon A2"
 MarathonA2Game.hash = "MarathonA2"
-MarathonA2Game.tagline = "The points don't matter! Can you reach the invisible roll?"
+MarathonA2Game.description = "The points don't matter! Can you reach the invisible roll?"
 MarathonA2Game.tags = {"Marathon", "Arika"}
 
 function MarathonA2Game:new(secret_inputs)

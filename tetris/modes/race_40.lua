@@ -9,7 +9,7 @@ local Race40Game = GameMode:extend()
 
 Race40Game.name = "Race 40"
 Race40Game.hash = "Race40"
-Race40Game.tagline = "How fast can you clear 40 lines?"
+Race40Game.description = "How fast can you clear 40 lines?"
 Race40Game.tags = {"Race", "Cambridge", "Beginner Friendly"}
 
 function Race40Game:new()

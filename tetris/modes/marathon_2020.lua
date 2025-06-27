@@ -9,7 +9,7 @@ local Marathon2020Game = GameMode:extend()
 
 Marathon2020Game.name = "Marathon 2020"
 Marathon2020Game.hash = "Marathon2020"
-Marathon2020Game.tagline = "2020 levels of pure pain! Can you achieve the World Master rank?"
+Marathon2020Game.description = "2020 levels of pure pain! Can you achieve the World Master rank?"
 Marathon2020Game.tags = {"Marathon", "Cambridge"}
 
 function Marathon2020Game:new()

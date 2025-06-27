@@ -54,7 +54,7 @@ ConfigScene.options = {
 	},
 	{
 		config_name = "tagline_position",
-		display_name = "Tagline placement",
+		display_name = "Desc. Position",
 		options = {"Top", "Bottom", "None"},
 		type = "options",
 		default = 1,
