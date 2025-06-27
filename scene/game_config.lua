@@ -13,10 +13,9 @@ ConfigScene.options = {
 		options = {"Per ruleset", "Per gamemode", "Hard Drop", "Soft Drop"},
 		description = [[
 Changes whether pieces lock on hard/soft drop.
-Per ruleset: Behaviour is dependent on ruleset.
-Per gamemode: Behaviour is dependent on gamemode.
-Harddrop: Hard drops (up) lock the piece; soft drops (down) do not lock.
-Softdrop: Soft drops (down) lock the piece; hard drops (up) do not lock.
+Per ruleset/gamemode: Behaviour is dependent on ruleset/gamemode.
+Hard Drop: Hard drops lock the piece; soft drops do not lock.
+Soft Drop: Soft drops lock the piece; hard drops do not lock.
 ]],
 		type = "options",
 		default = 1,
@@ -39,9 +38,9 @@ TTC: Piece colours are as they are in TTC games (cyan I, purple T, etc.)]],
 		options = {"Left", "Auto", "Right"},
 		description = [[
 Changes whether or not to swap rotation directions.
-Left: Rotation buttons are always normal.
-Auto: Rotation buttons are swapped for world-type rulesets (e.g. Ti-World, Guideline SRS).
-Right: Rotation buttons are always swapped.]],
+Left: Rotations are always normal.
+Auto: Rotations are swapped for World-type rulesets (e.g. Ti-World).
+Right: Rotations are always swapped.]],
 		type = "options",
 		default = 1,
 	},
@@ -73,7 +72,7 @@ Out of field: Pieces spawn as low as they can above of the field.]],
 Changes the behaviour of diagonal inputs.
 None: No input filtering is done.
 4-Way: Only one direction (up/down/left/right) can be pressed at a time.
-8-Way: Diagonals are allowed, but no opposing directions (up+down or left+right).
+8-Way: Diagonals are allowed, but no opposing directions (U+D or L+R).
 LICP: Last Input Controlled Priority. If two directions are held at once, the first pressed direction has priority.]],
 		type = "options",
 		default = 1,
@@ -93,7 +92,7 @@ LICP: Last Input Controlled Priority. If two directions are held at once, the fi
 		description = [[
 Whether or not hard drops can be buffered.
 Off: Hard drops cannot be buffered.
-Hold: Hard drops are buffered if the button is held down during piece spawn.
+Hold: Hard drops are buffered if the button is held during piece spawn.
 Tap: Hard drops are buffered if the button is tapped at any point during ARE.]],
 		type = "options",
 		default = 1,
@@ -103,7 +102,7 @@ Tap: Hard drops are buffered if the button is tapped at any point during ARE.]],
 		display_name = "Synchroes",
 		options = {"Per ruleset", "On", "Off"},
 		description = [[
-Whether or not piece movement happens before gravity (on), after gravity (off), or if it depends on the ruleset (per ruleset).
+Whether or not rotation happen before movement (on), after movement (off), or if it depends on the ruleset (per ruleset).
 ]],
 		type = "options",
 		default = 1,
@@ -114,8 +113,8 @@ Whether or not piece movement happens before gravity (on), after gravity (off), 
 		options = {"Top", "Side"},
 		description = [[
 Changes the position of the next queue around the game board.
-Top: The next piece appears above the board, with additional previews going to the right.
-Side: The next piece appears to the right of the board, with additional previews going down.]],
+Top: The next piece is above the board, with additional previews going right.
+Side: The next piece is to the right of the board, with additional previews going down.]],
 		setter = function (a)
 			config.side_next = a == 2
 			config.gamesettings.next_position = a
