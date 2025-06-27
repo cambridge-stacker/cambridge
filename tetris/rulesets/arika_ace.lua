@@ -5,7 +5,7 @@ local ARS = Ruleset:extend()
 
 ARS.name = "ACE-ARS"
 ARS.hash = "ArikaACE"
-ARS.description = "A fusion of SRS and ARS from TGM Ace!"
+ARS.description = "A modified version of ARS that integrates SRS-like locking behaviour, from TGM ACE."
 
 ARS.colourscheme = {
 	I = "C",
