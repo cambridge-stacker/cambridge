@@ -47,4 +47,6 @@ function ARS:onPieceRotate(piece, grid, upward)
 	end
 end
 
+function ARS:get180RotationValue() return 2 end
+
 return ARS
