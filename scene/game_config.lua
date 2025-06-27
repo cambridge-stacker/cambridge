@@ -11,6 +11,13 @@ ConfigScene.options = {
 		config_name = "manlock",
 		display_name = "Manual Locking",
 		options = {"Per ruleset", "Per gamemode", "Hard Drop", "Soft Drop"},
+		description = [[
+Changes whether pieces lock on hard/soft drop.
+Per ruleset: Behaviour is dependent on ruleset.
+Per gamemode: Behaviour is dependent on gamemode.
+Harddrop: Hard drops (up) lock the piece; soft drops (down) do not lock.
+Softdrop: Soft drops (down) lock the piece; hard drops (up) do not lock.
+]],
 		type = "options",
 		default = 1,
 	},
@@ -18,6 +25,11 @@ ConfigScene.options = {
 		config_name = "piece_colour",
 		display_name = "Piece Colours",
 		options = {"Per ruleset", "Arika", "TTC"},
+		description = [[
+Changes the colours of each piece.
+Per ruleset: Piece colours are dependent on ruleset.
+Arika: Piece colours are as they are in Arika games (red I, cyan T, etc.)
+TTC: Piece colours are as they are in TTC games (cyan I, purple T, etc.)]],
 		type = "options",
 		default = 1,
 	},
@@ -25,6 +37,11 @@ ConfigScene.options = {
 		config_name = "world_reverse",
 		display_name = "A Button Rotation",
 		options = {"Left", "Auto", "Right"},
+		description = [[
+Changes whether or not to swap rotation directions.
+Left: Rotation buttons are always normal.
+Auto: Rotation buttons are swapped for world-type rulesets (e.g. Ti-World, Guideline SRS).
+Right: Rotation buttons are always swapped.]],
 		type = "options",
 		default = 1,
 	},
@@ -32,6 +49,11 @@ ConfigScene.options = {
 		config_name = "spawn_positions",
 		display_name = "Spawn Positions",
 		options = {"Per ruleset", "In field", "Out of field"},
+		description = [[
+Changes the vertical position that pieces spawn at.
+Per ruleset: Behaviour is dependent on ruleset.
+In field: Pieces spawn as high as they can inside of the field.
+Out of field: Pieces spawn as low as they can above of the field.]],
 		type = "options",
 		default = 1,
 	},
@@ -39,6 +61,7 @@ ConfigScene.options = {
 		config_name = "save_replay",
 		display_name = "Save Replays",
 		options = {"On", "Off"},
+		description = "Whether or not to save replays.",
 		type = "options",
 		default = 1,
 	},
@@ -47,9 +70,11 @@ ConfigScene.options = {
 		display_name = "Movement Type",
 		options = {"Standard", "4-way Abs.", "4-way LICP", "8-way LICP"},
 		description = [[
-SOCD cardinal resolutions. Standard: None.
-4-way: No diagonals. 8-way: Diagonals, no opposing directions.
-LICP: Last Input Controlled Priority. First button is inactive unless opposing/last input is released.]],
+Changes the behaviour of diagonal inputs.
+None: No input filtering is done.
+4-Way: Only one direction (up/down/left/right) can be pressed at a time.
+8-Way: Diagonals are allowed, but no opposing directions (up+down or left+right).
+LICP: Last Input Controlled Priority. If two directions are held at once, the first pressed direction has priority.]],
 		type = "options",
 		default = 1,
 	},
@@ -57,6 +82,7 @@ LICP: Last Input Controlled Priority. First button is inactive unless opposing/l
 		config_name = "das_last_key",
 		display_name = "DAS Last Key",
 		options = {"Off", "On"},
+		description = "When charging DAS during spawn delay, whether or not DAS is charged for the first key held (off) or the last key held (on).",
 		type = "options",
 		default = 1,
 	},
@@ -64,6 +90,11 @@ LICP: Last Input Controlled Priority. First button is inactive unless opposing/l
 		config_name = "buffer_lock",
 		display_name = "Buffer Drop Type",
 		options = {"Off", "Hold", "Tap"},
+		description = [[
+Whether or not hard drops can be buffered.
+Off: Hard drops cannot be buffered.
+Hold: Hard drops are buffered if the button is held down during piece spawn.
+Tap: Hard drops are buffered if the button is tapped at any point during ARE.]],
 		type = "options",
 		default = 1,
 	},
@@ -71,7 +102,9 @@ LICP: Last Input Controlled Priority. First button is inactive unless opposing/l
 		config_name = "synchroes_allowed",
 		display_name = "Synchroes",
 		options = {"Per ruleset", "On", "Off"},
-		description = "On: Pieces rotate first, then move.\nOff: Pieces move first, then rotate.",
+		description = [[
+Whether or not piece movement happens before gravity (on), after gravity (off), or if it depends on the ruleset (per ruleset).
+]],
 		type = "options",
 		default = 1,
 	},
@@ -79,6 +112,10 @@ LICP: Last Input Controlled Priority. First button is inactive unless opposing/l
 		config_name = "next_position",
 		display_name = "Next Position",
 		options = {"Top", "Side"},
+		description = [[
+Changes the position of the next queue around the game board.
+Top: The next piece appears above the board, with additional previews going to the right.
+Side: The next piece appears to the right of the board, with additional previews going down.]],
 		setter = function (a)
 			config.side_next = a == 2
 			config.gamesettings.next_position = a
@@ -90,7 +127,10 @@ LICP: Last Input Controlled Priority. First button is inactive unless opposing/l
 		config_name = "replay_name",
 		display_name = "Replay File Name",
 		options = {"Full", "Date"},
-		description = "Full: <mode_name> - <ruleset_name> - <date_time>.crp\nDate: <date_time>.crp",
+		description = [[
+Changes the filename format that replays are saved with.
+Full: <mode_name> - <ruleset_name> - <date_time>.crp
+Date: <date_time>.crp]],
 		type = "options",
 		default = 1,
 	},
