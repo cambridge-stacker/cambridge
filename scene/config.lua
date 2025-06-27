@@ -143,7 +143,7 @@ function ConfigScene:renderSettings()
 		love.graphics.printf(self.options[self.highlight].option_descriptions[option_selected], 20, 380, 600, "left")
 	elseif self.options[self.highlight].description then
 		love.graphics.setColor(1, 1, 1, 1)
-		love.graphics.printf(self.options[self.highlight].description, 20, 380, 600, "left")
+		love.graphics.printf(self.options[self.highlight].description, 20, 390, 600, "left")
 	end
 end
 
