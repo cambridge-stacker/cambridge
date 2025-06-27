@@ -46,9 +46,9 @@ function ConfigScene:new(width)
 	self.highlight = 1
 	self.options_width = width or 150
 	self.option_pos_y = {}
-
+	
 	--#region Init option positions and sliders
-
+	
 	self.sliders = {}
 	local y = 100
 	for idx, option in ipairs(self.options) do
@@ -64,7 +64,8 @@ function ConfigScene:new(width)
 		end
 	end
 	--#endregion
-
+	
+	self.description_y = y + (self.spacing or 20) + 10
 	self.vertical_das = 0
 	self.horizontal_das = 0
 
@@ -140,10 +141,10 @@ function ConfigScene:renderSettings()
 	if self.options[self.highlight].option_descriptions then
 		love.graphics.setColor(1, 1, 1, 1)
 		local option_selected = config[self.config_type][self.options[self.highlight].config_name]
-		love.graphics.printf(self.options[self.highlight].option_descriptions[option_selected], 20, 380, 600, "left")
+		love.graphics.printf(self.options[self.highlight].option_descriptions[option_selected], 20, self.description_y, 600, "left")
 	elseif self.options[self.highlight].description then
 		love.graphics.setColor(1, 1, 1, 1)
-		love.graphics.printf(self.options[self.highlight].description, 20, 390, 600, "left")
+		love.graphics.printf(self.options[self.highlight].description, 20, self.description_y, 600, "left")
 	end
 end
 

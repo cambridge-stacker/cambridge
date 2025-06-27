@@ -81,7 +81,7 @@ LICP: Last Input Controlled Priority. If two directions are held at once, the fi
 		config_name = "das_last_key",
 		display_name = "DAS Last Key",
 		options = {"Off", "On"},
-		description = "When charging DAS during spawn delay, whether or not DAS is charged for the first key held (off) or the last key held (on).",
+		description = "When charging DAS during spawn delay, whether or not the direction is determined by the first key held (off) or the last key held (on).",
 		type = "options",
 		default = 1,
 	},
@@ -102,7 +102,10 @@ Tap: Hard drops are buffered if the button is tapped at any point during ARE.]],
 		display_name = "Synchroes",
 		options = {"Per ruleset", "On", "Off"},
 		description = [[
-Whether or not rotation happen before movement (on), after movement (off), or if it depends on the ruleset (per ruleset).
+Determines the behaviour of synchroes.
+Per ruleset: Behaviour is dependent on ruleset.
+On: Rotations happen before movement (synchroes enabled).
+Off: Rotations happen after movement (synchroes disabled).
 ]],
 		type = "options",
 		default = 1,
@@ -113,8 +116,8 @@ Whether or not rotation happen before movement (on), after movement (off), or if
 		options = {"Top", "Side"},
 		description = [[
 Changes the position of the next queue around the game board.
-Top: The next piece is above the board, with additional previews going right.
-Side: The next piece is to the right of the board, with additional previews going down.]],
+Top: The next piece is above the board; additional previews go right.
+Side: The next piece is to the right of the board; additional previews go downwards.]],
 		setter = function (a)
 			config.side_next = a == 2
 			config.gamesettings.next_position = a
