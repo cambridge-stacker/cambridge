@@ -222,7 +222,7 @@ function ModeSelectScene:render()
 			 10, description_y, 620, "left")
 		elseif self.menu_state.select == "ruleset" then
 			love.graphics.printf(
-			self.ruleset_folder[ruleset_selected].tagline or "(no description provided)",
+			self.ruleset_folder[ruleset_selected].description or "(no description provided)",
 			 10, description_y, 620, "left")
 		end
 		
