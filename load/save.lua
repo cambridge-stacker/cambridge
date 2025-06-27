@@ -120,6 +120,7 @@ function initConfig()
 
 	if config.fullscreen == nil then config.fullscreen = false end
 	if config.secret == nil then config.secret = false end
+	if config.visualsettings.background_brightness == nil then config.visualsettings.background_brightness = 100 end
 
 	if config.resource_packs_applied == nil then config.resource_packs_applied = {} end
 

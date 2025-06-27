@@ -26,6 +26,7 @@ function HighscoreScene:new()
 	self.index_count = 0
 
 	self.highscore_length = 0
+	self.highscore_formatting = true
 
 	self.scrollbar = newSlider(15.5, 290.5, 290, 0, 1, 0, function(value)
 			self.scrollbar_percentage = value
@@ -134,21 +135,26 @@ end
 ---@param hash string
 ---@param font love.Font
 ---@return table
-function HighscoreScene.getHighscoreColumnWidths(hash, font, width_limit)
+function HighscoreScene.getHighscoreColumnWidths(reference, font, width_limit)
 	font = font or love.graphics.getFont()
 	width_limit = width_limit or 200
 	local highscore_column_widths = {}
-	local highscore_reference = highscores[hash]
+	local highscore_reference = highscores[reference]
+	if type(reference) == "table" then
+		highscore_reference = reference
+	else
+		highscore_reference = highscores[reference]
+	end
 	if highscore_reference == nil then
 		return {}
 	end
-	local highscore_indexing = HighscoreScene.getHighscoreIndexing(hash)
+	local highscore_indexing = HighscoreScene.getHighscoreIndexing(reference)
 	for name, idx in pairs(highscore_indexing) do
-		highscore_column_widths[name] = font:getWidth(tostring(name))
+		highscore_column_widths[name] = font:getWidth(tostring(toFormattedValue(name)))
 	end
 	for key, value in pairs(highscore_reference) do
 		for k2, v2 in pairs(value) do
-			highscore_column_widths[k2] = math.max(highscore_column_widths[k2], font:getWidth(tostring(v2)))
+			highscore_column_widths[k2] = math.max(highscore_column_widths[k2], font:getWidth(tostring(toFormattedValue(v2))))
 		end
 	end
 	for key, value in pairs(highscore_column_widths) do
@@ -179,13 +185,12 @@ function HighscoreScene:selectHash()
 	self.sorted_key_id = nil
 	self.key_sort_string = nil
 	self.sort_type = "<"
-	self.key_references = {}
 	self.hash = self.hash_table[self.hash_id]
-	self.hash_highscore = highscores[self.hash]
+	self.hash_highscore = self.highscore_formatting and self:getFormattedHighscore(self.hash) or highscores[self.hash]
 	self.highscore_length = #self.hash_highscore
 	self.scrollbar.value = 1
-	self.highscore_index, self.index_count = self.getHighscoreIndexing(self.hash)
-	self.highscore_column_widths = self.getHighscoreColumnWidths(self.hash, font_3x5_2)
+	self.highscore_index, self.index_count = self.getHighscoreIndexing(self.hash_highscore)
+	self.highscore_column_widths = self.getHighscoreColumnWidths(self.hash_highscore, font_3x5_2)
 	self.highscore_column_positions = self.getHighscoreColumnPositions(self.highscore_column_widths, self.highscore_index, 100)
 	self.id_to_key = {}
 	for key, value in pairs(self.highscore_index) do
@@ -195,6 +200,55 @@ function HighscoreScene:selectHash()
 		self.menu_slot_positions[key] = key * 20
 		self.interpolated_menu_slot_positions[key] = 0
 	end
+end
+
+function HighscoreScene:toggleFormatting()
+	playSE("ihs")
+	self.sorted_key_id = nil
+	self.key_sort_string = nil
+	self.sort_type = "<"
+	self.highscore_formatting = not self.highscore_formatting
+	self.hash_highscore = self.highscore_formatting and self:getFormattedHighscore(self.hash) or highscores[self.hash]
+	self.highscore_length = #self.hash_highscore
+	self.highscore_index, self.index_count = self.getHighscoreIndexing(self.hash_highscore)
+	self.highscore_column_widths = self.getHighscoreColumnWidths(self.hash_highscore, font_3x5_2)
+	self.highscore_column_positions = self.getHighscoreColumnPositions(self.highscore_column_widths, self.highscore_index, 100)
+	self.id_to_key = {}
+	for key, value in pairs(self.highscore_index) do
+		self.id_to_key[value] = key
+	end
+	for key, slot in pairs(self.hash_highscore) do
+		self.menu_slot_positions[key] = key * 20
+	end
+end
+
+function HighscoreScene.customFormat(key, value)
+	if key == "frames" then
+		return {key = "time", value = formatTime(value)}
+	end
+	return {key = key, value = value}
+end
+
+function HighscoreScene:getFormattedHighscore(reference)
+	local formatted_highscore = {}
+	local highscore_reference = highscores[reference]
+	if type(reference) == "table" then
+		highscore_reference = reference
+	else
+		highscore_reference = highscores[reference]
+	end
+	if highscore_reference == nil then
+		return {}
+	end
+	for key, value in pairs(highscore_reference) do
+		local formatted_slot = {}
+		for k2, v2 in pairs(value) do
+			local formatted_thing = self.customFormat(k2, v2)
+			formatted_slot[formatted_thing.key] = formatted_thing.value
+		end
+		formatted_highscore[key] = formatted_slot
+	end
+	return formatted_highscore
 end
 
 function HighscoreScene:sortByKey(key)
@@ -253,6 +307,8 @@ function HighscoreScene:render()
 			self.scrollbar:draw()
 		end
 		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.printf("Generic 1 or Mouse Wheel to toggle formatting", 10, 10, 400, "left")
+		love.graphics.printf("Highscore Formatting: " .. (self.highscore_formatting and "ON" or "OFF"), 300, 10, 330, "right")
 		self.menu_list_y = interpolateNumber(self.menu_list_y / 20, self.list_pointer) * 20
 		love.graphics.printf("num", 30, 100, 100)
 		if #self.hash_highscore > 17 then
@@ -323,28 +379,32 @@ function HighscoreScene:onInputPress(e)
 		if e.x ~= 0 then
 			self:changeKeyOption(-e.x)
 		end
-	elseif e.type == "mouse" and e.button == 1 then
-		if self.hash == nil then
-			self.auto_menu_offset = math.floor((e.y - 260)/20)
-			if self.auto_menu_offset == 0 then
-				playSE("main_decide")
-				self:selectHash()
-			end
-		else
-			local old_key_id = self.sorted_key_id
-			for name, idx in pairs(self.highscore_index) do
-				if cursorHoverArea(self.highscore_column_positions[idx] - 15, 100, self.highscore_column_widths[name] + 20, 20) then
-					playSE("cursor_lr")
-					self.sorted_key_id = idx
-					if self.sorted_key_id ~= old_key_id then
-						self.sort_type = "<"
+	elseif e.type == "mouse" then
+		if e.button == 1 then
+			if self.hash == nil then
+				self.auto_menu_offset = math.floor((e.y - 260)/20)
+				if self.auto_menu_offset == 0 then
+					playSE("main_decide")
+					self:selectHash()
+				end
+			else
+				local old_key_id = self.sorted_key_id
+				for name, idx in pairs(self.highscore_index) do
+					if cursorHoverArea(self.highscore_column_positions[idx] - 15, 100, self.highscore_column_widths[name] + 20, 20) then
+						playSE("cursor_lr")
+						self.sorted_key_id = idx
+						if self.sorted_key_id ~= old_key_id then
+							self.sort_type = "<"
+						end
+						self:sortByKey(self.id_to_key[self.sorted_key_id])
 					end
-					self:sortByKey(self.id_to_key[self.sorted_key_id])
 				end
 			end
-		end
-		if cursorHoverArea(20, 40, 50, 30) then
-			self:back()
+			if cursorHoverArea(20, 40, 50, 30) then
+				self:back()
+			end
+		elseif e.button == 3 then
+			self:toggleFormatting()
 		end
 	elseif (e.input == "menu_decide") and self.hash == nil then
 		playSE("main_decide")
@@ -353,6 +413,8 @@ function HighscoreScene:onInputPress(e)
 		playSE("cursor_lr")
 		self.sorted_key_id = self.selected_key_id
 		self:sortByKey(self.id_to_key[self.selected_key_id])
+	elseif e.input == "generic_1" and self.hash ~= nil and self.index_count > 0 then
+		self:toggleFormatting()
 	elseif e.input == "menu_up" then
 		self:scrollList(-1)
 		self.das_up = true

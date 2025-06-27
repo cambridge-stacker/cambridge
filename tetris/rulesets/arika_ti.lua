@@ -5,7 +5,7 @@ local ARS = Ruleset:extend()
 
 ARS.name = "Ti-ARS"
 ARS.hash = "ArikaTI"
-ARS.tagline = "Arika's rotation system as seen in TGM3"
+ARS.description = "Arika's rotation system as seen in TGM3"
 
 ARS.synchroes = true
 -- Component functions.

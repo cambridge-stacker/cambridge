@@ -13,7 +13,7 @@ local GameMode = Object:extend()
 
 GameMode.name = ""
 GameMode.hash = ""
-GameMode.tagline = ""
+GameMode.description = ""
 GameMode.rollOpacityFunction = function(age) return 0 end
 
 ---@param secret_inputs table
@@ -1062,13 +1062,14 @@ end
 function GameMode:drawBackground()
 	local id = self:getBackground()
 	if type(id) == "number" then id = clamp(id, 0, #backgrounds) end
-	love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.setColor(1, 1, 1, config.background_brightness)
 	drawBackground(id)
 end
 
 function GameMode:drawFrame()
 	-- game frame
 	if self.grid.width == 10 and self.grid.height == 24 then
+		love.graphics.setColor(1, 1, 1, 1)
 		love.graphics.draw(misc_graphics["frame"], 48, 64)
 	else
 		love.graphics.setColor(174/255, 83/255, 76/255, 1)

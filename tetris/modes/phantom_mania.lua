@@ -9,7 +9,8 @@ local PhantomManiaGame = GameMode:extend()
 
 PhantomManiaGame.name = "Phantom Mania"
 PhantomManiaGame.hash = "PhantomMania"
-PhantomManiaGame.tagline = "The blocks disappear as soon as they're locked! Can you remember where everything is?"
+PhantomManiaGame.description = "The blocks disappear as soon as they're locked! Can you remember where everything is?"
+PhantomManiaGame.tags = {"Invisible Stack", "Survival", "Gimmick", "Cambridge"}
 
 function PhantomManiaGame:new(secret_inputs)
 	PhantomManiaGame.super:new(secret_inputs)

@@ -10,7 +10,8 @@ require 'libs.simple-slider'
 ---@field config_name string
 ---@field display_name string
 ---@field description string?
----@field options table?
+---@field option_descriptions string[]?
+---@field options string[]?
 ---@field default number
 ---@field increase_by number?
 ---@field min number?
@@ -136,9 +137,13 @@ function ConfigScene:renderSettings()
 			self:drawNumber(i, option)
 		end
 	end
-	if self.options[self.highlight].description then
+	if self.options[self.highlight].option_descriptions then
 		love.graphics.setColor(1, 1, 1, 1)
-		love.graphics.printf("Description: " .. self.options[self.highlight].description, 20, 380, 600, "left")
+		local option_selected = config[self.config_type][self.options[self.highlight].config_name]
+		love.graphics.printf(self.options[self.highlight].option_descriptions[option_selected], 20, 380, 600, "left")
+	elseif self.options[self.highlight].description then
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.printf(self.options[self.highlight].description, 20, 390, 600, "left")
 	end
 end
 

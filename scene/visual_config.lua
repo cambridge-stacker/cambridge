@@ -54,7 +54,7 @@ ConfigScene.options = {
 	},
 	{
 		config_name = "tagline_position",
-		display_name = "Tagline Position",
+		display_name = "Desc. Position",
 		options = {"Top", "Bottom", "None"},
 		type = "options",
 		default = 1,
@@ -96,7 +96,22 @@ ConfigScene.options = {
 		description = "Whether to fit the background image to 4:3 aspect ratio, or the aspect ratio of the game window",
 		type = "options",
 		default = 1,
-	}
+	},
+	{
+		config_name = "background_brightness",
+		display_name = "BG Brightness",
+		description = "How bright the background should be in-game.",
+		type = "slider",
+		default = 100,
+		min = 0,
+		max = 100,
+		increase_by = 5,
+		format = "%d%%",
+		setter = function(v)
+			config.visualsettings.background_brightness = v
+			config.background_brightness = v/100
+		end,
+	},
 }
 
 function ConfigScene:new()

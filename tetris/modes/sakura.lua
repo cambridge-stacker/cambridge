@@ -10,7 +10,8 @@ local SakuraGame = GameMode:extend()
 
 SakuraGame.name = "Sakura A3"
 SakuraGame.hash = "SakuraA3"
-SakuraGame.tagline = "Clear away the Gem Blocks as fast as possible!"
+SakuraGame.description = "Clear away the Gem Blocks as fast as possible!"
+SakuraGame.tags = {"Arika", "Puzzle", "Beginner Friendly"}
 
 local b = {
 	["r"] = { skin = "2tie", colour = "R" },
@@ -266,11 +267,11 @@ local maps = {
 local STAGE_TRANSITION_TIME = 300
 
 function SakuraGame:new(secret_inputs)
-	self.super:new()
+	self.super.new(self, secret_inputs)
 
 	self.randomizer = (
 		(
-			secret_inputs.rotate_left and secret_inputs.rotate_right
+			secret_inputs and secret_inputs.rotate_left and secret_inputs.rotate_right
 		) and History6RollsRandomizer() or SakuraRandomizer()
 	)
 	if type(secret_inputs) == "table" then
