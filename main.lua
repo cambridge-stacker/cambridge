@@ -572,6 +572,8 @@ local function multipleInputs(input_table, input)
 end
 
 
+
+
 ---@param file love.File
 function love.filedropped(file)
 	file:open("r")
@@ -585,7 +587,7 @@ function love.filedropped(file)
 	local binser = require "libs.binser"
 	local confirmation_buttons = {"No", "Yes", enterbutton = 2}
 	if raw_file_directory:sub(-4) == ".lua" then
-		msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "Where do you put "..filename.."?", { "Cancel", "Rulesets", "Modes"}, "info")
+		msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "Is "..filename.." a ruleset or a mode?", { "Cancel", "Ruleset", "Mode"}, "info")
 		if msgbox_choice == 0 or msgbox_choice == 1 then
 			return
 		end
@@ -610,7 +612,7 @@ function love.filedropped(file)
 		msgbox_choice = love.window.showMessageBox(love.window.getTitle(),
 		"What option do you select for "..filename.."?\n"..
 		"Directory: Treat the zip archive as directory\n"..
-		"Res. Packs: Add the zip file to resource packs folder\n\nPress ESC to abort.", {"Directory", "Res. Packs", escapebutton = 0}, "info")
+		"Res. Pack: Install the zip file as a resource pack.\n\nPress ESC to abort.", {"Directory", "Res. Pack", escapebutton = 0}, "info")
 		if msgbox_choice == 0 then
 			return
 		end
@@ -645,7 +647,7 @@ end
 
 ---@param dir string
 function love.directorydropped(dir)
-	local msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "Do you want to insert a directory ("..dir..") as a mod pack?", {"No", "Yes"}, "info")
+	local msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "Do you want to install this directory ("..dir..") as a mod pack?", {"No", "Yes"}, "info")
 	if msgbox_choice <= 1 then
 		return
 	end
