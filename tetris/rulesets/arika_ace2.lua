@@ -5,7 +5,7 @@ local ARS = Ruleset:extend()
 
 ARS.name = "ACE-ARS2"
 ARS.hash = "ArikaACE2"
-ARS.description = "ACE-ARS but with the classic ARS sonic drop instead!"
+ARS.description = "ACE-ARS but with the classic ARS sonic drop instead."
 ARS.spawn_above_field = true
 
 function ARS:attemptWallkicks(piece, new_piece, rot_dir, grid)

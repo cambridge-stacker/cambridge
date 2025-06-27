@@ -15,7 +15,7 @@ ConfigScene.options = {
 		config_name = "master_volume",
 		display_name = "Master Volume",
 		type = "slider",
-		description = "This will affect all sound sources. ALL OF IT.",
+		description = "This will affect all sound sources.",
 		default = 100,
 		min = 0,
 		max = 100,
@@ -62,8 +62,8 @@ ConfigScene.options = {
 		config_name = "sound_sources",
 		display_name = "Simult. SFX sources",
 		type = "slider",
-		description = "High values may result in high memory consumption, though it allows multiples of the same sound effect to be played at once." ..
-		"\n(There's some exceptions, e.g. SFX added through modes/rulesets)",
+		description = "High values may result in high memory consumption, though it allows multiple instances of the same sound effect to be played at once." ..
+		"\n(There are some exceptions, e.g. SFX added through modes/rulesets)",
 		default = 10,
 		min = 1,
 		max = 30,
@@ -78,7 +78,7 @@ ConfigScene.options = {
 		config_name = "next_piece_sound",
 		display_name = "Next Piece Sound",
 		type = "options",
-		description = "A toggle for next piece sounds. Some modes override this.",
+		description = "Whether to play next piece sounds. Some modes override this.",
 		default = 1,
 		options = {"On", "Off"}
 	}

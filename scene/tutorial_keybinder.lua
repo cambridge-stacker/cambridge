@@ -45,14 +45,14 @@ local input_description = {
 	down = "Soft/Sonic Drop a piece",
 	rotate_left = "Rotate a piece counterclockwise",
 	rotate_right = "Rotate a piece clockwise",
-	rotate_180 = "Rotate a piece in 180 degrees",
+	rotate_180 = "Rotate a piece by 180 degrees",
 	hold = "Hold a piece",
 	retry = "Retry a mode/replay",
 	pause = "Pause the game",
-	mode_exit = "Exit the currently playing mode",
+	mode_exit = "Return to the mode selection menu",
 }
 
---A list of inputs that shouldn't have the same keybinds with the other.
+--A list of inputs that should have keybindings distinct from other inputs.
 local mutually_exclusive_inputs = {
 	menu_decide = "menu_back",
 	left = {"right", "up", "down"},
@@ -94,8 +94,8 @@ end
 local null_joystick_name = ""
 
 function KeyConfigScene:new()
-	assert(require "tetris.modes.marathon_a3", "Missing mode: marathon_a3. It's required.")
-	assert(require "tetris.rulesets.standard", "Missing ruleset: standard. It's required.")
+	assert(require "tetris.modes.marathon_a3", "Missing mode: marathon_a3, required for the Tutorial Keybinder.")
+	assert(require "tetris.rulesets.standard", "Missing ruleset: standard, required for the Tutorial Keybinder.")
 	self.input_state = 1
 	self.visual_input_state = 1
 
@@ -152,7 +152,7 @@ function KeyConfigScene:render()
 
 	love.graphics.setColor(1, 1, 1)
 
-	love.graphics.printf(self.visual_input_state > #configurable_inputs and "You've now configured." or self.failed_input_assignment_time > 0 and "Binding conflict, press something else." or input_description[configurable_inputs[self.visual_input_state]],
+	love.graphics.printf(self.visual_input_state > #configurable_inputs and "You're all set!" or self.failed_input_assignment_time > 0 and "Binding conflict, press something else." or input_description[configurable_inputs[self.visual_input_state]],
 	80, 200, 480, "center", 0, 1, math.min(1, math.abs(self.transition_time)))
 	love.graphics.setFont(font_3x5_2)
 	if self.input_mode == "key" then
@@ -179,7 +179,7 @@ function KeyConfigScene:rebindKey(key)
 		return true
 	end
 	if self:mutexCheck(configurable_inputs[self.input_state], key) then
-		self.set_inputs[configurable_inputs[self.input_state]] = "<press an other key>"
+		self.set_inputs[configurable_inputs[self.input_state]] = "<press another key>"
 		return false
 	end
 	self.set_inputs[configurable_inputs[self.input_state]] = self:formatKey(key)

@@ -10,7 +10,7 @@ ConfigScene.options = {
 	{
 		config_name = "manlock",
 		display_name = "Manual Locking",
-		options = {"Per ruleset", "Per gamemode", "Harddrop", "Softdrop"},
+		options = {"Per ruleset", "Per gamemode", "Hard Drop", "Soft Drop"},
 		type = "options",
 		default = 1,
 	},
@@ -48,7 +48,7 @@ ConfigScene.options = {
 		options = {"Standard", "4-way Abs.", "4-way LICP", "8-way LICP"},
 		description = [[
 SOCD cardinal resolutions. Standard: None.
-4-way: No diagonals. 8-way: Yes diagonals, no opposing directions.
+4-way: No diagonals. 8-way: Diagonals, no opposing directions.
 LICP: Last Input Controlled Priority. First button is inactive unless opposing/last input is released.]],
 		type = "options",
 		default = 1,
@@ -71,7 +71,7 @@ LICP: Last Input Controlled Priority. First button is inactive unless opposing/l
 		config_name = "synchroes_allowed",
 		display_name = "Synchroes",
 		options = {"Per ruleset", "On", "Off"},
-		description = "On: Pieces rotate first, then moves.\nOff: Piece moves first, then rotates.",
+		description = "On: Pieces rotate first, then move.\nOff: Pieces move first, then rotate.",
 		type = "options",
 		default = 1,
 	},
@@ -88,7 +88,7 @@ LICP: Last Input Controlled Priority. First button is inactive unless opposing/l
 	},
 	{
 		config_name = "replay_name",
-		display_name = "Replay file name",
+		display_name = "Replay File Name",
 		options = {"Full", "Date"},
 		description = "Full: <mode_name> - <ruleset_name> - <date_time>.crp\nDate: <date_time>.crp",
 		type = "options",

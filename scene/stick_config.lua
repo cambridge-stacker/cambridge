@@ -50,7 +50,7 @@ local input_naming = {
 	generic_4 = "Generic 4",
 }
 
---A list of inputs that shouldn't have the same keybinds with the other.
+--A list of inputs that should have bindings distinct from other inputs.
 local mutually_exclusive_inputs = {
 	menu_decide = "menu_back",
 	mode_exit = {"retry", "pause"},
