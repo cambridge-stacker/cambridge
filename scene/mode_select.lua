@@ -217,8 +217,9 @@ function ModeSelectScene:render()
 	and self.game_mode_folder[self.menu_state.mode]
 	and not self.game_mode_folder[self.menu_state.mode].is_directory then
 		if self.menu_state.select == "mode" then
+			-- legacy modes use the tagline property while newer modes use description
 			love.graphics.printf(
-			self.game_mode_folder[mode_selected].tagline or "(no description provided)",
+			self.game_mode_folder[mode_selected].tagline or self.game_mode_folder[mode_selected].description or "(no description provided)",
 			 10, description_y, 620, "left")
 		elseif self.menu_state.select == "ruleset" then
 			love.graphics.printf(
