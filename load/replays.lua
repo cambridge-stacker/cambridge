@@ -131,7 +131,7 @@ replay_load_code = [[
 		)
 		if new_replay == nil or not success then
 			love.filesystem.remove("replays/"..replay_file_list[i])
-			print ("The replay at replays/"..replay_file_list[i].." is corrupted or has no data, thus, deleted.")
+			print("The replay at replays/"..replay_file_list[i].." is corrupted or has no data. It has thus been deleted.")
 		else
 			for key, value in pairs(new_replay) do
 				new_replay[key] = toFormattedValue(value)
@@ -144,6 +144,6 @@ replay_load_code = [[
 			love.thread.getChannel('replay'):push(new_replay)
 		end
 	end
-	love.thread.getChannel( 'loaded_replays' ):push( true )
+	love.thread.getChannel( 'loaded_replays' ):push(true)
 	print("Loaded replays.")
 ]]
