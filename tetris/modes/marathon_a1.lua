@@ -44,6 +44,8 @@ function MarathonA1Game:new(secret_inputs)
 	self.enable_hard_drop = false
 	self.enable_hold = false
 	self.next_queue_length = 1
+
+	self.grade = {rank = "9", next = 400}
 end
 
 function MarathonA1Game:getARE()
@@ -173,6 +175,7 @@ function MarathonA1Game:updateScore(level, drop_bonus, cleared_lines)
 			self.combo = 1
 		end
 		self.drop_bonus = 0
+		self.grade = getRankForScore(self.score)
 	end
 end
 
@@ -227,9 +230,9 @@ function MarathonA1Game:drawScoringInfo()
 	if self.gm_conditions["level300"] and self.gm_conditions["level500"] and self.gm_conditions["level999"] then
 		love.graphics.printf("GM", text_x, 140, 90, "left")
 	else
-		love.graphics.printf(getRankForScore(self.score).rank, text_x, 140, 90, "left")
+		love.graphics.printf(self.grade.rank, text_x, 140, 90, "left")
 	end
-	love.graphics.printf(getRankForScore(self.score).next, text_x, 280, 90, "left")
+	love.graphics.printf(self.grade.next, text_x, 280, 90, "left")
 	love.graphics.printf(self.level, text_x, 340, 40, "right")
 	love.graphics.printf(self:getSectionEndLevel(), text_x, 370, 40, "right")
 	if sg >= 5 then
