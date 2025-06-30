@@ -73,7 +73,7 @@ Changes the behaviour of diagonal inputs.
 None: No input filtering is done.
 4-Way: Only one direction (up/down/left/right) can be pressed at a time.
 8-Way: Diagonals are allowed, but no opposing directions (U+D or L+R).
-LICP: Last Input Controlled Priority. If two directions are held at once, the first pressed direction has priority.]],
+LICP: Last Input Controlled Priority. If two directions are held at once, the last pressed direction has priority.]],
 		type = "options",
 		default = 1,
 	},
