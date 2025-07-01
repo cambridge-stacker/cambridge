@@ -269,7 +269,7 @@ function HighscoreScene:sortByKey(key)
 	for k, v in pairs(table_content) do
 		self.menu_slot_positions[v.id] = k * 20
 	end
-	self.key_sort_string = self.sort_type == "<" and "v" or self.sort_type == ">" and "^" or ""
+	self.key_sort_string = self.sort_type == "<" and chars.down or self.sort_type == ">" and chars.up or ""
 	self.sort_type = self.sort_type == "<" and ">" or self.sort_type == ">" and "" or "<"
 end
 
