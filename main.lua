@@ -158,7 +158,7 @@ local toasts = {}
 ---@type toast[]
 local queued_toasts = {}
 
----@param param_table toast_params
+---@param param_table toast_params?
 function createToast(title, message, param_table)
 	param_table = param_table or {}
 	param_table.width = param_table.width or 200
