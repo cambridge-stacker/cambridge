@@ -193,7 +193,8 @@ misc_graphics_paths = {
 	icon = "res/img/cambridge_transparent"
 }
 local current_background_drawn
-function getBackgroundDimensions()
+-- This gives the position and size of a rectange, for a background, with either the aspect ratio of 4:3, or screen's aspect ratio, or the currently drawn background'supports aspect ratio.
+function getBackgroundRectDimensions()
 	local x, y, w, h = 0, 0, 640, 480
 	if config.visualsettings.stretch_background == 2 then
 		x, y = love.graphics.inverseTransformPoint(0, 0)
@@ -216,6 +217,6 @@ function drawBackground(id)
 	---@type love.Image
 	local bg_object = fetchBackgroundAndLoop(id)
 	current_background_drawn = bg_object
-	local x, y, w, h = getBackgroundDimensions()
+	local x, y, w, h = getBackgroundRectDimensions()
 	drawSizeIndependentImage(bg_object, x, y, 0, w, h)
 end
