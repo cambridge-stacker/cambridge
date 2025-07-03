@@ -640,6 +640,12 @@ function love.filedropped(file)
 				sortReplays()
 			else
 				refreshReplayTree()
+				if final_directory == "modes/" or final_directory == "rulesets/" then
+					unloadModules()
+					initModules()
+					playSE("ihs")
+					createToast("File drag-n-drop", "Modules reloaded!")
+				end
 			end
 		end
 	end
