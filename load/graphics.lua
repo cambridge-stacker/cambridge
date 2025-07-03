@@ -192,11 +192,8 @@ misc_graphics_paths = {
 	santa = "res/img/santa",
 	icon = "res/img/cambridge_transparent"
 }
-
--- Utility function to allow any size background to be used.
--- This will stretch the background to either 4:3, or screen's aspect ratio.
-function drawBackground(id)
-	local bg_object = fetchBackgroundAndLoop(id)
+local current_background_drawn
+function getBackgroundDimensions()
 	local x, y, w, h = 0, 0, 640, 480
 	if config.visualsettings.stretch_background == 2 then
 		x, y = love.graphics.inverseTransformPoint(0, 0)
@@ -204,5 +201,21 @@ function drawBackground(id)
 		local scale_factor = math.min(window_width / 640, window_height / 480)
 		w, h = window_width / scale_factor, window_height / scale_factor
 	end
+	if config.visualsettings.stretch_background == 3 then
+		local image_x, image_y = current_background_drawn:getDimensions()
+		local scale_factor = math.min(image_x / 640, image_y / 480)
+		w, h = image_x / scale_factor, image_y / scale_factor
+		x, y = (-w / 2) + 320, (-h / 2) + 240
+	end
+	return x, y, w, h
+end
+
+-- Utility function to allow any size background to be used.
+-- This will stretch the background to either 4:3, or screen's aspect ratio, or the drawable's aspect ratio.
+function drawBackground(id)
+	---@type love.Image
+	local bg_object = fetchBackgroundAndLoop(id)
+	current_background_drawn = bg_object
+	local x, y, w, h = getBackgroundDimensions()
 	drawSizeIndependentImage(bg_object, x, y, 0, w, h)
 end
