@@ -15,7 +15,7 @@ function recursivelyLoadRequireFileTable(tbl, directory, blacklisted_string)
 		end
 		if name ~= blacklisted_string and name:sub(-4) == ".lua" then
 			local module = require(require_string.."."..name:sub(1, -5))
-			module.description = module.description ~= "" and module.description or module.tagline
+			module.description = module.tagline ~= "" and module.tagline or module.description
 			tbl[#tbl+1] = module
 			if not (type(module) == "table" and type(module.__call) == "function") then
 				error("Add a return to "..directory.."/"..name..".\nMust be a table with __call function.", 1)

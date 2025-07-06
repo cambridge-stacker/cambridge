@@ -5,7 +5,7 @@ local SRS = Ruleset:extend()
 
 SRS.name = "Ti-World"
 SRS.hash = "StandardTI"
-SRS.version = "A slightly modified version of SRS from TGM3."
+SRS.description = "A slightly modified version of SRS from TGM3."
 SRS.world = true
 -- SRS.synchroes = true
 SRS.colourscheme = {
