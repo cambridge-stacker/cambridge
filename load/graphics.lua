@@ -193,7 +193,7 @@ misc_graphics_paths = {
 	icon = "res/img/cambridge_transparent"
 }
 local current_background_drawn
--- This gives the position and size of a rectange, for a background, with either the aspect ratio of 4:3, or screen's aspect ratio, or the currently drawn background'supports aspect ratio.
+-- This gives the position and size of a rectange, for a background, with either the aspect ratio of 4:3, or screen's aspect ratio, or the currently drawn background's aspect ratio.
 function getBackgroundRectDimensions()
 	local x, y, w, h = 0, 0, 640, 480
 	if config.visualsettings.stretch_background == 2 then

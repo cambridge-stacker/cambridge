@@ -252,10 +252,15 @@ function ReplaySelectScene:render()
 				love.graphics.printf("This mode overrides the ruleset.", 0, 80 + idx * 20, 640, "center")
 				love.graphics.setColor(1, 1, 1, 1)
 			end
-			if replay.pause_count and replay.pause_time then
+			if replay.pause_count and replay.pause_count > 0 and replay.pause_time then
 				idx = idx + 1
 				love.graphics.setFont(font_3x5_2)
 				love.graphics.printf(("Pause count: %d, Time paused: %s"):format(replay.pause_count, formatTime(replay.pause_time)), 0, 80 + idx * 20, 640, "center")
+			end
+			if replay.rerecords then
+				idx = idx + 1
+				love.graphics.setFont(font_3x5_2)
+				love.graphics.printf(("Replay re-record count: %d"):format(replay.rerecords), 0, 80 + idx * 20, 640, "center")
 			end
 			if replay.sha256_table then
 				if config.visualsettings.debug_level > 2 then
