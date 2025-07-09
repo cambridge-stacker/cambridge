@@ -23,10 +23,10 @@ local configurable_inputs = {
 local input_naming = {
 	menu_decide = "Menu Decide",
 	menu_back = "Menu Back",
-	left = "Move Left",
-	right = "Move Right",
-	up = "Hard/Sonic Drop",
-	down = "Soft/Sonic Drop",
+	left = "Generic Left",
+	right = "Generic Right",
+	up = "Hard Drop (Up)",
+	down = "Soft Drop (Down)",
 	rotate_left = "Rotate CCW 1",
 	rotate_right = "Rotate CW 1",
 	rotate_180 = "Rotate 180",
@@ -112,6 +112,8 @@ function KeyConfigScene:new()
 	self.transition_time = 0
 	self.transitioned = true
 
+	self.intro_frames = 600
+
 	if not config.input then config.input = {} end
 
 	self.safety_frames = 0
@@ -126,6 +128,10 @@ function KeyConfigScene:update()
 	self.nested_scene:update()
 	self.safety_frames = self.safety_frames - 1
 	self.failed_input_assignment_time = self.failed_input_assignment_time - 1
+	if self.intro_frames > 0 then
+		self.intro_frames = self.intro_frames - 1
+		return
+	end
 	self.transition_time = self.transition_time + 0.066
 	if self.transition_time > 0 then
 		self.visual_input_state = self.input_state
@@ -153,8 +159,20 @@ function KeyConfigScene:render()
 	love.graphics.setColor(1, 1, 1)
 
 	love.graphics.printf(self.visual_input_state > #configurable_inputs and "You're all set!" or self.failed_input_assignment_time > 0 and "Binding conflict, press something else." or input_description[configurable_inputs[self.visual_input_state]],
-	80, 200, 480, "center", 0, 1, math.min(1, math.abs(self.transition_time)))
+	0, 200, 640, "center", 0, 1, math.min(1, math.abs(self.transition_time)))
+	love.graphics.setFont(font_3x5_3)
+	if self.intro_frames > 480 then
+		love.graphics.printf("Welcome to Cambridge's Tutorial Keybinder!", 0, 200, 640, "center")
+	elseif self.intro_frames > 240 then
+		love.graphics.printf("Pressing a key or button will bind the input!", 0, 200, 640, "center")
+	elseif self.intro_frames > 0 then
+		love.graphics.printf("When you select a control scheme by using it, stick with it, have fun!", 80, 200, 480, "center")
+	end
 	love.graphics.setFont(font_3x5_2)
+	if self.visual_input_state <= #configurable_inputs then
+		love.graphics.printf("Input: " .. input_naming[configurable_inputs[self.visual_input_state]],
+		80, 280, 480, "center", 0, 1, math.min(1, math.abs(self.transition_time)))
+	end
 	if self.input_mode == "key" then
 		love.graphics.printf("Input mode: Keyboard",
 		0, 440, 635, "right")
@@ -213,7 +231,7 @@ function KeyConfigScene:refreshInputStates()
 	end
 end
 function KeyConfigScene:onInputPress(e)
-	if self.safety_frames > 0 or self.transition_time < 1 then
+	if self.safety_frames > 0 or self.transition_time < 1 or self.intro_frames > 0 then
 		return
 	end
 	self.safety_frames = 2
