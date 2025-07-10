@@ -184,8 +184,7 @@ function StickConfigScene:render()
 
 	local b = cursorHighlight(20, 40, 50, 30)
 	love.graphics.setColor(1, 1, b, 1)
-	love.graphics.setFont(font_3x5_4)
-	love.graphics.printf("<-", 20, 40, 50, "center")
+	love.graphics.printf(chars.big_left, 20, 40, 50, "center")
 	love.graphics.setColor(1, 1, 1, 1)
 
 	if self.joystick_name == null_joystick_name then
