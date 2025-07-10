@@ -276,14 +276,14 @@ end
 function HighscoreScene:render()
 	drawBackground(0)
 
-	love.graphics.setFont(font_3x5_4)
+	love.graphics.setFont(font_8x11)
 	local highlight = cursorHighlight(20, 40, 50, 30)
 	love.graphics.setColor(1, 1, highlight, 1)
-	love.graphics.printf("<-", 20, 40, 50, "center")
+	love.graphics.printf(chars.big_left, 20, 40, 50, "center")
 	love.graphics.setColor(1, 1, 1, 1)
 	if self.empty_highscores then
 		love.graphics.setFont(font_3x5_3)
-		love.graphics.printf("There's no recorded highscores!", 0, 200, 640, "center")
+		love.graphics.printf("There are no recorded highscores!", 0, 200, 640, "center")
 		love.graphics.setFont(font_3x5_2)
 		love.graphics.printf(
 			"Go play some modes, then come back!\n" ..
