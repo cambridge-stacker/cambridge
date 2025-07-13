@@ -737,12 +737,6 @@ function GameMode:playNextSound(ruleset)
 	playSE("blocks", ruleset.next_sounds[self.next_queue[1].shape])
 end
 
-function GameMode:getHighScoreData()
-	return {
-		score = self.score
-	}
-end
-
 function GameMode:animation(x, y, skin, colour)
 	-- Animation progress where 0 = start and 1 = end
 	local progress = 1
