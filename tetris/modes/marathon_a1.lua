@@ -175,7 +175,9 @@ function MarathonA1Game:updateScore(level, drop_bonus, cleared_lines)
 			self.combo = 1
 		end
 		self.drop_bonus = 0
-		self.grade = getRankForScore(self.score)
+		if self.grade.rank ~= "S9" and self.score > self.grade.next then
+			self.grade = getRankForScore(self.score)
+		end
 	end
 end
 
@@ -255,7 +257,7 @@ end
 
 function MarathonA1Game:getHighscoreData()
 	return {
-		grade = self.grade,
+		grade = self.grade.rank,
 		score = self.score,
 		level = self.level,
 		frames = self.frames,
