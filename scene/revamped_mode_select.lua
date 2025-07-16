@@ -195,10 +195,10 @@ end
 function ModeSelectScene:render()
 	drawBackground(0)
 
-	love.graphics.setFont(font_3x5_4)
+	love.graphics.setFont(font_8x11)
 	local b = cursorHighlight(0, 40, 50, 30)
 	love.graphics.setColor(1, 1, b, 1)
-	love.graphics.printf("<-", 0, 40, 50, "center")
+	love.graphics.printf(chars.big_left, 0, 40, 50, "center")
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_2)
 	love.graphics.draw(misc_graphics["select_mode"], 50, 44)
@@ -383,10 +383,10 @@ function ModeSelectScene:render()
 end
 
 local INPUT_SHORTHANDS = {
-	left = "<-",
-	right = "->",
-	up = "^",
-	down = "v",
+	left = chars.small_left,
+	right = chars.small_right,
+	up = chars.small_up,
+	down = chars.small_down,
 	rotate_left = "L1",
 	rotate_left2 = "L2",
 	rotate_right = "R1",

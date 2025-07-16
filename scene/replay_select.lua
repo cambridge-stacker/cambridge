@@ -132,7 +132,7 @@ function ReplaySelectScene:render()
 	if loaded_replays then
 		local b = cursorHighlight(0, 32, 40, 30)
 		love.graphics.setColor(1, 1, b, 1)
-		love.graphics.printf("<-", font_3x5_4, 0, 32, 40, "center")
+		love.graphics.printf(chars.big_left, font_8x11, 0, 32, 40, "center")
 		love.graphics.setColor(1, 1, 1, 1)
 	end
 	if not loaded_replays then

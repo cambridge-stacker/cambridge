@@ -121,7 +121,7 @@ end
 function ConfigScene:renderSettings()
 	local b = cursorHighlight(20, 40, 50, 30)
 	love.graphics.setColor(1, 1, b, 1)
-	love.graphics.printf("<-", font_3x5_4, 20, 40, 50, "center")
+	love.graphics.printf(chars.big_left, font_8x11, 20, 40, 50, "center")
 
 	love.graphics.setColor(1, 1, 1, 0.5)
 	love.graphics.rectangle("fill", 25, self.option_pos_y[self.highlight] - 2, self.options_width + 20, 22)
