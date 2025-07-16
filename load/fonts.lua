@@ -1,6 +1,6 @@
 local font_3x5_glyphs = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_" ..
 	"`abcdefghijklmnopqrstuvwxyz{|}~™АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя←↓↑→"
-local font_8x11_glyphs = " 0123456789:;.,ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz?!/\\^@$%<=>()*-+[]_&⬅⬇⬆➡"
+local font_8x11_glyphs = " 0123456789:;.,ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz?!/\\^@$%<=>()*-+[]_&⬅⬇⬆➡'\"{|}`"
 
 -- A collection of some special characters.
 chars = {
