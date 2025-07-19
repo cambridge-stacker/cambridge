@@ -13,6 +13,7 @@ function HighscoreScene:new()
 	return tostring(a):gsub("%d+",padnum) < tostring(b):gsub("%d+",padnum) end)
 	self.hash = nil
 	self.hash_highscore = nil
+	self.proc_highscore = nil
 	self.hash_id = 1
 	self.list_pointer = 1
 	self.das = 0
@@ -186,7 +187,10 @@ function HighscoreScene:selectHash()
 	self.key_sort_string = nil
 	self.sort_type = "<"
 	self.hash = self.hash_table[self.hash_id]
-	self.hash_highscore = self.highscore_formatting and self:getFormattedHighscore(self.hash) or highscores[self.hash]
+	-- hash_highscore and proc_highscore have the same keys
+	-- hash_highscore is the un/formatted data for display
+	-- proc_highscore is always unformatted for sorting
+	self.hash_highscore, self.proc_highscore = self:getHighscoreTable(self.hash, self.highscore_formatting)
 	self.highscore_length = #self.hash_highscore
 	self.scrollbar.value = 1
 	self.highscore_index, self.index_count = self.getHighscoreIndexing(self.hash_highscore)
@@ -208,7 +212,7 @@ function HighscoreScene:toggleFormatting()
 	self.key_sort_string = nil
 	self.sort_type = "<"
 	self.highscore_formatting = not self.highscore_formatting
-	self.hash_highscore = self.highscore_formatting and self:getFormattedHighscore(self.hash) or highscores[self.hash]
+	self.hash_highscore, self.proc_highscore = self:getHighscoreTable(self.hash, self.highscore_formatting)
 	self.highscore_length = #self.hash_highscore
 	self.highscore_index, self.index_count = self.getHighscoreIndexing(self.hash_highscore)
 	self.highscore_column_widths = self.getHighscoreColumnWidths(self.hash_highscore, font_3x5_2)
@@ -222,15 +226,27 @@ function HighscoreScene:toggleFormatting()
 	end
 end
 
+-- Value is either a value or a table of {value, label}
 function HighscoreScene.customFormat(key, value)
 	if key == "frames" then
 		return {key = "time", value = formatTime(value)}
 	end
+	if type(value) == "table" then
+		return {key = key, value = value.label}
+	end
 	return {key = key, value = value}
 end
 
-function HighscoreScene:getFormattedHighscore(reference)
+function HighscoreScene.getValue(key, value)
+	if type(value) == "table" then
+		return {key = key, value = value.value}
+	end
+	return {key = key, value = value}
+end
+
+function HighscoreScene:getHighscoreTable(reference, formatted)
 	local formatted_highscore = {}
+	local unformatted_highscore = {}
 	local highscore_reference = highscores[reference]
 	if type(reference) == "table" then
 		highscore_reference = reference
@@ -242,18 +258,21 @@ function HighscoreScene:getFormattedHighscore(reference)
 	end
 	for key, value in pairs(highscore_reference) do
 		local formatted_slot = {}
+		local unformatted_slot = {}
 		for k2, v2 in pairs(value) do
-			local formatted_thing = self.customFormat(k2, v2)
+			local formatted_thing = formatted and self.customFormat(k2, v2) or self.getValue(k2, v2)
 			formatted_slot[formatted_thing.key] = formatted_thing.value
+			unformatted_slot[formatted_thing.key] = self.getValue(k2, v2).value
 		end
 		formatted_highscore[key] = formatted_slot
+		unformatted_highscore[key] = unformatted_slot
 	end
-	return formatted_highscore
+	return formatted_highscore, unformatted_highscore
 end
 
 function HighscoreScene:sortByKey(key)
 	local table_content = {}
-	for k, v in pairs(self.hash_highscore) do
+	for k, v in pairs(self.proc_highscore) do
 		table_content[k] = {id = k, value = v}
 	end
 	local function padnum(d) return ("%03d%s"):format(#d, d) end
@@ -450,6 +469,7 @@ function HighscoreScene:back()
 		self.menu_list_y = 20
 		self.hash = nil
 		self.hash_highscore = nil
+		self.proc_highscore = nil
 		self.menu_slot_positions = {}
 		self.interpolated_menu_slot_positions = {}
 		self.index_count = 0
