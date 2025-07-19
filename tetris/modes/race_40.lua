@@ -12,6 +12,11 @@ Race40Game.hash = "Race40"
 Race40Game.description = "How fast can you clear 40 lines?"
 Race40Game.tags = {"Race", "Guideline", "Beginner Friendly"}
 
+Race40Game.highscoreFormat = {
+	lines = {sort = 1},  -- Ensure all completed runs appear first
+	frames = {fps = 60, sort = 2}
+}
+
 function Race40Game:new()
 	Race40Game.super:new()
 

@@ -12,6 +12,11 @@ SurvivalA2Game.hash = "SurvivalA2"
 SurvivalA2Game.description = "The game starts fast and only gets faster!"
 SurvivalA2Game.tags = {"Survival", "Arika", "20G Start"}
 
+SurvivalA2Game.highscoreFormat = {
+	level = {sort = 1},
+	frames = {fps = 60, sort = 2},
+}
+
 function SurvivalA2Game:new(secret_inputs)
 	SurvivalA2Game.super:new(secret_inputs)
 
@@ -164,7 +169,7 @@ function SurvivalA2Game:drawScoringInfo()
 		self.das.frames .. " " ..
 		strTrueValues(self.prev_inputs)
 	)
-	
+
 	love.graphics.setFont(font_3x5_2)
 	if self:getLetterGrade() ~= "" then love.graphics.printf("GRADE", text_x, 120, 40, "left") end
 	love.graphics.printf("SCORE", text_x, 200, 40, "left")

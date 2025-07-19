@@ -13,9 +13,16 @@ MarathonA1Game.hash = "MarathonA1"
 MarathonA1Game.description = "Can you score enough points to reach the title of Grand Master?"
 MarathonA1Game.tags = {"Marathon", "Arika", "Beginner Friendly"}
 
+MarathonA1Game.highscoreFormat = {
+	grade = {sort = 1},
+	score = {},
+	level = {sort = 2},
+	frames = {fps = 60, sort = 3},
+}
+
 function MarathonA1Game:new(secret_inputs)
 	MarathonA1Game.super:new(secret_inputs)
-	
+
 	if type(secret_inputs) == "table" then
 		for key, value in pairs(secret_inputs) do
 			if value == true then
@@ -36,7 +43,7 @@ function MarathonA1Game:new(secret_inputs)
 		"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
 		"GM"
 	}
-	
+
 	self.randomizer = History4RollsRandomizer()
 
 	self.additive_gravity = false
@@ -45,7 +52,7 @@ function MarathonA1Game:new(secret_inputs)
 	self.enable_hold = false
 	self.next_queue_length = 1
 
-	self.grade = {rank = "9", next = 400}
+	self.grade = {rank = "9", next = 400, index = 0}
 end
 
 function MarathonA1Game:getARE()
@@ -69,23 +76,23 @@ function MarathonA1Game:getLockDelay()
 end
 
 local function getRankForScore(score)
-		if score <	400 then return {rank = "9", next = 400}
-	elseif score <	800 then return {rank = "8", next = 800}
-	elseif score <   1400 then return {rank = "7", next = 1400}
-	elseif score <   2000 then return {rank = "6", next = 2000}
-	elseif score <   3500 then return {rank = "5", next = 3500}
-	elseif score <   5500 then return {rank = "4", next = 5500}
-	elseif score <   8000 then return {rank = "3", next = 8000}
-	elseif score <  12000 then return {rank = "2", next = 12000}
-	elseif score <  16000 then return {rank = "1", next = 16000}
-	elseif score <  22000 then return {rank = "S1", next = 22000}
-	elseif score <  30000 then return {rank = "S2", next = 30000}
-	elseif score <  40000 then return {rank = "S3", next = 40000}
-	elseif score <  52000 then return {rank = "S4", next = 52000}
-	elseif score <  66000 then return {rank = "S5", next = 66000}
-	elseif score <  82000 then return {rank = "S6", next = 82000}
-	elseif score < 100000 then return {rank = "S7", next = 100000}
-	elseif score < 120000 then return {rank = "S8", next = 120000}
+		if score <	400 then return {rank = "9", next = 400, index = 0}
+	elseif score <	800 then return {rank = "8", next = 800, index = 1}
+	elseif score <   1400 then return {rank = "7", next = 1400, index = 2}
+	elseif score <   2000 then return {rank = "6", next = 2000, index = 3}
+	elseif score <   3500 then return {rank = "5", next = 3500, index = 4}
+	elseif score <   5500 then return {rank = "4", next = 5500, index = 5}
+	elseif score <   8000 then return {rank = "3", next = 8000, index = 6}
+	elseif score <  12000 then return {rank = "2", next = 12000, index = 7}
+	elseif score <  16000 then return {rank = "1", next = 16000, index = 8}
+	elseif score <  22000 then return {rank = "S1", next = 22000, index = 9}
+	elseif score <  30000 then return {rank = "S2", next = 30000, index = 10}
+	elseif score <  40000 then return {rank = "S3", next = 40000, index = 11}
+	elseif score <  52000 then return {rank = "S4", next = 52000, index = 12}
+	elseif score <  66000 then return {rank = "S5", next = 66000, index = 13}
+	elseif score <  82000 then return {rank = "S6", next = 82000, index = 14}
+	elseif score < 100000 then return {rank = "S7", next = 100000, index = 15}
+	elseif score < 120000 then return {rank = "S8", next = 120000, index = 16}
 	else return {rank = "S9", next = "???"}
 	end
 end
@@ -221,7 +228,7 @@ function MarathonA1Game:drawScoringInfo()
 	love.graphics.printf("NEXT RANK", text_x, 260, 90, "left")
 	love.graphics.printf("LEVEL", text_x, 320, 40, "left")
 	local sg = self.grid:checkSecretGrade()
-	if sg >= 5 then 
+	if sg >= 5 then
 		love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
 	end
 
@@ -241,7 +248,7 @@ function MarathonA1Game:drawScoringInfo()
 		love.graphics.printf(self.SGnames[sg], 240, 450, 180, "left")
 	end
 	if self.bravos > 0 then love.graphics.printf(self.bravos, text_x + 60, 140, 40, "left") end
-	
+
 	love.graphics.setFont(font_8x11)
 	love.graphics.printf(formatTime(self.frames), 64, 420, 160, "center")
 end
@@ -256,8 +263,15 @@ function MarathonA1Game:getBackground()
 end
 
 function MarathonA1Game:getHighscoreData()
+	local grade_label
+	if self.gm_conditions["level300"] and self.gm_conditions["level500"] and self.gm_conditions["level999"] then
+		grade_label = "GM"
+	else
+		grade_label = self.grade.rank
+	end
+
 	return {
-		grade = self.grade.rank,
+		grade = {value = self.grade.index, label = grade_label},
 		score = self.score,
 		level = self.level,
 		frames = self.frames,

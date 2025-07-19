@@ -13,6 +13,12 @@ SakuraGame.hash = "SakuraA3"
 SakuraGame.description = "Clear away the Gem Blocks as fast as possible!"
 SakuraGame.tags = {"Arika", "Puzzle", "Beginner Friendly"}
 
+SakuraGame.highscoreFormat = {
+	current_map = {sort = 1, name = "Stage"},
+	maps = {name = "Stages Cleared"},
+	frames = {fps = 60, sort = 2},
+}
+
 local b = {
 	["r"] = { skin = "2tie", colour = "R" },
 	["o"] = { skin = "2tie", colour = "O" },
@@ -398,7 +404,7 @@ function SakuraGame:advanceOneFrame(inputs, ruleset)
 			else self.time_extend = 0 end
 		end
 
-		if not has_gem_blocks or 
+		if not has_gem_blocks or
 		(self.skipped and self.skip_delay <= 0) or
 		(self.stage_frames >= 3600 and self.piece == nil
 		and self.current_map <= 20) then
@@ -503,7 +509,7 @@ function SakuraGame:getStageString()
 end
 
 function SakuraGame:getStageShort()
-	
+
 	if self.current_map > 20 then
 		return "EX".. self.current_map - 20
 	else
@@ -679,9 +685,15 @@ function SakuraGame:getBackground()
 end
 
 function SakuraGame:getHighscoreData()
+	local map
+	if self.maps_cleared == 27 then
+		map = "ALL"
+	else
+		map = self:getStageString()
+	end
 	return {
 		maps = self.maps_cleared,
-		current_map = self.current_map,
+		current_map = {value = self.current_map, label = map},
 		frames = self.frames,
 	}
 end

@@ -12,6 +12,12 @@ Survival2020Game.hash = "Survival2020"
 Survival2020Game.description = "A new time limit on the blocks! Can you handle being forced to perform under the total delay?"
 Survival2020Game.tags = {"Survival", "Cambridge"}
 
+Survival2020Game.highscoreFormat = {
+	grade = {sort = 1},
+	level = {sort = 2},
+	frames = {fps = 60, sort = 3},
+}
+
 function Survival2020Game:new()
 	Survival2020Game.super:new()
 	self.level = 0
@@ -262,7 +268,7 @@ function Survival2020Game:getHighscoreData()
 	return {
 		level = self.level,
 		frames = self.frames,
-		grade = self.grade,
+		grade = {value = self.grade, label = getLetterGrade(math.floor(self.grade))},
 	}
 end
 

@@ -12,6 +12,12 @@ SurvivalA3Game.hash = "SurvivalA3"
 SurvivalA3Game.description = "The blocks turn black and white! Can you make it to level 1300?"
 SurvivalA3Game.tags = {"Survival", "Arika", "20G Start", "Gimmick"}
 
+SurvivalA3Game.highscoreFormat = {
+	grade = {sort = 1},
+	level = {sort = 2},
+	frames = {fps = 60, sort = 3},
+}
+
 function SurvivalA3Game:new(secret_inputs)
 	SurvivalA3Game.super:new(secret_inputs)
 
@@ -274,7 +280,7 @@ function SurvivalA3Game:getHighscoreData()
 	return {
 		level = self.level,
 		frames = self.frames,
-		grade = self.grade,
+		grade = {value = self.grade, label = getLetterGrade(self.grade)},
 	}
 end
 
