@@ -12,7 +12,7 @@ Survival2020Game.hash = "Survival2020"
 Survival2020Game.description = "A new time limit on the blocks! Can you handle being forced to perform under the total delay?"
 Survival2020Game.tags = {"Survival", "Cambridge"}
 
-Survival2020Game.highscoreFormat = {
+Survival2020Game.highscore_format = {
 	grade = {sort = 1},
 	level = {sort = 2},
 	frames = {fps = 60, sort = 3},

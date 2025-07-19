@@ -12,7 +12,7 @@ PhantomMania2Game.hash = "PhantomMania2"
 PhantomMania2Game.description = "The blocks disappear even faster now! Can you make it to level 1300?"
 PhantomMania2Game.tags = {"Invisible Stack", "Survival", "Gimmick", "Cambridge"}
 
-PhantomMania2Game.highscoreFormat = {
+PhantomMania2Game.highscore_format = {
 	grade = {sort = 1},
 	level = {sort = 2},
 	frames = {fps = 60, sort = 3},

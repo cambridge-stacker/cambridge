@@ -12,7 +12,7 @@ Race40Game.hash = "Race40"
 Race40Game.description = "How fast can you clear 40 lines?"
 Race40Game.tags = {"Race", "Guideline", "Beginner Friendly"}
 
-Race40Game.highscoreFormat = {
+Race40Game.highscore_format = {
 	lines = {sort = 1},  -- Ensure all completed runs appear first
 	frames = {fps = 60, sort = 2}
 }

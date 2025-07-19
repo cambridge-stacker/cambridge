@@ -12,7 +12,7 @@ Marathon2020Game.hash = "Marathon2020"
 Marathon2020Game.description = "2020 levels of pure pain! Can you achieve the World Master rank?"
 Marathon2020Game.tags = {"Marathon", "Cambridge"}
 
-Marathon2020Game.highscoreFormat = {
+Marathon2020Game.highscore_format = {
 	grade = {sort = 1},
 	level = {sort = 2},
 	frames = {fps = 60, sort = 3},

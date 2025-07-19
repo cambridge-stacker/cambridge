@@ -16,7 +16,7 @@ GameMode.hash = ""
 GameMode.description = ""
 GameMode.rollOpacityFunction = function(age) return 0 end
 
-GameMode.highscoreFormat = {
+GameMode.highscore_format = {
 	-- List out all the columns of the highscore here.
 	-- Used for PTB leaderboards.
 

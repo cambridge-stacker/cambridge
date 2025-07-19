@@ -13,7 +13,7 @@ SakuraGame.hash = "SakuraA3"
 SakuraGame.description = "Clear away the Gem Blocks as fast as possible!"
 SakuraGame.tags = {"Arika", "Puzzle", "Beginner Friendly"}
 
-SakuraGame.highscoreFormat = {
+SakuraGame.highscore_format = {
 	current_map = {sort = 1, name = "Stage"},
 	maps = {name = "Stages Cleared"},
 	frames = {fps = 60, sort = 2},

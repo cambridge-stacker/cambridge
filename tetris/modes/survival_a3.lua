@@ -12,7 +12,7 @@ SurvivalA3Game.hash = "SurvivalA3"
 SurvivalA3Game.description = "The blocks turn black and white! Can you make it to level 1300?"
 SurvivalA3Game.tags = {"Survival", "Arika", "20G Start", "Gimmick"}
 
-SurvivalA3Game.highscoreFormat = {
+SurvivalA3Game.highscore_format = {
 	grade = {sort = 1},
 	level = {sort = 2},
 	frames = {fps = 60, sort = 3},

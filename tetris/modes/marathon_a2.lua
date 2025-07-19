@@ -12,7 +12,7 @@ MarathonA2Game.hash = "MarathonA2"
 MarathonA2Game.description = "The points don't matter! Can you reach the invisible roll?"
 MarathonA2Game.tags = {"Marathon", "Arika"}
 
-MarathonA2Game.highscoreFormat = {
+MarathonA2Game.highscore_format = {
 	grade = {sort = 1},
 	score = {},
 	level = {sort = 2},

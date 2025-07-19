@@ -13,7 +13,7 @@ MarathonA1Game.hash = "MarathonA1"
 MarathonA1Game.description = "Can you score enough points to reach the title of Grand Master?"
 MarathonA1Game.tags = {"Marathon", "Arika", "Beginner Friendly"}
 
-MarathonA1Game.highscoreFormat = {
+MarathonA1Game.highscore_format = {
 	grade = {sort = 1},
 	score = {},
 	level = {sort = 2},

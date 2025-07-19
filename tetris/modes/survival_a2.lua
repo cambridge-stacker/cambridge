@@ -12,7 +12,7 @@ SurvivalA2Game.hash = "SurvivalA2"
 SurvivalA2Game.description = "The game starts fast and only gets faster!"
 SurvivalA2Game.tags = {"Survival", "Arika", "20G Start"}
 
-SurvivalA2Game.highscoreFormat = {
+SurvivalA2Game.highscore_format = {
 	level = {sort = 1},
 	frames = {fps = 60, sort = 2},
 }

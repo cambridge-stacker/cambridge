@@ -12,7 +12,7 @@ MarathonA3Game.hash = "MarathonA3"
 MarathonA3Game.description = "The game gets faster way more quickly! Can you get all the Section COOLs?"
 MarathonA3Game.tags = {"Marathon", "Arika"}
 
-MarathonA3Game.highscoreFormat = {
+MarathonA3Game.highscore_format = {
 	grade = {sort = 1},
 	level = {sort = 2},
 	frames = {fps = 60, sort = 3},
