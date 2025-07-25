@@ -934,6 +934,7 @@ function GameMode:drawNextQueue(ruleset)
 			ruleset.block_offsets[self.hold_queue.shape][self.hold_queue.orientation],
 			-16, -32
 		)
+		love.graphics.printf("HOLD", 32, 8, 40, "left")
 	end
 	return false
 end
