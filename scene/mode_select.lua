@@ -580,7 +580,7 @@ function ModeSelectScene:getFromSelectedTags(selected_tags, select_type)
 		root_folder = rulesets
 	end
 	if next(selected_tags) == nil then
-		return select_type == "ruleset" and self.ruleset_folder_selections[#self.ruleset_folder_selections] or self.game_mode_selections[#self.game_mode_selections]
+		return select_type == "ruleset" and self.ruleset_folder_selections[#self.ruleset_folder_selections].folder or self.game_mode_selections[#self.game_mode_selections].folder
 	end
 	local result_folder = {}
 	for k, v in pairs(selected_tags) do

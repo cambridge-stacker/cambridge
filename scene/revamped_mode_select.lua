@@ -317,7 +317,7 @@ function ModeSelectScene:render()
 				love.graphics.setColor(r, 1, b, fadeoutAtEdges(
 					-self.menu_mode_y + pos_y + 20,
 					160,
-					20) * (sel_idx / #self.game_mode_selections))
+					20) * ((sel_idx+1) / (#self.game_mode_selections+1)))
 				drawWrappingText(mode.name,
 				40 + (sel_idx - #self.game_mode_selections) * 10, (260 - self.menu_mode_y) + pos_y, 200, "left")
 			end
@@ -343,7 +343,7 @@ function ModeSelectScene:render()
 				love.graphics.setColor(r, 1, b, fadeoutAtEdges(
 					-self.menu_ruleset_x + 120 * idx + offset,
 					240,
-					120) * (sel_idx / #self.ruleset_folder_selections)
+					120) * ((sel_idx+1) / (#self.ruleset_folder_selections+1))
 				)
 				drawWrappingText(ruleset.name,
 				260 - self.menu_ruleset_x + 120 * idx + offset, 440 - (sel_idx - #self.ruleset_folder_selections) * 10, 120, "center")
@@ -356,64 +356,6 @@ function ModeSelectScene:render()
 	end
 	if #self.ruleset_folder == 0 then
 		love.graphics.printf("Empty folder!", 380 - self.menu_ruleset_x + latest_ruleset_selection.index * 120, 440, 120, "center")
-	end
-	for idx, mode in ipairs(self.game_mode_folder) do
-		if(idx >= self.menu_mode_y / 20 - 10 and
-		   idx <= self.menu_mode_y / 20 + 10) then
-			local b = 1
-			if mode.is_directory then
-				b = 0.4
-			end
-			local highlight = cursorHighlight(
-				0,
-				(260 - self.menu_mode_y) + 20 * idx,
-				260,
-				20)
-			local r = mode.is_tag and 0 or 1
-			if highlight < 0.5 then
-				r = 1-highlight
-				b = highlight
-			end
-			if idx == self.menu_state.mode and self.starting then
-				b = self.start_frames % 10 > 4 and 0 or 1
-			end
-			love.graphics.setColor(r, 1, b, fadeoutAtEdges(
-				-self.menu_mode_y + 20 * idx + 20,
-				160,
-				20))
-			drawWrappingText(mode.name,
-			40, (260 - self.menu_mode_y) + 20 * idx, 200, "left")
-			if table.contains(self.game_mode_tags, mode) then
-				love.graphics.rectangle("fill", 20, (260 - self.menu_mode_y) + 20 * idx, 10, 20)
-			end
-		end
-	end
-	for idx, ruleset in ipairs(self.ruleset_folder) do
-		if(idx >= self.menu_ruleset_x / 120 - 3 and
-		   idx <= self.menu_ruleset_x / 120 + 3) then
-			local b = 1
-			if ruleset.is_directory then
-				b = 0.4
-			end
-			local highlight = cursorHighlight(
-				260 - self.menu_ruleset_x + 120 * idx, 440,
-				120, 20)
-			local r = ruleset.is_tag and 0 or 1
-			if highlight < 0.5 then
-				r = 1-highlight
-				b = highlight
-			end
-			love.graphics.setColor(r, 1, b, fadeoutAtEdges(
-				-self.menu_ruleset_x + 120 * idx,
-				240,
-				120)
-			)
-			drawWrappingText(ruleset.name,
-			260 - self.menu_ruleset_x + 120 * idx, 440, 120, "center")
-			if table.contains(self.ruleset_tags, ruleset) then
-				love.graphics.rectangle("fill", 270 - self.menu_ruleset_x + 120 * idx, 456, 100, 4)
-			end
-		end
 	end
 	if self.game_mode_folder[self.menu_state.mode]
 	and self.game_mode_folder[self.menu_state.mode].ruleset_override then
@@ -580,7 +522,7 @@ function ModeSelectScene:getFromSelectedTags(selected_tags, select_type)
 		root_folder = rulesets
 	end
 	if next(selected_tags) == nil then
-		return select_type == "ruleset" and self.ruleset_folder_selections[#self.ruleset_folder_selections] or self.game_mode_selections[#self.game_mode_selections]
+		return select_type == "ruleset" and self.ruleset_folder_selections[#self.ruleset_folder_selections].folder or self.game_mode_selections[#self.game_mode_selections].folder
 	end
 	local result_folder = {}
 	for k, v in pairs(selected_tags) do
