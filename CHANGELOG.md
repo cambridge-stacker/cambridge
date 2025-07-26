@@ -3,6 +3,10 @@
 - Attempted to fix more crashes related to the lack of secret inputs
 - Fixed secret inputs not being passed through on Big A1, Big A2, and Sakura
 - Fixed clearBottomRows function
+- Added 3rd option for Stretch Background option, Image Ratio
+- Added more descriptions, and tweaks to the existing ones
+- 3x5 and 8x11 fonts now have extra glyphs
+- Updated the Tutorial Keybinder, to add introduction on how to use it
 - T.B.D
 
 # v0.4.4.1:
