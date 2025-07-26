@@ -12,6 +12,13 @@ MarathonA2Game.hash = "MarathonA2"
 MarathonA2Game.description = "The points don't matter! Can you reach the invisible roll?"
 MarathonA2Game.tags = {"Marathon", "Arika"}
 
+MarathonA2Game.highscore_format = {
+	grade = {sort = 1},
+	score = {},
+	level = {sort = 2},
+	frames = {fps = 60, sort = 3},
+}
+
 function MarathonA2Game:new(secret_inputs)
 	MarathonA2Game.super:new(secret_inputs)
 
@@ -414,7 +421,7 @@ end
 
 function MarathonA2Game:getHighscoreData()
 	return {
-		grade = grade_conversion[self.grade],
+		grade = {value = grade_conversion[self.grade], label = self:getLetterGrade()},
 		score = self.score,
 		level = self.level,
 		frames = self.frames,
