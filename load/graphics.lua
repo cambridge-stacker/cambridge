@@ -193,20 +193,21 @@ misc_graphics_paths = {
 	icon = "res/img/cambridge_transparent"
 }
 local current_background_drawn
--- This gives the position and size of a rectange, for a background, with either the aspect ratio of 4:3, or screen's aspect ratio, or the currently drawn background's aspect ratio.
+-- This gives the position and size of a rectange, for a background, with either the aspect ratio of 4:3, or screen's aspect ratio, or the currently drawn background's aspect ratio while fitting the window.
 function getBackgroundRectDimensions()
 	local x, y, w, h = 0, 0, 640, 480
+	local window_x, window_y, window_width, window_height = 0, 0, 0, 0
+	window_x, window_y = love.graphics.inverseTransformPoint(0, 0)
+	window_width, window_height = love.graphics.getDimensions()
+	local window_scale_factor = math.min(window_width / 640, window_height / 480)
+	window_width, window_height = window_width / window_scale_factor, window_height / window_scale_factor
 	if config.visualsettings.stretch_background == 2 then
-		x, y = love.graphics.inverseTransformPoint(0, 0)
-		local window_width, window_height = love.graphics.getDimensions()
-		local scale_factor = math.min(window_width / 640, window_height / 480)
-		w, h = window_width / scale_factor, window_height / scale_factor
-	end
-	if config.visualsettings.stretch_background == 3 then
+		return window_x, window_y, window_width, window_height
+	elseif config.visualsettings.stretch_background == 3 then
 		local image_x, image_y = current_background_drawn:getDimensions()
 		local scale_factor = math.min(image_x / 640, image_y / 480)
-		w, h = image_x / scale_factor, image_y / scale_factor
-		x, y = (-w / 2) + 320, (-h / 2) + 240
+		w, h = math.min(window_width, image_x / scale_factor), math.min(window_height, image_y / scale_factor)
+		x, y = math.max(window_x, (-w / 2) + 320), math.max(window_y, (-h / 2) + 240)
 	end
 	return x, y, w, h
 end
