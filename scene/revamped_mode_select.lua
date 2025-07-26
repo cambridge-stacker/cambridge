@@ -1,15 +1,18 @@
 local ModeSelectScene = Scene:extend()
 
-ModeSelectScene.title = "Mode list"
+ModeSelectScene.title = "Game Start"
 
 function ModeSelectScene:new()
 	-- reload custom modules
 	initModules()
 	if highscores == nil then highscores = {} end
-	self.game_mode_folder = game_modes
-	self.game_mode_selections = {{index = 0, folder = game_modes, positions = {}, offset = 0, root = true}}
 	self.ruleset_folder = rulesets
+	self.game_mode_tags = self:loadTags(game_modes, "mode")
+	self.game_mode_selections = {{index = 0, folder = game_modes, positions = {}, offset = 0, root = true}}
+	self.game_mode_folder = self:getFromSelectedTags(self.game_mode_tags, "mode")
+	self.ruleset_tags = self:loadTags(rulesets, "ruleset")
 	self.ruleset_folder_selections = {{index = 0, folder = rulesets, positions = {}, offset = 0, root = true}}
+	self.ruleset_folder = self:getFromSelectedTags(self.ruleset_tags, "ruleset")
 	self.menu_state = {}
 	if #self.game_mode_folder == 0 or #self.ruleset_folder == 0 then
 		self.display_warning = true
@@ -43,6 +46,9 @@ function ModeSelectScene:new()
 	self.interpolated_menu_slot_positions = {}
 	--#endregion
 	self.secret_inputs = {}
+	self.secret_sequence = {}
+	self.sequencing_start_frames = 0
+	self.input_timers = {}
 	self.das_x, self.das_y = 0, 0
 	self.menu_mode_y = 20
 	self.menu_ruleset_x = 20
@@ -57,6 +63,18 @@ function ModeSelectScene:new()
 		state = "Chosen ??? and ???.",
 		largeImageKey = "ingame-000"
 	})
+end
+
+function ModeSelectScene:loadTags(folder, tag_type)
+	local tags = {}
+	for key, value in ipairs(folder) do
+		for k2, v2 in pairs(current_tags[tag_type]) do
+			if (table.contains(value, v2.name) and value.is_tag) then
+				tags[k2] = value
+			end
+		end
+	end
+	return tags
 end
 
 local menu_DAS_hold = {["up"] = 0, ["down"] = 0, ["left"] = 0, ["right"] = 0}
@@ -88,6 +106,39 @@ end
 
 function ModeSelectScene:update()
 	switchBGM(nil)
+	for key, value in pairs(self.input_timers) do
+		self.input_timers[key] = value - 1
+		if value < 0 then
+			self.input_timers[key] = nil
+		end
+	end
+	if self.input_timers["reload"] == 0 then
+		unloadModules()
+		scene = ModeSelectScene()
+		scene.reload_time_remaining = 90
+		playSE("ihs")
+	end
+	if self.input_timers["secret_sequencing"] == 0 then
+		self.is_sequencing = true
+		self.first_input = true
+	end
+	if self.input_timers["stop_sequencing"] == 0 then
+		self.is_sequencing = false
+	end
+	if self.input_timers["reset_tags"] == 0 then
+		self.game_mode_tags = {}
+		self.ruleset_tags = {}
+		self.game_mode_folder = self.game_mode_selections[#self.game_mode_selections]
+		self.ruleset_folder = self.ruleset_folder_selections[#self.ruleset_folder_selections]
+		playSE("ihs")
+		self.text_tag_deselect_timer = 60
+	end
+
+	if self.is_sequencing then
+		self.sequencing_start_frames = math.min(self.sequencing_start_frames + 1, 20)
+	else
+		self.sequencing_start_frames = math.max(self.sequencing_start_frames - 1, 0)
+	end
 	self.safety_frames = self.safety_frames - 1
 	if self.starting then
 		self.start_frames = self.start_frames + 1
@@ -166,10 +217,10 @@ end
 function ModeSelectScene:render()
 	drawBackground(0)
 
-	love.graphics.setFont(font_3x5_4)
+	love.graphics.setFont(font_8x11)
 	local b = cursorHighlight(0, 40, 50, 30)
 	love.graphics.setColor(1, 1, b, 1)
-	love.graphics.printf("<-", 0, 40, 50, "center")
+	love.graphics.printf(chars.big_left, 0, 40, 50, "center")
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_2)
 	love.graphics.draw(misc_graphics["select_mode"], 50, 44)
@@ -205,7 +256,7 @@ function ModeSelectScene:render()
 	if 	self.game_mode_folder[self.menu_state.mode]
 	and not self.game_mode_folder[self.menu_state.mode].is_directory then
 		love.graphics.printf(
-			"Tagline: "..(self.game_mode_folder[mode_selected].tagline or "Missing."),
+			"Description: "..(self.game_mode_folder[mode_selected].description or "Missing."),
 			 280, 40, 360, "left")
 	end
 	if type(self.mode_highscore) == "table" then
@@ -306,6 +357,64 @@ function ModeSelectScene:render()
 	if #self.ruleset_folder == 0 then
 		love.graphics.printf("Empty folder!", 380 - self.menu_ruleset_x + latest_ruleset_selection.index * 120, 440, 120, "center")
 	end
+	for idx, mode in ipairs(self.game_mode_folder) do
+		if(idx >= self.menu_mode_y / 20 - 10 and
+		   idx <= self.menu_mode_y / 20 + 10) then
+			local b = 1
+			if mode.is_directory then
+				b = 0.4
+			end
+			local highlight = cursorHighlight(
+				0,
+				(260 - self.menu_mode_y) + 20 * idx,
+				260,
+				20)
+			local r = mode.is_tag and 0 or 1
+			if highlight < 0.5 then
+				r = 1-highlight
+				b = highlight
+			end
+			if idx == self.menu_state.mode and self.starting then
+				b = self.start_frames % 10 > 4 and 0 or 1
+			end
+			love.graphics.setColor(r, 1, b, fadeoutAtEdges(
+				-self.menu_mode_y + 20 * idx + 20,
+				160,
+				20))
+			drawWrappingText(mode.name,
+			40, (260 - self.menu_mode_y) + 20 * idx, 200, "left")
+			if table.contains(self.game_mode_tags, mode) then
+				love.graphics.rectangle("fill", 20, (260 - self.menu_mode_y) + 20 * idx, 10, 20)
+			end
+		end
+	end
+	for idx, ruleset in ipairs(self.ruleset_folder) do
+		if(idx >= self.menu_ruleset_x / 120 - 3 and
+		   idx <= self.menu_ruleset_x / 120 + 3) then
+			local b = 1
+			if ruleset.is_directory then
+				b = 0.4
+			end
+			local highlight = cursorHighlight(
+				260 - self.menu_ruleset_x + 120 * idx, 440,
+				120, 20)
+			local r = ruleset.is_tag and 0 or 1
+			if highlight < 0.5 then
+				r = 1-highlight
+				b = highlight
+			end
+			love.graphics.setColor(r, 1, b, fadeoutAtEdges(
+				-self.menu_ruleset_x + 120 * idx,
+				240,
+				120)
+			)
+			drawWrappingText(ruleset.name,
+			260 - self.menu_ruleset_x + 120 * idx, 440, 120, "center")
+			if table.contains(self.ruleset_tags, ruleset) then
+				love.graphics.rectangle("fill", 270 - self.menu_ruleset_x + 120 * idx, 456, 100, 4)
+			end
+		end
+	end
 	if self.game_mode_folder[self.menu_state.mode]
 	and self.game_mode_folder[self.menu_state.mode].ruleset_override then
 		love.graphics.setColor(0, 0, 0, 0.75)
@@ -313,14 +422,107 @@ function ModeSelectScene:render()
 		love.graphics.setColor(1, 1, 1, 1)
 		love.graphics.printf("This mode overrides the chosen ruleset!", 0, 440, 640, "center")
 	end
-	if self.reload_time_remaining and self.reload_time_remaining > 0 then
-		love.graphics.setColor(1, 1, 1, self.reload_time_remaining / 60)
-		love.graphics.printf("Modules reloaded!", 0, 10, 640, "center")
-		self.reload_time_remaining = self.reload_time_remaining - 1
+	local sequencing_start_frames = self.sequencing_start_frames
+	if sequencing_start_frames > 0 then
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.printf("Secret sequence: " .. self:getSequenceShorthand(), 10, -95 + sequencing_start_frames * 5, 620, "left")
+	end
+	local function drawFadingTextNearHeader(timer, string, decay_time)
+		if timer then
+			love.graphics.setColor(1, 1, 1, 1 - timer / decay_time)
+			love.graphics.printf(string, 0, 10, 640, "center")
+		end
+	end
+	drawFadingTextNearHeader(60 - (self.reload_time_remaining or 0), "Modules reloaded!", 60)
+	if self.reload_time_remaining then self.reload_time_remaining = self.reload_time_remaining - 1 end
+	drawFadingTextNearHeader(self.input_timers["reload"], "Keep holding Generic 1 to reload modules...", 60)
+	drawFadingTextNearHeader(self.input_timers["secret_sequencing"], "Keep holding Generic 2 to input secret sequences...", 40)
+	drawFadingTextNearHeader(self.input_timers["stop_sequencing"], "Keep holding to stop sequencing...", 40)
+	drawFadingTextNearHeader(self.input_timers["reset_tags"], "Keep holding Generic 3 to reset all tag selections....", 40)
+	drawFadingTextNearHeader(60 - (self.text_tag_deselect_timer or 0), "You've deselected all tags.", 60)
+	if self.text_tag_deselect_timer then self.text_tag_deselect_timer = self.text_tag_deselect_timer - 1 end
+	love.graphics.setColor(1, 1, 1, 1)
+end
+
+local INPUT_SHORTHANDS = {
+	left = chars.small_left,
+	right = chars.small_right,
+	up = chars.small_up,
+	down = chars.small_down,
+	rotate_left = "L1",
+	rotate_left2 = "L2",
+	rotate_right = "R1",
+	rotate_right2 = "R2",
+	rotate_180 = "180",
+	hold = "H",
+	generic_1 = "G1",
+	generic_2 = "G2",
+	generic_3 = "G3",
+	generic_4 = "G4",
+}
+function ModeSelectScene:getSequenceShorthand()
+	local shorthands = {}
+	for index, value in ipairs(self.secret_sequence) do
+		if INPUT_SHORTHANDS[value] then
+			table.insert(shorthands, INPUT_SHORTHANDS[value])
+		else
+			table.insert(shorthands, value)
+		end
+	end
+	return table.concat(shorthands, " ")
+end
+
+function ModeSelectScene:injectSecretSequenceOnMatch(mode)
+	if type(mode.sequences) == "table" then
+		for name, sequence in pairs(mode.sequences) do
+			if type(sequence) == "table" then
+				local matches_required = #sequence
+				local matches_found = 0
+				for k2, v2 in pairs(self.secret_sequence) do
+					if sequence[matches_found+1] == v2 then
+						matches_found = matches_found + 1
+					elseif matches_found < matches_required then
+						matches_found = sequence[1] == v2 and 1 or 0
+					end
+				end
+				if matches_found >= matches_required then
+					self.secret_inputs[name] = true
+				end
+			end
+		end
 	end
 end
 
+function ModeSelectScene:handleTagSelection(select_tag)
+	local selected_tag = false
+	local tag_select_type
+	if self.ruleset_folder[self.menu_state.ruleset].is_tag and select_tag == "ruleset" then
+		tag_select_type = self.handleTagFolder(self.ruleset_folder, self.ruleset_tags, self.menu_state.ruleset)
+		self.ruleset_folder = self:getFromSelectedTags(self.ruleset_tags, "ruleset")
+		selected_tag = true
+	elseif self.game_mode_folder[self.menu_state.mode].is_tag then
+		tag_select_type = self.handleTagFolder(self.game_mode_folder, self.game_mode_tags, self.menu_state.mode)
+		self.game_mode_folder = self:getFromSelectedTags(self.game_mode_tags, "mode")
+		selected_tag = true
+	elseif self.ruleset_folder[self.menu_state.ruleset].is_tag and select_tag == "mode" then
+		tag_select_type = self.handleTagFolder(self.ruleset_folder, self.ruleset_tags, self.menu_state.ruleset)
+		self.ruleset_folder = self:getFromSelectedTags(self.ruleset_tags, "ruleset")
+		selected_tag = true
+	end
+	if selected_tag then
+		if tag_select_type then
+			playSE("main_decide")
+		else
+			playSE("menu_cancel")
+		end
+	end
+	return selected_tag
+end
+
 function ModeSelectScene:indirectStartMode()
+	if self:handleTagSelection("ruleset") then
+		return
+	end
 	if self.ruleset_folder[self.menu_state.ruleset].is_directory then
 		playSE("main_decide")
 		self:menuGoForward("ruleset")
@@ -343,15 +545,60 @@ end
 function ModeSelectScene:startMode()
 	current_mode = self.menu_state.mode
 	current_ruleset = self.menu_state.ruleset
+	current_tags = {mode = self.game_mode_tags, ruleset = self.ruleset_tags}
 	config.current_mode = current_mode
 	config.current_ruleset = current_ruleset
 	config.current_folder_selections = current_folder_selections
+	config.current_tags = current_tags
 	saveConfig()
+	self:injectSecretSequenceOnMatch(self.game_mode_folder[self.menu_state.mode])
 	scene = GameScene(
 		self.game_mode_folder[self.menu_state.mode],
 		self.ruleset_folder[self.menu_state.ruleset],
 		self.secret_inputs
 	)
+end
+
+function ModeSelectScene.handleTagFolder(folder, tags, state)
+	local toggle = false
+	if folder[state].is_tag then
+		local name = folder[state].name
+		if tags[name] == nil then
+			tags[name] = folder[state]
+			toggle = true
+		else
+			tags[name] = nil
+		end
+	end
+	return toggle
+end
+
+
+function ModeSelectScene:getFromSelectedTags(selected_tags, select_type)
+	local root_folder = game_modes
+	if select_type == "ruleset" then
+		root_folder = rulesets
+	end
+	if next(selected_tags) == nil then
+		return select_type == "ruleset" and self.ruleset_folder_selections[#self.ruleset_folder_selections] or self.game_mode_selections[#self.game_mode_selections]
+	end
+	local result_folder = {}
+	for k, v in pairs(selected_tags) do
+		for k2, v2 in pairs(v) do
+			if not table.contains(result_folder, v2) and type(v2) == "table" then
+				table.insert(result_folder, v2)
+			end
+		end
+	end
+	local function padnum(d) return ("%03d%s"):format(#d, d) end
+	table.sort(result_folder, function(a,b)
+	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
+	for index, value in ipairs(root_folder) do
+		if value.is_tag and not value.tags then
+			table.insert(result_folder, index, value)
+		end
+	end
+	return result_folder
 end
 
 function ModeSelectScene:menuGoBack(menu_type)
@@ -403,18 +650,22 @@ function ModeSelectScene:exitScene()
 	scene = TitleScene()
 end
 
+local SYSTEM_INPUTS = {
+	menu_decide = true,
+	menu_back = true,
+	menu_left = true,
+	menu_right = true,
+	menu_up = true,
+	menu_down = true,
+	mode_exit = true,
+	retry = true,
+	pause = true,
+	frame_step = true,
+}
+
 function ModeSelectScene:onInputPress(e)
 	if self.safety_frames > 0 then
 		return
-	end
-	if e.scancode == "lctrl" or e.scancode == "rctrl" then
-		self.ctrl_held = true
-	end
-	if e.scancode == "r" and self.ctrl_held then
-		unloadModules()
-		scene = ModeSelectScene()
-		scene.reload_time_remaining = 90
-		playSE("ihs")
 	end
 	if (e.input or e.scancode) and (self.display_warning or #self.game_mode_folder == 0 or #self.ruleset_folder == 0) then
 		if self.display_warning then
@@ -424,11 +675,14 @@ function ModeSelectScene:onInputPress(e)
 		else
 			self:menuGoBack("ruleset")
 		end
+	elseif self.is_sequencing and e.type ~= "wheel" then
+		self.input_timers["stop_sequencing"] = 60
 	elseif e.input == "menu_back" then
 		local has_started = self.starting
 		if self.starting then
 			self.starting = false
 			self.start_frames = 0
+			self.secret_inputs = {}
 			return
 		end
 		playSE("menu_cancel")
@@ -471,6 +725,9 @@ function ModeSelectScene:onInputPress(e)
 			if e.x < 260 then
 				self.auto_mode_offset = math.floor((e.y - 260)/20)
 				if self.auto_mode_offset == 0 then
+					if self:handleTagSelection("mode") then
+						return
+					end
 					if self.game_mode_folder[self.menu_state.mode].is_directory then
 						playSE("main_decide")
 						self:menuGoForward("mode")
@@ -483,13 +740,16 @@ function ModeSelectScene:onInputPress(e)
 		else
 			self.auto_ruleset_offset = math.floor((e.x - 260)/120)
 			if self.auto_ruleset_offset == 0 and self.ruleset_folder[self.menu_state.ruleset].is_directory then
+				if self:handleTagSelection("ruleset") then
+					return
+				end
 				playSE("main_decide")
 				self:menuGoForward("ruleset")
 				self:refreshHighscores()
 			end
 		end
 	elseif self.starting then return
-	elseif e.type == "wheel" then
+	elseif e.type == "wheel" and not self.is_sequencing then
 		if #self.ruleset_folder == 0 or #self.game_mode_folder == 0 then
 			return
 		end
@@ -516,11 +776,30 @@ function ModeSelectScene:onInputPress(e)
 	elseif e.input then
 		self.secret_inputs[e.input] = true
 	end
+	if not self.is_sequencing then
+		if e.input == "generic_1" then
+			self.input_timers["reload"] = 60
+		elseif e.input == "generic_2" then
+			self.input_timers["secret_sequencing"] = 60
+		elseif e.input == "generic_3" then
+			self.input_timers["reset_tags"] = 60
+		end
+	end
 end
 
 function ModeSelectScene:onInputRelease(e)
-	if e.scancode == "lctrl" or e.scancode == "rctrl" then
-		self.ctrl_held = false
+	if self.is_sequencing then
+		self.input_timers["stop_sequencing"] = nil
+		if not self.first_input and not SYSTEM_INPUTS[e.input] then
+			table.insert(self.secret_sequence, e.input)
+		end
+		self.first_input = false
+	elseif e.input == "generic_1" then
+		self.input_timers["reload"] = nil
+	elseif e.input == "generic_2" then
+		self.input_timers["secret_sequencing"] = nil
+	elseif e.input == "generic_3" then
+		self.input_timers["reset_tags"] = nil
 	end
 	if e.input == "menu_up" then
 		self.das_up = nil
@@ -530,7 +809,7 @@ function ModeSelectScene:onInputRelease(e)
 		self.das_left = nil
 	elseif e.input == "menu_right" then
 		self.das_right = nil
-	elseif e.input then
+	elseif e.input and not self.starting then
 		self.secret_inputs[e.input] = false
 	end
 end
@@ -622,6 +901,7 @@ function ModeSelectScene:changeMode(rel)
 	playSE("cursor")
 	self.menu_state.mode = Mod1(self.menu_state.mode + rel, len)
 	self:refreshHighscores()
+	self.secret_sequence = {}
 end
 
 function ModeSelectScene:changeRuleset(rel)

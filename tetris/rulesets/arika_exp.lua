@@ -5,6 +5,7 @@ local ARS = Ruleset:extend()
 
 ARS.name = "ARS-X"
 ARS.hash = "ArikaEXP"
+ARS.description = "ARS, but with 180 spins."
 
 ARS.MANIPULATIONS_MAX = 24
 ARS.ROTATIONS_MAX = 12
@@ -45,5 +46,7 @@ function ARS:onPieceRotate(piece, grid, upward)
 		end
 	end
 end
+
+function ARS:get180RotationValue() return 2 end
 
 return ARS

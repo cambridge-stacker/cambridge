@@ -5,6 +5,7 @@ local ARS = Ruleset:extend()
 
 ARS.name = "Ti-ARS"
 ARS.hash = "ArikaTI"
+ARS.description = "A slightly more permissive version of ARS, from TGM3."
 
 ARS.synchroes = true
 -- Component functions.

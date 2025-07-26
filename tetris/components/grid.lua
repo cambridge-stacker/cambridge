@@ -61,6 +61,25 @@ function Grid:isRowFull(row)
 	return true
 end
 
+function Grid:getTallestColumnHeight()
+	for y, row in pairs(self.grid) do
+		for x, square in pairs(row) do
+			if self:isOccupied(x-1, y-1) then
+				return self.height + 1 - y
+			end
+		end
+	end
+end
+
+function Grid:getColumnHeight(x)
+	for y = 1, self.height do
+		if self:isOccupied(x-1, y-1) then
+			return self.height + 1 - y
+		end
+	end
+	return 0
+end
+
 ---@nodiscard
 function Grid:canPlacePiece(piece)
 	if piece.big then
@@ -223,8 +242,14 @@ function Grid:clearBlock(x, y)
 end
 
 function Grid:clearBottomRows(num)
-	for i = self.height, self.height - num + 1, -1 do
-		self:clearSpecificRow(i)
+	if num <= 0 then return end
+	if num >= self.height then self:clear() return end
+	for above_row = self.height, num + 1, -1 do
+		self.grid[above_row] = self.grid[above_row - num]
+		self.grid_age[above_row] = self.grid_age[above_row - num]
+		self.grid[above_row - num] = {}
+		self.grid_age[above_row - num] = {}
+		self:clearSpecificRow(above_row-num)
 	end
 end
 

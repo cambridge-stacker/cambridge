@@ -37,6 +37,23 @@ function loadImageTable(image_table, path_table)
 	end
 end
 
+---@param image love.Texture
+---@param origin_x integer
+---@param origin_y integer
+---@param draw_width integer
+---@param draw_height integer
+function drawSizeIndependentImage(image, origin_x, origin_y, r, draw_width, draw_height, offset_x, offset_y, ...)
+	offset_x = offset_x or 0
+	offset_y = offset_y or 0
+	local width, height = image:getDimensions()
+	local width_scale_factor = width / draw_width
+	local height_scale_factor = height / draw_height
+	love.graphics.draw(image, origin_x, origin_y, r, 1/width_scale_factor, 1/height_scale_factor, offset_x*width_scale_factor, offset_y*height_scale_factor, ...)
+end
+
+--- this exists for less unnecessary typing
+drawImage = drawSizeIndependentImage
+
 backgrounds = {}
 backgrounds_paths = {
 	title = "res/backgrounds/title",
@@ -175,11 +192,9 @@ misc_graphics_paths = {
 	santa = "res/img/santa",
 	icon = "res/img/cambridge_transparent"
 }
-
--- Utility function to allow any size background to be used.
--- This will stretch the background to either 4:3, or screen's aspect ratio.
-function drawBackground(id)
-	local bg_object = fetchBackgroundAndLoop(id)
+local current_background_drawn
+-- This gives the position and size of a rectange, for a background, with either the aspect ratio of 4:3, or screen's aspect ratio, or the currently drawn background's aspect ratio.
+function getBackgroundRectDimensions()
 	local x, y, w, h = 0, 0, 640, 480
 	if config.visualsettings.stretch_background == 2 then
 		x, y = love.graphics.inverseTransformPoint(0, 0)
@@ -187,5 +202,21 @@ function drawBackground(id)
 		local scale_factor = math.min(window_width / 640, window_height / 480)
 		w, h = window_width / scale_factor, window_height / scale_factor
 	end
+	if config.visualsettings.stretch_background == 3 then
+		local image_x, image_y = current_background_drawn:getDimensions()
+		local scale_factor = math.min(image_x / 640, image_y / 480)
+		w, h = image_x / scale_factor, image_y / scale_factor
+		x, y = (-w / 2) + 320, (-h / 2) + 240
+	end
+	return x, y, w, h
+end
+
+-- Utility function to allow any size background to be used.
+-- This will stretch the background to either 4:3, or screen's aspect ratio, or the drawable's aspect ratio.
+function drawBackground(id)
+	---@type love.Image
+	local bg_object = fetchBackgroundAndLoop(id)
+	current_background_drawn = bg_object
+	local x, y, w, h = getBackgroundRectDimensions()
 	drawSizeIndependentImage(bg_object, x, y, 0, w, h)
 end

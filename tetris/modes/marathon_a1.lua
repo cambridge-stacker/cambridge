@@ -10,13 +10,19 @@ local MarathonA1Game = GameMode:extend()
 
 MarathonA1Game.name = "Marathon A1"
 MarathonA1Game.hash = "MarathonA1"
-MarathonA1Game.tagline = "Can you score enough points to reach the title of Grand Master?"
+MarathonA1Game.description = "Can you score enough points to reach the title of Grand Master?"
+MarathonA1Game.tags = {"Marathon", "Arika", "Beginner Friendly"}
 
-
-
-function MarathonA1Game:new()
-	MarathonA1Game.super:new()
+function MarathonA1Game:new(secret_inputs)
+	MarathonA1Game.super:new(secret_inputs)
 	
+	if type(secret_inputs) == "table" then
+		for key, value in pairs(secret_inputs) do
+			if value == true then
+				self.secret_erasure = true
+			end
+		end
+	end
 	self.roll_frames = 0
 	self.combo = 1
 	self.bravos = 0
@@ -38,6 +44,8 @@ function MarathonA1Game:new()
 	self.enable_hard_drop = false
 	self.enable_hold = false
 	self.next_queue_length = 1
+
+	self.grade = {rank = "9", next = 400}
 end
 
 function MarathonA1Game:getARE()
@@ -118,6 +126,11 @@ function MarathonA1Game:getGravity()
 end
 
 function MarathonA1Game:advanceOneFrame()
+	if self.secret_erasure then
+		for i = 1, 3 do
+			self.grid:clearSpecificRow(i)
+		end
+	end
 	if self.clear then
 		self.roll_frames = self.roll_frames + 1
 		if self.roll_frames > 2968 then
@@ -162,6 +175,9 @@ function MarathonA1Game:updateScore(level, drop_bonus, cleared_lines)
 			self.combo = 1
 		end
 		self.drop_bonus = 0
+		if self.grade.rank ~= "S9" and self.score > self.grade.next then
+			self.grade = getRankForScore(self.score)
+		end
 	end
 end
 
@@ -192,40 +208,39 @@ function MarathonA1Game:drawScoringInfo()
 	MarathonA1Game.super.drawScoringInfo(self)
 	love.graphics.setColor(1, 1, 1, 1)
 
-	love.graphics.setFont(font_3x5)
-	love.graphics.print(
-		self.das.direction .. " " ..
-		self.das.frames .. " " ..
-		strTrueValues(self.prev_inputs)
-	)
+	local text_x = config["side_next"] and 320 or 240
 
 	love.graphics.setFont(font_3x5_2)
-	love.graphics.printf("NEXT", 64, 40, 40, "left")
-	love.graphics.printf("GRADE", 240, 120, 40, "left")
-	love.graphics.printf("SCORE", 240, 200, 40, "left")
-	love.graphics.printf("NEXT RANK", 240, 260, 90, "left")
-	love.graphics.printf("LEVEL", 240, 320, 40, "left")
+	if config["side_next"] then
+		love.graphics.printf("NEXT", 240, 72, 40, "left")
+	else
+		love.graphics.printf("NEXT", 64, 40, 40, "left")
+	end
+	love.graphics.printf("GRADE", text_x, 120, 40, "left")
+	love.graphics.printf("SCORE", text_x, 200, 40, "left")
+	love.graphics.printf("NEXT RANK", text_x, 260, 90, "left")
+	love.graphics.printf("LEVEL", text_x, 320, 40, "left")
 	local sg = self.grid:checkSecretGrade()
 	if sg >= 5 then 
 		love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
 	end
 
-	if self.bravos > 0 then love.graphics.printf("BRAVO", 300, 120, 40, "left") end
+	if self.bravos > 0 then love.graphics.printf("BRAVO", text_x + 60, 120, 40, "left") end
 
 	love.graphics.setFont(font_3x5_3)
-	love.graphics.printf(self.score, 240, 220, 90, "left")
+	love.graphics.printf(self.score, text_x, 220, 90, "left")
 	if self.gm_conditions["level300"] and self.gm_conditions["level500"] and self.gm_conditions["level999"] then
-		love.graphics.printf("GM", 240, 140, 90, "left")
+		love.graphics.printf("GM", text_x, 140, 90, "left")
 	else
-		love.graphics.printf(getRankForScore(self.score).rank, 240, 140, 90, "left")
+		love.graphics.printf(self.grade.rank, text_x, 140, 90, "left")
 	end
-	love.graphics.printf(getRankForScore(self.score).next, 240, 280, 90, "left")
-	love.graphics.printf(self.level, 240, 340, 40, "right")
-	love.graphics.printf(self:getSectionEndLevel(), 240, 370, 40, "right")
+	love.graphics.printf(self.grade.next, text_x, 280, 90, "left")
+	love.graphics.printf(self.level, text_x, 340, 40, "right")
+	love.graphics.printf(self:getSectionEndLevel(), text_x, 370, 40, "right")
 	if sg >= 5 then
 		love.graphics.printf(self.SGnames[sg], 240, 450, 180, "left")
 	end
-	if self.bravos > 0 then love.graphics.printf(self.bravos, 300, 140, 40, "left") end
+	if self.bravos > 0 then love.graphics.printf(self.bravos, text_x + 60, 140, 40, "left") end
 	
 	love.graphics.setFont(font_8x11)
 	love.graphics.printf(formatTime(self.frames), 64, 420, 160, "center")
@@ -242,7 +257,7 @@ end
 
 function MarathonA1Game:getHighscoreData()
 	return {
-		grade = self.grade,
+		grade = self.grade.rank,
 		score = self.score,
 		level = self.level,
 		frames = self.frames,

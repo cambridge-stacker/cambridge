@@ -15,7 +15,7 @@ ConfigScene.options = {
 		config_name = "master_volume",
 		display_name = "Master Volume",
 		type = "slider",
-		description = "This will affect all sound sources. ALL OF IT.",
+		description = "The overall volume of all sound effects and music.",
 		default = 100,
 		min = 0,
 		max = 100,
@@ -32,6 +32,7 @@ ConfigScene.options = {
 		config_name = "sfx_volume",
 		display_name = "SFX Volume",
 		type = "slider",
+		description = "The volume of sound effects (e.g. line clears, movement, menu scrolling).",
 		default = 50,
 		min = 0,
 		max = 100,
@@ -47,6 +48,7 @@ ConfigScene.options = {
 		config_name = "bgm_volume",
 		display_name = "BGM Volume",
 		type = "slider",
+		description = "The volume of background music (if the gamemode supports it).",
 		default = 50,
 		min = 0,
 		max = 100,
@@ -62,8 +64,9 @@ ConfigScene.options = {
 		config_name = "sound_sources",
 		display_name = "Simult. SFX sources",
 		type = "slider",
-		description = "High values may result in high memory consumption, though it allows multiples of the same sound effect to be played at once." ..
-		"\n(There's some exceptions, e.g. SFX added through modes/rulesets)",
+		description = [[
+The amount of instances of the same sound effect that may be played at once. High values may result in high memory consumption.
+(There are some exceptions in which this slider has no effect: for instance, SFX added through modes or rulesets.)]],
 		default = 10,
 		min = 1,
 		max = 30,
@@ -73,6 +76,14 @@ ConfigScene.options = {
 		setter = function(v)
 			config.audiosettings.sound_sources = math.floor(v)
 		end,
+	},
+	{
+		config_name = "next_piece_sound",
+		display_name = "Next Piece Sound",
+		type = "options",
+		description = "Whether or not to play next piece sounds. May be overridden by certain modes.",
+		default = 1,
+		options = {"On", "Off"}
 	}
 }
 local optioncount = #ConfigScene.options

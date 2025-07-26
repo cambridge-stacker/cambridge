@@ -5,6 +5,7 @@ local SRS = Ruleset:extend()
 
 SRS.name = "SRS-X"
 SRS.hash = "StandardEXP"
+SRS.description = "SRS with sonic drop and more powerful 180 spins, made famous by Nullpomino/Heboris."
 SRS.world = true
 SRS.colourscheme = {
 	I = "C",

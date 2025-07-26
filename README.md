@@ -5,9 +5,9 @@ Cambridge
 
 Welcome to Cambridge, the next open-source falling-block game engine!
 
-The project is written and maintained by [joezeng](https://github.com/joezeng), [Milla](https://github.com/MillaBasset), [Oshisaure](https://github.com/oshisaure), and a team of contributors at the [Cambridge Discord][discord]!
+The project is written and maintained by [joezeng](https://github.com/joezeng), [Milla](https://github.com/MillaBasset), [Oshisaure](https://github.com/oshisaure), [Tetro48](https://github.com/Tetro48), and a team of contributors at the [Cambridge Discord][discord]!
 
-The [Discord server][discord] has been reopened!
+You can join the project's [Discord server][discord]!
 
 Playing the game
 ----------------
@@ -24,7 +24,7 @@ All assets needed are bundled with the executable.
 
 #### Bleeding edge
 
-If you want the bleeding edge version, download [this](https://github.com/cambridge-stacker/cambridge/archive/master.zip). Extract the ZIP to a folder of your choosing.
+If you want the bleeding edge version, download [this](https://github.com/cambridge-stacker/cambridge/archive/main.zip). Extract the ZIP to a folder of your choosing.
 
 If you're on Windows, you can double-click `start.bat` to run the game. If that doesn't work, open a Command Prompt where you extracted Cambridge and run:
 
@@ -78,10 +78,11 @@ listed in the file SOURCES.
 Credits
 -------
   
+- [Tetro48](https://github.com/Tetro48) for developing and maintaining the project since 2022!
 - [Milla Basset](https://github.com/MillaBasset) for reviving the project and maintaining it from 2020 to 2024!
 - [Lilla Oshisaure](https://www.youtube.com/user/LeSpyroshisaure) for development support and help!
 - [joezeng](https://github.com/joezeng) for the original project, and for offering to help with the expansion!
-- [The Tetra Legends Discord](http://discord.com/invite/7hMx5r2) for support and playtesting!
+- ~~[The Tetra Legends Discord](http://discord.com/invite/7hMx5r2)~~ (defunct) for support and playtesting!
 - [The Absolute Plus](https://discord.gg/6Gf2awJ) for support!
 
 More special thanks can be found in-game, under the "Credits" menu.

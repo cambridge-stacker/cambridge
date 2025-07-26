@@ -5,6 +5,7 @@ local ARS = Ruleset:extend()
 
 ARS.name = "Classic ARS"
 ARS.hash = "Arika"
+ARS.description = "The classic Arika Rotation System, from TGM1 and TGM2/TAP."
 
 ARS.spawn_positions = {
 	I = { x=5, y=4 },

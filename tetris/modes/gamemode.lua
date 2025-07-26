@@ -13,7 +13,7 @@ local GameMode = Object:extend()
 
 GameMode.name = ""
 GameMode.hash = ""
-GameMode.tagline = ""
+GameMode.description = ""
 GameMode.rollOpacityFunction = function(age) return 0 end
 
 ---@param secret_inputs table
@@ -174,6 +174,7 @@ function GameMode:saveReplay()
 	replay["pause_count"] = self.pause_count
 	replay["pause_time"] = self.pause_time
 	replay["pause_timestamps"] = self.pause_timestamps
+	replay["rerecords"] = self.rerecords
 	if love.filesystem.getInfo("replays") == nil then
 		love.filesystem.createDirectory("replays")
 	end
@@ -727,17 +728,13 @@ function GameMode:initializeNextPiece(
 		table.remove(self.next_queue, 1)
 		table.insert(self.next_queue, self:getNextPiece(ruleset))
 	end
-	self:playNextSound(ruleset)
+	if config.audiosettings.next_piece_sound == 1 then
+		self:playNextSound(ruleset)
+	end
 end
 
 function GameMode:playNextSound(ruleset)
 	playSE("blocks", ruleset.next_sounds[self.next_queue[1].shape])
-end
-
-function GameMode:getHighScoreData()
-	return {
-		score = self.score
-	}
 end
 
 function GameMode:animation(x, y, skin, colour)
@@ -910,15 +907,23 @@ function GameMode:drawNextQueue(ruleset)
 			drawSizeIndependentImage(blocks[skin][colourscheme[piece]], pos_x+x*16, pos_y+y*16, 0, 16, 16)
 		end
 	end
+	local is_obscured = false
+	if not config.side_next and config.visualsettings.offset_obscured == 2 and self.piece and self.piece.position.y < 4 then
+		is_obscured = true
+	end
 	for i = 1, self.next_queue_length do
+		local next_queue_position = i
 		self:setNextOpacity(i)
 		local next_piece = self.next_queue[i].shape
 		local skin = self.next_queue[i].skin
 		local rotation = self.next_queue[i].orientation
+		if is_obscured then
+			next_queue_position = next_queue_position + 1
+		end
 		if config.side_next then -- next at side
-			drawPiece(next_piece, skin, ruleset.block_offsets[next_piece][rotation], 192, -16+i*48)
+			drawPiece(next_piece, skin, ruleset.block_offsets[next_piece][rotation], 192, -16+next_queue_position*48)
 		else -- next at top
-			drawPiece(next_piece, skin, ruleset.block_offsets[next_piece][rotation], -16+i*80, -32)
+			drawPiece(next_piece, skin, ruleset.block_offsets[next_piece][rotation], -16+next_queue_position*80, -32)
 		end
 	end
 	if self.hold_queue ~= nil and self.enable_hold then
@@ -1052,13 +1057,14 @@ end
 function GameMode:drawBackground()
 	local id = self:getBackground()
 	if type(id) == "number" then id = clamp(id, 0, #backgrounds) end
-	love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.setColor(1, 1, 1, config.background_brightness)
 	drawBackground(id)
 end
 
 function GameMode:drawFrame()
 	-- game frame
 	if self.grid.width == 10 and self.grid.height == 24 then
+		love.graphics.setColor(1, 1, 1, 1)
 		love.graphics.draw(misc_graphics["frame"], 48, 64)
 	else
 		love.graphics.setColor(174/255, 83/255, 76/255, 1)

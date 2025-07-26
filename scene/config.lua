@@ -10,12 +10,13 @@ require 'libs.simple-slider'
 ---@field config_name string
 ---@field display_name string
 ---@field description string?
----@field options table?
+---@field option_descriptions string[]?
+---@field options string[]?
 ---@field default number
 ---@field increase_by number?
 ---@field min number?
 ---@field max number?
----@field format string?
+---@field format string|function?
 ---@field sound_effect_name string?
 ---@field setter function?
 ---@field type "slider"|"options"|"number"
@@ -24,7 +25,7 @@ local config_option
 ---@type settings_config_option[]
 ConfigScene.options = {
 	-- Option types: slider, options, number
-	-- Format if type is options:	{name in config, displayed name, type, description, options}
+	-- Format if type is options:	{name in config, displayed name, type, description, default, options}
 	-- Format if otherwise:      	{name in config, displayed name, type, description, default, min, max, increase by, string format, sound effect name, setter function}
 }
 
@@ -45,9 +46,9 @@ function ConfigScene:new(width)
 	self.highlight = 1
 	self.options_width = width or 150
 	self.option_pos_y = {}
-
+	
 	--#region Init option positions and sliders
-
+	
 	self.sliders = {}
 	local y = 100
 	for idx, option in ipairs(self.options) do
@@ -63,7 +64,8 @@ function ConfigScene:new(width)
 		end
 	end
 	--#endregion
-
+	
+	self.description_y = y + (self.spacing or 20) + 10
 	self.vertical_das = 0
 	self.horizontal_das = 0
 
@@ -119,7 +121,7 @@ end
 function ConfigScene:renderSettings()
 	local b = cursorHighlight(20, 40, 50, 30)
 	love.graphics.setColor(1, 1, b, 1)
-	love.graphics.printf("<-", font_3x5_4, 20, 40, 50, "center")
+	love.graphics.printf(chars.big_left, font_8x11, 20, 40, 50, "center")
 
 	love.graphics.setColor(1, 1, 1, 0.5)
 	love.graphics.rectangle("fill", 25, self.option_pos_y[self.highlight] - 2, self.options_width + 20, 22)
@@ -136,9 +138,13 @@ function ConfigScene:renderSettings()
 			self:drawNumber(i, option)
 		end
 	end
-	if self.options[self.highlight].description then
+	if self.options[self.highlight].option_descriptions then
 		love.graphics.setColor(1, 1, 1, 1)
-		love.graphics.printf("Description: " .. self.options[self.highlight].description, 20, 380, 600, "left")
+		local option_selected = config[self.config_type][self.options[self.highlight].config_name]
+		love.graphics.printf(self.options[self.highlight].option_descriptions[option_selected], 20, self.description_y, 600, "left")
+	elseif self.options[self.highlight].description then
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.printf(self.options[self.highlight].description, 20, self.description_y, 600, "left")
 	end
 end
 
@@ -152,7 +158,13 @@ function ConfigScene:drawNumber(idx, option)
 	local pos_x = 90 + self.options_width
 	local width = 510 - self.options_width
 	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.printf(string.format(option.format,self.sliders[option.config_name]:getValue()), pos_x, self.option_pos_y[idx], width, "center")
+	local formatted_string = option
+	if type(option.format) == "function" then
+		formatted_string = option.format(config[self.config_type][option.config_name])
+	elseif type(option.format) == "string" then
+		formatted_string = string.format(option.format, config[self.config_type][option.config_name])
+	end
+	love.graphics.printf(formatted_string, pos_x, self.option_pos_y[idx], width, "center")
 end
 
 function ConfigScene:drawOptions(idx, option)
@@ -172,7 +184,12 @@ function ConfigScene:changeValue(by)
 		local x, y = getScaledDimensions(love.mouse.getPosition())
 		sld:update(x, y)
 	elseif option.type == "options" then
-		config[self.config_type][option.config_name] = Mod1(config[self.config_type][option.config_name]+by, #option.options)
+		local new_value = Mod1(config[self.config_type][option.config_name]+by, #option.options)
+		if option.setter then
+			option.setter(new_value)
+		else
+			config[self.config_type][option.config_name] = new_value
+		end
 	else
 		local new_value = Mod1(config[self.config_type][option.config_name] + by-option.min, option.max - option.min) + option.min
 		if option.setter then
@@ -203,7 +220,12 @@ function ConfigScene:onInputPress(e)
 					if cursorHoverArea(initial_pos_x + 110 * j, self.option_pos_y[i], 90, 20) then
 						self.main_menu_state = i
 						playSE(option.sound_effect_name or "cursor_lr")
-						config[self.config_type][option.config_name] = Mod1(j, #option.options)
+						local new_value = Mod1(j, #option.options)
+						if option.setter then
+							option.setter(new_value)
+						else
+							config[self.config_type][option.config_name] = new_value
+						end
 					end
 				end
 			end
@@ -228,6 +250,7 @@ function ConfigScene:onInputPress(e)
 		self.das_right = true
 	elseif e.input == "menu_back" then
 		playSE("menu_cancel")
+		createToast(self.title, "Reverted changes.")
 		loadSave()
 		self:onCancel()
 		scene = SettingsScene()

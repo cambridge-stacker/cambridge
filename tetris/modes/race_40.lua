@@ -9,8 +9,8 @@ local Race40Game = GameMode:extend()
 
 Race40Game.name = "Race 40"
 Race40Game.hash = "Race40"
-Race40Game.tagline = "How fast can you clear 40 lines?"
-
+Race40Game.description = "How fast can you clear 40 lines?"
+Race40Game.tags = {"Race", "Guideline", "Beginner Friendly"}
 
 function Race40Game:new()
 	Race40Game.super:new()
@@ -118,7 +118,6 @@ function Race40Game:drawScoringInfo()
 	local text_x = config["side_next"] and 320 or 240
 
 	love.graphics.setFont(font_3x5_2)
-	love.graphics.printf("NEXT", 64, 40, 40, "left")
 	love.graphics.printf("LINES", text_x, 320, 40, "left")
 	love.graphics.printf("line/min", text_x, 160, 80, "left")
 	love.graphics.printf("piece/sec", text_x, 220, 80, "left")

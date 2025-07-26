@@ -5,6 +5,7 @@ local SRS = Ruleset:extend()
 
 SRS.name = "ACE-SRS"
 SRS.hash = "StandardACE"
+SRS.description = "A slightly modified version SRS that permits up to 128 manipulations before locking, from TGM Ace."
 SRS.world = true
 SRS.colourscheme = {
 	I = "C",

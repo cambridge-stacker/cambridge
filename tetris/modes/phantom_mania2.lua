@@ -9,13 +9,20 @@ local PhantomMania2Game = GameMode:extend()
 
 PhantomMania2Game.name = "Phantom Mania 2"
 PhantomMania2Game.hash = "PhantomMania2"
-PhantomMania2Game.tagline = "The blocks disappear even faster now! Can you make it to level 1300?"
+PhantomMania2Game.description = "The blocks disappear even faster now! Can you make it to level 1300?"
+PhantomMania2Game.tags = {"Invisible Stack", "Survival", "Gimmick", "Cambridge"}
 
+function PhantomMania2Game:new(secret_inputs)
+	PhantomMania2Game.super:new(secret_inputs)
 
+	if type(secret_inputs) == "table" then
+		for key, value in pairs(secret_inputs) do
+			if value == true then
+				self.secret_erasure = true
+			end
+		end
+	end
 
-
-function PhantomMania2Game:new()
-	PhantomMania2Game.super:new()
 	self.grade = 0
 	self.garbage = 0
 	self.clear = false
@@ -112,6 +119,11 @@ function PhantomMania2Game:hitTorikan(old_level, new_level)
 end
 
 function PhantomMania2Game:advanceOneFrame()
+	if self.secret_erasure then
+		for i = 1, 3 do
+			self.grid:clearSpecificRow(i)
+		end
+	end
 	if self.clear then
 		self.roll_frames = self.roll_frames + 1
 		if self.roll_frames < 0 then
