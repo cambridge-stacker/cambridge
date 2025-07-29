@@ -17,11 +17,11 @@ function ModeSelectScene:new()
 	-- reload custom modules
 	initModules()
 	self.game_mode_tags = self:loadTags(game_modes, "mode")
-	self.game_mode_selections = {{index = 0, folder = game_modes, positions = {}, offset = 0, root = true}}
 	self.game_mode_folder = self:getFromSelectedTags(self.game_mode_tags, "mode")
+	self.game_mode_selections = {{index = 0, folder = self.game_mode_folder, positions = {}, offset = 0, root = true}}
 	self.ruleset_tags = self:loadTags(rulesets, "ruleset")
-	self.ruleset_folder_selections = {{index = 0, folder = rulesets, positions = {}, offset = 0, root = true}}
 	self.ruleset_folder = self:getFromSelectedTags(self.ruleset_tags, "ruleset")
+	self.ruleset_folder_selections = {{index = 0, folder = self.ruleset_folder, positions = {}, offset = 0, root = true}}
 	self.menu_state = {}
 	if #self.game_mode_folder == 0 or #self.ruleset_folder == 0 then
 		self.display_warning = true
@@ -134,8 +134,18 @@ function ModeSelectScene:update()
 	if self.input_timers["reset_tags"] == 0 then
 		self.game_mode_tags = {}
 		self.ruleset_tags = {}
-		self.game_mode_folder = self.game_mode_selections[#self.game_mode_selections]
-		self.ruleset_folder = self.ruleset_folder_selections[#self.ruleset_folder_selections]
+		if #self.game_mode_selections > 1 then
+			self.game_mode_folder = self.game_mode_selections[#self.game_mode_selections].folder
+		else
+			self.game_mode_folder = self:getFromSelectedTags(self.game_mode_tags, "mode")
+			self.game_mode_selections[1].folder = self.game_mode_folder
+		end
+		if #self.ruleset_folder_selections > 1 then
+			self.ruleset_folder = self.ruleset_folder_selections[#self.ruleset_folder_selections].folder
+		else
+			self.ruleset_folder = self:getFromSelectedTags(self.ruleset_tags, "ruleset")
+			self.ruleset_folder_selections[1].folder = self.ruleset_folder
+		end
 		playSE("ihs")
 		self.text_tag_unselect_timer = 60
 	end
@@ -236,14 +246,12 @@ function ModeSelectScene:render()
 	local description_y = tagline_position == 1 and (5 - sequencing_start_frames * 5) or 420
 	local render_list_size = tagline_position == 2 and 18 or 20
 
-	if tagline_position ~= 3
-	and self.game_mode_folder[self.menu_state.mode]
-	and not self.game_mode_folder[self.menu_state.mode].is_directory then
-		if self.menu_state.select == "mode" then
+	if tagline_position ~= 3 then
+		if self.menu_state.select == "mode" and self.game_mode_folder[mode_selected] and not self.game_mode_folder[mode_selected].is_directory then
 			love.graphics.printf(
 			self.game_mode_folder[mode_selected].description or "(no description provided)",
 			 10, description_y, 620, "left")
-		elseif self.menu_state.select == "ruleset" then
+		elseif self.menu_state.select == "ruleset" and self.ruleset_folder[ruleset_selected] and not self.ruleset_folder[ruleset_selected].is_directory then
 			love.graphics.printf(
 			self.ruleset_folder[ruleset_selected].description or "(no description provided)",
 			 10, description_y, 620, "left")
@@ -273,24 +281,6 @@ function ModeSelectScene:render()
 
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_2)
-	local mode_path_name = ""
-	if #self.game_mode_selections > 1 then
-		for index, value in ipairs(self.game_mode_selections) do
-			mode_path_name = mode_path_name..(value.name or "modes").." > "
-		end
-		love.graphics.printf(
-			"Path: "..mode_path_name:sub(1, -3),
-			 40, 220 - self.menu_mode_height, 200, "left")
-	end
-	local ruleset_path_name = ""
-	if #self.ruleset_folder_selections > 1 then
-		for index, value in ipairs(self.ruleset_folder_selections) do
-			ruleset_path_name = ruleset_path_name..(value.name or "rulesets").." > "
-		end
-		love.graphics.printf(
-			"Path: "..ruleset_path_name:sub(1, -3),
-			 360, 220 - self.menu_ruleset_height, 200, "left")
-	end
 	local fade_offset = tagline_position == 2 and -20 or 0
 	if #self.game_mode_folder == 0 then
 		love.graphics.printf("No modes in this folder!", 40, 280 - self.menu_mode_height + latest_mode_selection.index * 20, 260, "left")
@@ -324,31 +314,12 @@ function ModeSelectScene:render()
 				love.graphics.setColor(r,1,b,fadeoutAtEdges(
 					-self.menu_mode_height + pos_y - fade_offset,
 					render_list_size * 10 - 20,
-					20) * (sel_idx / #self.game_mode_selections))
+					20) * ((sel_idx+1) / (#self.game_mode_selections+1)))
 				drawWrappingText(mode.name,
 				40 + (sel_idx - #self.game_mode_selections) * 10, (260 - self.menu_mode_height) + pos_y, 200, "left")
-			end
-			local highlight = cursorHighlight(
-				0,
-				(260 - self.menu_mode_height) + 20 * idx,
-				320,
-				20)
-			local r = mode.is_tag and 0 or 1
-			if highlight < 0.5 then
-				r = 1-highlight
-				b = highlight
-			end
-			if idx == self.menu_state.mode and self.starting then
-				b = self.start_frames % 10 > 4 and 0 or 1
-			end
-			love.graphics.setColor(r,1,b,fadeoutAtEdges(
-				-self.menu_mode_height + 20 * idx - fade_offset,
-				render_list_size * 10 - 20,
-				20))
-			drawWrappingText(mode.name,
-			40, (260 - self.menu_mode_height) + 20 * idx, 200, "left")
-			if table.contains(self.game_mode_tags, mode) then
-				love.graphics.rectangle("fill", 20, (259 - self.menu_mode_height) + 20 * idx, 10, 20)
+				if table.contains(self.game_mode_tags, mode) then
+					love.graphics.rectangle("fill", 20, (259 - self.menu_mode_height) + 20 * idx, 10, 20)
+				end
 			end
 		end
 	end
@@ -375,30 +346,13 @@ function ModeSelectScene:render()
 				love.graphics.setColor(r, 1, b, fadeoutAtEdges(
 					-self.menu_ruleset_height + pos_y - fade_offset,
 					render_list_size * 10 - 20,
-					20) * (sel_idx / #self.ruleset_folder_selections)
+					20) * ((sel_idx+1) / (#self.ruleset_folder_selections+1))
 				)
 				drawWrappingText(ruleset.name,
 				360 - (sel_idx - #self.ruleset_folder_selections) * 10, (260 - self.menu_ruleset_height) + pos_y, 160, "left")
-			end
-			local highlight = cursorHighlight(
-				320,
-				(260 - self.menu_ruleset_height) + 20 * idx,
-				320,
-				20)
-			local r = ruleset.is_tag and 0 or 1
-			if highlight < 0.5 then
-				r = 1-highlight
-				b = highlight
-			end
-			love.graphics.setColor(r, 1, b, fadeoutAtEdges(
-				-self.menu_ruleset_height + 20 * idx - fade_offset,
-				render_list_size * 10 - 20,
-				20)
-			)
-			drawWrappingText(ruleset.name,
-			360, (260 - self.menu_ruleset_height) + 20 * idx, 160, "left")
-			if table.contains(self.ruleset_tags, ruleset) then
-				love.graphics.rectangle("fill", 340, (259 - self.menu_ruleset_height) + 20 * idx, 10, 20)
+				if table.contains(self.ruleset_tags, ruleset) then
+					love.graphics.rectangle("fill", 340, (259 - self.menu_ruleset_height) + 20 * idx, 10, 20)
+				end
 			end
 		end
 	end
@@ -486,14 +440,17 @@ function ModeSelectScene:handleTagSelection(select_type)
 	if self.ruleset_folder[self.menu_state.ruleset].is_tag and select_type == "ruleset" then
 		tag_select_type = self.handleTagFolder(self.ruleset_folder, self.ruleset_tags, self.menu_state.ruleset)
 		self.ruleset_folder = self:getFromSelectedTags(self.ruleset_tags, "ruleset")
+		self.ruleset_folder_selections[1].folder = self.ruleset_folder
 		selected_tag = true
 	elseif self.game_mode_folder[self.menu_state.mode].is_tag then
 		tag_select_type = self.handleTagFolder(self.game_mode_folder, self.game_mode_tags, self.menu_state.mode)
 		self.game_mode_folder = self:getFromSelectedTags(self.game_mode_tags, "mode")
+		self.game_mode_selections[1].folder = self.game_mode_folder
 		selected_tag = true
 	elseif self.ruleset_folder[self.menu_state.ruleset].is_tag and select_type == "mode" then
 		tag_select_type = self.handleTagFolder(self.ruleset_folder, self.ruleset_tags, self.menu_state.ruleset)
 		self.ruleset_folder = self:getFromSelectedTags(self.ruleset_tags, "ruleset")
+		self.ruleset_folder_selections[1].folder = self.ruleset_folder
 		selected_tag = true
 	end
 	if selected_tag then
@@ -580,7 +537,7 @@ function ModeSelectScene:getFromSelectedTags(selected_tags, select_type)
 		root_folder = rulesets
 	end
 	if next(selected_tags) == nil then
-		return select_type == "ruleset" and self.ruleset_folder_selections[#self.ruleset_folder_selections].folder or self.game_mode_selections[#self.game_mode_selections].folder
+		return root_folder
 	end
 	local result_folder = {}
 	for k, v in pairs(selected_tags) do

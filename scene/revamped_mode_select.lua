@@ -8,11 +8,11 @@ function ModeSelectScene:new()
 	if highscores == nil then highscores = {} end
 	self.ruleset_folder = rulesets
 	self.game_mode_tags = self:loadTags(game_modes, "mode")
-	self.game_mode_selections = {{index = 0, folder = game_modes, positions = {}, offset = 0, root = true}}
 	self.game_mode_folder = self:getFromSelectedTags(self.game_mode_tags, "mode")
+	self.game_mode_selections = {{index = 0, folder = self.game_mode_folder, positions = {}, offset = 0, root = true}}
 	self.ruleset_tags = self:loadTags(rulesets, "ruleset")
-	self.ruleset_folder_selections = {{index = 0, folder = rulesets, positions = {}, offset = 0, root = true}}
 	self.ruleset_folder = self:getFromSelectedTags(self.ruleset_tags, "ruleset")
+	self.ruleset_folder_selections = {{index = 0, folder = self.ruleset_folder, positions = {}, offset = 0, root = true}}
 	self.menu_state = {}
 	if #self.game_mode_folder == 0 or #self.ruleset_folder == 0 then
 		self.display_warning = true
@@ -128,8 +128,18 @@ function ModeSelectScene:update()
 	if self.input_timers["reset_tags"] == 0 then
 		self.game_mode_tags = {}
 		self.ruleset_tags = {}
-		self.game_mode_folder = self.game_mode_selections[#self.game_mode_selections]
-		self.ruleset_folder = self.ruleset_folder_selections[#self.ruleset_folder_selections]
+		if #self.game_mode_selections > 1 then
+			self.game_mode_folder = self.game_mode_selections[#self.game_mode_selections].folder
+		else
+			self.game_mode_folder = self:getFromSelectedTags(self.game_mode_tags, "mode")
+			self.game_mode_selections[1].folder = self.game_mode_folder
+		end
+		if #self.ruleset_folder_selections > 1 then
+			self.ruleset_folder = self.ruleset_folder_selections[#self.ruleset_folder_selections].folder
+		else
+			self.ruleset_folder = self:getFromSelectedTags(self.ruleset_tags, "ruleset")
+			self.ruleset_folder_selections[1].folder = self.ruleset_folder
+		end
 		playSE("ihs")
 		self.text_tag_deselect_timer = 60
 	end
@@ -320,6 +330,9 @@ function ModeSelectScene:render()
 					20) * ((sel_idx+1) / (#self.game_mode_selections+1)))
 				drawWrappingText(mode.name,
 				40 + (sel_idx - #self.game_mode_selections) * 10, (260 - self.menu_mode_y) + pos_y, 200, "left")
+				if table.contains(self.game_mode_tags, mode) then
+					love.graphics.rectangle("fill", 20, (260 - self.menu_mode_y) + 20 * idx, 10, 20)
+				end
 			end
 		end
 	end
@@ -347,6 +360,9 @@ function ModeSelectScene:render()
 				)
 				drawWrappingText(ruleset.name,
 				260 - self.menu_ruleset_x + 120 * idx + offset, 440 - (sel_idx - #self.ruleset_folder_selections) * 10, 120, "center")
+				if table.contains(self.ruleset_tags, ruleset) then
+					love.graphics.rectangle("fill", 270 - self.menu_ruleset_x + 120 * idx + offset, 456, 100, 4)
+				end
 			end
 		end
 	end
@@ -441,14 +457,17 @@ function ModeSelectScene:handleTagSelection(select_tag)
 	if self.ruleset_folder[self.menu_state.ruleset].is_tag and select_tag == "ruleset" then
 		tag_select_type = self.handleTagFolder(self.ruleset_folder, self.ruleset_tags, self.menu_state.ruleset)
 		self.ruleset_folder = self:getFromSelectedTags(self.ruleset_tags, "ruleset")
+		self.ruleset_folder_selections[1].folder = self.ruleset_folder
 		selected_tag = true
 	elseif self.game_mode_folder[self.menu_state.mode].is_tag then
 		tag_select_type = self.handleTagFolder(self.game_mode_folder, self.game_mode_tags, self.menu_state.mode)
 		self.game_mode_folder = self:getFromSelectedTags(self.game_mode_tags, "mode")
+		self.game_mode_selections[1].folder = self.game_mode_folder
 		selected_tag = true
 	elseif self.ruleset_folder[self.menu_state.ruleset].is_tag and select_tag == "mode" then
 		tag_select_type = self.handleTagFolder(self.ruleset_folder, self.ruleset_tags, self.menu_state.ruleset)
 		self.ruleset_folder = self:getFromSelectedTags(self.ruleset_tags, "ruleset")
+		self.ruleset_folder_selections[1].folder = self.ruleset_folder
 		selected_tag = true
 	end
 	if selected_tag then
@@ -522,7 +541,7 @@ function ModeSelectScene:getFromSelectedTags(selected_tags, select_type)
 		root_folder = rulesets
 	end
 	if next(selected_tags) == nil then
-		return select_type == "ruleset" and self.ruleset_folder_selections[#self.ruleset_folder_selections].folder or self.game_mode_selections[#self.game_mode_selections].folder
+		return root_folder
 	end
 	local result_folder = {}
 	for k, v in pairs(selected_tags) do
