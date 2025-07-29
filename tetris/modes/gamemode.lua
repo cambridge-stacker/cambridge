@@ -905,6 +905,16 @@ function GameMode:drawNextQueue(ruleset)
 			local x = offset.x + ruleset:getDrawOffset(piece).x + ruleset.spawn_positions[piece].x
 			local y = offset.y + ruleset:getDrawOffset(piece).y + 4.7
 			drawSizeIndependentImage(blocks[skin][colourscheme[piece]], pos_x+x*16, pos_y+y*16, 0, 16, 16)
+            -- draw center of rotation
+			if config.gamesettings.show_center_of_rotation == 2 then
+				local x = offsets[1].x + ruleset:getDrawOffset(piece).x + ruleset.spawn_positions[piece].x
+				local y = offsets[1].y + ruleset:getDrawOffset(piece).y + 4.7
+				drawSizeIndependentImage(
+					blocks[skin]['Z'],
+					pos_x+x*16, pos_y+y*16,
+					0, 16, 16
+				)
+			end
 		end
 	end
 	local is_obscured = false
