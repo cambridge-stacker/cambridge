@@ -141,7 +141,6 @@ function SurvivalAXGame:drawScoringInfo()
 	)
 
 	love.graphics.setFont(font_3x5_2)
-	love.graphics.printf("NEXT", 64, 40, 40, "left")
 	if self.lines < 150 then love.graphics.printf("TIME LEFT", text_x, 250, 80, "left") end
 	love.graphics.printf("LINES", text_x, 320, 40, "left")
 
