@@ -131,6 +131,8 @@ function SurvivalAXGame:drawScoringInfo()
 
 	love.graphics.setColor(1, 1, 1, 1)
 
+	local text_x = config["side_next"] and 320 or 240
+
 	love.graphics.setFont(font_3x5)
 	love.graphics.print(
 		self.das.direction .. " " ..
@@ -140,22 +142,22 @@ function SurvivalAXGame:drawScoringInfo()
 
 	love.graphics.setFont(font_3x5_2)
 	love.graphics.printf("NEXT", 64, 40, 40, "left")
-	if self.lines < 150 then love.graphics.printf("TIME LEFT", 240, 250, 80, "left") end
-	love.graphics.printf("LINES", 240, 320, 40, "left")
+	if self.lines < 150 then love.graphics.printf("TIME LEFT", text_x, 250, 80, "left") end
+	love.graphics.printf("LINES", text_x, 320, 40, "left")
 
 	local current_section = math.floor(self.lines / 10) + 1
 	self:drawSectionTimesWithSplits(current_section)
 
 	love.graphics.setFont(font_3x5_3)
-	love.graphics.printf(self.lines, 240, 340, 40, "right")
-	love.graphics.printf(self.clear and self.lines or self:getSectionEndLines(), 240, 370, 40, "right")
+	love.graphics.printf(self.lines, text_x, 340, 40, "right")
+	love.graphics.printf(self.clear and self.lines or self:getSectionEndLines(), text_x, 370, 40, "right")
 
 	-- draw time left, flash red if necessary
 	local time_left = self.section_time_limit - math.max(self:getSectionTime(), 0)
 	if not self.game_over and not self.clear and time_left < frameTime(0,10) and time_left % 4 < 2 then
 		love.graphics.setColor(1, 0.3, 0.3, 1)
 	end
-	if self.lines < 150 then love.graphics.printf(formatTime(time_left), 240, 270, 160, "left") end
+	if self.lines < 150 then love.graphics.printf(formatTime(time_left), text_x, 270, 160, "left") end
 	love.graphics.setColor(1, 1, 1, 1)
 end
 
