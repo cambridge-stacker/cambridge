@@ -12,9 +12,7 @@ local current_replay = 1
 local loading_replays
 
 function ReplaySelectScene:new()
-	-- fully reload custom modules
-	unloadModules()
-	initModules()
+	-- fully refresh custom modules
 
 	self.safety_frames = 0
 	self.frames_since_error = 0
@@ -32,6 +30,8 @@ function ReplaySelectScene:new()
 		})
 		return
 	end
+	unloadModules()
+	initModules()
 	self.display_error = false
 	if #replays == 0 then
 		self.display_warning = true
@@ -52,41 +52,6 @@ function ReplaySelectScene:new()
 		state = "Choosing a replay",
 		largeImageKey = "ingame-000"
 	})
-end
-
-function insertReplay(replay)
-	for key, value in pairs(replay) do
-		replay[key] = toFormattedValue(value)
-	end
-	if replay.highscore_data then
-		for key, value in pairs(replay.highscore_data) do
-			replay.highscore_data[key] = toFormattedValue(value)
-		end
-	end
-	local mode_name = replay.mode
-	replays[#replays+1] = replay
-	if dict_ref[mode_name] ~= nil and mode_name ~= "znil" then
-		table.insert(replay_tree[dict_ref[mode_name] ], #replays)
-	end
-	local branch_index = 0
-	for index, value in ipairs(replay_tree) do
-		if value.name == "All" then
-			branch_index = index
-			break
-		end
-	end
-	table.insert(replay_tree[branch_index], #replays)
-end
-function sortReplays()
-	if not replay_tree then return end
-	local function padnum(d) return ("%03d%s"):format(#d, d) end
-	table.sort(replay_tree, function(a,b)
-	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
-	for key, submenu in pairs(replay_tree) do
-		table.sort(submenu, function(a, b)
-			return replays[a]["timestamp"] > replays[b]["timestamp"]
-		end)
-	end
 end
 
 function ReplaySelectScene:update()
@@ -115,14 +80,7 @@ function ReplaySelectScene:update()
 			love.thread.getChannel( 'loaded_replays' ):pop()
 			loaded_replays = true
 			loading_replays = false
-			local function padnum(d) return ("%03d%s"):format(#d, d) end
-			table.sort(replay_tree, function(a,b)
-			return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
-			for key, submenu in pairs(replay_tree) do
-				table.sort(submenu, function(a, b)
-					return replays[a]["timestamp"] > replays[b]["timestamp"]
-				end)
-			end
+			sortReplays()
 			scene = ReplaySelectScene()
 		end
 		return -- It's there to avoid input response when loading.
@@ -174,7 +132,7 @@ function ReplaySelectScene:render()
 	if loaded_replays then
 		local b = cursorHighlight(0, 32, 40, 30)
 		love.graphics.setColor(1, 1, b, 1)
-		love.graphics.printf("<-", font_3x5_4, 0, 32, 40, "center")
+		love.graphics.printf(chars.big_left, font_8x11, 0, 32, 40, "center")
 		love.graphics.setColor(1, 1, 1, 1)
 	end
 	if not loaded_replays then
@@ -200,6 +158,11 @@ function ReplaySelectScene:render()
 		love.graphics.print("SELECT MODE TO REPLAY", 40, 35)
 	end
 
+	if self.refresh_time_remaining and self.refresh_time_remaining > 0 then
+		love.graphics.setColor(1, 1, 1, self.refresh_time_remaining / 60)
+		love.graphics.printf("Replay tree refreshed!", font_3x5_2, 0, 10, 640, "center")
+		self.refresh_time_remaining = self.refresh_time_remaining - 1
+	end
 	if self.display_warning then
 		love.graphics.setFont(font_3x5_3)
 		love.graphics.printf(
@@ -255,14 +218,14 @@ function ReplaySelectScene:render()
 			if replay.ineligible then
 				love.graphics.setFont(font_3x5_2)
 				love.graphics.setColor(1, 1, 0, 1)
-				love.graphics.printf("This replay is ineligible for leaderboards", 0, 80, 640, "center")
+				love.graphics.printf("This replay is ineligible for leaderboards.", 0, 80, 640, "center")
 				love.graphics.setColor(1, 1, 1, 1)
 				idx = idx + 1
 			end
 			if replay.toolassisted then
 				love.graphics.setFont(font_3x5_2)
 				love.graphics.setColor(1, 1, 0, 1)
-				love.graphics.printf("This replay has likely used in-game TAS", 0, 80, 640, "center")
+				love.graphics.printf("This replay has likely used in-game TAS.", 0, 80, 640, "center")
 				love.graphics.setColor(1, 1, 1, 1)
 				idx = idx + 1
 			end
@@ -289,10 +252,15 @@ function ReplaySelectScene:render()
 				love.graphics.printf("This mode overrides the ruleset.", 0, 80 + idx * 20, 640, "center")
 				love.graphics.setColor(1, 1, 1, 1)
 			end
-			if replay.pause_count and replay.pause_time then
+			if replay.pause_count and replay.pause_count > 0 and replay.pause_time then
 				idx = idx + 1
 				love.graphics.setFont(font_3x5_2)
-				love.graphics.printf(("Pause count: %d, Time Paused: %s"):format(replay.pause_count, formatTime(replay.pause_time)), 0, 80 + idx * 20, 640, "center")
+				love.graphics.printf(("Pause count: %d, Time paused: %s"):format(replay.pause_count, formatTime(replay.pause_time)), 0, 80 + idx * 20, 640, "center")
+			end
+			if replay.rerecords then
+				idx = idx + 1
+				love.graphics.setFont(font_3x5_2)
+				love.graphics.printf(("Replay re-record count: %d"):format(replay.rerecords), 0, 80 + idx * 20, 640, "center")
 			end
 			if replay.sha256_table then
 				if config.visualsettings.debug_level > 2 then
@@ -302,6 +270,26 @@ function ReplaySelectScene:render()
 					idx = idx + 1.5
 					love.graphics.printf(("SHA256 comparison hashes:\n   Mode: %s\nRuleset: %s"):format(self.replay_sha_table.mode, self.replay_sha_table.ruleset), 0, 80 + idx * 20, 640, "center")
 					idx = idx + 0.5
+				end
+				if replay.sha256_table.mode ~= self.replay_sha_table.mode then
+					idx = idx + 1
+					love.graphics.setColor(1, 0, 0)
+					love.graphics.setFont(font_3x5_2)
+					love.graphics.printf("SHA256 hash for mode doesn't match!", 0, 80 + idx * 20, 640, "center")
+					idx = idx + 1
+					love.graphics.setFont(font_3x5)
+					love.graphics.printf(("Replay: %s\nMode:   %s"):format(replay.sha256_table.mode, self.replay_sha_table.mode), 0, 80 + idx * 20, 640, "center")
+					love.graphics.setColor(1, 1, 1)
+				end
+				if replay.sha256_table.ruleset ~= self.replay_sha_table.ruleset and not replay.ruleset_override then
+					idx = idx + 1
+					love.graphics.setColor(1, 0, 0)
+					love.graphics.setFont(font_3x5_2)
+					love.graphics.printf("SHA256 hash for ruleset doesn't match!", 0, 80 + idx * 20, 640, "center")
+					idx = idx + 1
+					love.graphics.setFont(font_3x5)
+					love.graphics.printf(("Replay: %s\nRuleset:%s"):format(replay.sha256_table.ruleset, self.replay_sha_table.ruleset), 0, 80 + idx * 20, 640, "center")
+					love.graphics.setColor(1, 1, 1)
 				end
 			end
 			if next(self.highscores_indexing) == nil then
@@ -344,7 +332,7 @@ function ReplaySelectScene:render()
 		if #replay_tree[self.menu_state.submenu] == 0 then
 			love.graphics.setFont(font_3x5_2)
 			love.graphics.printf(
-				"This submenu doesn't contain replays of this mode. ",
+				"This submenu doesn't contain replays of this mode.",
 				80, 250, 480, "center"
 			)
 			return
@@ -352,7 +340,7 @@ function ReplaySelectScene:render()
 		love.graphics.setColor(1,1,1,fadeoutAtEdges(-self.height_offset - 80, 180, 20))
 		love.graphics.printf("Color legend:", 0, 180 - self.height_offset, 640, "center")
 		love.graphics.printf({
-		 {1, 1, 1, 1}, "White: Contains highscore data and isn't ineligible\n",
+		 {1, 1, 1, 1}, "White: Contains highscore data and is eligible\n",
 		 {1, 0, 0, 1}, "Red", {1, 1, 1, 1}, ": A replay that either has used TAS or is ineligible\n",
 		 {1, 0.5, 0.8, 1}, "Pink", {1, 1, 1, 1}, ": A replay that doesn't contain highscore data or is legacy"}, 0, 200 - self.height_offset, 640, "center")
 		for idx, replay_idx in ipairs(replay_tree[self.menu_state.submenu]) do
@@ -553,6 +541,7 @@ function ReplaySelectScene:verifyHighscoreData()
 	else
 		self.highscores_data_matching = true
 		playSE("mode_decide")
+		createToast("Replay highscore data verified!", "Highscore data stored in replay matches the verification!", {width = 300})
 	end
 end
 
@@ -601,6 +590,19 @@ function ReplaySelectScene:onInputPress(e)
 		if e.y ~= 0 then
 			self:changeOption(-e.y)
 		end
+	elseif e.scancode == "lctrl" or e.scancode == "rctrl" then
+		self.ctrl_held = true
+	elseif e.scancode == "r" and self.ctrl_held then
+		unloadModules()
+		initModules()
+		refreshReplayTree()
+		self.height_offset = 0
+		self.menu_state = {
+			submenu = current_submenu,
+			replay = current_replay,
+		}
+		self.refresh_time_remaining = 90
+		playSE("ihs")
 	elseif e.input == "generic_1" and self.chosen_replay then
 		self:verifyHighscoreData()
 	elseif e.input == "menu_decide" then

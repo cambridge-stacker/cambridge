@@ -5,6 +5,7 @@ local SRS = Ruleset:extend()
 
 SRS.name = "Guideline SRS"
 SRS.hash = "Standard"
+SRS.description = "The Super Rotation System, the global standard for most block-stacking games since 2001."
 SRS.softdrop_lock = false
 SRS.harddrop_lock = true
 

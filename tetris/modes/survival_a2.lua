@@ -9,13 +9,20 @@ local SurvivalA2Game = GameMode:extend()
 
 SurvivalA2Game.name = "Survival A2"
 SurvivalA2Game.hash = "SurvivalA2"
-SurvivalA2Game.tagline = "The game starts fast and only gets faster!"
+SurvivalA2Game.description = "The game starts fast and only gets faster!"
+SurvivalA2Game.tags = {"Survival", "Arika", "20G Start"}
 
+function SurvivalA2Game:new(secret_inputs)
+	SurvivalA2Game.super:new(secret_inputs)
 
+	if type(secret_inputs) == "table" then
+		for key, value in pairs(secret_inputs) do
+			if value == true then
+				self.secret_erasure = true
+			end
+		end
+	end
 
-
-function SurvivalA2Game:new()
-	SurvivalA2Game.super:new()
 	setTargetFPS(61.68)
 	self.roll_frames = 0
 	self.combo = 1
@@ -82,6 +89,11 @@ function SurvivalA2Game:hitTorikan(old_level, new_level)
 end
 
 function SurvivalA2Game:advanceOneFrame()
+	if self.secret_erasure then
+		for i = 1, 3 do
+			self.grid:clearSpecificRow(i)
+		end
+	end
 	if self.clear then
 		self.roll_frames = self.roll_frames + 1
 		if self.roll_frames > 1800 then
@@ -154,7 +166,6 @@ function SurvivalA2Game:drawScoringInfo()
 	)
 	
 	love.graphics.setFont(font_3x5_2)
-	love.graphics.printf("NEXT", 64, 40, 40, "left")
 	if self:getLetterGrade() ~= "" then love.graphics.printf("GRADE", text_x, 120, 40, "left") end
 	love.graphics.printf("SCORE", text_x, 200, 40, "left")
 	love.graphics.printf("LEVEL", text_x, 320, 40, "left")

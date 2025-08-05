@@ -9,13 +9,19 @@ local MarathonA3Game = GameMode:extend()
 
 MarathonA3Game.name = "Marathon A3"
 MarathonA3Game.hash = "MarathonA3"
-MarathonA3Game.tagline = "The game gets faster way more quickly! Can you get all the Section COOLs?"
+MarathonA3Game.description = "The game gets faster way more quickly! Can you get all the Section COOLs?"
+MarathonA3Game.tags = {"Marathon", "Arika"}
 
+function MarathonA3Game:new(secret_inputs)
+	MarathonA3Game.super:new(secret_inputs)
 
-
-
-function MarathonA3Game:new()
-	MarathonA3Game.super:new()
+	if type(secret_inputs) == "table" then
+		for key, value in pairs(secret_inputs) do
+			if value == true then
+				self.secret_erasure = true
+			end
+		end
+	end
 
 	self.speed_level = 0
 	self.roll_frames = 0
@@ -129,6 +135,11 @@ function MarathonA3Game:getGravity()
 end
 
 function MarathonA3Game:advanceOneFrame()
+	if self.secret_erasure then
+		for i = 1, 3 do
+			self.grid:clearSpecificRow(i)
+		end
+	end
 	if self.clear then
 		self.roll_frames = self.roll_frames + 1
 		if self.roll_frames < 0 then
@@ -436,11 +447,17 @@ function MarathonA3Game:drawScoringInfo()
 		strTrueValues(self.prev_inputs)
 	)
 	
+	local text_x = config["side_next"] and 320 or 240
+
 	love.graphics.setFont(font_3x5_2)
-	love.graphics.printf("NEXT", 64, 40, 40, "left")
-	love.graphics.printf("GRADE", 240, 120, 40, "left")
-	love.graphics.printf("SCORE", 240, 200, 40, "left")
-	love.graphics.printf("LEVEL", 240, 320, 40, "left")
+	if config["side_next"] then
+		love.graphics.printf("NEXT", 240, 72, 40, "left")
+	else
+		love.graphics.printf("NEXT", 64, 40, 40, "left")
+	end
+	love.graphics.printf("GRADE", text_x, 120, 40, "left")
+	love.graphics.printf("SCORE", text_x, 200, 40, "left")
+	love.graphics.printf("LEVEL", text_x, 320, 40, "left")
 	local sg = self.grid:checkSecretGrade()
 	if sg >= 5 then
 		love.graphics.printf("SECRET GRADE", 240, 430, 180, "left")
@@ -482,13 +499,13 @@ function MarathonA3Game:drawScoringInfo()
 		end
 
 	love.graphics.setFont(font_3x5_3)
-	love.graphics.printf(self.score, 240, 220, 90, "left")
+	love.graphics.printf(self.score, text_x, 220, 90, "left")
 	if self.roll_frames > 3238 then love.graphics.setColor(1, 0.5, 0, 1)
 	elseif self.level >= 999 then love.graphics.setColor(0, 1, 0, 1) end
-	love.graphics.printf(self:getLetterGrade(), 240, 140, 90, "left")
+	love.graphics.printf(self:getLetterGrade(), text_x, 140, 90, "left")
 	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.printf(self.level, 240, 340, 40, "right")
-	love.graphics.printf(self:getSectionEndLevel(), 240, 370, 40, "right")
+	love.graphics.printf(self.level, text_x, 340, 40, "right")
+	love.graphics.printf(self:getSectionEndLevel(), text_x, 370, 40, "right")
 	if sg >= 5 then
 		love.graphics.printf(self.SGnames[sg], 240, 450, 180, "left")
 	end

@@ -12,6 +12,9 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	love.mouse.setVisible(true)
 	pitchBGM(1)
 	config.gamesettings = replay["gamesettings"]
+	if config.gamesettings.next_position then
+		config.side_next = config.gamesettings.next_position == 2
+	end
 	if replay["delayed_auto_shift"] then config.das = replay["delayed_auto_shift"] end
 	if replay["auto_repeat_rate"] then config.arr = replay["auto_repeat_rate"] end
 	if replay["das_cut_delay"] then config.dcd = replay["das_cut_delay"] end
@@ -46,6 +49,7 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	self.paused = false
 	self.game.pause_count = replay["pause_count"]
 	self.game.pause_time = replay["pause_time"]
+	self.game.rerecords = replay["rerecords"]
 	self.replay_index = 1
 	self.replay_speed = 1
 	self.frames = 0
@@ -96,6 +100,9 @@ function ReplayScene:update()
 			self.game.grid:update()
 		end
 	end
+	if self.paused then
+		self.game.pause_time = self.game.pause_time + love.timer.getDelta() / (1/60)
+	end
 	DiscordRPC:update({
 		details = self.rerecord and self.game.rpc_details or ("Viewing a".. (self.replay["toolassisted"] and " tool-assisted" or "") .." replay"),
 		state = self.game.name,
@@ -105,6 +112,7 @@ end
 
 function ReplayScene:loadState()
 	if savestate_frames == nil then
+		createToast("Save the state first. Press F4 for that.", "Alt-F4 will close the game, so, keep that in mind.", {width = 260})
 		print("Save the state first. Press F4 for that. Alt-F4 will close the game, so, keep that in mind.")
 		return
 	end
@@ -149,6 +157,26 @@ function ReplayScene:render()
 			"T A S", -295, 100, 150, "center", 0, 8, 8
 		)
 	end
+	local pauses_y_coordinate = 23
+	if self.replay_speed > 1 then
+		pauses_y_coordinate = pauses_y_coordinate + 20
+		love.graphics.printf(self.replay_speed.."X", font_3x5_3, 0, 20, 635, "right")
+	end
+	love.graphics.setFont(font_3x5_2)
+	if self.game.pause_time and self.game.pause_count and not self.game.rerecords then
+		if self.game.pause_time > 0 or self.game.pause_count > 0 then
+			love.graphics.printf(string.format(
+				"%d PAUSE%s (%s)",
+				self.game.pause_count,
+				self.game.pause_count == 1 and "" or "S",
+				formatTime(self.game.pause_time)
+			), 0, pauses_y_coordinate, 635, "right")
+		end
+	elseif self.game.rerecords then
+		love.graphics.printf(string.format("Re-records: %d", self.game.rerecords), 0, pauses_y_coordinate, 635, "right")
+	else
+		love.graphics.printf("?? PAUSES (--:--.--)", 0, pauses_y_coordinate, 635, "right")
+	end
 	if self.rerecord then
 		return
 	end
@@ -158,24 +186,6 @@ function ReplayScene:render()
 		love.graphics.printf("TAS REPLAY", 0, 0, 635, "right")
 	else
 		love.graphics.printf("REPLAY", 0, 0, 635, "right")
-	end
-	local pauses_y_coordinate = 23
-	if self.replay_speed > 1 then
-		pauses_y_coordinate = pauses_y_coordinate + 20
-		love.graphics.printf(self.replay_speed.."X", 0, 20, 635, "right")
-	end
-	love.graphics.setFont(font_3x5_2)
-	if self.game.pause_time and self.game.pause_count then
-		if self.game.pause_time > 0 or self.game.pause_count > 0 then
-			love.graphics.printf(string.format(
-				"%d PAUSE%s (%s)",
-				self.game.pause_count,
-				self.game.pause_count == 1 and "" or "S",
-				formatTime(self.game.pause_time)
-			), 0, pauses_y_coordinate, 635, "right")
-		end
-	else
-		love.graphics.printf("?? PAUSES (--:--.--)", 0, pauses_y_coordinate, 635, "right")
 	end
 end
 
@@ -207,6 +217,7 @@ function ReplayScene:onInputPress(e)
 	--hardcoded input
 	elseif e.input == "save_state" then
 		savestate_frames = self.frames
+		createToast("In-game TAS", "State saved at frame "..self.frames, {width = 260})
 		print("State saved at frame "..self.frames)
 	elseif e.input == "load_state" then
 		self:loadState()
@@ -214,8 +225,12 @@ function ReplayScene:onInputPress(e)
 		self.frame_steps = self.frame_steps + 1
 	elseif e.input == "pause" and not (self.game.game_over or self.game.completed) then
 		self.paused = not self.paused
-		if self.paused then pauseBGM()
-		else resumeBGM() end
+		if self.paused then
+			pauseBGM()
+			self.game.pause_count = self.game.pause_count + 1
+		else 
+			resumeBGM()
+		end
 	elseif e.input and string.sub(e.input, 1, 5) ~= "menu_" and self.rerecord and e.input ~= "frame_step" then
 		self.inputs[e.input] = true
 		if config.gamesettings["diagonal_input"] == 3 and opposite_directions[e.input] then
@@ -239,6 +254,8 @@ function ReplayScene:onInputPress(e)
 		self.replay_speed = 1
 		self.game.save_replay = config.gamesettings.save_replay == 1
 		self.game.replay_inputs = self.retry_replay.inputs
+		self.game.rerecords = (self.game.rerecords or 0) + 1
+		self.retry_replay.rerecords = self.game.rerecords
 		if self.show_invisible then
 			self.game.ineligible = true
 		end
@@ -246,6 +263,7 @@ function ReplayScene:onInputPress(e)
 		pitchBGM(1)
 	elseif e.input == "hold" then
 		self.show_invisible = not self.show_invisible
+		self.game.ineligible = true
 	elseif self.rerecord then
 		--nothing
 	elseif e.input == "menu_left" then

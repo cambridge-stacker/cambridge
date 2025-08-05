@@ -17,6 +17,43 @@ TitleScene.menu_screens = {
 	ExitScene,
 }
 
+local splashtext = {
+	"Welcome to Cambridge!",
+	"Random text!",
+	"Put the block!",
+	"Trans rights!",
+	"20G gravity!",
+	"3next 1hold!",
+	"4next 2hold..?",
+	"Also try Techmino!",
+	"Also try Nullpomino!",
+	"Now with new funky mode!",
+	"Now with supersonic drop!",
+	"Mark!",
+	"aeiou",
+	"Also try TETR.IO!",
+	"Also try Shiromino!",
+	"Also try\nSpirit Drop!",
+	"Thank you, Milla!",
+	"Thank you, Kirby!",
+	"Thank you, Alexey!",
+	"Thank you, Joe!",
+	"Thank you, Oshi!",
+	"No soundtrack required!",
+	"Batteries not included!",
+	"Also try MoB!",
+	"Also try EBG!",
+	"Also try TGM!",
+	"Also try TAP!",
+	"Also try Ti!",
+	"Also try Cambridge!",
+	"O-spin double!",
+	"I-spin quad!",
+	"COOL !!",
+	"Let's go better next time!",
+	"Stacker? I barely even know her!"
+}
+local splash = ""
 local mainmenuidle = {
 	"Idle",
 	"On title screen",
@@ -38,10 +75,12 @@ local mainmenuidle = {
 	"Welcome to Cambridge!",
 	"who even reads these",
 	"Made with love in LOVE!",
-	"This is probably the longest RPC string out of every possible RPC string that can be displayed."
+	"This is probably the longest RPC string out of every possible RPC string that can be displayed.",
+	"Trying to see all the funny splash text (maybe)"
 }
 
 function TitleScene:new()
+	splash = splashtext[love.math.random(#splashtext)]
 	self.love2d_major, self.love2d_minor, self.love2d_revision = love.getVersion()
 	self.main_menu_state = 1
 	self.frames = 0
@@ -57,7 +96,7 @@ function TitleScene:new()
 				config.input.keys.menu_decide == "return" or
 				config.input.keys.menu_decide == "kpenter"
 			) then
-				self.press_enter_text = self.press_enter_text.." or [" .. config.input.keys.menu_decide .. "] key"
+				self.press_enter_text = self.press_enter_text.." or [" .. config.input.keys.menu_decide .. "]"
 			end
 		end
 	end
@@ -124,17 +163,17 @@ function TitleScene:render()
 	love.graphics.setColor(1, 1, 1, 1)
 	if not enter_pressed then
 		love.graphics.setFont(font_3x5_3)
-		love.graphics.printf("Welcome To Cambridge: The Next Open-Source Stacker!", 0, 240, 640, "center")
+		love.graphics.printf("Welcome to Cambridge: The Next Open-Source Stacker!", 0, 240, 640, "center")
 		if love.timer.getTime() % 2 <= 1 then
-			love.graphics.printf(self.press_enter_text, 80, 360, 480, "center")
+			love.graphics.printf(self.press_enter_text, 80, 390, 480, "center")
 		end
 		love.graphics.setFont(font_3x5_2)
 		if not (self.love2d_major == 11 and (self.love2d_minor == 3 or self.love2d_minor == 5)) and not (self.love2d_major == 12 and self.love2d_minor == 0) then
-			love.graphics.printf({{1, 0, 0, 1}, ("LOVE %d.%d is a potentially unstable version for Cambridge in other OS such as macOS or Linux at the moment! Stick to 11.3 or 11.5 for now."):format(self.love2d_major, self.love2d_minor)}, 50, 60, 540, "center")
+			love.graphics.printf({{1, 0, 0, 1}, ("LOVE %d.%d is a potentially unstable version for Cambridge on other operating systems such as macOS or Linux at the moment! Consider 11.3 or 11.5 for the best stability."):format(self.love2d_major, self.love2d_minor)}, 50, 60, 540, "center")
 		elseif (self.love2d_major == 12 and self.love2d_minor == 0) then
-			love.graphics.printf({{1, 1, 0, 1}, "Currently LOVE 12.0 is in development. Expect there be more bugs. Cambridge currently doesn't utilise the new features at the moment."}, 50, 60, 540, "center")
+			love.graphics.printf({{1, 1, 0, 1}, "LOVE 12.0 is currently in development. There may be more bugs than usual. Cambridge currently doesn't utilise the new features provided by LOVE 12.0."}, 50, 60, 540, "center")
 		end
-		love.graphics.printf("This new version has a lot of changes, so expect that there'd be a lot of bugs!\nReport bugs and issues found here to cambridge-stacker repository, in detail.", 0, 280, 640, "center")
+		love.graphics.printf("This new version has many changes and is therefore prone to bugs!\nReport bugs and issues found here to the\ncambridge-stacker/cambridge repository, in detail.\nYou can use the Report Bugs button to access the repository directly.", 0, 280, 640, "center")
 	end
 	local x, y
 	if enter_pressed then
@@ -157,7 +196,6 @@ function TitleScene:render()
 		2, 2
 	)
 	]]
-	--love.graphics.printf("Thanks for 1 year!", 430, 280, 160, "center")
 
 	love.graphics.setFont(font_3x5_2)
 	love.graphics.setColor(1, 1, 1, self.snow_bg_opacity)
@@ -177,6 +215,7 @@ function TitleScene:render()
 		return
 	end
 
+	love.graphics.printf(splash, 448, 300, 180, "center")
 	love.graphics.setColor(1, 1, 1, 0.5)
 	love.graphics.rectangle("fill", math.min(20, -120 * self.main_menu_state + (menu_frames * 24) - 20), 278 + 20 * self.main_menu_state, 160, 22)
 

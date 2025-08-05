@@ -10,7 +10,8 @@ local SakuraGame = GameMode:extend()
 
 SakuraGame.name = "Sakura A3"
 SakuraGame.hash = "SakuraA3"
-SakuraGame.tagline = "Clear away the Gem Blocks as fast as possible!"
+SakuraGame.description = "Clear away the Gem Blocks as fast as possible!"
+SakuraGame.tags = {"Arika", "Puzzle", "Beginner Friendly"}
 
 local b = {
 	["r"] = { skin = "2tie", colour = "R" },
@@ -266,13 +267,20 @@ local maps = {
 local STAGE_TRANSITION_TIME = 300
 
 function SakuraGame:new(secret_inputs)
-	self.super:new()
+	self.super.new(self, secret_inputs)
 
 	self.randomizer = (
 		(
-			secret_inputs.rotate_left and secret_inputs.rotate_right
+			secret_inputs and secret_inputs.rotate_left and secret_inputs.rotate_right
 		) and History6RollsRandomizer() or SakuraRandomizer()
 	)
+	if type(secret_inputs) == "table" then
+		for key, value in pairs(secret_inputs) do
+			if value == true and key ~= "rotate_left" and key ~= "rotate_right" then
+				self.secret_erasure = true
+			end
+		end
+	end
 
 	self.current_map = 1
 	self.time_limit = 10800
@@ -563,19 +571,24 @@ function SakuraGame:drawScoringInfo()
 		strTrueValues(self.prev_inputs)
 	)
 
+	local text_x = config["side_next"] and 320 or 240
 	love.graphics.setFont(font_3x5_2)
-	love.graphics.printf("NEXT", 64, 40, 40, "left")
-	love.graphics.printf("STAGE", 240, 120, 80, "left")
-	love.graphics.printf("TIME LIMIT", 240, 180, 80, "left")
-	love.graphics.printf("LEVEL", 240, 320, 40, "left")
+	if config["side_next"] then
+		love.graphics.printf("NEXT", 240, 72, 40, "left")
+	else
+		love.graphics.printf("NEXT", 64, 40, 40, "left")
+	end
+	love.graphics.printf("STAGE", text_x, 120, 80, "left")
+	love.graphics.printf("TIME LIMIT", text_x, 180, 80, "left")
+	love.graphics.printf("LEVEL", text_x, 320, 40, "left")
 	if self.current_map <= 20 then
-		love.graphics.printf("STAGE LIMIT", 240, 240, 100, "left")
+		love.graphics.printf("STAGE LIMIT", text_x, 240, 100, "left")
 	end
 	if effects[self.current_map] then
-		love.graphics.printf("EFFECT: " .. effects[self.current_map], 240, 300, 160, "left")
+		love.graphics.printf("EFFECT: " .. effects[self.current_map], text_x, 300, 160, "left")
 	end
 	if self.used_randomizer.history then
-		love.graphics.printf("RANDOM PIECES ACTIVE!", 240, 150, 200, "left")
+		love.graphics.printf("RANDOM PIECES ACTIVE!", text_x, 150, 200, "left")
 	end
 
 	love.graphics.setFont(font_3x5_3)
@@ -588,17 +601,17 @@ function SakuraGame:drawScoringInfo()
 		{ 1, 0.3, 0.3, 1 } or
 		{ 1, 1, 1, 1 }
 	)
-	love.graphics.printf(formatTime(self.time_limit), 240, 200, 120, "left")
+	love.graphics.printf(formatTime(self.time_limit), text_x, 200, 120, "left")
 	love.graphics.setColor(1, 1, 1, 1)
 	if self.current_map <= 20 then
-		love.graphics.printf(formatTime(3600 - self.stage_frames), 240, 260, 120, "left")
+		love.graphics.printf(formatTime(3600 - self.stage_frames), text_x, 260, 120, "left")
 	end
-	love.graphics.printf(self.level, 240, 340, 40, "right")
-	love.graphics.printf(math.floor((self.level + 100) / 100) * 100, 240, 370, 40, "right")
+	love.graphics.printf(self.level, text_x, 340, 40, "right")
+	love.graphics.printf(math.floor((self.level + 100) / 100) * 100, text_x, 370, 40, "right")
 
 	love.graphics.setFont(font_8x11)
 	love.graphics.printf(formatTime(self.frames), 64, 420, 160, "center")
-	love.graphics.printf(self:getStageShort(), 290, 110, 80, "left")
+	love.graphics.printf(self:getStageShort(), text_x+50, 110, 80, "left")
 end
 
 function SakuraGame:drawCustom()

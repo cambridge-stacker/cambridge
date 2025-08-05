@@ -120,7 +120,7 @@ function CreditsScene:update()
 	end
 	pitchBGM(self.scroll_speed)
 	local time_fragment = (self.final_y / self.music_duration)
-	self.time = self.time + (time_fragment * self.scroll_speed)
+	self.time = self.time + (time_fragment * self.scroll_speed) * (getDeltaTime()*60)
 	if self.time >= self.final_y + (time_fragment * 120) then
 		playSE("mode_decide")
 		scene = TitleScene()

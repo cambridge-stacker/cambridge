@@ -6,14 +6,26 @@ TuningScene.config_type = "tunings"
 require 'load.save'
 require 'libs.simple-slider'
 
+local function curryTimingFormatFunction(format_condition, condition)
+	return function (input)
+		if input == condition then
+			return format_condition
+		end
+		return string.format("%d ms (%d frame%s)", input * (1000 / getTargetFPS()), input, input > 1 and "s" or "")
+	end
+end
+
 ---@type settings_config_option[]
 TuningScene.options = {
 	-- Serves as a reference for the options available in the menu. Format: {name in config, name as displayed if applicable, slider name}
 	{
 		config_name = "das",
 		display_name = "Delayed Auto Shift (DAS)",
-		description = "Set it too fast, and you'd slip. Set it too slow, you'd feel sluggish.",
-		format = "%d frames",
+		description = [[
+The amount of time between when a direction is pressed and when movements start repeating.
+Low values feel slippery, high values feel sluggish.
+Can be overridden by certain modes.]],
+		format = curryTimingFormatFunction("No delay", 0),
 		sound_effect_name = "cursor",
 		min = 0,
 		max = 20,
@@ -27,8 +39,11 @@ TuningScene.options = {
 	{
 		config_name = "arr",
 		display_name = "Auto Repeat Rate (ARR)",
-		description = "This changes how fast you move pieces, only if modes doesn't use its own ARR. Higher -> Slower, Lower -> Faster.",
-		format = "%d frames",
+		description = [[
+The amount of time between automatic movements after the initial DAS delay.
+Low values move faster, high values move slower.
+Can be overridden by certain modes.]],
+		format = curryTimingFormatFunction("Instant", 0),
 		sound_effect_name = "cursor",
 		min = 0,
 		max = 6,
@@ -42,9 +57,10 @@ TuningScene.options = {
 	{
 		config_name = "dcd",
 		display_name = "DAS Cut Delay (DCD)",
-		description = "When you rotate, softdrop, or hard drop a piece, the auto-shift delay is increased "..
-		              "by specified amount of frames if the mode allows that configuration, or the amount the modes forces on.",
-		format = "%d frames",
+		description = [[
+When a piece is rotated or dropped, DAS movement pauses for this amount of time.
+Certain modes may disable this behaviour.]],
+		format = curryTimingFormatFunction("Disabled (0 frames)", 0),
 		sound_effect_name = "cursor",
 		min = 0,
 		max = 6,
@@ -58,8 +74,8 @@ TuningScene.options = {
 	{
 		config_name = "menu_das",
 		display_name = "DAS in menus",
-		description = "Delayed Auto Shift, in menus.\nSet it too fast, and you'd slip. Set it too slow, you'd feel sluggish.",
-		format = "%d frames",
+		description = "DAS delay when scrolling through menus. Low values feel slippery, high values feel sluggish.",
+		format = curryTimingFormatFunction("No delay", 0),
 		sound_effect_name = "cursor",
 		min = 3,
 		max = 20,
@@ -69,8 +85,8 @@ TuningScene.options = {
 	{
 		config_name = "menu_arr",
 		display_name = "ARR in menus",
-		description = "This changes how quickly you auto-repeat a directional press in menus. Higher -> Slower, Lower -> Faster.",
-		format = "%d frames",
+		description = "ARR when scrolling through menu options. Low values are faster, high values are slower.",
+		format = curryTimingFormatFunction("SLIPPERY (16ms/1f)", 1),
 		sound_effect_name = "cursor",
 		min = 1,
 		max = 8,
@@ -80,7 +96,7 @@ TuningScene.options = {
 	{
 		config_name = "mode_dynamic_arr",
 		display_name = "Dyn. Select Mode ARR",
-		description = "Dynamic Select Mode Auto Repeat Rate. The one menu that gradually decreases auto repeat delay if it's on.",
+		description = "If enabled, when scrolling through the mode/ruleset list, speeds up the repeat rate more and more the longer you hold a direction.",
 		sound_effect_name = "cursor",
 		type = "options",
 		options = {"On", "Off"},

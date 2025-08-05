@@ -14,11 +14,13 @@ function recursivelyLoadRequireFileTable(tbl, directory, blacklisted_string)
 			recursivelyLoadRequireFileTable(tbl[#tbl], directory.."/"..name, blacklisted_string)
 		end
 		if name ~= blacklisted_string and name:sub(-4) == ".lua" then
-			tbl[#tbl+1] = require(require_string.."."..name:sub(1, -5))
-			if not (type(tbl[#tbl]) == "table" and type(tbl[#tbl].__call) == "function") then
+			local module = require(require_string.."."..name:sub(1, -5))
+			module.description = module.tagline ~= "" and module.tagline or module.description
+			tbl[#tbl+1] = module
+			if not (type(module) == "table" and type(module.__call) == "function") then
 				error("Add a return to "..directory.."/"..name..".\nMust be a table with __call function.", 1)
 			end
-			module_sources[tbl[#tbl]] = love.filesystem.read(directory.."/"..name)
+			module_sources[module] = love.filesystem.read(directory.."/"..name)
 		end
 	end
 end
@@ -68,7 +70,7 @@ function recursivelyTagModules(init, tbl, tag_tbl)
 	--#endregion
 
 	for key, value in ipairs(sorted_tags) do
-		table.insert(init, value)
+		table.insert(init, key, value)
 	end
 end
 
