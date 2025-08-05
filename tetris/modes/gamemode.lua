@@ -1135,10 +1135,11 @@ function GameMode:draw(paused)
 
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_2)
+	local background_rect = {getBackgroundRectDimensions()}
 	if config.visualsettings.display_gamemode == 1 then
 		love.graphics.printf(
 			self.name .. " - " .. self.ruleset.name,
-			0, 460, 640, "left"
+			background_rect[1], background_rect[2] + background_rect[4] - 20, background_rect[3], "left"
 		)
 	end
 

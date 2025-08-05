@@ -477,14 +477,14 @@ function love.draw()
 		bottom_right_corner_y_offset = bottom_right_corner_y_offset + 20
 		love.graphics.printf(
 			string.format("(%g) %.2f fps - %s", getTargetFPS(), 1.0 / avg_delta, version),
-			background_x, background_height - bottom_right_corner_y_offset, background_width - 5, "right"
+			background_x, background_y + background_height - bottom_right_corner_y_offset, background_width - 5, "right"
 		)
 	end
 	if config.visualsettings.debug_level > 1 then
 		bottom_right_corner_y_offset = bottom_right_corner_y_offset + 18
 		love.graphics.printf(
 			string.format("Lua memory use: %.1fMB", collectgarbage("count")/1000),
-			background_x, background_height - bottom_right_corner_y_offset, background_width - 5, "right"
+			background_x, background_y + background_height - bottom_right_corner_y_offset, background_width - 5, "right"
 		)
 	end
 
