@@ -157,6 +157,7 @@ function ReplayScene:render()
 			"T A S", -295, 100, 150, "center", 0, 8, 8
 		)
 	end
+	love.graphics.setColor(1, 1, 1, 1)
 	local pauses_y_coordinate = 23
 	if self.replay_speed > 1 then
 		pauses_y_coordinate = pauses_y_coordinate + 20
