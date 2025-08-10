@@ -12,6 +12,12 @@ MarathonA3Game.hash = "MarathonA3"
 MarathonA3Game.description = "The game gets faster way more quickly! Can you get all the Section COOLs?"
 MarathonA3Game.tags = {"Marathon", "Arika"}
 
+MarathonA3Game.highscore_format = {
+	grade = {sort = 1},
+	level = {sort = 2},
+	frames = {fps = 60, sort = 3},
+}
+
 function MarathonA3Game:new(secret_inputs)
 	MarathonA3Game.super:new(secret_inputs)
 
@@ -446,7 +452,7 @@ function MarathonA3Game:drawScoringInfo()
 		self.das.frames .. " " ..
 		strTrueValues(self.prev_inputs)
 	)
-	
+
 	local text_x = config["side_next"] and 320 or 240
 
 	love.graphics.setFont(font_3x5_2)
@@ -516,7 +522,7 @@ end
 
 function MarathonA3Game:getHighscoreData()
 	return {
-		grade = self:getAggregateGrade(),
+		grade = {value = self:getAggregateGrade(), label = self:getLetterGrade()},
 		level = self.level,
 		frames = self.frames,
 	}
