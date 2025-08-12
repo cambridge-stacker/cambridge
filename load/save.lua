@@ -3,9 +3,6 @@ local binser = require 'libs.binser'
 function loadSave()
 	config = loadFromFile('config.sav', true)
 	highscores = loadFromFile('highscores.sav', true)
-	
-	-- init config. this was moved from main.lua, to avoid a random config-related crash.
-	initConfig()
 end
 
 local configurable_inputs = {

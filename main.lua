@@ -46,6 +46,9 @@ function love.load(args)
 	-- used for screenshots
 	GLOBAL_CANVAS = love.graphics.newCanvas()
 
+	-- init config
+	initConfig()
+
 	love.window.setFullscreen(config["fullscreen"])
 
 
