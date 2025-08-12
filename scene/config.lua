@@ -252,6 +252,7 @@ function ConfigScene:onInputPress(e)
 		playSE("menu_cancel")
 		createToast(self.title, "Reverted changes.")
 		loadSave()
+		initConfig()
 		self:onCancel()
 		scene = SettingsScene()
 	end
