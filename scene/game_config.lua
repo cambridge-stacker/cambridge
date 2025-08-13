@@ -139,11 +139,11 @@ Date: <date_time>.crp]],
 	{
 		config_name = "show_center_of_rotation",
 		display_name = "Center of rotation",
-		options = {"Off", "On"},
+		options = {"Hidden", "Visible"},
 		description = [[
 Whether or not to decorate the block that is the center of rotation.
-Off: Do not decorate the block that is the center of rotation.
-Off: Decorate the block that is the center of rotation.]],
+Hidden: Do not decorate the block that is the center of rotation.
+Visible: Decorate the block that is the center of rotation.]],
 		type = "options",
 		default = 1,
 	},
