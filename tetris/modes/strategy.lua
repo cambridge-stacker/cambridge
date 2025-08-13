@@ -12,6 +12,11 @@ StrategyGame.hash = "Strategy"
 StrategyGame.description = "You have lots of time to think! Can you use it to place a piece fast?"
 StrategyGame.tags = {"Strategy", "Cambridge"}
 
+StrategyGame.highscore_format = {
+	level = {sort = 1},
+	frames = {fps = 60, sort = 2},
+}
+
 function StrategyGame:new()
 	StrategyGame.super:new()
 	self.clear = false

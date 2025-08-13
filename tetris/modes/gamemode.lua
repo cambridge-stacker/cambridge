@@ -16,6 +16,30 @@ GameMode.hash = ""
 GameMode.description = ""
 GameMode.rollOpacityFunction = function(age) return 0 end
 
+GameMode.highscore_format = {
+	-- List out all the columns of the highscore here.
+	-- Used for PTB leaderboards.
+
+	-- Fields are numeric by default.
+	-- Use [sort] to specify the default sorting priority.
+	-- Use [asc] to indicate that lower numbers are better.
+	-- Use [name] to override the field name.
+	-- score = {sort = 1, asc = false},
+
+	-- Specify frame times by setting an fps.
+	-- Times are assumed to be ascending unless asc = false is explicitly sent.
+	-- frames = {fps = 60},
+
+	-- Specify text columns by setting text to true. Text columns cannot be ordered
+	-- medals = {text = true},
+
+	-- For sortable text columns, such as Grades, define them here as numbers
+	-- and then in the highscore record, pass the value as a table with a
+	-- value for sorting and a label to display.
+	-- e.g. function getHighscore() return {grade = {value = 0, label = "9"}} end
+	-- grade = {}
+}
+
 ---@param secret_inputs table
 ---@param properties table
 function GameMode:new(secret_inputs, properties)
@@ -905,6 +929,16 @@ function GameMode:drawNextQueue(ruleset)
 			local x = offset.x + ruleset:getDrawOffset(piece).x + ruleset.spawn_positions[piece].x
 			local y = offset.y + ruleset:getDrawOffset(piece).y + 4.7
 			drawSizeIndependentImage(blocks[skin][colourscheme[piece]], pos_x+x*16, pos_y+y*16, 0, 16, 16)
+            -- draw center of rotation
+			if config.gamesettings.show_center_of_rotation == 2 then
+				local x = offsets[1].x + ruleset:getDrawOffset(piece).x + ruleset.spawn_positions[piece].x
+				local y = offsets[1].y + ruleset:getDrawOffset(piece).y + 4.7
+				drawSizeIndependentImage(
+					blocks[skin]['Z'],
+					pos_x+x*16, pos_y+y*16,
+					0, 16, 16
+				)
+			end
 		end
 	end
 	local is_obscured = false

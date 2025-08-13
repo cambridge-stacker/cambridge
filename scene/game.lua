@@ -84,6 +84,7 @@ function GameScene:render()
 		love.graphics.printf(
 			"T A S", -295, 100, 150, "center", 0, 8, 8
 		)
+		love.graphics.setColor(1, 1, 1, 1)
 	end
 end
 
