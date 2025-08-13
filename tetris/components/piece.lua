@@ -252,6 +252,16 @@ function Piece:draw(opacity, brightness, grid, partial_das)
 			)
 		end
 	end
+    -- draw center of rotation
+	if config.gamesettings.show_center_of_rotation == 2 then
+		local x = self.position.x + offsets[1].x
+		local y = self.position.y + offsets[1].y
+		drawSizeIndependentImage(
+			blocks[self.skin]['Z'],
+			64+x*16+partial_das, 16+y*16+gravity_offset,
+			0, 16, 16
+		)
+	end
 	return false
 end
 

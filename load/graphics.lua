@@ -118,6 +118,7 @@ blocks_paths = {
 		F = "res/img/s9",
 		A = "res/img/s8",
 		X = "res/img/s9",
+		Z = "res/img/s10",
 	},
 	["bone"] = {
 		R = "res/img/bone",

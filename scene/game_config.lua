@@ -136,6 +136,17 @@ Date: <date_time>.crp]],
 		type = "options",
 		default = 1,
 	},
+	{
+		config_name = "show_center_of_rotation",
+		display_name = "Center of rotation",
+		options = {"Hidden", "Visible"},
+		description = [[
+Whether or not to decorate the block that is the center of rotation.
+Hidden: Do not decorate the block that is the center of rotation.
+Visible: Decorate the block that is the center of rotation.]],
+		type = "options",
+		default = 1,
+	},
 }
 local optioncount = #ConfigScene.options
 
