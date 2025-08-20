@@ -126,6 +126,21 @@ Side: The next piece is to the right of the board; additional previews go downwa
 		default = 1,
 	},
 	{
+		config_name = "next_side_position",
+		display_name = "Side Position",
+		options = {"Top", "Center"},
+		description = [[
+Changes the vertical position of the next queue at the side of the game board.
+Top: The top-most next piece is near the top of the board.
+Center: The top-most next piece is near the center of the board.]],
+		setter = function (a)
+            config.side_position = a == 2
+            config.gamesettings.next_side_position = a
+		end,
+		type = "options",
+		default = 1,
+	},
+	{
 		config_name = "replay_name",
 		display_name = "Replay File Name",
 		options = {"Full", "Date"},
