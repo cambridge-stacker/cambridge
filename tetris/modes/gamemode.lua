@@ -627,6 +627,9 @@ function GameMode:processDelays(inputs, ruleset, drop_speed)
 			playedGoSE = true
 			playSEOnce("go")
 		end
+		if self.ready_frames == 75 and config.audiosettings.starting_piece_sound == 1 and config.audiosettings.next_piece_sound == 1 then
+			self:playNextSound(ruleset)
+		end
 		if self.ready_frames == 0 then
 			self:initializeOrHold(inputs, ruleset)
 		end
