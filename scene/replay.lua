@@ -100,7 +100,7 @@ function ReplayScene:update()
 			self.game.grid:update()
 		end
 	end
-	if self.paused then
+	if self.paused and self.rerecord then
 		self.game.pause_time = self.game.pause_time + love.timer.getDelta() / (1/60)
 	end
 	DiscordRPC:update({
@@ -228,8 +228,10 @@ function ReplayScene:onInputPress(e)
 		self.paused = not self.paused
 		if self.paused then
 			pauseBGM()
-			self.game.pause_count = self.game.pause_count + 1
-		else 
+			if self.rerecord then
+				self.game.pause_count = self.game.pause_count + 1
+			end
+		else
 			resumeBGM()
 		end
 	elseif e.input and string.sub(e.input, 1, 5) ~= "menu_" and self.rerecord and e.input ~= "frame_step" then
