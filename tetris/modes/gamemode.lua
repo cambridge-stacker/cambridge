@@ -206,7 +206,7 @@ function GameMode:saveReplay()
 	if config.gamesettings.replay_name == 2 then
 		init_name = string.format("replays/%s.crp", os.date("%Y-%m-%d_%H-%M-%S"))
 	else
-		init_name = string.format("replays/%s - %s - %s.crp", self.name, self.ruleset.name, os.date("%Y-%m-%d_%H-%M-%S"))
+		init_name = string.format("replays/%s - %s - %s.crp", self.hash, self.ruleset.hash, os.date("%Y-%m-%d_%H-%M-%S"))
 	end
 	local replay_name = init_name
 	local replay_number = 0

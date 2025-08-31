@@ -131,7 +131,7 @@ Side: The next piece is to the right of the board; additional previews go downwa
 		options = {"Full", "Date"},
 		description = [[
 Changes the filename format that replays are saved with.
-Full: <mode_name> - <ruleset_name> - <date_time>.crp
+Full: <mode_ID> - <ruleset_ID> - <date_time>.crp
 Date: <date_time>.crp]],
 		type = "options",
 		default = 1,
