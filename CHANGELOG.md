@@ -7,7 +7,13 @@
 - Added more descriptions, and tweaks to the existing ones
 - 3x5 and 8x11 fonts now have extra glyphs
 - Updated the Tutorial Keybinder, to add introduction on how to use it
-- T.B.D
+- Added Center of Rotation (nanophilip)
+- HOLD text now shows up above the held piece. (nanophilip)
+- Fixed a crash regarding configs
+- Pause timer and counter no longer gets triggered when not in re-recording
+- Added starting piece sound, that plays after the "READY", before "GO!"
+- Full replay name now uses IDs instead of names
+- Fixed TAS watermark bleeding alphas
 
 # v0.4.4.1:
 - Fixed bugs related to 21h
