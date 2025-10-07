@@ -119,6 +119,7 @@ blocks_paths = {
 		A = "res/img/s8",
 		X = "res/img/s9",
 		Z = "res/img/s10",
+		I = "res/img/s11",
 	},
 	["bone"] = {
 		R = "res/img/bone",
@@ -133,6 +134,8 @@ blocks_paths = {
 		F = "res/img/bone",
 		A = "res/img/bone",
 		X = "res/img/bone",
+		Z = "res/img/s10",
+		I = "res/img/s11",
 	},
 	["gem"] = {
 		R = "res/img/gem1",
@@ -147,6 +150,8 @@ blocks_paths = {
 		F = "res/img/gem9",
 		A = "res/img/gem9",
 		X = "res/img/gem9",
+		Z = "res/img/s10",
+		I = "res/img/s11",
 	},
 	["square"] = {
 		W = "res/img/squares",
