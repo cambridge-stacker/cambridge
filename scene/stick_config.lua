@@ -399,7 +399,9 @@ function StickConfigScene:onInputPress(e)
 			end
 			if not self.reconfiguration and is_bound then
 				self.input_state = self.input_state + 1
-				self.set_inputs[configurable_inputs[self.input_state]] = "<release to start binding, or hold to erase>"
+				if configurable_inputs[self.input_state] ~= nil then
+					self.set_inputs[configurable_inputs[self.input_state]] = "<release to start binding, or hold to erase>"
+				end
 				self.erase_timer = 60
 				self.safety_frames = 2
 				self.rebinding = true
