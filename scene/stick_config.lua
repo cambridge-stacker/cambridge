@@ -231,7 +231,9 @@ function StickConfigScene:render()
 			end
 		end
 	elseif self.erase_timer == 30 then
-		self.set_inputs[configurable_inputs[self.input_state]] = "<erasing binding...>"
+		if configurable_inputs[self.input_state] ~= nil then
+			self.set_inputs[configurable_inputs[self.input_state]] = "<erasing binding...>"
+		end
 	end
 	if self.erase_timer >= 0 then
 		self.erase_timer = self.erase_timer - 1
@@ -251,6 +253,7 @@ end
 
 function StickConfigScene:rebind(binding)
 	local input_type = configurable_inputs[self.input_state]
+	if input_type == nil then return false end
 	if binding == nil then
 		self.new_input[input_type] = nil
 		self.set_inputs[input_type] = "erased"
@@ -401,10 +404,10 @@ function StickConfigScene:onInputPress(e)
 				self.input_state = self.input_state + 1
 				if configurable_inputs[self.input_state] ~= nil then
 					self.set_inputs[configurable_inputs[self.input_state]] = "<release to start binding, or hold to erase>"
+					self.erase_timer = 60
+					self.rebinding = true
 				end
-				self.erase_timer = 60
 				self.safety_frames = 2
-				self.rebinding = true
 			end
 		end
 	end
