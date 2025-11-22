@@ -148,7 +148,6 @@ function initConfig()
 		if config.current_folder_selections then
 			current_folder_selections = config.current_folder_selections
 		end
-		if config.current_tags then current_tags = config.current_tags end
 		scene = TitleScene()
 		--if migrateInputConfig still fails
 		if inputUpdaterConditions(config.input.keys) then

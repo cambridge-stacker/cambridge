@@ -6,12 +6,10 @@ function ModeSelectScene:new()
 	-- reload custom modules
 	initModules()
 	if highscores == nil then highscores = {} end
-	self.game_mode_tags = self:loadTags(game_modes, "mode")
+	self.game_mode_folder = game_modes
 	self.game_mode_selections = {game_modes}
-	self.game_mode_folder = self:getFromSelectedTags(self.game_mode_tags, "mode")
-	self.ruleset_tags = self:loadTags(rulesets, "ruleset")
+	self.ruleset_folder = rulesets
 	self.ruleset_folder_selections = {rulesets}
-	self.ruleset_folder = self:getFromSelectedTags(self.ruleset_tags, "ruleset")
 	self.menu_state = {}
 	if #self.game_mode_folder == 0 or #self.ruleset_folder == 0 then
 		self.display_warning = true
@@ -62,18 +60,6 @@ function ModeSelectScene:new()
 		state = "Chosen ??? and ???.",
 		largeImageKey = "ingame-000"
 	})
-end
-
-function ModeSelectScene:loadTags(folder, tag_type)
-	local tags = {}
-	for key, value in ipairs(folder) do
-		for k2, v2 in pairs(current_tags[tag_type]) do
-			if (table.contains(value, v2.name) and value.is_tag) then
-				tags[k2] = value
-			end
-		end
-	end
-	return tags
 end
 
 local menu_DAS_hold = {["up"] = 0, ["down"] = 0, ["left"] = 0, ["right"] = 0}
@@ -321,9 +307,6 @@ function ModeSelectScene:render()
 				20))
 			drawWrappingText(mode.name,
 			40, (260 - self.menu_mode_y) + 20 * idx, 200, "left")
-			if table.contains(self.game_mode_tags, mode) then
-				love.graphics.rectangle("fill", 20, (260 - self.menu_mode_y) + 20 * idx, 10, 20)
-			end
 		end
 	end
 	for idx, ruleset in ipairs(self.ruleset_folder) do
@@ -348,9 +331,6 @@ function ModeSelectScene:render()
 			)
 			drawWrappingText(ruleset.name,
 			260 - self.menu_ruleset_x + 120 * idx, 440, 120, "center")
-			if table.contains(self.ruleset_tags, ruleset) then
-				love.graphics.rectangle("fill", 270 - self.menu_ruleset_x + 120 * idx, 456, 100, 4)
-			end
 		end
 	end
 	if self.game_mode_folder[self.menu_state.mode]
@@ -431,36 +411,7 @@ function ModeSelectScene:injectSecretSequenceOnMatch(mode)
 	end
 end
 
-function ModeSelectScene:handleTagSelection(select_tag)
-	local selected_tag = false
-	local tag_select_type
-	if self.ruleset_folder[self.menu_state.ruleset].is_tag and select_tag == "ruleset" then
-		tag_select_type = self.handleTagFolder(self.ruleset_folder, self.ruleset_tags, self.menu_state.ruleset)
-		self.ruleset_folder = self:getFromSelectedTags(self.ruleset_tags, "ruleset")
-		selected_tag = true
-	elseif self.game_mode_folder[self.menu_state.mode].is_tag then
-		tag_select_type = self.handleTagFolder(self.game_mode_folder, self.game_mode_tags, self.menu_state.mode)
-		self.game_mode_folder = self:getFromSelectedTags(self.game_mode_tags, "mode")
-		selected_tag = true
-	elseif self.ruleset_folder[self.menu_state.ruleset].is_tag and select_tag == "mode" then
-		tag_select_type = self.handleTagFolder(self.ruleset_folder, self.ruleset_tags, self.menu_state.ruleset)
-		self.ruleset_folder = self:getFromSelectedTags(self.ruleset_tags, "ruleset")
-		selected_tag = true
-	end
-	if selected_tag then
-		if tag_select_type then
-			playSE("main_decide")
-		else
-			playSE("menu_cancel")
-		end
-	end
-	return selected_tag
-end
-
 function ModeSelectScene:indirectStartMode()
-	if self:handleTagSelection("ruleset") then
-		return
-	end
 	if self.ruleset_folder[self.menu_state.ruleset].is_directory then
 		playSE("main_decide")
 		self:menuGoForward("ruleset")
@@ -483,11 +434,9 @@ end
 function ModeSelectScene:startMode()
 	current_mode = self.menu_state.mode
 	current_ruleset = self.menu_state.ruleset
-	current_tags = {mode = self.game_mode_tags, ruleset = self.ruleset_tags}
 	config.current_mode = current_mode
 	config.current_ruleset = current_ruleset
 	config.current_folder_selections = current_folder_selections
-	config.current_tags = current_tags
 	saveConfig()
 	self:injectSecretSequenceOnMatch(self.game_mode_folder[self.menu_state.mode])
 	scene = GameScene(
@@ -495,48 +444,6 @@ function ModeSelectScene:startMode()
 		self.ruleset_folder[self.menu_state.ruleset],
 		self.secret_inputs
 	)
-end
-
-function ModeSelectScene.handleTagFolder(folder, tags, state)
-	local toggle = false
-	if folder[state].is_tag then
-		local name = folder[state].name
-		if tags[name] == nil then
-			tags[name] = folder[state]
-			toggle = true
-		else
-			tags[name] = nil
-		end
-	end
-	return toggle
-end
-
-
-function ModeSelectScene:getFromSelectedTags(selected_tags, select_type)
-	local root_folder = game_modes
-	if select_type == "ruleset" then
-		root_folder = rulesets
-	end
-	if next(selected_tags) == nil then
-		return select_type == "ruleset" and self.ruleset_folder_selections[#self.ruleset_folder_selections] or self.game_mode_selections[#self.game_mode_selections]
-	end
-	local result_folder = {}
-	for k, v in pairs(selected_tags) do
-		for k2, v2 in pairs(v) do
-			if not table.contains(result_folder, v2) and type(v2) == "table" then
-				table.insert(result_folder, v2)
-			end
-		end
-	end
-	local function padnum(d) return ("%03d%s"):format(#d, d) end
-	table.sort(result_folder, function(a,b)
-	return tostring(a.name):gsub("%d+",padnum) < tostring(b.name):gsub("%d+",padnum) end)
-	for index, value in ipairs(root_folder) do
-		if value.is_tag and not value.tags then
-			table.insert(result_folder, index, value)
-		end
-	end
-	return result_folder
 end
 
 function ModeSelectScene:menuGoBack(menu_type)
@@ -659,9 +566,6 @@ function ModeSelectScene:onInputPress(e)
 			if e.x < 260 then
 				self.auto_mode_offset = math.floor((e.y - 260)/20)
 				if self.auto_mode_offset == 0 then
-					if self:handleTagSelection("mode") then
-						return
-					end
 					if self.game_mode_folder[self.menu_state.mode].is_directory then
 						playSE("main_decide")
 						self:menuGoForward("mode")
@@ -674,9 +578,6 @@ function ModeSelectScene:onInputPress(e)
 		else
 			self.auto_ruleset_offset = math.floor((e.x - 260)/120)
 			if self.auto_ruleset_offset == 0 and self.ruleset_folder[self.menu_state.ruleset].is_directory then
-				if self:handleTagSelection("ruleset") then
-					return
-				end
 				playSE("main_decide")
 				self:menuGoForward("ruleset")
 				self:refreshHighscores()
