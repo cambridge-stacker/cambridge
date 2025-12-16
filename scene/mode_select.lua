@@ -417,7 +417,7 @@ end
 function ModeSelectScene:startMode()
 	-- at this point, the user does not care about replays
 	-- so we can free them - modes will gobble up memory for no reason
-	initReplayLoaderAndCollectGarbage()
+	reinitReplayStorageAndCollectGarbage()
 
 	current_mode = self.menu_state.mode
 	current_ruleset = self.menu_state.ruleset

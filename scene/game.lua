@@ -42,6 +42,9 @@ function GameScene:new(game_mode, ruleset, inputs)
 		state = self.game.name,
 		largeImageKey = "ingame-"..self.game:getBackground().."00"
 	})
+
+	-- for good measure
+	collectgarbage("collect")
 end
 
 function GameScene:update()
