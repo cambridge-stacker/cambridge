@@ -415,6 +415,10 @@ function ModeSelectScene:indirectStartMode()
 end
 --Direct way of starting a mode.
 function ModeSelectScene:startMode()
+	-- at this point, the user does not care about replays
+	-- so we can free them - modes will gobble up memory for no reason
+	initReplayLoaderAndCollectGarbage()
+
 	current_mode = self.menu_state.mode
 	current_ruleset = self.menu_state.ruleset
 	config.current_mode = current_mode
