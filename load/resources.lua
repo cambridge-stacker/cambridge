@@ -90,6 +90,7 @@ function loadResources()
 	}
 	local previous_bg_index = 0
 	local bg_index = 0
+	-- Loading numbered backgrounds dynamically
 	while true do
 		local formatted_bg_path = bg_path:format(tostring(bg_index*100))
 		for key, value in pairs(image_formats) do
