@@ -111,11 +111,14 @@ function GameScene:onInputPress(e)
 		sortReplays()
 		scene = e.input == "retry" and GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs) or TitleScene.menu_screens[1]()
 		scene.safety_frames = 2
+
+		-- for good measure
+		collectgarbage("collect")
 	elseif e.input == "frame_step" and TAS_mode then
 		self.frame_steps = self.frame_steps + 1
 	elseif e.input == "retry" then
-		switchBGM(nil)
 		pitchBGM(1)
+		switchBGM(nil)
 		self.game:onExit()
 		scene = GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs)
 	elseif e.input == "pause" and not (self.game.game_over or self.game.completed) then
@@ -131,6 +134,9 @@ function GameScene:onInputPress(e)
 		switchBGM(nil)
 		self.game:onExit()
 		scene = TitleScene.menu_screens[1]()
+
+		-- for good measure
+		collectgarbage("collect")
 	elseif e.input and string.sub(e.input, 1, 5) ~= "menu_" and e.input ~= "frame_step" then
 		self.inputs[e.input] = true
 		if config.gamesettings["diagonal_input"] == 3 and opposite_directions[e.input] then
