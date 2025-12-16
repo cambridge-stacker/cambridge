@@ -80,14 +80,6 @@ function loadResources()
 	backgrounds = {}
 	blocks = {}
 	misc_graphics = {}
-	backgrounds_paths = {
-		title = "res/backgrounds/title",
-		title_no_icon = "res/backgrounds/title-no-icon",
-		title_night = "res/backgrounds/title-night",
-		snow = "res/backgrounds/snow",
-		options_input = "res/backgrounds/options-input",
-		options_game = "res/backgrounds/options-game",
-	}
 	local previous_bg_index = 0
 	local bg_index = 0
 	-- Loading numbered backgrounds dynamically
