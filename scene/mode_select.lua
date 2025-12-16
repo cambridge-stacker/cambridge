@@ -416,8 +416,8 @@ end
 --Direct way of starting a mode.
 function ModeSelectScene:startMode()
 	-- at this point, the user does not care about replays
-	-- so we can free them - modes will gobble up memory for no reason
-	reinitReplayStorageAndCollectGarbage()
+	-- so we can kill them
+	reinitReplayStorage()
 
 	current_mode = self.menu_state.mode
 	current_ruleset = self.menu_state.ruleset
