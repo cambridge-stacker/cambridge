@@ -7,12 +7,12 @@ local TIRandomizer = Randomizer:extend()
 
 local seed
 
--- ANSI C LCG (TGM variant)
+-- TGM's LCG.  used by every history based randomizer in every TGM game.
 
 local function lcg()
     seed = (129749 * seed)%(2^32) -- can overflow max safe integer range if we don't break this up and apply overflow here.
     seed = (seed * 8505 +12345) % (2^32)    -- second overflow check, just in case.
-    return math.floor(seed / (2 ^ 10)) % 32768     -- slight I bias, cuz 32767 is an I.
+    return math.floor(seed / (2 ^ 10)) % 32768     -- slight I bias for modulo 7, cuz 32767 is an I.
 end
 
 local function lcgRandom(n)
@@ -29,7 +29,7 @@ function TIRandomizer:initialize()
         "J", "J", "J", "J", "J",
         "L", "L", "L", "L", "L",
         "O", "O", "O", "O", "O",
-        "T", "T", "T", "T", "T",  -- correct bag order
+        "T", "T", "T", "T", "T",  -- thtis is the correct intial seed.
     }
     self.droughts = {
         I = 4,
@@ -38,7 +38,7 @@ function TIRandomizer:initialize()
         J = 4,
         L = 4,
         O = 4,
-        T = 4,
+        T = 4, -- starting drought counters.
     }
     self.piece_index = {
         "I",
@@ -49,7 +49,7 @@ function TIRandomizer:initialize()
         "O",
         "T",
     }
-    seed = love.math.random(0, 0xFFFFFFFF) -- pick random 32 bit unsigned starting seed in replay compatible fashion. 
+    seed = love.math.random(0, 0xFFFFFFFF) -- pick random 32 bit unsigned starting seed in replay compatible fashion.  not sure if all of these are usable by TI
 end
 
 function TIRandomizer:generatePiece()
@@ -58,7 +58,7 @@ function TIRandomizer:generatePiece()
     didfirst = false          -- did we just do the first piece
     if self.first then
 	while self.first do
-            index = lcgRandom(35) -- hack removed
+            index = lcgRandom(35) -- hack removed.  infinite rerolls to pick first piece
             x = self.pool[index]  -- get piece.
             if x == "I" then          -- if an I
                 self.first = false    -- accept
@@ -75,17 +75,16 @@ function TIRandomizer:generatePiece()
             didfirst = true           -- regardless once done rerolling, didfirst is true, safe to set it here.
         end
     else
-        for i = 1, 5 do
-            index = lcgRandom(#self.pool)
-            x = self.pool[index]
+        for i = 1, 5 do					   -- no, this is not an error in my implementation. the cocde does 1, 3, 5 7 9, or 10 rolls.  these correspond to 1 2 3 4 5 6
+            index = lcgRandom(#self.pool)  -- this pair of lines was probably ment to be above the loop
+            x = self.pool[index]           -- if it were, no rolls would be wasted, but their sequences wouldn't match the real game.
             if not self:inHistory(x) then
                 break
             end
             didreroll = true                                -- checked later
-            self.pool[index] = self:GetMostDroughtedPiece() -- update the bag
+            self.pool[index] = self:GetMostDroughtedPiece() -- update the bag. yes if you have to reroll a piece the peice you jsut rolled is now less likely to repeat.
             index = lcgRandom(#self.pool)                   -- reroll in case we are about to fall out
-            x = self.pool
-                [index]                                     -- yes, this burns an turbo number from the rng most of the time.
+            x = self.pool[index]                            -- yes, this burns an extra number from the rng most of the time.
         end
     end
     highscore = self:CheckHighDroughtCount() -- check drought count before updating histogram so we can implement the bug
