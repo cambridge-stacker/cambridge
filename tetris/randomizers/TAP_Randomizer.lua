@@ -3,12 +3,12 @@ local Randomizer = require 'tetris.randomizers.randomizer'
 local TAPRandomizer = Randomizer:extend()
 local seed
 
--- TAP's LCG 
+-- TGM's LCG. used for every TGM game's history based randomizer.
 
 local function lcg()
     seed = (129749 * seed)%(2^32) -- can overflow max safe integer range if we don't break this up and apply overflow here.
     seed = (seed * 8505 +12345) % (2^32)    -- second overflow check, just in case.
-    return math.floor(seed / (2 ^ 10)) % 32768     -- mulitple of 3 bits used minimizes modulo bias to lowest possible. 0 and 32767 are both I.
+    return math.floor(seed / (2 ^ 10)) % 32768     -- mulitple of 3 bits used minimizes modulo bias for 7 to lowest possible. 0 and 32767 are both I.
 end
 
 local function lcgRandom(n)           -- usable for any number of pieces
@@ -18,7 +18,7 @@ end
 function TAPRandomizer:initialize()
 	self.history = {"Z", "S", "S", "Z"}
 	self.first = true
-	seed = love.math.random(0, 0xFFFFFFFF)
+	seed = love.math.random(0, 0xFFFFFFFF) -- use LOVE to set initial seed so replays will sync. 
 end
 
 function TAPRandomizer:generatePiece()
