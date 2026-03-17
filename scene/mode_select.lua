@@ -113,24 +113,6 @@ function ModeSelectScene:update()
 	if self.input_timers["stop_sequencing"] == 0 then
 		self.is_sequencing = false
 	end
-	if self.input_timers["reset_tags"] == 0 then
-		self.game_mode_tags = {}
-		self.ruleset_tags = {}
-		if #self.game_mode_selections > 1 then
-			self.game_mode_folder = self.game_mode_selections[#self.game_mode_selections].folder
-		else
-			self.game_mode_folder = self:getFromSelectedTags(self.game_mode_tags, "mode")
-			self.game_mode_selections[1].folder = self.game_mode_folder
-		end
-		if #self.ruleset_folder_selections > 1 then
-			self.ruleset_folder = self.ruleset_folder_selections[#self.ruleset_folder_selections].folder
-		else
-			self.ruleset_folder = self:getFromSelectedTags(self.ruleset_tags, "ruleset")
-			self.ruleset_folder_selections[1].folder = self.ruleset_folder
-		end
-		playSE("ihs")
-		self.text_tag_unselect_timer = 60
-	end
 
 	if self.is_sequencing then
 		self.sequencing_start_frames = math.min(self.sequencing_start_frames + 1, 20)
@@ -355,7 +337,6 @@ function ModeSelectScene:render()
 	drawFadingTextNearHeader(self.input_timers["reload"], "Keep holding Generic 1 to reload modules...", 40)
 	drawFadingTextNearHeader(self.input_timers["secret_sequencing"], "Keep holding Generic 2 to input secret sequences...", 40)
 	drawFadingTextNearHeader(self.input_timers["stop_sequencing"], "Keep holding to stop sequencing...", 40)
-	drawFadingTextNearHeader(self.input_timers["reset_tags"], "Keep holding Generic 3 to reset all tag selections....", 40)
 	drawFadingTextNearHeader(60 - (self.text_tag_unselect_timer or 0), "You've unselected all tags.", 60)
 	if self.text_tag_unselect_timer then self.text_tag_unselect_timer = self.text_tag_unselect_timer - 1 end
 	love.graphics.setColor(1, 1, 1, 1)
@@ -631,8 +612,6 @@ function ModeSelectScene:onInputPress(e)
 			self.input_timers["reload"] = 60
 		elseif e.input == "generic_2" then
 			self.input_timers["secret_sequencing"] = 60
-		elseif e.input == "generic_3" then
-			self.input_timers["reset_tags"] = 60
 		end
 	end
 end
@@ -648,8 +627,6 @@ function ModeSelectScene:onInputRelease(e)
 		self.input_timers["reload"] = nil
 	elseif e.input == "generic_2" then
 		self.input_timers["secret_sequencing"] = nil
-	elseif e.input == "generic_3" then
-		self.input_timers["reset_tags"] = nil
 	end
 	if e.input == "menu_up" then
 		self.das_up = nil
