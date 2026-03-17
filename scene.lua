@@ -17,6 +17,7 @@ ReportBugFunc = require "scene.named_funcs.report_bug"
 
 --#endregion
 
+AbstractInteractableScene = require "scene.abstract.abstract_interactable"
 ExitScene = require "scene.exit"
 GameScene = require "scene.game"
 ResourcePackScene = require "scene.resource_pack_scene"
@@ -28,7 +29,7 @@ ReplaySelectScene = require "scene.replay_select"
 KeyConfigScene = require "scene.key_config"
 StickConfigScene = require "scene.stick_config"
 InputConfigScene = require "scene.input_config"
-AbstractConfigScene = require "scene.config" -- this is an abstract scene
+AbstractConfigScene = require "scene.abstract.config" -- this is an abstract scene
 GameConfigScene = require "scene.game_config"
 VisualConfigScene = require "scene.visual_config"
 AudioConfigScene = require "scene.audio_config"
