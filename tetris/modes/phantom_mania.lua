@@ -12,6 +12,11 @@ PhantomManiaGame.hash = "PhantomMania"
 PhantomManiaGame.description = "The blocks disappear as soon as they're locked! Can you remember where everything is?"
 PhantomManiaGame.tags = {"Invisible Stack", "Survival", "Gimmick", "Cambridge"}
 
+PhantomManiaGame.highscore_format = {
+	level = {sort = 1},
+	frames = {fps = 60, sort = 2},
+}
+
 function PhantomManiaGame:new(secret_inputs)
 	PhantomManiaGame.super:new(secret_inputs)
 

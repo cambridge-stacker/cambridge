@@ -12,6 +12,11 @@ SurvivalAXGame.hash = "SurvivalAX"
 SurvivalAXGame.description = "Can you clear the time hurdles when the game goes this fast?"
 SurvivalAXGame.tags = {"Survival", "Arika", "20G Start"}
 
+SurvivalAXGame.highscore_format = {
+	lines = {sort = 1},
+	frames = {fps = 60, sort = 2},
+}
+
 function SurvivalAXGame:new()
 	SurvivalAXGame.super:new()
 

@@ -84,6 +84,14 @@ The amount of instances of the same sound effect that may be played at once. Hig
 		description = "Whether or not to play next piece sounds. May be overridden by certain modes.",
 		default = 1,
 		options = {"On", "Off"}
+	},
+	{
+		config_name = "starting_piece_sound",
+		display_name = "Starting Piece Sound",
+		type = "options",
+		description = "Whether or not to play the starting piece sound. May be overridden by certain modes.",
+		default = 1,
+		options = {"On", "Off"}
 	}
 }
 local optioncount = #ConfigScene.options

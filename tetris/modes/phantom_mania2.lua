@@ -12,6 +12,12 @@ PhantomMania2Game.hash = "PhantomMania2"
 PhantomMania2Game.description = "The blocks disappear even faster now! Can you make it to level 1300?"
 PhantomMania2Game.tags = {"Invisible Stack", "Survival", "Gimmick", "Cambridge"}
 
+PhantomMania2Game.highscore_format = {
+	grade = {sort = 1},
+	level = {sort = 2},
+	frames = {fps = 60, sort = 3},
+}
+
 function PhantomMania2Game:new(secret_inputs)
 	PhantomMania2Game.super:new(secret_inputs)
 
@@ -364,7 +370,7 @@ function PhantomMania2Game:getHighscoreData()
 	return {
 		level = self.level,
 		frames = self.frames,
-		grade = self.grade,
+		grade = {value = self.grade, label = getLetterGrade(math.floor(self.grade))},
 	}
 end
 

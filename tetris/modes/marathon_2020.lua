@@ -12,9 +12,15 @@ Marathon2020Game.hash = "Marathon2020"
 Marathon2020Game.description = "2020 levels of pure pain! Can you achieve the World Master rank?"
 Marathon2020Game.tags = {"Marathon", "Cambridge"}
 
+Marathon2020Game.highscore_format = {
+	grade = {sort = 1},
+	level = {sort = 2},
+	frames = {fps = 60, sort = 3},
+}
+
 function Marathon2020Game:new()
 	Marathon2020Game.super:new()
-	
+
 	self.lock_drop = true
 	self.lock_hard_drop = true
 	self.enable_hold = true
@@ -32,7 +38,7 @@ function Marathon2020Game:new()
 		[1000] = false, [1500] = false, [1900] = false
 	}
 	self.torikan_hit = false
-	
+
 	self.grade = 0
 	self.grade_points = 0
 	self.grade_point_decay_counter = 0
@@ -407,7 +413,7 @@ You qualify for the GM roll if you:
 - in less than 13:30.00 total.
 
 ]]--
-	
+
 	return self.level >= 2020 and self:getTotalGrade() == 50 and self.grade_points >= 25000 and self.frames <= frameTime(13,30)
 end
 
@@ -450,10 +456,10 @@ function Marathon2020Game:drawScoringInfo()
 	if (self.cool_timer > 0) then
 				love.graphics.printf("COOL!!", 64, 400, 160, "center")
 				self.cool_timer = self.cool_timer - 1
-		end	
+		end
 
 	love.graphics.setFont(font_3x5_3)
-	
+
 	local grade = self:getTotalGrade()
 	love.graphics.printf(
 		grade > 50 and "GM" or grade,

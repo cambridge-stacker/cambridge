@@ -191,6 +191,8 @@ function KeyConfigScene:new()
 		self.error_duration = 0.5
 	end
 
+	self.das = 0
+
 	DiscordRPC:update({
 		details = "In settings",
 		state = "Changing key config",
