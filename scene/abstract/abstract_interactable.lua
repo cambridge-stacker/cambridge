@@ -32,7 +32,7 @@ function AbstractInteractableScene:render()
 	for key, value in pairs(self.interactables) do
 		love.graphics.push("all")
 		local is_selected = self.current_selected_interactable == value
-		local is_hovered = cursorHighlight(value.x, value.y, value.w, value.h) == 1
+		local is_hovered = cursorHighlight(value.x, value.y, value.w, value.h) == 0
 		love.graphics.rectangle("line", value.x, value.y, value.w, value.h)
 		value:onRender(is_selected, is_hovered)
 		love.graphics.pop()
