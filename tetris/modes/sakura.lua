@@ -273,7 +273,7 @@ local maps = {
 local STAGE_TRANSITION_TIME = 300
 
 function SakuraGame:new(secret_inputs)
-	self.super.new(self, secret_inputs)
+	SakuraGame.super.new(self, secret_inputs)
 
 	self.randomizer = (
 		(

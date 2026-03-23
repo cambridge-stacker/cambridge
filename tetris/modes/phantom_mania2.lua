@@ -19,7 +19,7 @@ PhantomMania2Game.highscore_format = {
 }
 
 function PhantomMania2Game:new(secret_inputs)
-	PhantomMania2Game.super:new(secret_inputs)
+	PhantomMania2Game.super.new(self, secret_inputs)
 
 	if type(secret_inputs) == "table" then
 		for key, value in pairs(secret_inputs) do
