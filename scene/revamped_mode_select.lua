@@ -297,9 +297,6 @@ function ModeSelectScene:render()
 					20) * ((sel_idx+1) / (#self.game_mode_selections+1)))
 				drawWrappingText(mode.name,
 				40 + (sel_idx - #self.game_mode_selections) * 10, (260 - self.menu_mode_y) + pos_y, 200, "left")
-				if table.contains(self.game_mode_tags, mode) then
-					love.graphics.rectangle("fill", 20, (260 - self.menu_mode_y) + 20 * idx, 10, 20)
-				end
 			end
 		end
 	end
@@ -327,9 +324,6 @@ function ModeSelectScene:render()
 				)
 				drawWrappingText(ruleset.name,
 				260 - self.menu_ruleset_x + 120 * idx + offset, 440 - (sel_idx - #self.ruleset_folder_selections) * 10, 120, "center")
-				if table.contains(self.ruleset_tags, ruleset) then
-					love.graphics.rectangle("fill", 270 - self.menu_ruleset_x + 120 * idx + offset, 456, 100, 4)
-				end
 			end
 		end
 	end
