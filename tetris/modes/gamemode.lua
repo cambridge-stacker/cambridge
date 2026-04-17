@@ -958,7 +958,11 @@ function GameMode:drawNextQueue(ruleset)
 			next_queue_position = next_queue_position + 1
 		end
 		if config.side_next then -- next at side
-			drawPiece(next_piece, skin, ruleset.block_offsets[next_piece][rotation], 192, -16+next_queue_position*48)
+            if not config.side_position then
+                drawPiece(next_piece, skin, ruleset.block_offsets[next_piece][rotation], 192, -16+next_queue_position*48)
+            else
+    			drawPiece(next_piece, skin, ruleset.block_offsets[next_piece][rotation], 192, 64+next_queue_position*48)
+            end
 		else -- next at top
 			drawPiece(next_piece, skin, ruleset.block_offsets[next_piece][rotation], -16+next_queue_position*80, -32)
 		end
@@ -1004,7 +1008,11 @@ function GameMode:drawScoringInfo()
 	love.graphics.setFont(font_3x5_2)
 
 	if config["side_next"] then
-		love.graphics.printf("NEXT", 240, 72, 40, "left")
+            if not config.side_position then
+        		love.graphics.printf("NEXT", 240, 72, 40, "left")
+            else
+        		love.graphics.printf("NEXT", 240, 152, 40, "left")
+            end
 	else
 		love.graphics.printf("NEXT", 64, 40, 40, "left")
 	end
