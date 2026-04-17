@@ -21,7 +21,7 @@ MarathonA1Game.highscore_format = {
 }
 
 function MarathonA1Game:new(secret_inputs)
-	MarathonA1Game.super:new(secret_inputs)
+	MarathonA1Game.super.new(self, secret_inputs)
 
 	if type(secret_inputs) == "table" then
 		for key, value in pairs(secret_inputs) do

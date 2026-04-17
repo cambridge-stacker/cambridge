@@ -19,7 +19,7 @@ Marathon2020Game.highscore_format = {
 }
 
 function Marathon2020Game:new()
-	Marathon2020Game.super:new()
+	Marathon2020Game.super.new(self)
 
 	self.lock_drop = true
 	self.lock_hard_drop = true

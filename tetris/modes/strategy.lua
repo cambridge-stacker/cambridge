@@ -18,7 +18,7 @@ StrategyGame.highscore_format = {
 }
 
 function StrategyGame:new()
-	StrategyGame.super:new()
+	StrategyGame.super.new(self)
 	self.clear = false
 	self.completed = false
 	self.roll_frames = 0

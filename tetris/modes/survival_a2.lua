@@ -18,7 +18,7 @@ SurvivalA2Game.highscore_format = {
 }
 
 function SurvivalA2Game:new(secret_inputs)
-	SurvivalA2Game.super:new(secret_inputs)
+	SurvivalA2Game.super.new(self, secret_inputs)
 
 	if type(secret_inputs) == "table" then
 		for key, value in pairs(secret_inputs) do

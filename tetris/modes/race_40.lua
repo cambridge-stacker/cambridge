@@ -18,7 +18,7 @@ Race40Game.highscore_format = {
 }
 
 function Race40Game:new()
-	Race40Game.super:new()
+	Race40Game.super.new(self)
 
 	self.lines = 0
 	self.line_goal = 40

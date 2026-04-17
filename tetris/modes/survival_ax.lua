@@ -18,7 +18,7 @@ SurvivalAXGame.highscore_format = {
 }
 
 function SurvivalAXGame:new()
-	SurvivalAXGame.super:new()
+	SurvivalAXGame.super.new(self)
 
 	self.randomizer = Bag7NoSZOStartRandomizer()
 
