@@ -1,4 +1,14 @@
 
+--[[ProFi = require 'libs.profi'
+ProFi:start()
+
+function love.quit()
+	ProFi:stop()
+	ProFi:writeReport()
+
+	return false
+end]]
+
 -- Pre-load aliases
 random = love.math.random
 math.random = love.math.random

@@ -3,12 +3,20 @@ local io_thread
 
 loaded_replays = false
 
-function loadReplayList()
+function initReplayStorage()
 	replays = {}
 	replay_tree = {{name = "All"}}
 	dict_ref = {}
 	loaded_replays = false
+end
+
+function reinitReplayStorageAndCollectGarbage()
+	initReplayStorage()
 	collectgarbage("collect")
+end
+
+function loadReplayList()
+	reinitReplayStorageAndCollectGarbage()
 
 	--proper disposal to avoid some memory problems
 	if io_thread then
