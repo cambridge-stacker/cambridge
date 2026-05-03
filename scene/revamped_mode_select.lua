@@ -423,6 +423,9 @@ function ModeSelectScene:indirectStartMode()
 end
 --Direct way of starting a mode.
 function ModeSelectScene:startMode()
+	-- Clears up the replay list
+	initReplayList()
+
 	current_mode = self.menu_state.mode
 	current_ruleset = self.menu_state.ruleset
 	config.current_mode = current_mode
