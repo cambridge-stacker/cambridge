@@ -173,7 +173,7 @@ function TitleScene:render()
 		elseif (self.love2d_major == 12 and self.love2d_minor == 0) then
 			love.graphics.printf({{1, 1, 0, 1}, "LOVE 12.0 is currently in development. There may be more bugs than usual. Cambridge currently doesn't utilise the new features provided by LOVE 12.0."}, 50, 60, 540, "center")
 		end
-		love.graphics.printf("This new version has many changes and is therefore prone to bugs!\nReport bugs and issues found here to the\ncambridge-stacker/cambridge repository, in detail.\nYou can use the Report Bugs button to access the repository directly.", 0, 280, 640, "center")
+		love.graphics.printf("This new version changes where the replays are stored and loaded!\nReport bugs and issues found here to the\ncambridge-stacker/cambridge repository, in detail.\nYou can use the Report Bugs button to access the repository directly.", 0, 280, 640, "center")
 	end
 	local x, y
 	if enter_pressed then
