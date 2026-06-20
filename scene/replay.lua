@@ -131,6 +131,9 @@ function ReplayScene:loadState()
 	scene.replay_speed = self.replay_speed
 	scene.show_invisible = self.show_invisible
 	scene.paused = true
+
+	-- for good measure
+	collectgarbage("collect")
 end
 
 function ReplayScene:render()
@@ -215,6 +218,9 @@ function ReplayScene:onInputPress(e)
 	 	)
 		scene.safety_frames = 2
 		savestate_frames = nil
+
+		-- for good measure
+		collectgarbage("collect")
 	--hardcoded input
 	elseif e.input == "save_state" then
 		savestate_frames = self.frames
