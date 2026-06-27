@@ -17,6 +17,21 @@ GameMode.description = ""
 GameMode.rollOpacityFunction = function(age) return 0 end
 GameMode.use_extended_metadata = false
 
+GameMode.config_settings = {
+	--- This is a table for mode configurations.
+	--- If you know how to utilize Config Framework, this will be familiar
+	---@class config_template Configuration Template
+	---@field format                 string|nil|fun(value):string Value formatter
+	---@field setting_title          string Name of a setting
+	---@field internal_variable_name any Internal variable to modify by key reference
+	---@field description            string?
+	---@field increment_type         "integer"|"float"? Default value type: Integer
+	---@field low_limit              number? Sets a low boundary
+	---@field high_limit             number? Sets a high boundary
+	---@field default                number|boolean Default value.
+	---@field arrows                 boolean? Show arrows or not.
+}
+
 GameMode.highscore_format = {
 	-- List out all the columns of the highscore here.
 	-- Used for PTB leaderboards.
