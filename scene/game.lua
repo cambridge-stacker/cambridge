@@ -10,7 +10,7 @@ function GameScene:new(game_mode, ruleset, metadata)
 	love.mouse.setVisible(true)
 	self.retry_mode = game_mode
 	self.retry_ruleset = ruleset
-	self.secret_inputs = metadata.secret_inputs
+	self.metadata = metadata
 	self.sha_tbl = {
 		mode = sha2.sha256(getModuleSource(game_mode)),
 		ruleset = sha2.sha256(getModuleSource(ruleset))
@@ -106,7 +106,7 @@ function GameScene:onInputPress(e)
 		switchBGM(nil)
 		self.game:onExit()
 		sortReplays()
-		scene = e.input == "retry" and GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs) or TitleScene.menu_screens[1]()
+		scene = e.input == "retry" and GameScene(self.retry_mode, self.retry_ruleset, self.metadata) or TitleScene.menu_screens[1]()
 		scene.safety_frames = 2
 
 		-- for good measure -Rexxt
@@ -117,7 +117,7 @@ function GameScene:onInputPress(e)
 		switchBGM(nil)
 		pitchBGM(1)
 		self.game:onExit()
-		scene = GameScene(self.retry_mode, self.retry_ruleset, self.secret_inputs)
+		scene = GameScene(self.retry_mode, self.retry_ruleset, self.metadata)
 
 		-- A case of, why not? -Tetro48, aka Tetrina
 		collectgarbage("collect")
