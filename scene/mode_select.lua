@@ -47,6 +47,7 @@ function ModeSelectScene:new()
 	self.secret_inputs = {}
 	self.secret_sequence = {}
 	self.sequencing_start_frames = 0
+	self.mode_configs = {}
 	self.input_timers = {}
 	self.das = 0
 	-- It's not exactly self-descriptive.
@@ -415,11 +416,23 @@ function ModeSelectScene:startMode()
 	config.current_ruleset = current_ruleset
 	config.current_folder_selections = current_folder_selections
 	saveConfig()
-	self:injectSecretSequenceOnMatch(self.game_mode_folder[self.menu_state.mode])
+	local mode = self.game_mode_folder[self.menu_state.mode]
+	local metadata = {
+		secret_inputs = self.secret_inputs,
+		mode_configs = self.mode_configs
+	}
+	if not mode.use_extended_metadata then
+		for key, value in pairs(self.secret_inputs) do
+			if not metadata[key] then
+				metadata[key] = value
+			end
+		end
+	end
+	self:injectSecretSequenceOnMatch(mode)
 	scene = GameScene(
-		self.game_mode_folder[self.menu_state.mode],
+		mode,
 		self.ruleset_folder[self.menu_state.ruleset],
-		self.secret_inputs
+		metadata
 	)
 end
 

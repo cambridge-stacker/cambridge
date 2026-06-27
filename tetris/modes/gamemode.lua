@@ -15,6 +15,7 @@ GameMode.name = ""
 GameMode.hash = ""
 GameMode.description = ""
 GameMode.rollOpacityFunction = function(age) return 0 end
+GameMode.use_extended_metadata = false
 
 GameMode.highscore_format = {
 	-- List out all the columns of the highscore here.
@@ -40,14 +41,19 @@ GameMode.highscore_format = {
 	-- grade = {}
 }
 
----@param secret_inputs table
+---@param metadata table
 ---@param properties table
-function GameMode:new(secret_inputs, properties)
+function GameMode:new(metadata, properties)
 	self.replay_inputs = {}
+	self.metadata = metadata
 	self.random_low, self.random_high = love.math.getRandomSeed()
 	self.random_state = love.math.getRandomState()
 	self.save_replay = config.gamesettings.save_replay == 1
-	self.replay_properties = properties or {}
+	if self.use_extended_metadata then
+		self.replay_properties = metadata.replay_properties or {}
+	else
+		self.replay_properties = properties or {}
+	end
 
 	self.grid = Grid(10, 24)
 	self.randomizer = Randomizer()
@@ -190,7 +196,11 @@ function GameMode:saveReplay()
 	replay["level"] = self.level
 	replay["lines"] = self.lines
 	replay["gamesettings"] = config.gamesettings
-	replay["secret_inputs"] = self.secret_inputs
+	if self.use_extended_metadata then
+		replay["metadata"] = self.metadata
+	else
+		replay["secret_inputs"] = self.secret_inputs
+	end
 	replay["delayed_auto_shift"] = config.das
 	replay["auto_repeat_rate"] = config.arr
 	replay["das_cut_delay"] = config.dcd

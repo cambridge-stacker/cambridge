@@ -27,9 +27,24 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	self.retry_replay = replay
 	self.retry_mode = game_mode
 	self.retry_ruleset = ruleset
-	self.secret_inputs = replay["secret_inputs"]
+	local metadata = {}
+	if replay["metadata"] then
+		self.secret_inputs = replay["metadata"].secret_inputs
+		metadata = copy(replay["metadata"])
+	else
+		-- Compat for old replays.
+		self.secret_inputs = replay["secret_inputs"]
+		metadata.secret_inputs = self.secret_inputs
+		for key, value in pairs(self.secret_inputs) do
+			if not metadata[key] then
+				metadata[key] = value
+			end
+		end
+	end
+	metadata.replay_properties = self.replay.properties
 	self.replay = deepcopy(replay)
-	self.game = game_mode(self.secret_inputs, self.replay.properties)
+
+	self.game = game_mode(metadata, self.replay.properties)
 	self.game.secret_inputs = self.secret_inputs
 	self.game.save_replay = false
 	if ruleset then

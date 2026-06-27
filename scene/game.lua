@@ -6,17 +6,17 @@ GameScene.title = "Game"
 
 require 'load.save'
 
-function GameScene:new(game_mode, ruleset, inputs)
+function GameScene:new(game_mode, ruleset, metadata)
 	love.mouse.setVisible(true)
 	self.retry_mode = game_mode
 	self.retry_ruleset = ruleset
-	self.secret_inputs = inputs
+	self.secret_inputs = metadata.secret_inputs
 	self.sha_tbl = {
 		mode = sha2.sha256(getModuleSource(game_mode)),
 		ruleset = sha2.sha256(getModuleSource(ruleset))
 	}
-	self.game = game_mode(self.secret_inputs)
-	self.game.secret_inputs = inputs
+	self.game = game_mode(metadata)
+	self.game.secret_inputs = metadata.secret_inputs
 	self.ruleset = ruleset(self.game)
 	self.game:initialize(self.ruleset)
 	self.movement_queue = {}
