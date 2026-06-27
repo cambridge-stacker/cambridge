@@ -20,7 +20,10 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	if replay["das_cut_delay"] then config.dcd = replay["das_cut_delay"] end
 	love.math.setRandomSeed(replay["random_low"], replay["random_high"])
 	love.math.setRandomState(replay["random_state"])
-	self.sha_tbl = {mode = sha2.sha256(binser.s(game_mode)), ruleset = sha2.sha256(binser.s(ruleset))}
+	self.sha_tbl = {
+		mode = sha2.sha256(getModuleSource(game_mode)),
+		ruleset = sha2.sha256(getModuleSource(ruleset))
+	}
 	self.retry_replay = replay
 	self.retry_mode = game_mode
 	self.retry_ruleset = ruleset
