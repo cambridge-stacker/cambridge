@@ -41,7 +41,7 @@ function ReplayScene:new(replay, game_mode, ruleset)
 			end
 		end
 	end
-	metadata.replay_properties = self.replay.properties
+	metadata.replay_properties = replay.properties
 	self.replay = deepcopy(replay)
 
 	self.game = game_mode(metadata, self.replay.properties)

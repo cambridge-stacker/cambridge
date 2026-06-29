@@ -12,6 +12,15 @@ PhantomMania2Game.hash = "PhantomMania2"
 PhantomMania2Game.description = "The blocks disappear even faster now! Can you make it to level 1300?"
 PhantomMania2Game.tags = {"Invisible Stack", "Survival", "Gimmick", "Cambridge"}
 
+---@type config_template[]
+PhantomMania2Game.config_settings = {
+	{
+		setting_title = "test";
+		default = 0;
+		internal_variable_name = "test";
+	}
+}
+
 PhantomMania2Game.highscore_format = {
 	grade = {sort = 1},
 	level = {sort = 2},
