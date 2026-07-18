@@ -233,6 +233,9 @@ function GameMode:saveReplay()
 	else
 		init_name = string.format("replays/%s/%s - %s - %s.crp", self.name, self.hash, self.ruleset.hash, os.date("%Y-%m-%d_%H-%M-%S"))
 	end
+	if not love.filesystem.getInfo("replays/"..self.name, "directory") then
+		love.filesystem.createDirectory("replays/"..self.name)
+	end
 	local replay_name = init_name
 	local replay_number = 0
 	while true do
