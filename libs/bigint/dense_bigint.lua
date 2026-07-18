@@ -538,44 +538,104 @@ function bigint.divide_raw(big1, big2)
         assert(big2.sign == "+", "error: big2 is not positive")
 
         local result = bigint.new()
+        local remainder = bigint.new()
+		
+		if #big2.digits == 1 then
+			if big2.digits[1] == 1 then
+				return big1:clone(), bigint.new(0)
+			end
+			-- naive long division
+			local fdividend = 0
+			local fdivisor = big2.digits[1]
+			
+			for i = 1, #big1.digits do
+				fdividend = max_size * fdividend + big1.digits[i]
+				fq = math.floor(fdividend,fdivisor)
+				result.digits[#result.digits + 1] = fq
+				fdividend = fdividend - fdivisor * fq
+			end
+			return bigint.strip(result), bigint.new(fdividend)
+		end
 
-        local dividend = bigint.new() -- Dividend of a single operation
-
-        local neg_zero = bigint.new(0)
-        neg_zero.sign = "-"
-
-        for i = 1, #big1.digits do
-            -- Fixes a negative zero bug
-            if (#dividend.digits ~= 0) and (bigint.compare(dividend, neg_zero, "==")) then
-                dividend = bigint.new()
-            end
-            
-            table.insert(dividend.digits, big1.digits[i])
-            
-            local factor = bigint.new(0)
-            while bigint.compare(dividend, big2, ">=") do
-                dividend = bigint.subtract(dividend, big2)
-                factor = bigint.add(factor, bigint.new(1))
-            end
-
-            for i = 0, #factor.digits - 1 do
-                result.digits[#result.digits + 1 - i] = factor.digits[i + 1]
-            end
+		-- Knuth algorithm 4.3.1D
+		-- D1: normalise; ensures nv.digits[1] >= max_size / 2
+		local nmult = bigint.new(math.floor((max_size - 1)/big2.digits[1]))
+		local nu = big1 * nmult
+		local nv = big2 * nmult
+		-- D2: loop
+		local m = #big1.digits - #big2.digits
+		local n = #big2.digits
+		assert(m > 0)
+		local qhat = 0
+		local fdividend = 0
+		local rhat = 0
+		local k = 0
+		-- initialise shifted nv
+		local nvshifted = nv:clone()
+		for k = 1,m do
+			nvshifted.digits[#nvshifted.digits + 1] = 0
+		end
+        for i = 0, m do -- j = m - i
+			-- D3: estimated quotient digit qhat
+			-- need to be careful in case we have too few digits in nu
+			k = i + 1 - (m + n + 1 - #nu.digits) -- (m+n+1 - (j+n) ); should be i+1 if #nu.digits is m+n+1 and 1 if #nu.digits is m+n+1-i
+			fdividend = (nu.digits[k] or 0) * max_size + (nu.digits[k+1] or 0)
+			qhat = math.floor(fdividend / nv.digits[1])
+			rhat = fdividend - nv.digits[1] * qhat
+			-- first test and adjustment
+			if (qhat == max_size) or ((qhat * nv.digits[2]) > (max_size * rhat + (nu.digits[k+2] or 0))) then
+				qhat = qhat - 1
+				rhat = rhat + nv.digits[1]
+				-- second test and adjustment
+				if (rhat < max_size0) and ((qhat * nv.digits[2]) > (max_size * rhat + (nu.digits[k+2] or 0))) then
+					qhat = qhat - 1
+					rhat = rhat + nv.digits[1]
+				end
+			end
+			-- D4, don't subtract yet
+			-- nvshifted should have j = m - i extra digits on the right
+			nsubtr = nvshifted * bigint.new(qhat)
+			-- D5 and D6: final adjustment
+			if bigint.compare(nu, nsubtr, "<") then
+				qhat = qhat - 1
+				nsubtr = nsubtr - nvshifted
+			end
+			-- subtract now
+			nu = nu - nsubtr
+			-- check
+			assert(bigint.compare(nu,nvshifted,"<="))
+			assert(bigint.compare(nu,bigint.new(0),">="))
+			result.digits[#result.digits + 1] = qhat
+			-- adjust shifted
+			table.remove(nvshifted.digits,#nvshifted.digits)
         end
-
-        return bigint.strip(result), dividend
-    end
+		-- D8: obtain remainder
+		remainder = bigint.divide_raw(nu,nmult) -- uses the naive long division above
+		assert(#result.digits > 0,qhat)
+        return bigint.strip(result), remainder
+	end
 end
 
 -- FRONTEND: Divide two bigs (decimals not supported), returning big result and
 -- big remainder, accounting for signs
+-- 
 function bigint.divide(big1, big2)
     local result, remainder = bigint.divide_raw(bigint.abs(big1),
                                                 bigint.abs(big2))
+    -- use the lua standard for modulus i.e. floored division, remainder has same sign as divisor
+	-- above line emits truncated division (+,+) -> (+,+) , (-,+) -> (-,-), (+,-) -> (-,+), (-,-) -> (+,-)
+	-- thus we need to invert remainder and adjust quotient if signs don't match
     if (big1.sign == big2.sign) then
         result.sign = "+"
+		remainder.sign = big2.sign
     else
-        result.sign = "-"
+		result.sign = "-"
+		if (bigint.compare(remainder, bigint.new(0), ">")) then
+			-- if nonzero remainder, invert remainder and adjust result
+			remainder = bigint.abs(big2) - remainder
+			remainder.sign = big2.sign
+			result = result - bigint.new(1)
+		end
     end
 
     return result, remainder
@@ -585,9 +645,6 @@ end
 function bigint.modulus(big1, big2)
     local result, remainder = bigint.divide(big1, big2)
 
-    -- Remainder will always have the same sign as the dividend per C standard
-    -- https://en.wikipedia.org/wiki/Modulo_operation#Remainder_calculation_for_the_modulo_operation
-    remainder.sign = big1.sign
     return remainder
 end
 
