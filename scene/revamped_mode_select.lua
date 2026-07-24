@@ -48,6 +48,7 @@ function ModeSelectScene:new()
 	self.mode_configs = {}
 	self.configuring_start_frames = 0
 	self.input_timers = {}
+	self.reload_time_remaining = 0
 	self.das_x, self.das_y = 0, 0
 	self.menu_mode_y = 20
 	self.menu_ruleset_x = 20
@@ -120,10 +121,8 @@ function ModeSelectScene:update()
 	if self.input_timers["stop_sequencing"] == 0 then
 		self.is_sequencing = false
 	end
-	if self.input_timers["configure_mode"] == 0 then
-		self.is_configuring = not self.is_configuring
-	end
 
+	if self.reload_time_remaining then self.reload_time_remaining = self.reload_time_remaining - 1 end
 	if self.is_sequencing then
 		self.sequencing_start_frames = math.min(self.sequencing_start_frames + 1, 20)
 	else
@@ -225,6 +224,7 @@ function ModeSelectScene:drawMenuSection(text, value, selection, shown_selection
 end
 
 function ModeSelectScene:drawConfigMenu()
+	if not self:getHighscoreConditions() then return end
 	local menu_sections_per_page = 12
 	local config_settings = self.game_mode_folder[self.menu_state.mode].config_settings
 	for i, config_obj in ipairs(config_settings) do
@@ -261,6 +261,7 @@ end
 
 
 function ModeSelectScene:render()
+	love.graphics.setColor(1, 1, 1, 1)
 	drawBackground(0)
 
 	love.graphics.setFont(font_8x11)
@@ -432,20 +433,19 @@ function ModeSelectScene:render()
 		love.graphics.setColor(1, 1, 1, 1)
 		love.graphics.printf("Secret sequence: " .. self:getSequenceShorthand(), 10, -95 + sequencing_start_frames * 5, 620, "left")
 	end
-	local function drawFadingTextNearHeader(timer, string, decay_time)
-		if timer then
-			love.graphics.setColor(1, 1, 1, 1 - timer / decay_time)
-			love.graphics.printf(string, 0, 10, 640, "center")
-		end
+	local text_table = {}
+	table.insert(text_table, (self.input_timers["reload"] or 60) < 40 and "Keep holding to reload..." or
+	                         self.reload_time_remaining > 0 and "Reloaded modules!" or "G1: Reload Modules")
+	table.insert(text_table, (self.input_timers["secret_sequencing"] or 60) < 40 and "Keep holding to sequence..." or "G2: Input Secret Sequence")
+	if self:getHighscoreConditions() and #self.game_mode_folder[self.menu_state.mode].config_settings > 0 then
+		table.insert(text_table, "G3: Configure mode")
 	end
-	drawFadingTextNearHeader(60 - (self.reload_time_remaining or 0), "Modules reloaded!", 60)
-	if self.reload_time_remaining then self.reload_time_remaining = self.reload_time_remaining - 1 end
-	drawFadingTextNearHeader(self.input_timers["reload"], "Keep holding Generic 1 to reload modules...", 60)
-	drawFadingTextNearHeader(self.input_timers["secret_sequencing"], "Keep holding Generic 2 to input secret sequences...", 40)
-	drawFadingTextNearHeader(self.input_timers["stop_sequencing"], "Keep holding to stop sequencing...", 40)
-	drawFadingTextNearHeader(((self.reload_time_remaining or 0) > 0 or self.sequencing_start_frames > 0 or self.input_timers["reload"] or self.input_timers["secret_sequencing"] or self.input_timers["stop_sequencing"]) and 10 or 0,
-				"G1: Reload Modules  G2: Input Secret Sequence"..(self.game_mode_folder[self.menu_state.mode] and #self.game_mode_folder[self.menu_state.mode].config_settings > 0 and "  G3: Configure mode" or ""), 10)
 	love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.printf(table.concat(text_table, " - "), 0, 10 - sequencing_start_frames * 5, 640, "center")
+	if self.input_timers["stop_sequencing"] then
+		love.graphics.setColor(1, 1, 1, 1 - self.input_timers["stop_sequencing"] / 40)
+		love.graphics.printf("Continue holding to stop sequencing...", 0, 10, 640, "center")
+	end
 end
 
 local INPUT_SHORTHANDS = {
@@ -628,6 +628,10 @@ function ModeSelectScene:onInputPress(e)
 			return
 		end
 		playSE("menu_cancel")
+		if self.is_configuring then
+			self.is_configuring = false
+			return
+		end
 		if #self.game_mode_selections > 1 then
 			self:menuGoBack("mode")
 			return
@@ -719,7 +723,7 @@ function ModeSelectScene:onInputPress(e)
 			self.input_timers["secret_sequencing"] = 60
 		elseif e.input == "generic_3" then
 			if #self.game_mode_folder[self.menu_state.mode].config_settings > 0 then
-				self.input_timers["configure_mode"] = 60
+				self.is_configuring = not self.is_configuring
 			end
 		end
 	end
@@ -736,8 +740,6 @@ function ModeSelectScene:onInputRelease(e)
 		self.input_timers["reload"] = nil
 	elseif e.input == "generic_2" then
 		self.input_timers["secret_sequencing"] = nil
-	elseif e.input == "generic_3" then
-		self.input_timers["configure_mode"] = nil
 	end
 	if e.input == "menu_up" then
 		self.das_up = nil
@@ -845,12 +847,12 @@ end
 
 
 function ModeSelectScene:refreshHighscores()
-	self:refreshModeConfigs()
 	self.auto_sort_clock = 0
 	if not self:getHighscoreConditions() then
 		self.mode_highscore = nil
 		return
 	end
+	self:refreshModeConfigs()
 	local hash = self.game_mode_folder[self.menu_state.mode].hash .. "-"
 	if self.game_mode_folder[self.menu_state.mode].ruleset_override then
 		hash = hash .. tostring(self.game_mode_folder[self.menu_state.mode].ruleset_override)
