@@ -50,9 +50,7 @@ function ModeSelectScene:new()
 	self.mode_configs = {}
 	self.input_timers = {}
 	self.das = 0
-	-- It's not exactly self-descriptive.
 	self.menu_mode_height = 20
-	-- It's not exactly self-descriptive.
 	self.menu_ruleset_height = 20
 	self.auto_menu_offset = 0
 	self.auto_menu_state = "mode"
