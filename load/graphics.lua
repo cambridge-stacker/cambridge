@@ -20,7 +20,7 @@ function loadImage(path)
 		-- this file exists
 		return love.graphics.newImage(path)
 	end
-	error(("Image (%s) not found!"):format(path))
+	error(("Image (%s) not found!"):format(path), 2)
 end
 
 function loadImageTable(image_table, path_table)
