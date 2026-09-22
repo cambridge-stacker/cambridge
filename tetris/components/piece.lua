@@ -233,33 +233,33 @@ function Piece:draw(opacity, brightness, grid, partial_das)
 		gravity_offset = self.gravity * 16
 	end
 	if partial_das == nil then partial_das = 0 end
+	if self.big then partial_das = partial_das * 2 end
+	local block_size = self.big and 32 or 16
 	for index, offset in pairs(offsets) do
 		local x = self.position.x + offset.x
 		local y = self.position.y + offset.y
 		if self.big then
 			x = x + offset.x
 			y = y + offset.y
-			drawSizeIndependentImage(
-				blocks[self.skin][self.colour],
-				64+x*16+partial_das*2, 16+y*16+gravity_offset,
-				0, 32, 32
-			)
-		else
-			drawSizeIndependentImage(
-				blocks[self.skin][self.colour],
-				64+x*16+partial_das, 16+y*16+gravity_offset,
-				0, 16, 16
-			)
 		end
+		drawSizeIndependentImage(
+			blocks[self.skin][self.colour],
+			64+x*16+partial_das, 16+y*16+gravity_offset,
+			0, block_size, block_size
+		)
 	end
     -- draw center of rotation
 	if config.gamesettings.show_center_of_rotation == 2 then
 		local x = self.position.x + offsets[1].x
 		local y = self.position.y + offsets[1].y
+		if self.big then
+			x = x + offsets[1].x
+			y = y + offsets[1].y
+		end
 		drawSizeIndependentImage(
 			blocks[self.skin]['Z'],
 			64+x*16+partial_das, 16+y*16+gravity_offset,
-			0, 16, 16
+			0, block_size, block_size
 		)
 	end
 	return false

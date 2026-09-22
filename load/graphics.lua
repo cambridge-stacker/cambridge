@@ -121,7 +121,7 @@ blocks_paths = {
 		Z = "res/img/s10",
 		I = "res/img/s11",
 	},
-	["bone"] = {
+	["bone_classic"] = {
 		R = "res/img/bone",
 		O = "res/img/bone",
 		Y = "res/img/bone",
@@ -135,7 +135,23 @@ blocks_paths = {
 		A = "res/img/bone",
 		X = "res/img/bone",
 		Z = "res/img/s10",
-		I = "res/img/s11",
+		I = "res/img/bonei",
+	},
+	["bone_world"] = {
+		R = "res/img/bonew",
+		Y = "res/img/bonew",
+		O = "res/img/bonew",
+		G = "res/img/bonew",
+		C = "res/img/bonew",
+		B = "res/img/bonew",
+		M = "res/img/bonew",
+		W = "res/img/bonew",
+		D = "res/img/bonew",
+		F = "res/img/bonew",
+		A = "res/img/bonew",
+		X = "res/img/bonew",
+		Z = "res/img/s10",
+		I = "res/img/bonei",
 	},
 	["gem"] = {
 		R = "res/img/gem1",

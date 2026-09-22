@@ -39,17 +39,13 @@ Ruleset.next_sounds = {
 
 function Ruleset:new(game_mode)
 	self.game = game_mode
-	local bones
+	local bone_type
 	if config.gamesettings.piece_colour == 1 then
-		bones = self.world and "w" or ""
+		bone_type = self.world and "world" or "classic"
 	else
-		bones = config.gamesettings.piece_colour == 3 and "w" or ""
+		bone_type = config.gamesettings.piece_colour == 3 and "world" or "classic"
 	end
-	for colour in pairs(blocks["2tie"]) do
-		blocks.bone[colour] = love.graphics.newImage(
-			"res/img/bone" .. bones .. ".png"
-		)
-	end
+	blocks.bone = blocks["bone_"..bone_type]
 end
 
 function Ruleset:rotatePiece(inputs, piece, grid, prev_inputs, initial)
