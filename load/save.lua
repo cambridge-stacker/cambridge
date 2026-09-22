@@ -2,6 +2,7 @@ local binser = require 'libs.binser'
 
 function loadSave()
 	config = loadFromFile('config.sav', true)
+	player = loadFromFile('player.sav', true)
 	highscores = loadFromFile('highscores.sav', true)
 end
 
@@ -104,6 +105,8 @@ function inputVersioning()
 	end
 end
 
+local is_config_ready = true
+
 function initConfig()
 	if not config.tunings then
 		config.tunings = {
@@ -133,6 +136,7 @@ function initConfig()
 
 	if not config.input then
 		scene = TutorialKeybinder()
+		is_config_ready = false
 	else
 		if config.input.keys then
 			if config.input.joysticks == nil then
@@ -157,8 +161,32 @@ function initConfig()
 	end
 end
 
+function initPlayerData()
+	if type(player.playtimes) ~= "table" then
+		player.playtimes = {}
+	end
+	if type(player.run_counts) ~= "table" then
+		player.run_counts = {}
+	end
+	if not player.id then
+		player.id = love.math.random(0, 1e16 - 2)
+	end
+	local success, profile_picture = pcall(loadImage, "res/img/profile_picture")
+	if success then
+		player.profile_picture = profile_picture
+	end
+end
+
 function saveConfig()
 	saveToFile("config.sav", binser.serialize(config))
+end
+
+--This handles saving player data in a way...
+function savePlayerData()
+	local stored_profile_picture = player.profile_picture
+	player.profile_picture = nil
+	saveToFile("player.sav", binser.serialize(player))
+	player.profile_picture = stored_profile_picture
 end
 
 function saveHighscores()

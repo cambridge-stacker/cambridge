@@ -224,6 +224,8 @@ function GameMode:saveReplay()
 	replay["pause_time"] = self.pause_time
 	replay["pause_timestamps"] = self.pause_timestamps
 	replay["rerecords"] = self.rerecords
+	replay["player_name"] = scene.player_name
+	replay["player_id"] = scene.player_id
 	if love.filesystem.getInfo("replays") == nil then
 		love.filesystem.createDirectory("replays")
 	end

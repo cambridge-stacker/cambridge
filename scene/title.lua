@@ -8,8 +8,7 @@ local menu_frames = 0
 
 TitleScene.menu_screens = {
 	ModeSelectScene,
-	HighscoresScene,
-	ReplaySelectScene,
+	RecordsScene,
 	JoinDiscordFunc,
 	ReportBugFunc,
 	SettingsScene,

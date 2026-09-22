@@ -222,14 +222,14 @@ function ReplaySelectScene:render()
 			if replay.ineligible then
 				love.graphics.setFont(font_3x5_2)
 				love.graphics.setColor(1, 1, 0, 1)
-				love.graphics.printf("This replay is ineligible for leaderboards.", 0, 80, 640, "center")
+				love.graphics.printf("This replay is ineligible for leaderboards.", 0, 80 + idx * 20, 640, "center")
 				love.graphics.setColor(1, 1, 1, 1)
 				idx = idx + 1
 			end
 			if replay.toolassisted then
 				love.graphics.setFont(font_3x5_2)
 				love.graphics.setColor(1, 1, 0, 1)
-				love.graphics.printf("This replay has likely used in-game TAS.", 0, 80, 640, "center")
+				love.graphics.printf("This replay has likely used in-game TAS.", 0, 80 + idx * 20, 640, "center")
 				love.graphics.setColor(1, 1, 1, 1)
 				idx = idx + 1
 			end
@@ -248,6 +248,15 @@ function ReplaySelectScene:render()
 				end
 				love.graphics.setFont(font_3x5_2)
 				love.graphics.printf({"Cambridge version for this replay: ", version_text_color, replay.cambridge_version}, 0, 80 + idx * 20, 640, "center")
+			end
+			if replay.player_name then
+				idx = idx + 1
+				love.graphics.setFont(font_3x5_2)
+				if replay.rerecords then
+					love.graphics.printf(("Replay originally recorded by: %s"):format(replay.player_name), 0, 80 + idx * 20, 640, "center")
+				else
+					love.graphics.printf(("Replay recorded by: %s"):format(replay.player_name), 0, 80 + idx * 20, 640, "center")
+				end
 			end
 			if replay.ruleset_override then
 				idx = idx + 1
@@ -605,7 +614,7 @@ end
 function ReplaySelectScene:onInputPress(e)
 	if self.safety_frames > 0 then return end
 	if (self.display_warning or self.display_error) and e.input then
-		scene = TitleScene()
+		scene = RecordsScene()
 	elseif e.type == "mouse" and loaded_replays then
 		if e.button == 1 then
 			if e.y < 62 and e.x > 0 and e.y > 32 and e.x < 50 then
@@ -621,11 +630,11 @@ function ReplaySelectScene:onInputPress(e)
 					self.menu_state.replay = 1
 					return
 				end
-				scene = TitleScene()
+				scene = RecordsScene()
 				return
 			end
 			if self.display_error or self.display_warning then
-				scene = TitleScene()
+				scene = RecordsScene()
 				return
 			end
 			self.auto_menu_offset = math.floor((e.y - 260)/20)
@@ -641,7 +650,7 @@ function ReplaySelectScene:onInputPress(e)
 	elseif not loaded_replays then
 		if e.input == "menu_back" then
 			playSE("menu_cancel")
-			scene = TitleScene()
+			scene = RecordsScene()
 		end
 	elseif e.type == "wheel" and not self.chosen_replay then
 		if e.y ~= 0 then
@@ -701,7 +710,7 @@ function ReplaySelectScene:onInputPress(e)
 		end
 		current_submenu = 0
 		current_replay = self.menu_state.replay
-		scene = TitleScene()
+		scene = RecordsScene()
 	end
 end
 

@@ -293,8 +293,8 @@ function ModeSelectScene:render()
 	self.menu_ruleset_x = interpolateNumber(self.menu_ruleset_x, ruleset_selected * 120)
 
 	love.graphics.setColor(1, 1, 1, 0.5)
-	love.graphics.rectangle("fill", 20, 259 + (mode_selected * 20) - self.menu_mode_y, 240, 22)
-	love.graphics.rectangle("fill", 260 + (ruleset_selected * 120) - self.menu_ruleset_x, 439, 120, 22)
+	love.graphics.rectangle("fill", 20, 219 + (mode_selected * 20) - self.menu_mode_y, 240, 22)
+	love.graphics.rectangle("fill", 260 + (ruleset_selected * 120) - self.menu_ruleset_x, 399, 120, 22)
 	love.graphics.setColor(1, 1, 1, 1)
 
 
@@ -307,6 +307,8 @@ function ModeSelectScene:render()
 		love.graphics.printf(
 			"Description: "..(self.game_mode_folder[mode_selected].description or "Missing."),
 			 info_x, 40, 360, "left")
+		love.graphics.printf("Playtime on record: " .. getPlaytimeString(player.playtimes[self.game_mode_folder[self.menu_state.mode].hash] or 0), info_x, 330, 360, "left")
+		love.graphics.printf("Runs on record: " .. (player.run_counts[self.game_mode_folder[self.menu_state.mode].hash] or 0), info_x, 350, 360, "left")
 	end
 	self:drawConfigMenu()
 	if type(self.mode_highscore) == "table" then
@@ -349,7 +351,7 @@ function ModeSelectScene:render()
 			self.game_mode_folder.is_tag and
 			"Tag: ".. self.game_mode_folder.name or
 			"Path: "..mode_path_name:sub(1, -3),
-			 40, 220 - self.menu_mode_y, 200, "left")
+			 40, 180 - self.menu_mode_y, 200, "left")
 	end
 	local ruleset_path_name = ""
 	if #self.ruleset_folder_selections > 1 then
@@ -364,21 +366,21 @@ function ModeSelectScene:render()
 	end
 	love.graphics.setFont(font_3x5_2)
 	if #self.game_mode_folder == 0 then
-		love.graphics.printf("No modes in this folder!", 40, 280 - self.menu_mode_y, 260, "left")
+		love.graphics.printf("No modes in this folder!", 40, 240 - self.menu_mode_y, 260, "left")
 	end
 	if #self.ruleset_folder == 0 then
 		love.graphics.printf("Empty folder!", 380 - self.menu_ruleset_x, 440, 120, "center")
 	end
 	for idx, mode in ipairs(self.game_mode_folder) do
-		if(idx >= self.menu_mode_y / 20 - 10 and
-		   idx <= self.menu_mode_y / 20 + 10) then
+		if(idx >= self.menu_mode_y / 20 - 8 and
+		   idx <= self.menu_mode_y / 20 + 8) then
 			local b = 1
 			if mode.is_directory then
 				b = 0.4
 			end
 			local highlight = cursorHighlight(
 				0,
-				(260 - self.menu_mode_y) + 20 * idx,
+				(220 - self.menu_mode_y) + 20 * idx,
 				260,
 				20)
 			local r = mode.is_tag and 0 or 1
@@ -390,11 +392,11 @@ function ModeSelectScene:render()
 				b = self.start_frames % 10 > 4 and 0 or 1
 			end
 			love.graphics.setColor(r, 1, b, fadeoutAtEdges(
-				-self.menu_mode_y + 20 * idx + 20,
-				160,
+				-self.menu_mode_y + 20 * idx,
+				140,
 				20))
 			drawWrappingText(mode.name,
-			40, (260 - self.menu_mode_y) + 20 * idx, 200, "left")
+			40, (220 - self.menu_mode_y) + 20 * idx, 200, "left")
 		end
 	end
 	for idx, ruleset in ipairs(self.ruleset_folder) do
@@ -405,7 +407,7 @@ function ModeSelectScene:render()
 				b = 0.4
 			end
 			local highlight = cursorHighlight(
-				260 - self.menu_ruleset_x + 120 * idx, 440,
+				260 - self.menu_ruleset_x + 120 * idx, 400,
 				120, 20)
 			local r = ruleset.is_tag and 0 or 1
 			if highlight < 0.5 then
@@ -418,15 +420,15 @@ function ModeSelectScene:render()
 				120)
 			)
 			drawWrappingText(ruleset.name,
-			260 - self.menu_ruleset_x + 120 * idx, 440, 120, "center")
+			260 - self.menu_ruleset_x + 120 * idx, 400, 120, "center")
 		end
 	end
 	if self.game_mode_folder[self.menu_state.mode]
 	and self.game_mode_folder[self.menu_state.mode].ruleset_override then
 		love.graphics.setColor(0, 0, 0, 0.75)
-		love.graphics.rectangle("fill", 0, 420, 640, 60)
+		love.graphics.rectangle("fill", 0, 380, 640, 60)
 		love.graphics.setColor(1, 1, 1, 1)
-		love.graphics.printf("This mode overrides the chosen ruleset!", 0, 440, 640, "center")
+		love.graphics.printf("This mode overrides the chosen ruleset!", 0, 400, 640, "center")
 	end
 	local sequencing_start_frames = self.sequencing_start_frames
 	if sequencing_start_frames > 0 then
@@ -667,9 +669,9 @@ function ModeSelectScene:onInputPress(e)
 			self:menuGoBack("ruleset")
 			return
 		end
-		if e.y < 440 then
+		if e.y < 400 then
 			if e.x < 260 then
-				self.auto_mode_offset = math.floor((e.y - 260)/20)
+				self.auto_mode_offset = math.floor((e.y - 220)/20)
 				if self.auto_mode_offset == 0 then
 					if self.game_mode_folder[self.menu_state.mode].is_directory then
 						playSE("main_decide")

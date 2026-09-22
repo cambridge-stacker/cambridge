@@ -15,6 +15,8 @@ function GameScene:new(game_mode, ruleset, metadata)
 		mode = sha2.sha256(getModuleSource(game_mode)),
 		ruleset = sha2.sha256(getModuleSource(ruleset))
 	}
+	self.player_name = player.name
+	self.player_id = player.id
 	self.game = game_mode(metadata)
 	self.game.secret_inputs = metadata.secret_inputs
 	self.ruleset = ruleset(self.game)
@@ -37,6 +39,13 @@ function GameScene:new(game_mode, ruleset, metadata)
 	self.game.pause_time = 0
 	self.game.pause_timestamps = {}
 	self.frame_steps = 0
+	self.time_measures = {
+		[0] = {
+			os = os.clock(),
+			love = love.timer.getTime()
+		}
+	}
+	player.playtimes[game_mode.hash] = player.playtimes[game_mode.hash] or 0
 	DiscordRPC:update({
 		details = self.game.rpc_details,
 		state = self.game.name,
@@ -51,6 +60,13 @@ function GameScene:update()
 		if self.frame_steps > 0 then
 			self.game.toolassisted = true
 			self.frame_steps = self.frame_steps - 1
+		end
+		table.insert(self.time_measures, {
+			os = os.clock(),
+			love = love.timer.getTime()
+		})
+		if #self.time_measures % 100 == 0 and not self:verifyTimeIntegrity() then
+			self.game.ineligible = true
 		end
 		local inputs = {}
 		for input, value in pairs(self.inputs) do
@@ -88,6 +104,29 @@ function GameScene:render()
 	end
 end
 
+function GameScene:verifyTimeIntegrity()
+	local deltas = {
+		os = 0,
+		love = 0,
+	}
+	local function getSomeLenientComparison(delta)
+		if (math.abs(delta.love - delta.os) > 0.0015) then
+			return false
+		end
+		return true
+	end
+	for index, value in ipairs(self.time_measures) do
+		deltas.os = deltas.os + value.os - self.time_measures[index-1].os
+		deltas.love = deltas.love + value.love - self.time_measures[index-1].love
+	end
+	if getSomeLenientComparison(deltas) then
+		-- the love2d timer is relatively high-precision
+		return deltas.love
+	else
+		return false
+	end
+end
+
 local movement_directions = {"left", "right", "down", "up"}
 local opposite_directions = {left = "right", right = "left", up = "down", down = "up"}
 
@@ -106,8 +145,10 @@ function GameScene:onInputPress(e)
 		switchBGM(nil)
 		self.game:onExit()
 		sortReplays()
+		self:postRun()
 		scene = e.input == "retry" and GameScene(self.retry_mode, self.retry_ruleset, self.metadata) or TitleScene.menu_screens[1]()
 		scene.safety_frames = 2
+
 
 		-- for good measure -Rexxt
 		collectgarbage("collect")
@@ -117,6 +158,7 @@ function GameScene:onInputPress(e)
 		switchBGM(nil)
 		pitchBGM(1)
 		self.game:onExit()
+		self:postRun()
 		scene = GameScene(self.retry_mode, self.retry_ruleset, self.metadata)
 
 		-- A case of, why not? -Tetro48, aka Tetrina
@@ -133,6 +175,7 @@ function GameScene:onInputPress(e)
 	elseif e.input == "mode_exit" then
 		switchBGM(nil)
 		self.game:onExit()
+		self:postRun()
 		scene = TitleScene.menu_screens[1]()
 		
 		-- for good measure -Rexxt
@@ -183,6 +226,15 @@ function GameScene:onInputRelease(e)
 				end
 			end
 		end
+	end
+end
+
+function GameScene:postRun()
+	local time_integrity = self:verifyTimeIntegrity()
+	if time_integrity and not self.game.ineligible then
+		player.playtimes[self.game.hash] = (player.playtimes[self.game.hash] or 0) + time_integrity
+		player.run_counts[self.game.hash] = (player.run_counts[self.game.hash] or 0) + 1
+		savePlayerData()
 	end
 end
 

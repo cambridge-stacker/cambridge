@@ -24,6 +24,8 @@ function ReplayScene:new(replay, game_mode, ruleset)
 		mode = sha2.sha256(getModuleSource(game_mode)),
 		ruleset = sha2.sha256(getModuleSource(ruleset))
 	}
+	self.player_name = replay["player_name"]
+	self.player_id = replay["player_id"]
 	self.retry_replay = replay
 	self.retry_mode = game_mode
 	self.retry_ruleset = ruleset

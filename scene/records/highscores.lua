@@ -390,7 +390,7 @@ end
 function HighscoreScene:onInputPress(e)
 	if self.empty_highscores then
 		playSE("menu_cancel")
-		scene = TitleScene()
+		scene = RecordsScene()
 	elseif e.type == "wheel" then
 		if e.y ~= 0 then
 			self:scrollList(-e.y)
@@ -475,7 +475,7 @@ function HighscoreScene:back()
 		self.index_count = 0
 		self.highscore_length = 0
 	else
-		scene = TitleScene()
+		scene = RecordsScene()
 	end
 end
 
