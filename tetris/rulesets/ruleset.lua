@@ -21,6 +21,8 @@ Ruleset.softdrop_lock = true
 Ruleset.harddrop_lock = false
 
 Ruleset.enable_IRS_wallkicks = false
+Ruleset.enable_IRS_doubles = false
+Ruleset.enable_rotation_doubles = false
 Ruleset.are_cancel = false
 Ruleset.are = true
 Ruleset.spawn_above_field = false
@@ -73,16 +75,24 @@ function Ruleset:rotatePiece(inputs, piece, grid, prev_inputs, initial)
 	end
 end
 
-function Ruleset:attemptRotate(new_inputs, piece, grid, initial)
+function Ruleset:getRotationDirection(new_inputs, initial)
 	local rot_dir = 0
-
-	if (new_inputs["rotate_left"] or new_inputs["rotate_left2"]) then
+	if ((new_inputs["rotate_left"] and new_inputs["rotate_left2"]) or
+	    (new_inputs["rotate_right"] or new_inputs["rotate_right2"])) and
+	   (self.enable_rotation_doubles or (self.enable_IRS_doubles and initial)) then
+		rot_dir = 2
+	elseif (new_inputs["rotate_left"] or new_inputs["rotate_left2"]) then
 		rot_dir = 3
 	elseif (new_inputs["rotate_right"] or new_inputs["rotate_right2"]) then
 		rot_dir = 1
 	elseif (new_inputs["rotate_180"]) then
 		rot_dir = self:get180RotationValue()
 	end
+	return rot_dir
+end
+
+function Ruleset:attemptRotate(new_inputs, piece, grid, initial)
+	local rot_dir = self:getRotationDirection(new_inputs, initial)
 
 	if rot_dir == 0 then return end
 	if config.gamesettings.world_reverse == 3 or (self.world and config.gamesettings.world_reverse == 2) then
