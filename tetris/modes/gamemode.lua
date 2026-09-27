@@ -414,12 +414,6 @@ function GameMode:update(inputs, ruleset)
 
 		if (piece_drot ~= 0) then
 			self:onPieceRotate(self.piece, self.grid, piece_drot)
-			self:detectSpins(self.piece, ruleset)
-			if self.piece.spin and self.piece.full_spin then
-				playSE("spin", "full")
-			elseif self.piece.spin then
-				playSE("spin", "mini")
-			end
 		end
 		if (piece_dx ~= 0) then
 			self:onPieceMove(self.piece, self.grid, piece_dx)
