@@ -45,6 +45,7 @@ function GameScene:new(game_mode, ruleset, metadata)
 			love = love.timer.getTime()
 		}
 	}
+	self.time_paused = 0
 	player.playtimes[game_mode.hash] = player.playtimes[game_mode.hash] or 0
 	DiscordRPC:update({
 		details = self.game.rpc_details,
@@ -56,6 +57,7 @@ end
 function GameScene:update()
 	if self.paused and self.frame_steps == 0 then
 		self.game.pause_time = self.game.pause_time + love.timer.getDelta() / (1/60)
+		self.time_paused = self.time_paused + love.timer.getDelta()
 	else
 		if self.frame_steps > 0 then
 			self.game.toolassisted = true
@@ -121,7 +123,7 @@ function GameScene:verifyTimeIntegrity()
 	end
 	if getSomeLenientComparison(deltas) then
 		-- the love2d timer is relatively high-precision
-		return deltas.love
+		return deltas.love - self.time_paused
 	else
 		return false
 	end
