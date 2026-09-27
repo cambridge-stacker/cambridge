@@ -364,6 +364,10 @@ function GameMode:update(inputs, ruleset)
 			self:dasCut()
 		end
 
+		if (piece_drot ~= 0) then
+			self.piece.last_rotated = true
+			self:onPieceRotate(self.piece, self.grid, piece_drot)
+		end
 		if (piece_dx ~= 0) then
 			self.piece.last_rotated = false
 			self:onPieceMove(self.piece, self.grid, piece_dx)
@@ -371,10 +375,6 @@ function GameMode:update(inputs, ruleset)
 		if (piece_dy ~= 0) then
 			self.piece.last_rotated = false
 			self:onPieceDrop(self.piece, self.grid, piece_dy)
-		end
-		if (piece_drot ~= 0) then
-			self.piece.last_rotated = true
-			self:onPieceRotate(self.piece, self.grid, piece_drot)
 		end
 
 		if inputs["up"] == true and
@@ -946,6 +946,24 @@ function GameMode:drawGhostPiece(ruleset)
 	ghost_piece:dropToBottom(self.grid)
 	ghost_piece:draw(0.5)
 end
+
+---
+function GameMode:getNextTransform(i, side)
+	if side then
+		return {
+			x = 192,
+			y = -16+i*48,
+			scale = 1,
+		}
+	else
+		return {
+			x = -16 + i* 80,
+			y = -32,
+			scale = 1,
+		}
+	end
+end
+
 
 function GameMode:drawNextQueue(ruleset)
 	local colourscheme
