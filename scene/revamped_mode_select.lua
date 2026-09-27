@@ -308,7 +308,7 @@ function ModeSelectScene:render()
 			"Description: "..(self.game_mode_folder[mode_selected].description or "Missing."),
 			 info_x, 40, 360, "left")
 		love.graphics.printf("Playtime on record: " .. getPlaytimeString(player.playtimes[self.game_mode_folder[self.menu_state.mode].hash] or 0), info_x, 330, 360, "left")
-		love.graphics.printf("Runs on record: " .. (player.run_counts[self.game_mode_folder[self.menu_state.mode].hash] or 0), info_x, 350, 360, "left")
+		love.graphics.printf("Attempts on record: " .. (player.run_counts[self.game_mode_folder[self.menu_state.mode].hash] or 0), info_x, 350, 360, "left")
 	end
 	self:drawConfigMenu()
 	if type(self.mode_highscore) == "table" then

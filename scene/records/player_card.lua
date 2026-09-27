@@ -41,16 +41,16 @@ function getPlaytimeString(playtime)
 end
 
 local function getBlinking()
-	return os.clock() % 0.5 < 0.25 and "_" or ""
+	return os.clock() % 0.5 < 0.25 and "_" or " "
 end
 
 function PlayerCardScene.renderCard(x, y, is_editing, field_name)
 	love.graphics.setColor(1, 1, 1)
-	love.graphics.rectangle("fill", x, y, 320, 140, 10, 10)
+	love.graphics.rectangle("fill", x, y, 340, 140, 10, 10)
 	love.graphics.setColor(0.9, 0.9, 0.9)
-	love.graphics.rectangle("fill", x + 2, y + 2, 316, 136, 9, 9)
+	love.graphics.rectangle("fill", x + 2, y + 2, 336, 136, 9, 9)
 	love.graphics.setColor(0.75, 0.75, 0.75)
-	love.graphics.rectangle("fill", x + 4, y + 4, 312, 132, 8, 8)
+	love.graphics.rectangle("fill", x + 4, y + 4, 332, 132, 8, 8)
 
 	love.graphics.setColor(1, 1, 1)
 	love.graphics.setFont(font_3x5_3)
@@ -58,16 +58,20 @@ function PlayerCardScene.renderCard(x, y, is_editing, field_name)
 	for key, playtime in pairs(player.playtimes) do
 		total_playtime = total_playtime + playtime
 	end
+	local total_runs = 0
+	for key, runs in pairs(player.run_counts) do
+		total_runs = total_runs + runs
+	end
 	drawImage(player.profile_picture or blocks.bone_classic["W"], x + 4, y + 4, 0, 64, 64)
 	if is_editing and field_name == "name" then
-		love.graphics.printf(player.name .. getBlinking(), x + 70, y + 10, 160, "left")
+		love.graphics.printf(player.name .. getBlinking(), x + 70, y + 10, 240, "left")
 	else
-		love.graphics.printf(player.name or "<INSERT NAME>", x + 70, y + 10, 160, "left")
+		love.graphics.printf(player.name or "<INSERT NAME>", x + 70, y + 10, 240, "left")
 	end
 	love.graphics.setFont(font_3x5_2)
-	love.graphics.printf(getPlaytimeString(total_playtime), x + 30, y + 10, 270, "right")
+	love.graphics.printf(getPlaytimeString(total_playtime) .. "\n" .. total_runs .. " att.", x + 30, y + 5, 300, "right")
 	if is_editing and field_name == "about_me" then
-		love.graphics.printf(player.about_me .. getBlinking(), x + 70, y + 36, 240, "left")
+		love.graphics.printf(player.about_me .. getBlinking(), x + 70, y + 36, 250, "left")
 	else
 		love.graphics.printf(player.about_me or "<insert info>", x + 70, y + 36, 240, "left")
 	end
@@ -122,7 +126,7 @@ function PlayerCardScene:render()
 	love.graphics.setColor(1, 1, 1, 0.5)
 	love.graphics.rectangle("fill", 75, 248 + 40 * self.menu_state, font_3x5_3:getWidth(self.options[self.menu_state].title) + 16, 33)
 
-	PlayerCardScene.renderCard(80, 130, true, self.is_editing, self.field_edit)
+	PlayerCardScene.renderCard(80, 130, self.is_editing, self.field_edit)
 
 	love.graphics.setFont(font_3x5_3)
 	love.graphics.setColor(1, 1, 1, 1)
@@ -151,8 +155,12 @@ end
 
 function PlayerCardScene:onInputPress(e)
 	if e.type == "textinput" and self.is_editing then
-		player[self.field_edit] = player[self.field_edit] .. e.text
-		playSE("cursor")
+		if utf8.len(player[self.field_edit]) < self.length_limit then
+			player[self.field_edit] = player[self.field_edit] .. e.text
+			playSE("cursor")
+		else
+			playSE("error")
+		end
 	end
 	if self.safety_frames > 0 then return end
 	if self.is_editing then
