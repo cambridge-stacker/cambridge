@@ -57,9 +57,7 @@ end
 
 ---@nodiscard
 function Piece:withRelativeRotation(rot)
-	local new_rot = self.rotation + rot
-	while new_rot < 0 do new_rot = new_rot + 4 end
-	while new_rot >= 4 do new_rot = new_rot - 4 end
+	local new_rot = (self.rotation + rot) % 4
 	return Piece(
 		self.shape, new_rot, self.position,
 		self.block_offsets, self.gravity, self.lock_delay, self.skin, self.colour, self.big
@@ -118,10 +116,9 @@ end
 ---@param rot integer
 ---@return Piece
 function Piece:setRelativeRotation(rot)
-	local new_rot = self.rotation + rot
-	while new_rot < 0 do new_rot = new_rot + 4 end
-	while new_rot >= 4 do new_rot = new_rot - 4 end
+	local new_rot = (self.rotation + rot) % 4
 	self.rotation = new_rot
+	self.last_rotated = true
 	return self
 end
 
@@ -134,6 +131,7 @@ function Piece:moveInGrid(step, squares, grid, instant)
 	for x = 1, squares do
 		if grid:canPlacePiece(self:withOffset(step, 1)) then
 			moved = true
+			self.last_rotated = false
 			self:setOffset(step, 1)
 			if instant then
 				self:dropToBottom(grid)
@@ -218,10 +216,10 @@ end
 
 -- Procedures for drawing.
 
----@param opacity number|nil Must be in range of 0 to 1
----@param brightness number|nil Must be in range of 0 to 1
+---@param opacity number? Must be in range of 0 to 1
+---@param brightness number? Must be in range of 0 to 1
 ---@param grid Grid
----@param partial_das number|nil
+---@param partial_das number?
 function Piece:draw(opacity, brightness, grid, partial_das)
 	if opacity == nil then opacity = 1 end
 	if brightness == nil then brightness = 1 end

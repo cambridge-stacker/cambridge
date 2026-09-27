@@ -27,6 +27,16 @@ ARS.big_spawn_positions = {
 	Z = { x=2, y=3 },
 }
 
+-- The center is assumed to be the first tile in the block_offsets list.
+ARS.corner_positions = {
+	T={
+		{x=-1, y=-1}, {x=1, y=-1}, {x=1, y=1}, {x=-1, y=1},
+		front_corner_end = 2,
+		single_list = true
+	},
+
+}
+
 ARS.block_offsets = {
 	I={
 		{ {x=0, y=0}, {x=-1, y=0}, {x=-2, y=0}, {x=1, y=0} },

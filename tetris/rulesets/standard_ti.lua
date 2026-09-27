@@ -43,6 +43,16 @@ SRS.big_spawn_positions = {
 	Z = { x=2, y=3 },
 }
 
+-- The center is assumed to be the first tile in the block_offsets list.
+SRS.corner_positions = {
+	T={
+		{x=-1, y=-1}, {x=1, y=-1}, {x=1, y=1}, {x=-1, y=1},
+		front_corner_end = 2,
+		single_list = true
+	},
+
+}
+
 SRS.block_offsets = {
 -- 	I={
 -- 		{ {x=0, y=0}, {x=-1, y=0}, {x=-2, y=0}, {x=1, y=0} },
@@ -195,6 +205,7 @@ function SRS:attemptWallkicks(piece, new_piece, rot_dir, grid)
 	for idx, offset in pairs(kicks) do
 		local kicked_piece = new_piece:withOffset(offset)
 		if grid:canPlacePiece(kicked_piece) then
+			piece.special_kick = offset.y == 2
 			piece:setRelativeRotation(rot_dir)
 			piece:setOffset(offset)
 			self:onPieceRotate(piece, grid, offset.y < 0)

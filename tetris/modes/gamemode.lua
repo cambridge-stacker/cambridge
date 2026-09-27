@@ -108,6 +108,7 @@ function GameMode:new(metadata, properties)
 	self.ihs = true
 	self.square_mode = false
 	self.immobile_spin_bonus = false
+	self.corner_spin_bonus = false
 	self.rpc_details = "In game"
 	self.SGnames = {
 		"9", "8", "7", "6", "5", "4", "3", "2", "1",
@@ -276,6 +277,53 @@ function GameMode:canPieceMove(inputs)
 	return not (inputs.up and self.lock_on_hard_drop and not self.hard_drop_locked)
 end
 
+function GameMode:detectSpins(piece, ruleset)
+	piece.spin = false
+	if self.immobile_spin_bonus and
+		piece.last_rotated and (
+		piece:isDropBlocked(self.grid) and
+		piece:isMoveBlocked(self.grid, { x=-1, y=0 }) and
+		piece:isMoveBlocked(self.grid, { x=1, y=0 }) and
+		piece:isMoveBlocked(self.grid, { x=0, y=-1 })
+	) then
+		piece.spin = true
+	end
+
+	if self.corner_spin_bonus and
+		self.piece.last_rotated and
+		ruleset.corner_positions and
+		ruleset.corner_positions[piece.shape]
+	then
+		local piece_offsets = piece:getBlockOffsets()
+		local front_corners, back_corners = 0, 0
+		local corner_positions
+		if ruleset.corner_positions[piece.shape].single_list then
+			corner_positions = ruleset.corner_positions[piece.shape]
+			
+		else
+			corner_positions = ruleset.corner_positions[piece.shape][piece.rotation]
+		end
+		-- Overgeneralization.
+
+		for index, corner_pos in ipairs(corner_positions) do
+			local frontal_corner = Mod1(index - (corner_positions.single_list and self.piece.rotation or 0), #corner_positions) <= corner_positions.front_corner_end
+			if self.grid:isOccupied(
+				self.piece.position.x + corner_pos.x + piece_offsets[1].x,
+				self.piece.position.y + corner_pos.y + piece_offsets[1].y
+			) then
+				if frontal_corner then
+					front_corners = front_corners + 1
+				else
+					back_corners = back_corners + 1
+				end
+			end
+		end
+		local combined_corners = front_corners + back_corners
+		piece.full_spin = front_corners >= math.min(2, corner_positions.front_corner_end) or piece.special_kick
+		piece.spin = piece.spin or combined_corners >= 3
+	end
+end
+
 function GameMode:update(inputs, ruleset)
 	if self.completed then
 		self:updateOnGameComplete()
@@ -365,15 +413,18 @@ function GameMode:update(inputs, ruleset)
 		end
 
 		if (piece_drot ~= 0) then
-			self.piece.last_rotated = true
 			self:onPieceRotate(self.piece, self.grid, piece_drot)
+			self:detectSpins(self.piece, ruleset)
+			if self.piece.spin and self.piece.full_spin then
+				playSE("spin", "full")
+			elseif self.piece.spin then
+				playSE("spin", "mini")
+			end
 		end
 		if (piece_dx ~= 0) then
-			self.piece.last_rotated = false
 			self:onPieceMove(self.piece, self.grid, piece_dx)
 		end
 		if (piece_dy ~= 0) then
-			self.piece.last_rotated = false
 			self:onPieceDrop(self.piece, self.grid, piece_dy)
 		end
 
@@ -404,16 +455,7 @@ function GameMode:update(inputs, ruleset)
 		end
 
 		if self.piece.locked == true then
-			-- spin detection, immobile only for now
-			if self.immobile_spin_bonus and
-			   self.piece.last_rotated and (
-				self.piece:isDropBlocked(self.grid) and
-				self.piece:isMoveBlocked(self.grid, { x=-1, y=0 }) and
-				self.piece:isMoveBlocked(self.grid, { x=1, y=0 }) and
-				self.piece:isMoveBlocked(self.grid, { x=0, y=-1 })
-			) then
-				self.piece.spin = true
-			end
+			self:detectSpins(self.piece, ruleset)
 
 			self.grid:applyPiece(self.piece)
 
