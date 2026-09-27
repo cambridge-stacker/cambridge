@@ -78,7 +78,7 @@ end
 function Ruleset:getRotationDirection(new_inputs, initial)
 	local rot_dir = 0
 	if ((new_inputs["rotate_left"] and new_inputs["rotate_left2"]) or
-	    (new_inputs["rotate_right"] or new_inputs["rotate_right2"])) and
+	    (new_inputs["rotate_right"] and new_inputs["rotate_right2"])) and
 	   (self.enable_rotation_doubles or (self.enable_IRS_doubles and initial)) then
 		rot_dir = 2
 	elseif (new_inputs["rotate_left"] or new_inputs["rotate_left2"]) then
