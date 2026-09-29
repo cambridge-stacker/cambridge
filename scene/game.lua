@@ -55,6 +55,10 @@ function GameScene:new(game_mode, ruleset, metadata)
 end
 
 function GameScene:update()
+	table.insert(self.time_measures, {
+		os = os.clock(),
+		love = love.timer.getTime()
+	})
 	if self.paused and self.frame_steps == 0 then
 		self.game.pause_time = self.game.pause_time + love.timer.getDelta() / (1/60)
 		self.time_paused = self.time_paused + love.timer.getDelta()
@@ -63,10 +67,6 @@ function GameScene:update()
 			self.game.toolassisted = true
 			self.frame_steps = self.frame_steps - 1
 		end
-		table.insert(self.time_measures, {
-			os = os.clock(),
-			love = love.timer.getTime()
-		})
 		if #self.time_measures % 100 == 0 and not self:verifyTimeIntegrity() then
 			self.game.ineligible = true
 		end
