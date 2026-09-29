@@ -205,7 +205,7 @@ function SRS:attemptWallkicks(piece, new_piece, rot_dir, grid)
 	for idx, offset in pairs(kicks) do
 		local kicked_piece = new_piece:withOffset(offset)
 		if grid:canPlacePiece(kicked_piece) then
-			piece.special_kick = offset.y == 2
+			piece.special_kick = math.abs(offset.x) == 1 and math.abs(offset.y) == 2
 			piece:setRelativeRotation(rot_dir)
 			piece:setOffset(offset)
 			self:onPieceRotate(piece, grid, offset.y < 0)
