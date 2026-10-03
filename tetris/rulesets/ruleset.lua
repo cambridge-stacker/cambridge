@@ -112,9 +112,9 @@ function Ruleset:attemptRotate(new_inputs, piece, grid, initial)
 		rot_dir = 4 - rot_dir
 	end
 
-	local new_piece = piece:withRelativeRotation(rot_dir)
 
 	for i = 1, rot_iterations do
+		local new_piece = piece:withRelativeRotation(rot_dir)
 		if (grid:canPlacePiece(new_piece)) then
 			piece:setRelativeRotation(rot_dir)
 			self:onPieceRotate(piece, grid)
