@@ -79,7 +79,7 @@ function Ruleset:getRotationDirection(new_inputs, initial)
 	local rot_dir = 0
 	if ((new_inputs["rotate_left"] and new_inputs["rotate_left2"]) or
 	    (new_inputs["rotate_right"] and new_inputs["rotate_right2"])) and
-	   (self.enable_rotation_doubles or (self.enable_IRS_doubles and initial)) then
+	   (self.enable_IRS_doubles and initial) then
 		rot_dir = 2
 	elseif (new_inputs["rotate_left"] or new_inputs["rotate_left2"]) then
 		rot_dir = 3
@@ -91,8 +91,21 @@ function Ruleset:getRotationDirection(new_inputs, initial)
 	return rot_dir
 end
 
+function Ruleset:getRotationIterations(new_inputs, initial)
+	local rot_iterations = 1
+	
+	if ((new_inputs["rotate_left"] and new_inputs["rotate_left2"]) or
+	    (new_inputs["rotate_right"] and new_inputs["rotate_right2"])) and
+	   (self.enable_rotation_doubles and not initial) then
+		rot_iterations = 2
+	end
+
+	return rot_iterations
+end
+
 function Ruleset:attemptRotate(new_inputs, piece, grid, initial)
 	local rot_dir = self:getRotationDirection(new_inputs, initial)
+	local rot_iterations = self:getRotationIterations(new_inputs, initial)
 
 	if rot_dir == 0 then return end
 	if config.gamesettings.world_reverse == 3 or (self.world and config.gamesettings.world_reverse == 2) then
@@ -101,15 +114,17 @@ function Ruleset:attemptRotate(new_inputs, piece, grid, initial)
 
 	local new_piece = piece:withRelativeRotation(rot_dir)
 
-	if (grid:canPlacePiece(new_piece)) then
-		piece:setRelativeRotation(rot_dir)
-		self:onPieceRotate(piece, grid)
-		playSE("rotate")
-	else
-		if not(initial and self.enable_IRS_wallkicks == false) then
-			self:attemptWallkicks(piece, new_piece, rot_dir, grid)
+	for i = 1, rot_iterations do
+		if (grid:canPlacePiece(new_piece)) then
+			piece:setRelativeRotation(rot_dir)
+			self:onPieceRotate(piece, grid)
+			playSE("rotate")
+		else
+			if not(initial and self.enable_IRS_wallkicks == false) then
+				self:attemptWallkicks(piece, new_piece, rot_dir, grid)
+			end
+			playSE("kick")
 		end
-		playSE("kick")
 	end
 end
 
