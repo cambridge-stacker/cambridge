@@ -1011,21 +1011,21 @@ function GameMode:drawNextQueue(ruleset)
 	else
 		colourscheme = ruleset.colourscheme
 	end
-	local function drawPiece(piece, skin, offsets, pos_x, pos_y)
+	local function drawPiece(piece, skin, offsets, pos_x, pos_y, size)
 		for index, offset in pairs(offsets) do
 			local x = offset.x + ruleset:getDrawOffset(piece).x + ruleset.spawn_positions[piece].x
 			local y = offset.y + ruleset:getDrawOffset(piece).y + 4.7
-			drawSizeIndependentImage(blocks[skin][colourscheme[piece]], pos_x+x*16, pos_y+y*16, 0, 16, 16)
-            -- draw center of rotation
-			if config.gamesettings.show_center_of_rotation == 2 then
-				local x = offsets[1].x + ruleset:getDrawOffset(piece).x + ruleset.spawn_positions[piece].x
-				local y = offsets[1].y + ruleset:getDrawOffset(piece).y + 4.7
-				drawSizeIndependentImage(
-					blocks[skin]['Z'],
-					pos_x+x*16, pos_y+y*16,
-					0, 16, 16
-				)
-			end
+			drawSizeIndependentImage(blocks[skin][colourscheme[piece]], pos_x+x*size, pos_y+y*size, 0, size, size)
+		end
+		-- draw center of rotation
+		if config.gamesettings.show_center_of_rotation == 2 then
+			local x = offsets[1].x + ruleset:getDrawOffset(piece).x + ruleset.spawn_positions[piece].x
+			local y = offsets[1].y + ruleset:getDrawOffset(piece).y + 4.7
+			drawSizeIndependentImage(
+				blocks[skin]['Z'],
+				pos_x+x*size, pos_y+y*size,
+				0, size, size
+			)
 		end
 	end
 	local is_obscured = false
@@ -1038,14 +1038,12 @@ function GameMode:drawNextQueue(ruleset)
 		local next_piece = self.next_queue[i].shape
 		local skin = self.next_queue[i].skin
 		local rotation = self.next_queue[i].orientation
+		local transforms = self:getNextTransform(i, config.side_next)
 		if is_obscured then
 			next_queue_position = next_queue_position + 1
 		end
-		if config.side_next then -- next at side
-			drawPiece(next_piece, skin, ruleset.block_offsets[next_piece][rotation], 192, -16+next_queue_position*48)
-		else -- next at top
-			drawPiece(next_piece, skin, ruleset.block_offsets[next_piece][rotation], -16+next_queue_position*80, -32)
-		end
+		-- yes, the 16 * scale is a bit silly, but it's to not expose raw pixel size
+		drawPiece(next_piece, skin, ruleset.block_offsets[next_piece][rotation], transforms.x, transforms.y, 16 * transforms.scale)
 	end
 	if self.hold_queue ~= nil and self.enable_hold then
 		self:setHoldOpacity()
@@ -1053,7 +1051,7 @@ function GameMode:drawNextQueue(ruleset)
 			self.hold_queue.shape,
 			self.hold_queue.skin,
 			ruleset.block_offsets[self.hold_queue.shape][self.hold_queue.orientation],
-			-16, -32
+			-16, -32, 16
 		)
 		love.graphics.printf("HOLD", 32, 8, 40, "left")
 	end
