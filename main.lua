@@ -386,10 +386,12 @@ function love.errorhandler(msg)
 		local pos = 70
 		love.graphics.clear(89/255, 157/255, 220/255)
 		love.graphics.printf("Cambridge Crashed!", pos, pos-40, love.graphics.getWidth() - pos, "center")
-		for i = 1, 7 do
-			local local_line = line_error-4+i
-			if local_line > 0 and local_line <= #lua_file_content then
-				love.graphics.print(local_line.. ": " .. lua_file_content[local_line] .. (local_line == line_error and " <---" or "") , pos, pos + (i * 15) - 5)
+		if type(line_error) == "number" then
+			for i = 1, 7 do
+				local local_line = line_error-4+i
+				if local_line > 0 and local_line <= #lua_file_content then
+					love.graphics.print(local_line.. ": " .. lua_file_content[local_line] .. (local_line == line_error and " <---" or "") , pos, pos + (i * 15) - 5)
+				end
 			end
 		end
 		if #lua_file_content == 0 then
