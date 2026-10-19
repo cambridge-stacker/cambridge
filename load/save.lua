@@ -4,6 +4,14 @@ function loadSave()
 	config = loadFromFile('config.sav', true)
 	player = loadFromFile('player.sav', true)
 	highscores = loadFromFile('highscores.sav', true)
+	
+	if not player.profile_picture then
+		
+		local success, profile_picture = pcall(loadImage, "res/img/profile_picture")
+		if success then
+			player.profile_picture = profile_picture
+		end
+	end
 end
 
 local configurable_inputs = {
