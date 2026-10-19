@@ -79,6 +79,26 @@ function PlayerCardScene.renderCard(x, y, is_editing, field_name)
 	love.graphics.printf(string.format("%d", player.id), x + 70, y + 2, 160, "left")
 end
 
+function PlayerCardScene.renderMiniCard(x, y, alignment)
+	local player_name_string = player.name or "<INSERT NAME>"
+	local player_rpc_details = DiscordRPC.presence.details or ""
+	local name_width = math.max(font_3x5_2:getWidth(player_name_string),font_3x5_2:getWidth(player_rpc_details))
+	local x_offset = alignment == "right" and (-name_width - 40) or alignment == "center" and (-name_width / 2 - 20) or 0
+	x = x + x_offset
+	love.graphics.setColor(1, 1, 1)
+	love.graphics.rectangle("fill", x, y, 40 + name_width, 36, 3, 3)
+	love.graphics.setColor(0.9, 0.9, 0.9)
+	love.graphics.rectangle("fill", x + 1, y + 1, 38 + name_width, 34, 2, 2)
+	love.graphics.setColor(0.75, 0.75, 0.75)
+	love.graphics.rectangle("fill", x + 2, y + 2, 36 + name_width, 32, 1, 1)
+
+	love.graphics.setColor(1, 1, 1)
+	love.graphics.setFont(font_3x5_2)
+	drawImage(player.profile_picture or blocks.bone_classic["W"], x + 2, y + 2, 0, 32, 32)
+	love.graphics.printf(player_name_string, x + 36, y + 3, 240, "left")
+	love.graphics.printf(player_rpc_details, x + 36, y + 18, 240, "left")
+end
+
 function PlayerCardScene:new()
 	self.menu_state = 1
 	self.safety_frames = 2

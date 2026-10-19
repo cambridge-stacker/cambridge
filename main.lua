@@ -479,11 +479,12 @@ function love.draw()
 			background_x, background_height - bottom_right_corner_y_offset, background_width - 5, "right"
 		)
 	end
-	bottom_right_corner_y_offset = bottom_right_corner_y_offset + 18
-	love.graphics.printf(
-		string.format("%s: %s", scene.title == "Replay" and "Viewer" or "Player", player.name or "<NO NAME>"),
-		background_x, background_height - bottom_right_corner_y_offset, background_width - 5, "right"
-	)
+	bottom_right_corner_y_offset = bottom_right_corner_y_offset + 34
+	PlayerCardScene.renderMiniCard(background_x + background_width, background_height - bottom_right_corner_y_offset, "right")
+	-- love.graphics.printf(
+	-- 	string.format("%s: %s", scene.title == "Replay" and "Viewer" or "Player", player.name or "<NO NAME>"),
+	-- 	background_x, background_height - bottom_right_corner_y_offset, background_width - 5, "right"
+	-- )
 	if config.visualsettings.debug_level > 1 then
 		bottom_right_corner_y_offset = bottom_right_corner_y_offset + 18
 		love.graphics.printf(
