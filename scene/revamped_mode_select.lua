@@ -862,17 +862,19 @@ function ModeSelectScene:refreshHighscores()
 		hash = hash .. self.ruleset_folder[self.menu_state.ruleset].hash
 	end
 	local prev_highscores = self.mode_highscore
-	self.mode_highscore = highscores[hash]
-	if type(self.mode_highscore) ~= "table" then
+	-- yes that : looks a bit stupid, and doesn't look like it should work, but it somehow does
+	self.mode_highscore = HighscoresScene:getHighscoreTable(hash, true)
+	if #self.mode_highscore == 0 then
+		self.mode_highscore = nil -- legacy code moment
 		return
 	end
 	self.sorted_highscores = {}
-	self.highscore_index, self.index_count = HighscoresScene.getHighscoreIndexing(hash)
+	self.highscore_index, self.index_count = HighscoresScene.getHighscoreIndexing(self.mode_highscore)
 	self.id_to_key = {}
 	for k, v in next, self.highscore_index do
 		self.id_to_key[v] = k
 	end
-	self.highscore_column_widths = HighscoresScene.getHighscoreColumnWidths(hash, font_3x5_2)
+	self.highscore_column_widths = HighscoresScene.getHighscoreColumnWidths(self.mode_highscore, font_3x5_2)
 	self.highscore_column_positions = HighscoresScene.getHighscoreColumnPositions(self.highscore_column_widths, self.highscore_index, 40)
 	if self.mode_highscore ~= prev_highscores then
 		self.key_id = 1
