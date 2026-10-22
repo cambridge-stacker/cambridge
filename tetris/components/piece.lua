@@ -43,7 +43,7 @@ end
 -- Functions that return a new piece to test in rotation systems.
 
 ---@param offset {x:integer, y:integer}
----@param force_scale integer|nil
+---@param force_scale integer?
 ---@return Piece
 ---@nodiscard
 function Piece:withOffset(offset, force_scale)
@@ -104,7 +104,7 @@ end
 -- Procedures to actually do stuff to pieces.
 
 ---@param offset {x:integer, y:integer}
----@param force_scale integer|nil
+---@param force_scale integer?
 ---@return Piece
 function Piece:setOffset(offset, force_scale)
 	local offset_scale = force_scale or self.big and 2 or 1
@@ -124,7 +124,7 @@ end
 
 ---@param step {x:integer, y:integer}
 ---@param squares integer
----@param instant boolean|nil
+---@param instant boolean?
 ---@return Piece
 function Piece:moveInGrid(step, squares, grid, instant)
 	local moved = false
@@ -174,7 +174,7 @@ end
 
 ---@param gravity number
 ---@param grid Grid
----@param classic_lock boolean|nil
+---@param classic_lock boolean?
 ---@return Piece
 function Piece:addGravity(gravity, grid, classic_lock)
 	local new_gravity = self.gravity + gravity

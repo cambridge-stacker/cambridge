@@ -21,7 +21,7 @@ GameMode.config_settings = {
 	--- This is a table for mode configurations.
 	--- If you know how to utilize Config Framework, this will be familiar
 	---@class config_template Configuration Template
-	---@field format                 string|nil|fun(value):string Value formatter
+	---@field format                 string|fun(value):string? Value formatter
 	---@field setting_title          string Name of a setting
 	---@field internal_variable_name any Internal variable to modify by key reference
 	---@field description            string?

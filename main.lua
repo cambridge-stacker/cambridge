@@ -696,8 +696,8 @@ function love.textinput(t)
 	onInputPress({type = "textinput", text = t})
 end
 
----@param key string|nil
----@param scancode string|nil
+---@param key string?
+---@param scancode string?
 function love.keypressed(key, scancode)
 	local result_inputs = {}
 	if config.input and config.input.keys then
@@ -713,8 +713,8 @@ function love.keypressed(key, scancode)
 	end
 end
 
----@param key string|nil
----@param scancode string|nil
+---@param key string?
+---@param scancode string?
 function love.keyreleased(key, scancode)
 	local result_inputs = {}
 	if config.input and config.input.keys then

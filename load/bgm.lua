@@ -54,7 +54,7 @@ function generateBGMTable()
 	end
 end
 
----@type love.Source|nil
+---@type love.Source?
 local current_bgm = nil
 
 local pitch = 1

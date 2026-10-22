@@ -1,7 +1,7 @@
 local binser = require 'libs.binser'
 
 ---@param filename string
----@param backup boolean|nil
+---@param backup boolean?
 function loadFromFile(filename, backup)
 	local file_data = love.filesystem.read(filename)
 	if file_data == nil then
