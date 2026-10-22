@@ -250,8 +250,6 @@ function HighscoreScene:getHighscoreTable(reference, formatted)
 	local highscore_reference = highscores[reference]
 	if type(reference) == "table" then
 		highscore_reference = reference
-	else
-		highscore_reference = highscores[reference]
 	end
 	if highscore_reference == nil then
 		return {}
