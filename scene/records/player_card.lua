@@ -95,8 +95,8 @@ function PlayerCardScene.renderMiniCard(x, y, alignment)
 	love.graphics.setColor(1, 1, 1)
 	love.graphics.setFont(font_3x5_2)
 	drawImage(player.profile_picture or blocks.bone_classic["W"], x + 2, y + 2, 0, 32, 32)
-	love.graphics.printf(player_name_string, x + 36, y + 3, 240, "left")
-	love.graphics.printf(player_rpc_details, x + 36, y + 18, 240, "left")
+	love.graphics.print(player_name_string, x + 36, y + 3)
+	love.graphics.print(player_rpc_details, x + 36, y + 18)
 end
 
 function PlayerCardScene:new()
