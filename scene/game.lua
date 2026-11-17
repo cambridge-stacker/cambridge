@@ -141,9 +141,12 @@ function GameScene:onInputPress(e)
 		e.input == "mode_exit" or
 		e.input == "retry"
 	) then
-		local highscore_entry = self.game:getHighscoreData()
-		local highscore_hash = self.game.hash .. "-" .. self.ruleset.hash
-		submitHighscore(highscore_hash, highscore_entry)
+		local time_integrity = self:verifyTimeIntegrity()
+		if time_integrity and not self.game.ineligible and not self.game.toolassisted then
+			local highscore_entry = self.game:getHighscoreData()
+			local highscore_hash = self.game.hash .. "-" .. self.ruleset.hash
+			submitHighscore(highscore_hash, highscore_entry)
+		end
 		switchBGM(nil)
 		self.game:onExit()
 		sortReplays()
