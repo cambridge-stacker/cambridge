@@ -43,7 +43,7 @@ end
 -- Functions that return a new piece to test in rotation systems.
 
 ---@param offset {x:integer, y:integer}
----@param force_scale integer|nil
+---@param force_scale integer?
 ---@return Piece
 ---@nodiscard
 function Piece:withOffset(offset, force_scale)
@@ -57,9 +57,7 @@ end
 
 ---@nodiscard
 function Piece:withRelativeRotation(rot)
-	local new_rot = self.rotation + rot
-	while new_rot < 0 do new_rot = new_rot + 4 end
-	while new_rot >= 4 do new_rot = new_rot - 4 end
+	local new_rot = (self.rotation + rot) % 4
 	return Piece(
 		self.shape, new_rot, self.position,
 		self.block_offsets, self.gravity, self.lock_delay, self.skin, self.colour, self.big
@@ -106,7 +104,7 @@ end
 -- Procedures to actually do stuff to pieces.
 
 ---@param offset {x:integer, y:integer}
----@param force_scale integer|nil
+---@param force_scale integer?
 ---@return Piece
 function Piece:setOffset(offset, force_scale)
 	local offset_scale = force_scale or self.big and 2 or 1
@@ -118,22 +116,22 @@ end
 ---@param rot integer
 ---@return Piece
 function Piece:setRelativeRotation(rot)
-	local new_rot = self.rotation + rot
-	while new_rot < 0 do new_rot = new_rot + 4 end
-	while new_rot >= 4 do new_rot = new_rot - 4 end
+	local new_rot = (self.rotation + rot) % 4
 	self.rotation = new_rot
+	self.last_rotated = true
 	return self
 end
 
 ---@param step {x:integer, y:integer}
 ---@param squares integer
----@param instant boolean|nil
+---@param instant boolean?
 ---@return Piece
 function Piece:moveInGrid(step, squares, grid, instant)
 	local moved = false
 	for x = 1, squares do
 		if grid:canPlacePiece(self:withOffset(step, 1)) then
 			moved = true
+			self.last_rotated = false
 			self:setOffset(step, 1)
 			if instant then
 				self:dropToBottom(grid)
@@ -176,7 +174,7 @@ end
 
 ---@param gravity number
 ---@param grid Grid
----@param classic_lock boolean|nil
+---@param classic_lock boolean?
 ---@return Piece
 function Piece:addGravity(gravity, grid, classic_lock)
 	local new_gravity = self.gravity + gravity
@@ -218,10 +216,10 @@ end
 
 -- Procedures for drawing.
 
----@param opacity number|nil Must be in range of 0 to 1
----@param brightness number|nil Must be in range of 0 to 1
+---@param opacity number? Must be in range of 0 to 1
+---@param brightness number? Must be in range of 0 to 1
 ---@param grid Grid
----@param partial_das number|nil
+---@param partial_das number?
 function Piece:draw(opacity, brightness, grid, partial_das)
 	if opacity == nil then opacity = 1 end
 	if brightness == nil then brightness = 1 end
@@ -233,33 +231,33 @@ function Piece:draw(opacity, brightness, grid, partial_das)
 		gravity_offset = self.gravity * 16
 	end
 	if partial_das == nil then partial_das = 0 end
+	if self.big then partial_das = partial_das * 2 end
+	local block_size = self.big and 32 or 16
 	for index, offset in pairs(offsets) do
 		local x = self.position.x + offset.x
 		local y = self.position.y + offset.y
 		if self.big then
 			x = x + offset.x
 			y = y + offset.y
-			drawSizeIndependentImage(
-				blocks[self.skin][self.colour],
-				64+x*16+partial_das*2, 16+y*16+gravity_offset,
-				0, 32, 32
-			)
-		else
-			drawSizeIndependentImage(
-				blocks[self.skin][self.colour],
-				64+x*16+partial_das, 16+y*16+gravity_offset,
-				0, 16, 16
-			)
 		end
+		drawSizeIndependentImage(
+			blocks[self.skin][self.colour],
+			64+x*16+partial_das, 16+y*16+gravity_offset,
+			0, block_size, block_size
+		)
 	end
     -- draw center of rotation
 	if config.gamesettings.show_center_of_rotation == 2 then
 		local x = self.position.x + offsets[1].x
 		local y = self.position.y + offsets[1].y
+		if self.big then
+			x = x + offsets[1].x
+			y = y + offsets[1].y
+		end
 		drawSizeIndependentImage(
 			blocks[self.skin]['Z'],
 			64+x*16+partial_das, 16+y*16+gravity_offset,
-			0, 16, 16
+			0, block_size, block_size
 		)
 	end
 	return false

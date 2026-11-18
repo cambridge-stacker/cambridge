@@ -19,7 +19,7 @@ Survival2020Game.highscore_format = {
 }
 
 function Survival2020Game:new()
-	Survival2020Game.super:new()
+	Survival2020Game.super.new(self)
 	self.level = 0
 	self.grade = 0
 	self.garbage = 0

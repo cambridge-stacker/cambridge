@@ -47,11 +47,10 @@ function ModeSelectScene:new()
 	self.secret_inputs = {}
 	self.secret_sequence = {}
 	self.sequencing_start_frames = 0
+	self.mode_configs = {}
 	self.input_timers = {}
 	self.das = 0
-	-- It's not exactly self-descriptive.
 	self.menu_mode_height = 20
-	-- It's not exactly self-descriptive.
 	self.menu_ruleset_height = 20
 	self.auto_menu_offset = 0
 	self.auto_menu_state = "mode"
@@ -327,9 +326,10 @@ function ModeSelectScene:render()
 		love.graphics.printf("Secret sequence: " .. self:getSequenceShorthand(), 10, -95 + sequencing_start_frames * 5, 620, "left")
 	end
 	local function drawFadingTextNearHeader(timer, string, decay_time)
+		print(timer)
 		if timer then
 			love.graphics.setColor(1, 1, 1, 1 - timer / decay_time)
-			love.graphics.printf(string, 320, 40, 320, "center")
+			love.graphics.printf(string, 280, 40, 360, "center")
 		end
 	end
 	drawFadingTextNearHeader(60 - (self.reload_time_remaining or 0), "Modules reloaded!", 60)
@@ -337,8 +337,8 @@ function ModeSelectScene:render()
 	drawFadingTextNearHeader(self.input_timers["reload"], "Keep holding Generic 1 to reload modules...", 40)
 	drawFadingTextNearHeader(self.input_timers["secret_sequencing"], "Keep holding Generic 2 to input secret sequences...", 40)
 	drawFadingTextNearHeader(self.input_timers["stop_sequencing"], "Keep holding to stop sequencing...", 40)
-	drawFadingTextNearHeader(60 - (self.text_tag_unselect_timer or 0), "You've unselected all tags.", 60)
-	if self.text_tag_unselect_timer then self.text_tag_unselect_timer = self.text_tag_unselect_timer - 1 end
+	drawFadingTextNearHeader(((self.reload_time_remaining or 0) > 0 or sequencing_start_frames or self.input_timers["reload"] or self.input_timers["secret_sequencing"] or self.input_timers["stop_sequencing"]) and 10 or 0,
+				"G1: Reload Modules  G2: Input Secret Sequence  G3: Configure mode", 10)
 	love.graphics.setColor(1, 1, 1, 1)
 end
 
@@ -413,17 +413,32 @@ function ModeSelectScene:indirectStartMode()
 end
 --Direct way of starting a mode.
 function ModeSelectScene:startMode()
+	-- Clears up the replay list
+	initReplayList()
+
 	current_mode = self.menu_state.mode
 	current_ruleset = self.menu_state.ruleset
 	config.current_mode = current_mode
 	config.current_ruleset = current_ruleset
 	config.current_folder_selections = current_folder_selections
 	saveConfig()
-	self:injectSecretSequenceOnMatch(self.game_mode_folder[self.menu_state.mode])
+	local mode = self.game_mode_folder[self.menu_state.mode]
+	local metadata = {
+		secret_inputs = self.secret_inputs,
+		mode_configs = self.mode_configs
+	}
+	if not mode.use_extended_metadata then
+		for key, value in pairs(self.secret_inputs) do
+			if not metadata[key] then
+				metadata[key] = value
+			end
+		end
+	end
+	self:injectSecretSequenceOnMatch(mode)
 	scene = GameScene(
-		self.game_mode_folder[self.menu_state.mode],
+		mode,
 		self.ruleset_folder[self.menu_state.ruleset],
-		self.secret_inputs
+		metadata
 	)
 end
 

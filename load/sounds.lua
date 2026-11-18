@@ -11,6 +11,10 @@ sound_paths = {
 	move = "res/se/move.wav",
 	rotate = "res/se/rotate.wav",
 	kick = "res/se/kick.wav",
+	spin = {
+		mini = "res/se/spin_mini.wav",
+		full = "res/se/spin_full.wav"
+	},
 	bottom = "res/se/bottom.wav",
 	cursor = "res/se/cursor.wav",
 	cursor_lr = "res/se/cursor_lr.wav",

@@ -250,8 +250,6 @@ function HighscoreScene:getHighscoreTable(reference, formatted)
 	local highscore_reference = highscores[reference]
 	if type(reference) == "table" then
 		highscore_reference = reference
-	else
-		highscore_reference = highscores[reference]
 	end
 	if highscore_reference == nil then
 		return {}
@@ -390,7 +388,7 @@ end
 function HighscoreScene:onInputPress(e)
 	if self.empty_highscores then
 		playSE("menu_cancel")
-		scene = TitleScene()
+		scene = RecordsScene()
 	elseif e.type == "wheel" then
 		if e.y ~= 0 then
 			self:scrollList(-e.y)
@@ -475,7 +473,7 @@ function HighscoreScene:back()
 		self.index_count = 0
 		self.highscore_length = 0
 	else
-		scene = TitleScene()
+		scene = RecordsScene()
 	end
 end
 

@@ -49,6 +49,8 @@ function love.load(args)
 	-- init config
 	initConfig()
 
+	initPlayerData()
+
 	love.window.setFullscreen(config["fullscreen"])
 
 
@@ -385,10 +387,12 @@ function love.errorhandler(msg)
 		local pos = 70
 		love.graphics.clear(89/255, 157/255, 220/255)
 		love.graphics.printf("Cambridge Crashed!", pos, pos-40, love.graphics.getWidth() - pos, "center")
-		for i = 1, 7 do
-			local local_line = line_error-4+i
-			if local_line > 0 and local_line <= #lua_file_content then
-				love.graphics.print(local_line.. ": " .. lua_file_content[local_line] .. (local_line == line_error and " <---" or "") , pos, pos + (i * 15) - 5)
+		if type(line_error) == "number" then
+			for i = 1, 7 do
+				local local_line = line_error-4+i
+				if local_line > 0 and local_line <= #lua_file_content then
+					love.graphics.print(local_line.. ": " .. lua_file_content[local_line] .. (local_line == line_error and " <---" or "") , pos, pos + (i * 15) - 5)
+				end
 			end
 		end
 		if #lua_file_content == 0 then
@@ -480,6 +484,12 @@ function love.draw()
 			background_x, background_y + background_height - bottom_right_corner_y_offset, background_width - 5, "right"
 		)
 	end
+	bottom_right_corner_y_offset = bottom_right_corner_y_offset + 34
+	PlayerCardScene.renderMiniCard(background_x + background_width, background_height - bottom_right_corner_y_offset, "right")
+	-- love.graphics.printf(
+	-- 	string.format("%s: %s", scene.title == "Replay" and "Viewer" or "Player", player.name or "<NO NAME>"),
+	-- 	background_x, background_height - bottom_right_corner_y_offset, background_width - 5, "right"
+	-- )
 	if config.visualsettings.debug_level > 1 then
 		bottom_right_corner_y_offset = bottom_right_corner_y_offset + 18
 		love.graphics.printf(
@@ -515,7 +525,7 @@ function love.draw()
 		local stats = love.graphics.getStats()
 		love.graphics.printf(
 			string.format("GPU stats:\nDraw calls: %d\nTexture Memory: %dKB\n"..(stats.textures and "Textures" or "Images").." loaded: %d\nFonts loaded: %d\nBatched draw calls: %d", stats.drawcalls + 1, stats.texturememory / 1024, (stats.images or stats.textures), stats.fonts, stats.drawcallsbatched),
-			0, 480 - bottom_right_corner_y_offset, 635 + bottom_right_corner_x_offset, "right"
+			background_x, 480 - bottom_right_corner_y_offset, background_width - 5, "right"
 		)
 	end
 end
@@ -583,7 +593,8 @@ end
 ---@param file love.File
 function love.filedropped(file)
 	file:open("r")
-	local data = file:read()
+	local byte_data = file:read("data")
+	local data = byte_data:getString()
 	file:close()
 	local raw_file_directory = file:getFilename()
 	local char_pos = raw_file_directory:gsub("\\", "/"):reverse():find("/")
@@ -627,8 +638,25 @@ function love.filedropped(file)
 		elseif msgbox_choice == 2 then
 			final_directory = "resourcepacks/"
 		end
+	elseif raw_file_directory:sub(-4) == ".png" then
+		if scene.title == "Edit Player Card" then
+			msgbox_choice = love.window.showMessageBox(love.window.getTitle(), "Do you want to replace the profile picture here?", {"Replace", "Cancel", escapebutton = 0}, "info")
+			if msgbox_choice == 0 then
+				return
+			end
+			if msgbox_choice == 1 then
+				final_directory = "res/img/"
+				filename = "profile_picture.png"
+				player.profile_picture = love.graphics.newImage(byte_data)
+			elseif msgbox_choice == 2 then
+				return
+			end
+		else
+			love.window.showMessageBox(love.window.getTitle(), "You're not editing the player card at the moment.", "warning")
+			return
+		end
 	else
-		love.window.showMessageBox(love.window.getTitle(), "This file ("..filename..") is not one of these file types: .lua, .crp, .zip", "warning")
+		love.window.showMessageBox(love.window.getTitle(), "This file ("..filename..") is not one of these file types: .lua, .crp, .zip .png", "warning")
 		return
 	end
 	local do_write = 2
@@ -669,8 +697,12 @@ function love.directorydropped(dir)
 	love.filesystem.unmount(dir)
 end
 
----@param key string|nil
----@param scancode string|nil
+function love.textinput(t)
+	onInputPress({type = "textinput", text = t})
+end
+
+---@param key string?
+---@param scancode string?
 function love.keypressed(key, scancode)
 	local result_inputs = {}
 	if config.input and config.input.keys then
@@ -686,8 +718,8 @@ function love.keypressed(key, scancode)
 	end
 end
 
----@param key string|nil
----@param scancode string|nil
+---@param key string?
+---@param scancode string?
 function love.keyreleased(key, scancode)
 	local result_inputs = {}
 	if config.input and config.input.keys then

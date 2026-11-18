@@ -20,13 +20,33 @@ function ReplayScene:new(replay, game_mode, ruleset)
 	if replay["das_cut_delay"] then config.dcd = replay["das_cut_delay"] end
 	love.math.setRandomSeed(replay["random_low"], replay["random_high"])
 	love.math.setRandomState(replay["random_state"])
-	self.sha_tbl = {mode = sha2.sha256(binser.s(game_mode)), ruleset = sha2.sha256(binser.s(ruleset))}
+	self.sha_tbl = {
+		mode = sha2.sha256(getModuleSource(game_mode)),
+		ruleset = sha2.sha256(getModuleSource(ruleset))
+	}
+	self.player_name = replay["player_name"]
+	self.player_id = replay["player_id"]
 	self.retry_replay = replay
 	self.retry_mode = game_mode
 	self.retry_ruleset = ruleset
-	self.secret_inputs = replay["secret_inputs"]
+	local metadata = {}
+	if replay["metadata"] then
+		self.secret_inputs = replay["metadata"].secret_inputs
+		metadata = copy(replay["metadata"])
+	else
+		-- Compat for old replays.
+		self.secret_inputs = replay["secret_inputs"]
+		metadata.secret_inputs = self.secret_inputs
+		for key, value in pairs(self.secret_inputs) do
+			if not metadata[key] then
+				metadata[key] = value
+			end
+		end
+	end
+	metadata.replay_properties = replay.properties
 	self.replay = deepcopy(replay)
-	self.game = game_mode(self.secret_inputs, self.replay.properties)
+
+	self.game = game_mode(metadata, self.replay.properties)
 	self.game.secret_inputs = self.secret_inputs
 	self.game.save_replay = false
 	if ruleset then
@@ -131,6 +151,9 @@ function ReplayScene:loadState()
 	scene.replay_speed = self.replay_speed
 	scene.show_invisible = self.show_invisible
 	scene.paused = true
+
+	-- for good measure
+	collectgarbage("collect")
 end
 
 function ReplayScene:render()
@@ -215,6 +238,9 @@ function ReplayScene:onInputPress(e)
 	 	)
 		scene.safety_frames = 2
 		savestate_frames = nil
+
+		-- for good measure
+		collectgarbage("collect")
 	--hardcoded input
 	elseif e.input == "save_state" then
 		savestate_frames = self.frames

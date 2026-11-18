@@ -20,25 +20,19 @@ function ReplaySelectScene:new()
 	self.replay_count = #(love.filesystem.getDirectoryItems("replays"))
 	if not loaded_replays and not loading_replays then
 		loading_replays = true
-		replays_loaded = 0
-		loadReplayList()
+		self.sorting_mode = true
+		sortReplayFolder()
+		initReplayList()
 		self.state_string = ""
 		DiscordRPC:update({
 			details = "In menus",
 			state = "Loading replays...",
 			largeImageKey = "ingame-000"
 		})
-		return
 	end
 	unloadModules()
 	initModules()
 	self.display_error = false
-	if #replays == 0 then
-		self.display_warning = true
-		current_replay = 1
-	else
-		self.display_warning = false
-	end
 
 	self.menu_state = {
 		submenu = current_submenu,
@@ -65,12 +59,7 @@ function ReplaySelectScene:update()
 		local overtime
 		while replay and not overtime do
 			replays_loaded = replays_loaded + 1
-			local mode_name = replay.mode
-			replays[#replays+1] = replay
-			if dict_ref[mode_name] ~= nil and mode_name ~= "znil" then
-				table.insert(replay_tree[dict_ref[mode_name] ], #replays)
-			end
-			table.insert(replay_tree[1], #replays)
+			insertReplay(replay)
 			overtime = love.timer.getTime() - last_time > 0.6/getTargetFPS()
 			if not overtime then
 				replay = love.thread.getChannel('replay'):pop()
@@ -80,8 +69,23 @@ function ReplaySelectScene:update()
 			love.thread.getChannel( 'loaded_replays' ):pop()
 			loaded_replays = true
 			loading_replays = false
-			sortReplays()
-			scene = ReplaySelectScene()
+			refreshReplayTree()
+			if self.replay_file_path_select then
+				local branch_index = 0
+				for index, value in ipairs(replay_tree) do
+					if value.name == "All" then
+						branch_index = index
+						break
+					end
+				end
+				for index, value in ipairs(replay_tree[branch_index]) do
+					if replays[value].file_path == self.replay_file_path_select then
+						self.menu_state.submenu = branch_index
+						self.menu_state.replay = index
+						self:startReplay()
+					end
+				end
+			end
 		end
 		return -- It's there to avoid input response when loading.
 	end
@@ -218,14 +222,14 @@ function ReplaySelectScene:render()
 			if replay.ineligible then
 				love.graphics.setFont(font_3x5_2)
 				love.graphics.setColor(1, 1, 0, 1)
-				love.graphics.printf("This replay is ineligible for leaderboards.", 0, 80, 640, "center")
+				love.graphics.printf("This replay is ineligible for leaderboards.", 0, 80 + idx * 20, 640, "center")
 				love.graphics.setColor(1, 1, 1, 1)
 				idx = idx + 1
 			end
 			if replay.toolassisted then
 				love.graphics.setFont(font_3x5_2)
 				love.graphics.setColor(1, 1, 0, 1)
-				love.graphics.printf("This replay has likely used in-game TAS.", 0, 80, 640, "center")
+				love.graphics.printf("This replay has likely used in-game TAS.", 0, 80 + idx * 20, 640, "center")
 				love.graphics.setColor(1, 1, 1, 1)
 				idx = idx + 1
 			end
@@ -244,6 +248,15 @@ function ReplaySelectScene:render()
 				end
 				love.graphics.setFont(font_3x5_2)
 				love.graphics.printf({"Cambridge version for this replay: ", version_text_color, replay.cambridge_version}, 0, 80 + idx * 20, 640, "center")
+			end
+			if replay.player_name then
+				idx = idx + 1
+				love.graphics.setFont(font_3x5_2)
+				if replay.rerecords then
+					love.graphics.printf(("Replay originally recorded by: %s"):format(replay.player_name), 0, 80 + idx * 20, 640, "center")
+				else
+					love.graphics.printf(("Replay recorded by: %s"):format(replay.player_name), 0, 80 + idx * 20, 640, "center")
+				end
 			end
 			if replay.ruleset_override then
 				idx = idx + 1
@@ -347,31 +360,36 @@ function ReplaySelectScene:render()
 			if(idx >= self.height_offset/20-10 and idx <= self.height_offset/20+10) then
 				local replay = replays[replay_idx]
 				local display_string
-				if replay_tree[self.menu_state.submenu].name == "All" then
-					display_string = os.date("%c", replay["timestamp"]).." - ".. replay["mode"]
+				local b, g = cursorHighlight(0, (260 - self.height_offset) + 20 * idx, 640, 20), 1
+				if replay.placeholder then
+					display_string = replay.file_path
 				else
-					display_string = os.date("%c", replay["timestamp"])
-				end
-				if not replay.ruleset_override then
-					display_string = display_string.." - "..replay["ruleset"]
-				end
-				if replay["level"] ~= nil then
-					display_string = display_string.." - Level: "..replay["level"]
-				end
-				if replay["timer"] ~= nil then
-					display_string = display_string.." - Time: "..formatTime(replay["timer"])
+
+					if replay_tree[self.menu_state.submenu].name == "All" then
+						display_string = os.date("%c", replay["timestamp"]).." - ".. replay["mode"]
+					else
+						display_string = os.date("%c", replay["timestamp"])
+					end
+					if not replay.ruleset_override then
+						display_string = display_string.." - "..replay["ruleset"]
+					end
+					if replay["level"] ~= nil then
+						display_string = display_string.." - Level: "..replay["level"]
+					end
+					if replay["timer"] ~= nil then
+						display_string = display_string.." - Time: "..formatTime(replay["timer"])
+					end
+					if not replay["highscore_data"] or next(replay["highscore_data"]) == nil then
+						g = 0.5
+						b = 0.8
+					end
+					if replay["toolassisted"] or replay["ineligible"] then
+						g = 0
+						b = 0
+					end
 				end
 				if #display_string > 78 and idx ~= self.menu_state.replay then
 					display_string = display_string:sub(1, 75) .. "..."
-				end
-				local b, g = cursorHighlight(0, (260 - self.height_offset) + 20 * idx, 640, 20), 1
-				if not replay["highscore_data"] or next(replay["highscore_data"]) == nil then
-					g = 0.5
-					b = 0.8
-				end
-				if replay["toolassisted"] or replay["ineligible"] then
-					g = 0
-					b = 0
 				end
 				love.graphics.setColor(1,g,b,fadeoutAtEdges((-self.height_offset) + 20 * idx, 180, 20))
 				drawWrappingText(display_string, 6, (260 - self.height_offset) + 20 * idx, 628, "left")
@@ -418,12 +436,55 @@ function ReplaySelectScene:generateHighscoreRowOffsets(highscore_data, font)
 	return highscores_idx_offset
 end
 
+function ReplaySelectScene:injectFileAsReplay(file)
+	local replay_path = file.file_path
+	print(replay_path)
+	local data = love.filesystem.read(replay_path)
+	local success, new_replay = pcall(
+		function() return binser.deserialize(data)[1] end
+	)
+	if new_replay == nil or not success then
+		love.filesystem.remove(replay_path)
+		print("The replay at ".. replay_path .." is corrupted or has no data. It has thus been deleted.")
+	else
+		for key, value in pairs(new_replay) do
+			new_replay[key] = toFormattedValue(value)
+		end
+		if new_replay.highscore_data then 
+			for key, value in pairs(new_replay.highscore_data) do
+				new_replay.highscore_data[key] = toFormattedValue(value)
+			end
+		end
+		new_replay.file_path = replay_path
+		insertReplay(new_replay)
+	end
+	return new_replay
+end
+
+function ReplaySelectScene:loadReplayFolder(folder_name)
+	replays_loaded = 0
+	self.replay_count = #(love.filesystem.getDirectoryItems("replays/"..folder_name))
+	if self.replay_count == 0 then
+		return
+	end
+	loadReplaysInFolder(folder_name)
+	loading_replays = true
+end
+
+function ReplaySelectScene:selectReplayFromFilePathAfterLoad(file_path)
+	self.replay_file_path_select = file_path
+end
+
 function ReplaySelectScene:startReplay()
 	if self.menu_state.submenu == 0 then
 		self.menu_state.submenu = self.menu_state.replay
 		self.menu_state.replay = 1
 		self.height_offset = 0
 		playSE("main_decide")
+		if #replay_tree[self.menu_state.submenu] == 0 then
+			local folder_name = replay_tree[self.menu_state.submenu].name
+			self:loadReplayFolder(folder_name)
+		end
 		return
 	elseif self.menu_state.submenu > 0 then
 		if #replay_tree[self.menu_state.submenu] == 0 then
@@ -437,6 +498,11 @@ function ReplaySelectScene:startReplay()
 	-- Get game mode and ruleset
 	local pointer = replay_tree[self.menu_state.submenu][self.menu_state.replay]
 	local replay = replays[pointer]
+	if replay.placeholder then
+		self:loadReplayFolder(replay.folder_name)
+		self:selectReplayFromFilePathAfterLoad(replay.file_path)
+		return
+	end
 	local mode = self.indexModeFromReplay(replay)
 	local rules = self.indexRulesetFromReplay(replay)
 	if mode == nil or (rules == nil and not replay.ruleset_override) then
@@ -548,7 +614,7 @@ end
 function ReplaySelectScene:onInputPress(e)
 	if self.safety_frames > 0 then return end
 	if (self.display_warning or self.display_error) and e.input then
-		scene = TitleScene()
+		scene = RecordsScene()
 	elseif e.type == "mouse" and loaded_replays then
 		if e.button == 1 then
 			if e.y < 62 and e.x > 0 and e.y > 32 and e.x < 50 then
@@ -564,11 +630,11 @@ function ReplaySelectScene:onInputPress(e)
 					self.menu_state.replay = 1
 					return
 				end
-				scene = TitleScene()
+				scene = RecordsScene()
 				return
 			end
 			if self.display_error or self.display_warning then
-				scene = TitleScene()
+				scene = RecordsScene()
 				return
 			end
 			self.auto_menu_offset = math.floor((e.y - 260)/20)
@@ -584,7 +650,7 @@ function ReplaySelectScene:onInputPress(e)
 	elseif not loaded_replays then
 		if e.input == "menu_back" then
 			playSE("menu_cancel")
-			scene = TitleScene()
+			scene = RecordsScene()
 		end
 	elseif e.type == "wheel" and not self.chosen_replay then
 		if e.y ~= 0 then
@@ -644,7 +710,7 @@ function ReplaySelectScene:onInputPress(e)
 		end
 		current_submenu = 0
 		current_replay = self.menu_state.replay
-		scene = TitleScene()
+		scene = RecordsScene()
 	end
 end
 

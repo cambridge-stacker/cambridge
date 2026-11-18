@@ -8,7 +8,7 @@ PhantomManiaNGame.description = "The old mode from Nullpomino, for Ti-ARS and SR
 PhantomManiaNGame.tags = {"Invisible Stack", "Survival", "Gimmick", "Cambridge"}
 
 function PhantomManiaNGame:new(secret_inputs)
-	PhantomManiaNGame.super:new(secret_inputs)
+	PhantomManiaNGame.super.new(self, secret_inputs)
 
 	self.next_queue_length = 3
 	self.enable_hold = true

@@ -109,7 +109,7 @@ function TuningScene:new()
 	config.tunings.das = config.das
 	config.tunings.arr = config.arr
 	config.tunings.dcd = config.dcd
-	self.super.new(self, 200)
+	TuningScene.super.new(self, 200)
 	DiscordRPC:update({
 		details = "In settings",
 		state = "Changing tuning settings",

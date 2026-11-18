@@ -15,6 +15,22 @@ GameMode.name = ""
 GameMode.hash = ""
 GameMode.description = ""
 GameMode.rollOpacityFunction = function(age) return 0 end
+GameMode.use_extended_metadata = false
+
+GameMode.config_settings = {
+	--- This is a table for mode configurations.
+	--- If you know how to utilize Config Framework, this will be familiar
+	---@class config_template Configuration Template
+	---@field format                 string|fun(value):string? Value formatter
+	---@field setting_title          string Name of a setting
+	---@field internal_variable_name any Internal variable to modify by key reference
+	---@field description            string?
+	---@field increment_type         "integer"|"float"? Default value type: Integer
+	---@field low_limit              number? Sets a low boundary
+	---@field high_limit             number? Sets a high boundary
+	---@field default                number|boolean Default value.
+	---@field arrows                 boolean? Show arrows or not.
+}
 
 GameMode.highscore_format = {
 	-- List out all the columns of the highscore here.
@@ -40,14 +56,19 @@ GameMode.highscore_format = {
 	-- grade = {}
 }
 
----@param secret_inputs table
+---@param metadata table
 ---@param properties table
-function GameMode:new(secret_inputs, properties)
+function GameMode:new(metadata, properties)
 	self.replay_inputs = {}
+	self.metadata = metadata
 	self.random_low, self.random_high = love.math.getRandomSeed()
 	self.random_state = love.math.getRandomState()
 	self.save_replay = config.gamesettings.save_replay == 1
-	self.replay_properties = properties or {}
+	if self.use_extended_metadata then
+		self.replay_properties = metadata.replay_properties or {}
+	else
+		self.replay_properties = properties or {}
+	end
 
 	self.grid = Grid(10, 24)
 	self.randomizer = Randomizer()
@@ -87,6 +108,7 @@ function GameMode:new(secret_inputs, properties)
 	self.ihs = true
 	self.square_mode = false
 	self.immobile_spin_bonus = false
+	self.corner_spin_bonus = false
 	self.rpc_details = "In game"
 	self.SGnames = {
 		"9", "8", "7", "6", "5", "4", "3", "2", "1",
@@ -190,7 +212,11 @@ function GameMode:saveReplay()
 	replay["level"] = self.level
 	replay["lines"] = self.lines
 	replay["gamesettings"] = config.gamesettings
-	replay["secret_inputs"] = self.secret_inputs
+	if self.use_extended_metadata then
+		replay["metadata"] = self.metadata
+	else
+		replay["secret_inputs"] = self.secret_inputs
+	end
 	replay["delayed_auto_shift"] = config.das
 	replay["auto_repeat_rate"] = config.arr
 	replay["das_cut_delay"] = config.dcd
@@ -199,14 +225,19 @@ function GameMode:saveReplay()
 	replay["pause_time"] = self.pause_time
 	replay["pause_timestamps"] = self.pause_timestamps
 	replay["rerecords"] = self.rerecords
+	replay["player_name"] = scene.player_name
+	replay["player_id"] = scene.player_id
 	if love.filesystem.getInfo("replays") == nil then
 		love.filesystem.createDirectory("replays")
 	end
 	local init_name
 	if config.gamesettings.replay_name == 2 then
-		init_name = string.format("replays/%s.crp", os.date("%Y-%m-%d_%H-%M-%S"))
+		init_name = string.format("replays/%s/%s.crp", self.name, os.date("%Y-%m-%d_%H-%M-%S"))
 	else
-		init_name = string.format("replays/%s - %s - %s.crp", self.hash, self.ruleset.hash, os.date("%Y-%m-%d_%H-%M-%S"))
+		init_name = string.format("replays/%s/%s - %s - %s.crp", self.name, self.hash, self.ruleset.hash, os.date("%Y-%m-%d_%H-%M-%S"))
+	end
+	if not love.filesystem.getInfo("replays/"..self.name, "directory") then
+		love.filesystem.createDirectory("replays/"..self.name)
 	end
 	local replay_name = init_name
 	local replay_number = 0
@@ -244,6 +275,53 @@ end
 
 function GameMode:canPieceMove(inputs)
 	return not (inputs.up and self.lock_on_hard_drop and not self.hard_drop_locked)
+end
+
+function GameMode:detectSpins(piece, ruleset)
+	piece.spin = false
+	if self.immobile_spin_bonus and
+		piece.last_rotated and (
+		piece:isDropBlocked(self.grid) and
+		piece:isMoveBlocked(self.grid, { x=-1, y=0 }) and
+		piece:isMoveBlocked(self.grid, { x=1, y=0 }) and
+		piece:isMoveBlocked(self.grid, { x=0, y=-1 })
+	) then
+		piece.spin = true
+	end
+
+	if self.corner_spin_bonus and
+		self.piece.last_rotated and
+		ruleset.corner_positions and
+		ruleset.corner_positions[piece.shape]
+	then
+		local piece_offsets = piece:getBlockOffsets()
+		local front_corners, back_corners = 0, 0
+		local corner_positions
+		if ruleset.corner_positions[piece.shape].single_list then
+			corner_positions = ruleset.corner_positions[piece.shape]
+			
+		else
+			corner_positions = ruleset.corner_positions[piece.shape][piece.rotation]
+		end
+		-- Overgeneralization.
+
+		for index, corner_pos in ipairs(corner_positions) do
+			local frontal_corner = Mod1(index - (corner_positions.single_list and self.piece.rotation or 0), #corner_positions) <= corner_positions.front_corner_end
+			if self.grid:isOccupied(
+				self.piece.position.x + corner_pos.x + piece_offsets[1].x,
+				self.piece.position.y + corner_pos.y + piece_offsets[1].y
+			) then
+				if frontal_corner then
+					front_corners = front_corners + 1
+				else
+					back_corners = back_corners + 1
+				end
+			end
+		end
+		local combined_corners = front_corners + back_corners
+		piece.full_spin = front_corners >= math.min(2, corner_positions.front_corner_end) or piece.special_kick
+		piece.spin = piece.spin or combined_corners >= 3
+	end
 end
 
 function GameMode:update(inputs, ruleset)
@@ -334,17 +412,14 @@ function GameMode:update(inputs, ruleset)
 			self:dasCut()
 		end
 
+		if (piece_drot ~= 0) then
+			self:onPieceRotate(self.piece, self.grid, piece_drot)
+		end
 		if (piece_dx ~= 0) then
-			self.piece.last_rotated = false
 			self:onPieceMove(self.piece, self.grid, piece_dx)
 		end
 		if (piece_dy ~= 0) then
-			self.piece.last_rotated = false
 			self:onPieceDrop(self.piece, self.grid, piece_dy)
-		end
-		if (piece_drot ~= 0) then
-			self.piece.last_rotated = true
-			self:onPieceRotate(self.piece, self.grid, piece_drot)
 		end
 
 		if inputs["up"] == true and
@@ -374,16 +449,7 @@ function GameMode:update(inputs, ruleset)
 		end
 
 		if self.piece.locked == true then
-			-- spin detection, immobile only for now
-			if self.immobile_spin_bonus and
-			   self.piece.last_rotated and (
-				self.piece:isDropBlocked(self.grid) and
-				self.piece:isMoveBlocked(self.grid, { x=-1, y=0 }) and
-				self.piece:isMoveBlocked(self.grid, { x=1, y=0 }) and
-				self.piece:isMoveBlocked(self.grid, { x=0, y=-1 })
-			) then
-				self.piece.spin = true
-			end
+			self:detectSpins(self.piece, ruleset)
 
 			self.grid:applyPiece(self.piece)
 
@@ -917,6 +983,24 @@ function GameMode:drawGhostPiece(ruleset)
 	ghost_piece:draw(0.5)
 end
 
+---
+function GameMode:getNextTransform(i, side)
+	if side then
+		return {
+			x = 192,
+			y = -16+i*48,
+			scale = 1,
+		}
+	else
+		return {
+			x = -16 + i* 80,
+			y = -32,
+			scale = 1,
+		}
+	end
+end
+
+
 function GameMode:drawNextQueue(ruleset)
 	local colourscheme
 	if table.equalvalues(
@@ -927,21 +1011,21 @@ function GameMode:drawNextQueue(ruleset)
 	else
 		colourscheme = ruleset.colourscheme
 	end
-	local function drawPiece(piece, skin, offsets, pos_x, pos_y)
+	local function drawPiece(piece, skin, offsets, pos_x, pos_y, size)
 		for index, offset in pairs(offsets) do
 			local x = offset.x + ruleset:getDrawOffset(piece).x + ruleset.spawn_positions[piece].x
 			local y = offset.y + ruleset:getDrawOffset(piece).y + 4.7
-			drawSizeIndependentImage(blocks[skin][colourscheme[piece]], pos_x+x*16, pos_y+y*16, 0, 16, 16)
-            -- draw center of rotation
-			if config.gamesettings.show_center_of_rotation == 2 then
-				local x = offsets[1].x + ruleset:getDrawOffset(piece).x + ruleset.spawn_positions[piece].x
-				local y = offsets[1].y + ruleset:getDrawOffset(piece).y + 4.7
-				drawSizeIndependentImage(
-					blocks[skin]['Z'],
-					pos_x+x*16, pos_y+y*16,
-					0, 16, 16
-				)
-			end
+			drawSizeIndependentImage(blocks[skin][colourscheme[piece]], pos_x+x*size, pos_y+y*size, 0, size, size)
+		end
+		-- draw center of rotation
+		if config.gamesettings.show_center_of_rotation == 2 then
+			local x = offsets[1].x + ruleset:getDrawOffset(piece).x + ruleset.spawn_positions[piece].x
+			local y = offsets[1].y + ruleset:getDrawOffset(piece).y + 4.7
+			drawSizeIndependentImage(
+				blocks[skin]['Z'],
+				pos_x+x*size, pos_y+y*size,
+				0, size, size
+			)
 		end
 	end
 	local is_obscured = false
@@ -954,14 +1038,12 @@ function GameMode:drawNextQueue(ruleset)
 		local next_piece = self.next_queue[i].shape
 		local skin = self.next_queue[i].skin
 		local rotation = self.next_queue[i].orientation
+		local transforms = self:getNextTransform(i, config.side_next)
 		if is_obscured then
 			next_queue_position = next_queue_position + 1
 		end
-		if config.side_next then -- next at side
-			drawPiece(next_piece, skin, ruleset.block_offsets[next_piece][rotation], 192, -16+next_queue_position*48)
-		else -- next at top
-			drawPiece(next_piece, skin, ruleset.block_offsets[next_piece][rotation], -16+next_queue_position*80, -32)
-		end
+		-- yes, the 16 * scale is a bit silly, but it's to not expose raw pixel size
+		drawPiece(next_piece, skin, ruleset.block_offsets[next_piece][rotation], transforms.x, transforms.y, 16 * transforms.scale)
 	end
 	if self.hold_queue ~= nil and self.enable_hold then
 		self:setHoldOpacity()
@@ -969,7 +1051,7 @@ function GameMode:drawNextQueue(ruleset)
 			self.hold_queue.shape,
 			self.hold_queue.skin,
 			ruleset.block_offsets[self.hold_queue.shape][self.hold_queue.orientation],
-			-16, -32
+			-16, -32, 16
 		)
 		love.graphics.printf("HOLD", 32, 8, 40, "left")
 	end

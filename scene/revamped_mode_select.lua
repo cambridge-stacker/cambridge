@@ -45,7 +45,10 @@ function ModeSelectScene:new()
 	self.secret_inputs = {}
 	self.secret_sequence = {}
 	self.sequencing_start_frames = 0
+	self.mode_configs = {}
+	self.configuring_start_frames = 0
 	self.input_timers = {}
+	self.reload_time_remaining = 0
 	self.das_x, self.das_y = 0, 0
 	self.menu_mode_y = 20
 	self.menu_ruleset_x = 20
@@ -53,6 +56,14 @@ function ModeSelectScene:new()
 	self.auto_ruleset_offset = 0
 	self.start_frames, self.starting = 0, false
 	self.safety_frames = 2
+
+	-- this is to not make the built-in configuration go aneurysm
+	self.selection = 1
+	self.menu_DAS = 12
+	self.menu_DAS_ticks = { up = 0, down = 0, left = 0, right = 0 }
+	self.menu_DAS_accumulant = { left = 0, right = 0 }
+	self.prev_inputs = {}
+
 	HighscoresScene.removeEmpty()
 	self:refreshHighscores()
 	DiscordRPC:update({
@@ -111,10 +122,16 @@ function ModeSelectScene:update()
 		self.is_sequencing = false
 	end
 
+	if self.reload_time_remaining then self.reload_time_remaining = self.reload_time_remaining - 1 end
 	if self.is_sequencing then
 		self.sequencing_start_frames = math.min(self.sequencing_start_frames + 1, 20)
 	else
 		self.sequencing_start_frames = math.max(self.sequencing_start_frames - 1, 0)
+	end
+	if self.is_configuring then
+		self.configuring_start_frames = math.min(self.configuring_start_frames + 1, 20)
+	else
+		self.configuring_start_frames = math.max(self.configuring_start_frames - 1, 0)
 	end
 	self.safety_frames = self.safety_frames - 1
 	if self.starting then
@@ -140,6 +157,17 @@ function ModeSelectScene:update()
 		self.das_x = self.das_x + 1
 	else
 		self.das_x = 0
+	end
+	if self.is_configuring then
+		local config_obj = self.game_mode_folder[self.menu_state.mode].config_settings[self.selection]
+		local var = self.mode_configs[config_obj.internal_variable_name]
+		if type(var) ~= "boolean" then
+			self.mode_configs[config_obj.internal_variable_name] = self:menuIncrement({left = self.das_left, right = self.das_right}, var,
+			love.keyboard.isScancodeDown("lshift", "rshift") and config_obj.increment_type == "float" and 0.01 or 1, config_obj.increment_type == "integer",
+				config_obj.low_limit, config_obj.high_limit)
+			self.prev_inputs = {left = self.das_left, right = self.das_right}
+			
+		end
 	end
 	if self.auto_mode_offset ~= 0 then
 		self:changeMode(self.auto_mode_offset < 0 and -1 or 1)
@@ -191,7 +219,70 @@ function ModeSelectScene:getInterpolatedSelectionSegmentPos(selections, sel_idx,
 	return selection.positions[seg_idx]
 end
 
+
+function ModeSelectScene:drawMenuSection(text, value, selection, shown_selection, show_left_arrows, show_right_arrows)
+	local config_x = 280 + 480
+	if self.configuring_start_frames > 0 then
+		config_x = config_x - self.configuring_start_frames * 24
+	end
+	if show_left_arrows == nil then show_left_arrows = true end
+	if show_right_arrows == nil then show_right_arrows = true end
+	if value == nil then return end
+	love.graphics.setFont(font_3x5_2)
+	if self.selection == selection then
+		love.graphics.setColor(1, 1, 0, 1)
+	end
+	love.graphics.printf(text, config_x+5, 85 + 15 * shown_selection, 160, "left")
+
+	love.graphics.setColor(1, 1, 1, 1)
+	if show_right_arrows then
+		love.graphics.polygon("fill", config_x+165, 89 + 15 * shown_selection, config_x+165, 99 + 15 * shown_selection, config_x+170, 94 + 15 * shown_selection)
+	end
+	if show_left_arrows then
+		love.graphics.polygon("fill", config_x+3, 89 + 15 * shown_selection, config_x+3, 99 + 15 * shown_selection, config_x-2, 94 + 15 * shown_selection)
+	end
+	love.graphics.printf(value, config_x, 85 + 15 * shown_selection, 160, "right")
+end
+
+function ModeSelectScene:drawConfigMenu()
+	if not self:getHighscoreConditions() then return end
+	local menu_sections_per_page = 12
+	local config_settings = self.game_mode_folder[self.menu_state.mode].config_settings
+	for i, config_obj in ipairs(config_settings) do
+		i = i - 1
+		if math.floor(i / menu_sections_per_page) == math.floor((self.selection - 1) / menu_sections_per_page) then
+			local var = self.mode_configs[config_obj.internal_variable_name]
+			local show_left_arrows, show_right_arrows = not config_obj.low_limit or var > config_obj.low_limit, not config_obj.high_limit or var < config_obj.high_limit
+			local out_value = var
+			if type(config_obj.format) == "function" then
+				out_value = config_obj.format(var)
+			elseif type(config_obj.format) == "string" then
+				out_value = config_obj.format:format(var)
+			elseif type(var) == "boolean" then
+				out_value = var and "ON" or "OFF"
+				show_left_arrows, show_right_arrows = true, true
+			end
+			if config_obj.arrows == false then
+				show_left_arrows, show_right_arrows = false, false
+			end
+			self:drawMenuSection(config_obj.setting_title, out_value, i + 1, i % menu_sections_per_page + 1,
+			show_left_arrows, show_right_arrows)
+		end
+	end
+	if #config_settings > menu_sections_per_page then
+		love.graphics.printf(
+			string.format("Page %d/%d", math.floor((self.selection - 1) / menu_sections_per_page) + 1,
+				math.floor((#config_settings - 1) / menu_sections_per_page) + 1), 60, 85, 160, "right")
+	end
+	-- if config_settings[self.selection] and config_settings[self.selection].description ~= nil then
+	-- 	self:drawMenuDescription(config_settings[self.selection].description)
+	-- 	love.graphics.printf("Description", 5, 400, 160, "left")
+	-- end
+end
+
+
 function ModeSelectScene:render()
+	love.graphics.setColor(1, 1, 1, 1)
 	drawBackground(0)
 
 	love.graphics.setFont(font_8x11)
@@ -225,25 +316,32 @@ function ModeSelectScene:render()
 	self.menu_ruleset_x = interpolateNumber(self.menu_ruleset_x, (ruleset_selected + latest_ruleset_selection.index) * 120)
 
 	love.graphics.setColor(1, 1, 1, 0.5)
-	love.graphics.rectangle("fill", 20, 259 + (mode_selected + latest_mode_selection.index) * 20 - self.menu_mode_y, 240, 22)
-	love.graphics.rectangle("fill", 260 + (ruleset_selected + latest_ruleset_selection.index) * 120 - self.menu_ruleset_x, 439, 120, 22)
+	love.graphics.rectangle("fill", 20, 219 + (mode_selected + latest_mode_selection.index) * 20 - self.menu_mode_y, 240, 22)
+	love.graphics.rectangle("fill", 260 + (ruleset_selected + latest_ruleset_selection.index) * 120 - self.menu_ruleset_x, 399, 120, 22)
 	love.graphics.setColor(1, 1, 1, 1)
 
 
+	local info_x = 280
+	if self.configuring_start_frames > 0 then
+		info_x = info_x + self.configuring_start_frames * 24
+	end
 	if 	self.game_mode_folder[self.menu_state.mode]
 	and not self.game_mode_folder[self.menu_state.mode].is_directory then
 		love.graphics.printf(
 			"Description: "..(self.game_mode_folder[mode_selected].description or "Missing."),
-			 280, 40, 360, "left")
+			 info_x, 40, 360, "left")
+		love.graphics.printf("Playtime on record: " .. getPlaytimeString(player.playtimes[self.game_mode_folder[self.menu_state.mode].hash] or 0), info_x, 330, 360, "left")
+		love.graphics.printf("Attempts on record: " .. (player.run_counts[self.game_mode_folder[self.menu_state.mode].hash] or 0), info_x, 350, 360, "left")
 	end
+	self:drawConfigMenu()
 	if type(self.mode_highscore) == "table" then
-		love.graphics.printf("num", 280, 100, 100)
+		love.graphics.printf("num", info_x, 100, 100)
 		for name, idx in pairs(self.highscore_index) do
 			local column_x = self.highscore_column_positions[idx]
 			local column_w = self.highscore_column_widths[name]
 			love.graphics.setColor(1, 1, 1, 1)
-			love.graphics.printf(tostring(name), column_x, 100, column_w, "left")
-			love.graphics.line(-5 + column_x, 100, -5 + column_x, 320)
+			love.graphics.printf(tostring(name), info_x + column_x, 100, column_w, "left")
+			love.graphics.line(info_x - 5 + column_x, 100, info_x - 5 + column_x, 320)
 		end
 		for key, slot in pairs(self.mode_highscore) do
 			self.interpolated_menu_slot_positions[key] = interpolateNumber(self.interpolated_menu_slot_positions[key], self.menu_slot_positions[key])
@@ -251,17 +349,17 @@ function ModeSelectScene:render()
 			if slot_y < 220 then
 				local text_alpha = fadeoutAtEdges(-100 + slot_y, 100, 20)
 				love.graphics.setColor(1, 1, 1, text_alpha)
-				love.graphics.printf(tostring(key), 280, 100 + slot_y, 30, "left")
+				love.graphics.printf(tostring(key), info_x, 100 + slot_y, 30, "left")
 				for name, value in pairs(slot) do
 					local idx = self.highscore_index[name]
 					local formatted_string = toFormattedValue(value)
 					local column_x = self.highscore_column_positions[idx]
-					drawWrappingText(tostring(formatted_string), column_x, 100 + slot_y, self.highscore_column_widths[name], "left")
+					drawWrappingText(tostring(formatted_string), info_x + column_x, 100 + slot_y, self.highscore_column_widths[name], "left")
 				end
 			end
 		end
 		if type(self.key_id) == "number" then
-			love.graphics.printf(self.key_sort_string, -10 + self.highscore_column_positions[self.key_id], 100, 90)
+			love.graphics.printf(self.key_sort_string, info_x - 10 + self.highscore_column_positions[self.key_id], 100, 90)
 		end
 	end
 
@@ -272,8 +370,8 @@ function ModeSelectScene:render()
 		local offset = selection.index * 20
 		for idx, mode in ipairs(selection.folder) do
 			local pos_y = self:getInterpolatedSelectionSegmentPos(self.game_mode_selections, sel_idx, idx, offset)
-			if(pos_y >= self.menu_mode_y - 200 and
-			   pos_y <= self.menu_mode_y + 200) then
+			if(pos_y >= self.menu_mode_y - 170 and
+			   pos_y <= self.menu_mode_y + 170) then
 				local b = 1
 				if mode.is_directory then
 					b = 0.4
@@ -292,11 +390,11 @@ function ModeSelectScene:render()
 					b = self.start_frames % 10 > 4 and 0 or 1
 				end
 				love.graphics.setColor(r, 1, b, fadeoutAtEdges(
-					-self.menu_mode_y + pos_y + 20,
-					160,
+					-self.menu_mode_y + pos_y,
+					140,
 					20) * ((sel_idx+1) / (#self.game_mode_selections+1)))
 				drawWrappingText(mode.name,
-				40 + (sel_idx - #self.game_mode_selections) * 10, (260 - self.menu_mode_y) + pos_y, 200, "left")
+				40 + (sel_idx - #self.game_mode_selections) * 10, (220 - self.menu_mode_y) + pos_y, 200, "left")
 			end
 		end
 	end
@@ -323,13 +421,13 @@ function ModeSelectScene:render()
 					120) * ((sel_idx+1) / (#self.ruleset_folder_selections+1))
 				)
 				drawWrappingText(ruleset.name,
-				260 - self.menu_ruleset_x + 120 * idx + offset, 440 - (sel_idx - #self.ruleset_folder_selections) * 10, 120, "center")
+				260 - self.menu_ruleset_x + 120 * idx + offset, 400 - (sel_idx - #self.ruleset_folder_selections) * 10, 120, "center")
 			end
 		end
 	end
 	love.graphics.setColor(1, 1, 1, 1)
 	if #self.game_mode_folder == 0 then
-		love.graphics.printf("No modes in this folder!", 40, 280 - self.menu_mode_y + latest_mode_selection.index * 20, 260, "left")
+		love.graphics.printf("No modes in this folder!", 40, 240 - self.menu_mode_y + latest_mode_selection.index * 20, 260, "left")
 	end
 	if #self.ruleset_folder == 0 then
 		love.graphics.printf("Empty folder!", 380 - self.menu_ruleset_x + latest_ruleset_selection.index * 120, 440, 120, "center")
@@ -337,29 +435,28 @@ function ModeSelectScene:render()
 	if self.game_mode_folder[self.menu_state.mode]
 	and self.game_mode_folder[self.menu_state.mode].ruleset_override then
 		love.graphics.setColor(0, 0, 0, 0.75)
-		love.graphics.rectangle("fill", 0, 420, 640, 60)
+		love.graphics.rectangle("fill", 0, 380, 640, 60)
 		love.graphics.setColor(1, 1, 1, 1)
-		love.graphics.printf("This mode overrides the chosen ruleset!", 0, 440, 640, "center")
+		love.graphics.printf("This mode overrides the chosen ruleset!", 0, 400, 640, "center")
 	end
 	local sequencing_start_frames = self.sequencing_start_frames
 	if sequencing_start_frames > 0 then
 		love.graphics.setColor(1, 1, 1, 1)
 		love.graphics.printf("Secret sequence: " .. self:getSequenceShorthand(), 10, -95 + sequencing_start_frames * 5, 620, "left")
 	end
-	local function drawFadingTextNearHeader(timer, string, decay_time)
-		if timer then
-			love.graphics.setColor(1, 1, 1, 1 - timer / decay_time)
-			love.graphics.printf(string, 0, 10, 640, "center")
-		end
+	local text_table = {}
+	table.insert(text_table, (self.input_timers["reload"] or 60) < 40 and "Keep holding to reload..." or
+	                         self.reload_time_remaining > 0 and "Reloaded modules!" or "G1: Reload Modules")
+	table.insert(text_table, (self.input_timers["secret_sequencing"] or 60) < 40 and "Keep holding to sequence..." or "G2: Input Secret Sequence")
+	if self:getHighscoreConditions() and #self.game_mode_folder[self.menu_state.mode].config_settings > 0 then
+		table.insert(text_table, "G3: Configure mode")
 	end
-	drawFadingTextNearHeader(60 - (self.reload_time_remaining or 0), "Modules reloaded!", 60)
-	if self.reload_time_remaining then self.reload_time_remaining = self.reload_time_remaining - 1 end
-	drawFadingTextNearHeader(self.input_timers["reload"], "Keep holding Generic 1 to reload modules...", 60)
-	drawFadingTextNearHeader(self.input_timers["secret_sequencing"], "Keep holding Generic 2 to input secret sequences...", 40)
-	drawFadingTextNearHeader(self.input_timers["stop_sequencing"], "Keep holding to stop sequencing...", 40)
-	drawFadingTextNearHeader(60 - (self.text_tag_deselect_timer or 0), "You've deselected all tags.", 60)
-	if self.text_tag_deselect_timer then self.text_tag_deselect_timer = self.text_tag_deselect_timer - 1 end
 	love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.printf(table.concat(text_table, " - "), 0, 10 - sequencing_start_frames * 5, 640, "center")
+	if self.input_timers["stop_sequencing"] then
+		love.graphics.setColor(1, 1, 1, 1 - self.input_timers["stop_sequencing"] / 40)
+		love.graphics.printf("Continue holding to stop sequencing...", 0, 10, 640, "center")
+	end
 end
 
 local INPUT_SHORTHANDS = {
@@ -432,17 +529,32 @@ function ModeSelectScene:indirectStartMode()
 end
 --Direct way of starting a mode.
 function ModeSelectScene:startMode()
+	-- Clears up the replay list
+	initReplayList()
+
 	current_mode = self.menu_state.mode
 	current_ruleset = self.menu_state.ruleset
 	config.current_mode = current_mode
 	config.current_ruleset = current_ruleset
 	config.current_folder_selections = current_folder_selections
 	saveConfig()
-	self:injectSecretSequenceOnMatch(self.game_mode_folder[self.menu_state.mode])
+	local mode = self.game_mode_folder[self.menu_state.mode]
+	local metadata = {
+		secret_inputs = self.secret_inputs,
+		mode_configs = self.mode_configs
+	}
+	if not mode.use_extended_metadata then
+		for key, value in pairs(self.secret_inputs) do
+			if not metadata[key] then
+				metadata[key] = value
+			end
+		end
+	end
+	self:injectSecretSequenceOnMatch(mode)
 	scene = GameScene(
-		self.game_mode_folder[self.menu_state.mode],
+		mode,
 		self.ruleset_folder[self.menu_state.ruleset],
-		self.secret_inputs
+		metadata
 	)
 end
 
@@ -531,6 +643,10 @@ function ModeSelectScene:onInputPress(e)
 			return
 		end
 		playSE("menu_cancel")
+		if self.is_configuring then
+			self.is_configuring = false
+			return
+		end
 		if #self.game_mode_selections > 1 then
 			self:menuGoBack("mode")
 			return
@@ -566,9 +682,9 @@ function ModeSelectScene:onInputPress(e)
 			self:menuGoBack("ruleset")
 			return
 		end
-		if e.y < 440 then
+		if e.y < 400 then
 			if e.x < 260 then
-				self.auto_mode_offset = math.floor((e.y - 260)/20)
+				self.auto_mode_offset = math.floor((e.y - 220)/20)
 				if self.auto_mode_offset == 0 then
 					if self.game_mode_folder[self.menu_state.mode].is_directory then
 						playSE("main_decide")
@@ -620,6 +736,10 @@ function ModeSelectScene:onInputPress(e)
 			self.input_timers["reload"] = 60
 		elseif e.input == "generic_2" then
 			self.input_timers["secret_sequencing"] = 60
+		elseif e.input == "generic_3" then
+			if #self.game_mode_folder[self.menu_state.mode].config_settings > 0 then
+				self.is_configuring = not self.is_configuring
+			end
 		end
 	end
 end
@@ -662,12 +782,92 @@ function ModeSelectScene:getHighscoreConditions()
 	return true
 end
 
+function ModeSelectScene:configIncrementWithDAS(input, input_string, is_integer)
+	if (input) then
+		self.menu_DAS_ticks[input_string] = self.menu_DAS_ticks[input_string] + 1
+	else
+		self.menu_DAS_ticks[input_string] = 0
+		self.menu_DAS_accumulant[input_string] = 0
+	end
+	if (self.prev_inputs[input_string] == false or
+		(self.menu_DAS_ticks[input_string] >= self.menu_DAS) or
+		self.menu_DAS_ticks[input_string] == 1) and input then
+		if self.menu_DAS_ticks[input_string] == 1 then
+			playSE("cursor")
+			return 1
+		end
+		local increment = math.max(((self.menu_DAS_ticks[input_string] + 15 - self.menu_DAS) ^ 1.2) / 360,
+		                           love.keyboard.isScancodeDown("lctrl", "rctrl") and 0 or 1/4)
+		if not is_integer then
+			if (self.menu_DAS_ticks[input_string] - self.menu_DAS) % 3 == 0 then
+				playSE("cursor")
+			end
+			return increment
+		else
+			self.menu_DAS_accumulant[input_string] = self.menu_DAS_accumulant[input_string] + increment
+			if (increment < 1/3 and self.menu_DAS_accumulant[input_string] > 1) or
+			   (self.menu_DAS_ticks[input_string] - self.menu_DAS) % 3 == 0 and increment >= 1/3 then
+				playSE("cursor")
+			end
+			if self.menu_DAS_accumulant[input_string] > 1 then
+				local increment_return = math.floor(self.menu_DAS_accumulant[input_string])
+				self.menu_DAS_accumulant[input_string] = self.menu_DAS_accumulant[input_string] % 1
+				return increment_return
+			end
+		end
+	end
+	return 0
+end
+
+function ModeSelectScene:menuIncrement(inputs, current_value, increase_by, is_integer, low_limit, high_limit)
+	current_value = current_value + self:configIncrementWithDAS(inputs["right"], "right", is_integer) * increase_by
+	current_value = current_value - self:configIncrementWithDAS(inputs["left"], "left", is_integer) * increase_by
+	if low_limit == nil then low_limit = -math.huge end
+	if high_limit == nil then high_limit = math.huge end
+	if current_value > high_limit then
+		return high_limit
+	end
+	if current_value < low_limit then return low_limit end
+	return current_value
+end
+
+function ModeSelectScene:refreshModeConfigs(wipe_menu_config)
+	local mode_hash = self.game_mode_folder[self.menu_state.mode].hash
+	for key, value in pairs(self.game_mode_folder[self.menu_state.mode].config_settings) do
+		--hard to read and understand
+		value.setting_title = value.setting_title or value[1]
+		value.internal_variable_name = value.internal_variable_name or value[2]
+		value.description = value.description or value[3]
+		value.low_limit = value.low_limit or value[4]
+		value.high_limit = value.high_limit or value[5]
+		if value.arrows == nil then value.arrows = value[6] end
+		if value.increment_type == nil then
+			value.increment_type = "integer"
+		end
+		if config.mode_config then
+			if config.mode_config[mode_hash] then
+				if config.mode_config[mode_hash][value.internal_variable_name] ~= nil then
+					self.mode_configs[value.internal_variable_name] = config.mode_config[mode_hash][value.internal_variable_name]
+				end
+			end
+		end
+		if type(value.default) == "boolean" and type(self.mode_configs[value.internal_variable_name]) ~= "boolean" then
+			self.mode_configs[value.internal_variable_name] = value.default
+		end
+		if self.mode_configs[value.internal_variable_name] == nil or wipe_menu_config then
+			self.mode_configs[value.internal_variable_name] = value.default ~= nil and value.default or 1
+		end
+	end
+end
+
+
 function ModeSelectScene:refreshHighscores()
 	self.auto_sort_clock = 0
 	if not self:getHighscoreConditions() then
 		self.mode_highscore = nil
 		return
 	end
+	self:refreshModeConfigs()
 	local hash = self.game_mode_folder[self.menu_state.mode].hash .. "-"
 	if self.game_mode_folder[self.menu_state.mode].ruleset_override then
 		hash = hash .. tostring(self.game_mode_folder[self.menu_state.mode].ruleset_override)
@@ -675,18 +875,20 @@ function ModeSelectScene:refreshHighscores()
 		hash = hash .. self.ruleset_folder[self.menu_state.ruleset].hash
 	end
 	local prev_highscores = self.mode_highscore
-	self.mode_highscore = highscores[hash]
-	if type(self.mode_highscore) ~= "table" then
+	-- yes that : looks a bit stupid, and doesn't look like it should work, but it somehow does
+	self.mode_highscore = HighscoresScene:getHighscoreTable(hash, true)
+	if #self.mode_highscore == 0 then
+		self.mode_highscore = nil -- legacy code moment
 		return
 	end
 	self.sorted_highscores = {}
-	self.highscore_index, self.index_count = HighscoresScene.getHighscoreIndexing(hash)
+	self.highscore_index, self.index_count = HighscoresScene.getHighscoreIndexing(self.mode_highscore)
 	self.id_to_key = {}
 	for k, v in next, self.highscore_index do
 		self.id_to_key[v] = k
 	end
-	self.highscore_column_widths = HighscoresScene.getHighscoreColumnWidths(hash, font_3x5_2)
-	self.highscore_column_positions = HighscoresScene.getHighscoreColumnPositions(self.highscore_column_widths, self.highscore_index, 320)
+	self.highscore_column_widths = HighscoresScene.getHighscoreColumnWidths(self.mode_highscore, font_3x5_2)
+	self.highscore_column_positions = HighscoresScene.getHighscoreColumnPositions(self.highscore_column_widths, self.highscore_index, 40)
 	if self.mode_highscore ~= prev_highscores then
 		self.key_id = 1
 		self.sort_type = ""
@@ -734,6 +936,11 @@ function ModeSelectScene:changeMode(rel)
 	local len = #self.game_mode_folder
 	if len == 0 then return end
 	playSE("cursor")
+	if self.is_configuring then
+		local maxSelection = #self.game_mode_folder[self.menu_state.mode].config_settings
+		self.selection = Mod1(self.selection + rel, maxSelection)
+		return
+	end
 	self.menu_state.mode = Mod1(self.menu_state.mode + rel, len)
 	self:refreshHighscores()
 	self.secret_sequence = {}
@@ -742,6 +949,15 @@ end
 function ModeSelectScene:changeRuleset(rel)
 	local len = #self.ruleset_folder
 	if len == 0 then return end
+	if self.is_configuring then
+		local config_obj = self.game_mode_folder[self.menu_state.mode].config_settings[self.selection]
+		local var = self.mode_configs[config_obj.internal_variable_name]
+		if type(var) == "boolean" then
+			self.mode_configs[config_obj.internal_variable_name] = not self.mode_configs[config_obj.internal_variable_name]
+			playSE("cursor")
+		end
+		return
+	end
 	playSE("cursor_lr")
 	self.menu_state.ruleset = Mod1(self.menu_state.ruleset + rel, len)
 	self:refreshHighscores()
