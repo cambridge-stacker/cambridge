@@ -550,7 +550,7 @@ function bigint.divide_raw(big1, big2)
 			
 			for i = 1, #big1.digits do
 				fdividend = max_size * fdividend + big1.digits[i]
-				fq = math.floor(fdividend,fdivisor)
+				fq = math.floor(fdividend/fdivisor)
 				result.digits[#result.digits + 1] = fq
 				fdividend = fdividend - fdivisor * fq
 			end
