@@ -550,7 +550,7 @@ function bigint.divide_raw(big1, big2)
 			
 			for i = 1, #big1.digits do
 				fdividend = max_size * fdividend + big1.digits[i]
-				fq = math.floor(fdividend/fdivisor)
+				local fq = math.floor(fdividend/fdivisor)
 				result.digits[#result.digits + 1] = fq
 				fdividend = fdividend - fdivisor * fq
 			end
@@ -587,7 +587,7 @@ function bigint.divide_raw(big1, big2)
 				qhat = qhat - 1
 				rhat = rhat + nv.digits[1]
 				-- second test and adjustment
-				if (rhat < max_size0) and ((qhat * nv.digits[2]) > (max_size * rhat + (nu.digits[k+2] or 0))) then
+				if (rhat < max_size) and ((qhat * nv.digits[2]) > (max_size * rhat + (nu.digits[k+2] or 0))) then
 					qhat = qhat - 1
 					rhat = rhat + nv.digits[1]
 				end
