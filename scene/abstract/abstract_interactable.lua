@@ -6,11 +6,46 @@ AbstractInteractableScene.title = "Interactable"
 ---@field y number
 ---@field w number
 ---@field h number
----@field onInteract function
+---@field onPress function
 ---@field onRelease function?
 ---@field onUpdate fun(self:INTERACTABLE, is_selected:boolean, is_hovered:boolean)
 ---@field onRender fun(self:INTERACTABLE, is_selected:boolean, is_highlighted:boolean)
 local LLS_INTERACTABLE_METADATA
+
+
+---TODO: Finish implementing this one, since a lot of Cambridge UI is that
+---@param x number
+---@param y number
+---@param onUpdate fun(self:INTERACTABLE, is_selected:boolean, is_hovered:boolean)
+---@param mode "vertical"|"horizontal"
+function AbstractInteractableScene:createList(x, y, w, h, buttons, mode, onUpdate, onButtonRender)
+	local interactables_list = {
+		x = x, y = y,
+		w = w * #buttons, h = h * #buttons,
+		button_w = w, button_h = h,
+		buttons = buttons,
+		mode = mode or "vertical",
+		number_selected = 0,
+		onUpdate = onUpdate,
+		onPress = function (list, input)
+			if input.x and input.y then
+				if list.mode == "vertical" then
+					list.number_selected = (input.y - list.y) / list.button_y
+				elseif list.mode == "horizontal" then
+					list.number_selected = (input.x - list.x) / list.button_x
+				end
+			end
+		end,
+		onRender = function (list, is_selected, is_highlighted)
+			for key, value in pairs(list.buttons) do
+				onButtonRender(key, value)
+			end
+		end
+	}
+
+	self:addNewInteractable(interactables_list)
+	return interactables_list
+end
 
 function AbstractInteractableScene:new()
 	---@type INTERACTABLE[]
@@ -97,7 +132,7 @@ function AbstractInteractableScene:addNewInteractable(interactable)
 	assert(type(interactable.w) == "number", "W is not a number!")
 	assert(type(interactable.h) == "number", "H is not a number!")
 	assert(type(interactable.onRender) == "function", "onRender is not a function!")
-	assert(type(interactable.onInteract) == "function", "onInteract is not a function!")
+	assert(type(interactable.onPress) == "function", "onPress is not a function!")
 	assert(type(interactable.onUpdate) == "function", "onUpdate is not a function!")
 	table.insert(self.interactables, interactable)
 end
@@ -106,23 +141,23 @@ end
 function AbstractInteractableScene:onInputPress(e)
 	if e.input == "menu_decide" then
 		if self.current_selected_interactable then
-			self.current_selected_interactable:onInteract()
+			self.current_selected_interactable:onPress()
 		end
 	elseif e.input == "menu_back" then
 		self:onMenuBack()
-	elseif e.input == "menu_left" then
-		self.current_selected_interactable = self:moveInteractableSelector(-1, 0)
-	elseif e.input == "menu_right" then
-		self.current_selected_interactable = self:moveInteractableSelector(1, 0)
-	elseif e.input == "menu_up" then
-		self.current_selected_interactable = self:moveInteractableSelector(0, -1)
-	elseif e.input == "menu_down" then
-		self.current_selected_interactable = self:moveInteractableSelector(0, 1)
+	-- elseif e.input == "menu_left" then
+	-- 	self.current_selected_interactable = self:moveInteractableSelector(-1, 0)
+	-- elseif e.input == "menu_right" then
+	-- 	self.current_selected_interactable = self:moveInteractableSelector(1, 0)
+	-- elseif e.input == "menu_up" then
+	-- 	self.current_selected_interactable = self:moveInteractableSelector(0, -1)
+	-- elseif e.input == "menu_down" then
+	-- 	self.current_selected_interactable = self:moveInteractableSelector(0, 1)
 	elseif e.type == "key" then
 	elseif e.type == "mouse" then
 		for key, value in pairs(self.interactables) do
 			if e.x > value.x and e.x < value.x + value.w and e.y > value.y and e.y < value.y + value.h then
-				value:onInteract()
+				value:onPress({x = e.x, y = e.y})
 				print("interact found!")
 				return
 			end
