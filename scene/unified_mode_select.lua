@@ -672,7 +672,7 @@ local SYSTEM_INPUTS = {
 }
 
 function ModeSelectScene:onInputPress(e)
-	if self.safety_frames > 0 then
+	if self.safety_frames > 0 or e.type == "textinput" then
 		return
 	end
 	if (e.input or e.scancode) and (self.display_warning or #self.game_mode_folder == 0 or #self.ruleset_folder == 0) then
