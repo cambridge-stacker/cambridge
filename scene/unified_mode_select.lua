@@ -143,6 +143,11 @@ function ModeSelectScene:update()
 			self:startMode()
 		end
 		return
+	elseif self.countdown then
+		self.start_frames = math.max(self.start_frames - 1, 0)
+		if self.start_frames == 0 then
+			self.countdown = false
+		end
 	end
 	if type(self.mode_highscore) == "table" and self.index_count >= 1 then
 		self.auto_sort_clock = self.auto_sort_clock + 1
@@ -348,8 +353,8 @@ function ModeSelectScene:render()
 				"Description: "..(self.game_mode_folder[mode_selected].description or "Missing."),
 				280, 40 - offset_from_starting, 360, "left")
 		end
-		love.graphics.printf("Playtime on record: " .. getPlaytimeString(player.playtimes[self.game_mode_folder[self.menu_state.mode].hash] or 0), 10 - offset_from_starting, 430, 360, "left")
-		love.graphics.printf("Attempts on record: " .. (player.run_counts[self.game_mode_folder[self.menu_state.mode].hash] or 0), 10 - offset_from_starting, 450, 360, "left")
+		love.graphics.printf("Playtime on record: " .. getPlaytimeString(player.playtimes[self.game_mode_folder[self.menu_state.mode].hash] or 0), 10, 430 + offset_from_starting, 360, "left")
+		love.graphics.printf("Attempts on record: " .. (player.run_counts[self.game_mode_folder[self.menu_state.mode].hash] or 0), 10, 450 + offset_from_starting, 360, "left")
 	end
 	self:drawConfigMenu()
 	if type(self.mode_highscore) == "table" and config.visualsettings.mode_select_type == 2 then
@@ -425,10 +430,10 @@ function ModeSelectScene:render()
 	for idx, mode in ipairs(self.game_mode_folder) do
 		local x = 40
 		local y = (220 - self.menu_mode_y) + 20 * idx
-		if idx == self.menu_state.mode and self.starting then
-			local lerp_t = math.min(math.max(0, (self.start_frames - 40)) / 15, 1)
-			self:drawListElement(math.lerp(40, 0, lerp_t), 
-						math.lerp(y, 460, lerp_t), mode, self.start_frames % 10 > 4 and 0 or 1, 1, 200, "left")
+		if idx == self.menu_state.mode and (self.starting or self.countdown) then
+			local lerp_t = math.min(math.max(0, (self.start_frames -30)) / 30, 1)
+			self:drawListElement(math.lerp(40, 0, lerp_t ^ 3), 
+						math.lerp(y, 460, lerp_t ^ 3), mode, (self.start_frames % 10 > 4 and self.starting) and 0 or 1, 1, 200, "left")
 		elseif (idx >= self.menu_mode_y / 20 - 8 and idx <= self.menu_mode_y / 20 + 8) then
 			x = x - math.max(0, math.sinh(self.start_frames / 6 - (y - 100) / 96))
 			self:drawListElement(x, y, mode, cursorHighlight(0, y, 260, 20), fadeoutAtEdges(-y + 220, 140, 20), 200, "left")
@@ -448,7 +453,7 @@ function ModeSelectScene:render()
 		local alignment = "center"
 		if config.visualsettings.mode_select_type == 1 then
 			can_display = (idx >= self.menu_ruleset_y / 20 - 7 and idx <= self.menu_ruleset_y / 20 + 7)
-			x = (idx == self.menu_state.ruleset and self.starting) and 360 or info_x + 80
+			x = (idx == self.menu_state.ruleset and (self.starting or self.countdown)) and 360 or info_x + 80
 			y = (220 - self.menu_ruleset_y) + 20 * idx
 			limit = 200
 			alpha = fadeoutAtEdges(-y + 220, 120, 20)
@@ -457,17 +462,21 @@ function ModeSelectScene:render()
 		else
 			can_display = (idx >= self.menu_ruleset_x / 120 - 3 and idx <= self.menu_ruleset_x / 120 + 3)
 		end
-		if idx == self.menu_state.ruleset and self.starting then
+		if idx == self.menu_state.ruleset and (self.starting or self.countdown) then
 			local x_final_offset = font:getWidth(self.game_mode_folder[self.menu_state.mode].name .. " - ")
-			local lerp_t = math.min(math.max(0, (self.start_frames - 45)) / 15, 1)
-			self:drawListElement(math.lerp(x + x_start_offset, x_final_offset, lerp_t), 
-						math.lerp(y, 460, lerp_t), ruleset, 1, 1, 200, "left")
+			local lerp_t = math.min(math.max(0, (self.start_frames - 30)) / 30, 1)
+			if self.game_mode_folder[self.menu_state.mode]
+			and self.game_mode_folder[self.menu_state.mode].ruleset_override then
+				lerp_t = 0
+			end
+			self:drawListElement(math.lerp(x + x_start_offset, x_final_offset, lerp_t ^ 3), 
+						math.lerp(y, 460, lerp_t ^ 3), ruleset, 1, 1, 200, "left")
 		elseif config.visualsettings.mode_select_type == 1 and (idx >= self.menu_ruleset_y / 20 - 8 and idx <= self.menu_ruleset_y / 20 + 8) then
 			x = x + math.max(0, math.sinh(self.start_frames / 6 - (y - 100) / 96))
 		elseif config.visualsettings.mode_select_type == 2 and (idx >= self.menu_ruleset_x / 120 - 3 and idx <= self.menu_ruleset_x / 120 + 3) then
 			y = y + math.max(0, math.sinh(self.start_frames / 6 - (x - 40) / 128))
 		end
-		if can_display and not (idx == self.menu_state.ruleset and self.starting) then
+		if can_display and not (idx == self.menu_state.ruleset and (self.starting or self.countdown)) then
 			self:drawListElement(x, y, ruleset, cursorHighlight(x, 400, 120, 20), alpha, limit, alignment)
 		end
 	end
@@ -680,7 +689,7 @@ function ModeSelectScene:onInputPress(e)
 		local has_started = self.starting
 		if self.starting then
 			self.starting = false
-			self.start_frames = 0
+			self.countdown = true
 			self.secret_inputs = {}
 			return
 		end

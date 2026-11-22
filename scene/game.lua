@@ -129,6 +129,19 @@ function GameScene:verifyTimeIntegrity()
 	end
 end
 
+function GameScene:onExit()
+	if config.visualsettings.mode_entry == 2 then
+		scene.start_frames = 61
+		scene.countdown = true
+		
+		local mode_selected, ruleset_selected = scene.menu_state.mode, scene.menu_state.ruleset
+
+		scene.menu_mode_y = mode_selected * 20
+		scene.menu_ruleset_y = ruleset_selected * 20
+		scene.menu_ruleset_x = ruleset_selected * 120
+	end
+end
+
 local movement_directions = {"left", "right", "down", "up"}
 local opposite_directions = {left = "right", right = "left", up = "down", down = "up"}
 
@@ -154,6 +167,9 @@ function GameScene:onInputPress(e)
 		scene = e.input == "retry" and GameScene(self.retry_mode, self.retry_ruleset, self.metadata) or TitleScene.menu_screens[1]()
 		scene.safety_frames = 2
 
+		if e.input ~= "retry" then
+			self:onExit()
+		end
 
 		-- for good measure -Rexxt
 		collectgarbage("collect")
@@ -182,6 +198,7 @@ function GameScene:onInputPress(e)
 		self.game:onExit()
 		self:postRun()
 		scene = TitleScene.menu_screens[1]()
+		self:onExit()
 		
 		-- for good measure -Rexxt
 		collectgarbage("collect")
