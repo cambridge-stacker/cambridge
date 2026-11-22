@@ -479,7 +479,7 @@ function ModeSelectScene:render()
 			love.graphics.setColor(1, 1, 1, 1)
 			love.graphics.printf("This mode overrides the chosen ruleset!", 340, 240, 220, "center")
 		else
-			love.graphics.rectangle("fill", 0, 380, 640, 60)
+			love.graphics.rectangle("fill", 0, 390, 640, 40)
 			love.graphics.setColor(1, 1, 1, 1)
 			love.graphics.printf("This mode overrides the chosen ruleset!", 0, 400, 640, "center")
 		end
