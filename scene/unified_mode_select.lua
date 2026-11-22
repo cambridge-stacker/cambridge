@@ -326,10 +326,12 @@ function ModeSelectScene:render()
 	if not self.starting then
 		love.graphics.setColor(1, 1, 1, 0.5)
 		love.graphics.rectangle("fill", 20, 219 + (mode_selected * 20) - self.menu_mode_y, 240, 22)
-		if config.visualsettings.mode_select_type == 1 then
-			love.graphics.rectangle("fill", 340, 219 + (ruleset_selected * 20) - self.menu_ruleset_y, 240, 22)
-		else
-			love.graphics.rectangle("fill", 260 + (ruleset_selected * 120) - self.menu_ruleset_x, 399, 120, 22)
+		if not self.is_configuring then
+			if config.visualsettings.mode_select_type == 1 then
+				love.graphics.rectangle("fill", 340, 219 + (ruleset_selected * 20) - self.menu_ruleset_y, 240, 22)
+			else
+				love.graphics.rectangle("fill", 260 + (ruleset_selected * 120) - self.menu_ruleset_x, 399, 120, 22)
+			end
 		end
 	end
 	love.graphics.setColor(1, 1, 1, 1)
@@ -350,11 +352,17 @@ function ModeSelectScene:render()
 				280, 40 - offset_from_starting, 360, "left")
 		else
 			love.graphics.printf(
-				"Description: "..(self.game_mode_folder[mode_selected].description or "Missing."),
+				"Mode Desc.: "..(self.game_mode_folder[mode_selected].description or "Missing."),
 				280, 40 - offset_from_starting, 360, "left")
 		end
 		love.graphics.printf("Playtime on record: " .. getPlaytimeString(player.playtimes[self.game_mode_folder[self.menu_state.mode].hash] or 0), 10, 430 + offset_from_starting, 360, "left")
 		love.graphics.printf("Attempts on record: " .. (player.run_counts[self.game_mode_folder[self.menu_state.mode].hash] or 0), 10, 450 + offset_from_starting, 360, "left")
+	end
+	if      self.ruleset_folder[ruleset_selected]
+	and not self.ruleset_folder[ruleset_selected].is_directory then
+			love.graphics.printf(
+				"Ruleset Desc.: "..(self.ruleset_folder[ruleset_selected].description or "Missing."),
+				info_x, (config.visualsettings.mode_select_type == 1 and 370 or 330), 360, "left")
 	end
 	self:drawConfigMenu()
 	if type(self.mode_highscore) == "table" and config.visualsettings.mode_select_type == 2 then
@@ -477,14 +485,14 @@ function ModeSelectScene:render()
 			y = y + math.max(0, math.sinh(self.start_frames / 6 - (x - 40) / 128))
 		end
 		if can_display and not (idx == self.menu_state.ruleset and (self.starting or self.countdown)) then
-			self:drawListElement(x, y, ruleset, cursorHighlight(x, 400, 120, 20), alpha, limit, alignment)
+			self:drawListElement(x, y, ruleset, cursorHighlight(x, y, limit, 20), alpha, limit, alignment)
 		end
 	end
 	if self.game_mode_folder[self.menu_state.mode]
 	and self.game_mode_folder[self.menu_state.mode].ruleset_override then
 		love.graphics.setColor(0, 0, 0, 0.75)
 		if config.visualsettings.mode_select_type == 1 then
-			love.graphics.rectangle("fill", 330, 80, 240, 380, 5, 5)
+			love.graphics.rectangle("fill", 330, 100, 240, 260, 5, 5)
 			love.graphics.setColor(1, 1, 1, 1)
 			love.graphics.printf("This mode overrides the chosen ruleset!", 340, 240, 220, "center")
 		else
@@ -745,8 +753,15 @@ function ModeSelectScene:onInputPress(e)
 					end
 					self:indirectStartMode()
 				end
+			elseif config.visualsettings.mode_select_type == 1 and e.x > 320 then
+				self.auto_ruleset_offset = math.floor((e.y - 220)/20)
+				if self.auto_ruleset_offset == 0 and self.ruleset_folder[self.menu_state.ruleset].is_directory then
+					playSE("main_decide")
+					self:menuGoForward("ruleset")
+					self:refreshHighscores()
+				end
 			end
-		else
+		elseif config.visualsettings.mode_select_type == 2 then
 			self.auto_ruleset_offset = math.floor((e.x - 260)/120)
 			if self.auto_ruleset_offset == 0 and self.ruleset_folder[self.menu_state.ruleset].is_directory then
 				playSE("main_decide")
