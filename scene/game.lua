@@ -112,7 +112,7 @@ function GameScene:verifyTimeIntegrity()
 		love = 0,
 	}
 	local function getSomeLenientComparison(delta)
-		if (math.abs(delta.love - delta.os) > 0.0015) then
+		if (math.abs(delta.love - delta.os) > 0.01) then
 			return false
 		end
 		return true
