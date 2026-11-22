@@ -559,7 +559,7 @@ function bigint.divide_raw(big1, big2)
 
 		-- Knuth algorithm 4.3.1D
 		-- D1: normalise; ensures nv.digits[1] >= max_size / 2
-		local nmult = bigint.new(math.floor((max_size - 1)/big2.digits[1]))
+		local nmult = bigint.new(math.floor(max_size/(big2.digits[1]+1)))
 		local nu = big1 * nmult
 		local nv = big2 * nmult
 		-- D2: loop
@@ -594,7 +594,7 @@ function bigint.divide_raw(big1, big2)
 			end
 			-- D4, don't subtract yet
 			-- nvshifted should have j = m - i extra digits on the right
-			nsubtr = nvshifted * bigint.new(qhat)
+			local nsubtr = nvshifted * bigint.new(qhat)
 			-- D5 and D6: final adjustment
 			if bigint.compare(nu, nsubtr, "<") then
 				qhat = qhat - 1
