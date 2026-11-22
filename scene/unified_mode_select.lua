@@ -2,6 +2,8 @@ local ModeSelectScene = Scene:extend()
 
 ModeSelectScene.title = "Game Start"
 
+--- Beware of the rendering code. It's a huge mess by trying to animate all of it by starting up a mode. -Tetrina.
+
 function ModeSelectScene:new()
 	-- reload custom modules
 	initModules()
@@ -52,6 +54,7 @@ function ModeSelectScene:new()
 	self.das_x, self.das_y = 0, 0
 	self.menu_mode_y = 20
 	self.menu_ruleset_x = 20
+	self.menu_ruleset_y = 20
 	self.auto_mode_offset = 0
 	self.auto_ruleset_offset = 0
 	self.start_frames, self.starting = 0, false
@@ -259,18 +262,40 @@ function ModeSelectScene:drawConfigMenu()
 	-- end
 end
 
+function ModeSelectScene:drawListElement(x, y, module, highlight, alpha, limit, alignment)
+	local b = 1
+	if module.is_directory then
+		b = 0.4
+	end
+	local r = module.is_tag and 0 or 1
+	if highlight < 0.5 then
+		r = 1-highlight
+		b = highlight
+	end
+	love.graphics.setColor(r, 1, b, alpha)
+	drawWrappingText(module.name,
+	x, y, limit, alignment)
+end
+
 
 function ModeSelectScene:render()
 	love.graphics.setColor(1, 1, 1, 1)
 	drawBackground(0)
 
+	local offset_from_starting = math.max(0, math.sinh(self.start_frames / 6))
+
 	love.graphics.setFont(font_8x11)
 	local b = cursorHighlight(0, 40, 50, 30)
 	love.graphics.setColor(1, 1, b, 1)
-	love.graphics.printf(chars.big_left, 0, 40, 50, "center")
+	love.graphics.printf(chars.big_left, 0, 40 - offset_from_starting, 50, "center")
+	love.graphics.setColor(1, 1, 1, 0.1)
+	if config.visualsettings.mode_select_type == 1 and not self.is_configuring then
+		love.graphics.print(chars.big_up .. chars.big_down, 40 - offset_from_starting, 40, 0, 4)
+		love.graphics.print(chars.big_left .. chars.big_right, 360 + offset_from_starting, 40, 0, 4)
+	end
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_2)
-	love.graphics.draw(misc_graphics["select_mode"], 50, 44)
+	love.graphics.draw(misc_graphics["select_mode"], 50, 44 - offset_from_starting, 0)
 
 	if self.display_warning then
 		love.graphics.setFont(font_3x5_3)
@@ -290,11 +315,18 @@ function ModeSelectScene:render()
 	local mode_selected, ruleset_selected = self.menu_state.mode, self.menu_state.ruleset
 
 	self.menu_mode_y = interpolateNumber(self.menu_mode_y, mode_selected * 20)
+	self.menu_ruleset_y = interpolateNumber(self.menu_ruleset_y, ruleset_selected * 20)
 	self.menu_ruleset_x = interpolateNumber(self.menu_ruleset_x, ruleset_selected * 120)
 
-	love.graphics.setColor(1, 1, 1, 0.5)
-	love.graphics.rectangle("fill", 20, 219 + (mode_selected * 20) - self.menu_mode_y, 240, 22)
-	love.graphics.rectangle("fill", 260 + (ruleset_selected * 120) - self.menu_ruleset_x, 399, 120, 22)
+	if not self.starting then
+		love.graphics.setColor(1, 1, 1, 0.5)
+		love.graphics.rectangle("fill", 20, 219 + (mode_selected * 20) - self.menu_mode_y, 240, 22)
+		if config.visualsettings.mode_select_type == 1 then
+			love.graphics.rectangle("fill", 340, 219 + (ruleset_selected * 20) - self.menu_ruleset_y, 240, 22)
+		else
+			love.graphics.rectangle("fill", 260 + (ruleset_selected * 120) - self.menu_ruleset_x, 399, 120, 22)
+		end
+	end
 	love.graphics.setColor(1, 1, 1, 1)
 
 
@@ -302,16 +334,25 @@ function ModeSelectScene:render()
 	if self.configuring_start_frames > 0 then
 		info_x = info_x + self.configuring_start_frames * 24
 	end
+	if self.start_frames > 15 then
+		info_x = info_x + math.sinh((self.start_frames - 15) / 4)
+	end
 	if 	self.game_mode_folder[self.menu_state.mode]
 	and not self.game_mode_folder[self.menu_state.mode].is_directory then
-		love.graphics.printf(
-			"Description: "..(self.game_mode_folder[mode_selected].description or "Missing."),
-			 info_x, 40, 360, "left")
-		love.graphics.printf("Playtime on record: " .. getPlaytimeString(player.playtimes[self.game_mode_folder[self.menu_state.mode].hash] or 0), info_x, 330, 360, "left")
-		love.graphics.printf("Attempts on record: " .. (player.run_counts[self.game_mode_folder[self.menu_state.mode].hash] or 0), info_x, 350, 360, "left")
+		if self.is_configuring then
+			love.graphics.printf(
+				"Description: "..(self.game_mode_folder[self.menu_state.mode].config_settings[self.selection].description or "Missing."),
+				280, 40 - offset_from_starting, 360, "left")
+		else
+			love.graphics.printf(
+				"Description: "..(self.game_mode_folder[mode_selected].description or "Missing."),
+				280, 40 - offset_from_starting, 360, "left")
+		end
+		love.graphics.printf("Playtime on record: " .. getPlaytimeString(player.playtimes[self.game_mode_folder[self.menu_state.mode].hash] or 0), 10 - offset_from_starting, 430, 360, "left")
+		love.graphics.printf("Attempts on record: " .. (player.run_counts[self.game_mode_folder[self.menu_state.mode].hash] or 0), 10 - offset_from_starting, 450, 360, "left")
 	end
 	self:drawConfigMenu()
-	if type(self.mode_highscore) == "table" then
+	if type(self.mode_highscore) == "table" and config.visualsettings.mode_select_type == 2 then
 		love.graphics.printf("num", info_x, 100, 100)
 		for name, idx in pairs(self.highscore_index) do
 			local column_x = self.highscore_column_positions[idx]
@@ -351,84 +392,97 @@ function ModeSelectScene:render()
 			self.game_mode_folder.is_tag and
 			"Tag: ".. self.game_mode_folder.name or
 			"Path: "..mode_path_name:sub(1, -3),
-			 40, 180 - self.menu_mode_y, 200, "left")
+			 40 - offset_from_starting, 180 - self.menu_mode_y, 200, "left")
 	end
 	local ruleset_path_name = ""
 	if #self.ruleset_folder_selections > 1 then
 		for index, value in ipairs(self.ruleset_folder_selections) do
 			ruleset_path_name = ruleset_path_name..(value.name or "rulesets").." > "
 		end
+		local x, y = 360 - self.menu_ruleset_x, 420 + offset_from_starting
+		if config.visualsettings.mode_select_type == 1 then
+			x, y = 360 + offset_from_starting, 180 - self.menu_ruleset_y
+		end
 		love.graphics.printf(
 			self.ruleset_folder.is_tag and
 			"Tag: ".. self.ruleset_folder.name or
 			"Path: "..ruleset_path_name:sub(1, -3),
-			 360 - self.menu_ruleset_x, 420, 60 + font_3x5_2:getWidth(ruleset_path_name), "left")
+			 x, y, 60 + font_3x5_2:getWidth(ruleset_path_name), "left")
 	end
 	love.graphics.setFont(font_3x5_2)
 	if #self.game_mode_folder == 0 then
 		love.graphics.printf("No modes in this folder!", 40, 240 - self.menu_mode_y, 260, "left")
 	end
+	love.graphics.setFont(font_3x5_2)
+	love.graphics.setColor(1, 1, 1, 1)
 	if #self.ruleset_folder == 0 then
-		love.graphics.printf("Empty folder!", 380 - self.menu_ruleset_x, 440, 120, "center")
+		local x, y = 380 - self.menu_ruleset_x, 440 + offset_from_starting
+		if config.visualsettings.mode_select_type == 1 then
+			x, y = 420 + offset_from_starting, 240 - self.menu_ruleset_y
+		end
+		love.graphics.printf("Empty folder!", x, y, 120, "center")
 	end
 	for idx, mode in ipairs(self.game_mode_folder) do
-		if(idx >= self.menu_mode_y / 20 - 8 and
-		   idx <= self.menu_mode_y / 20 + 8) then
-			local b = 1
-			if mode.is_directory then
-				b = 0.4
-			end
-			local highlight = cursorHighlight(
-				0,
-				(220 - self.menu_mode_y) + 20 * idx,
-				260,
-				20)
-			local r = mode.is_tag and 0 or 1
-			if highlight < 0.5 then
-				r = 1-highlight
-				b = highlight
-			end
-			if idx == self.menu_state.mode and self.starting then
-				b = self.start_frames % 10 > 4 and 0 or 1
-			end
-			love.graphics.setColor(r, 1, b, fadeoutAtEdges(
-				-self.menu_mode_y + 20 * idx,
-				140,
-				20))
-			drawWrappingText(mode.name,
-			40, (220 - self.menu_mode_y) + 20 * idx, 200, "left")
+		local x = 40
+		local y = (220 - self.menu_mode_y) + 20 * idx
+		if idx == self.menu_state.mode and self.starting then
+			local lerp_t = math.min(math.max(0, (self.start_frames - 40)) / 15, 1)
+			self:drawListElement(math.lerp(40, 0, lerp_t), 
+						math.lerp(y, 460, lerp_t), mode, self.start_frames % 10 > 4 and 0 or 1, 1, 200, "left")
+		elseif (idx >= self.menu_mode_y / 20 - 8 and idx <= self.menu_mode_y / 20 + 8) then
+			x = x - math.max(0, math.sinh(self.start_frames / 6 - (y - 100) / 96))
+			self:drawListElement(x, y, mode, cursorHighlight(0, y, 260, 20), fadeoutAtEdges(-y + 220, 140, 20), 200, "left")
 		end
 	end
+	local font = love.graphics.getFont()
 	for idx, ruleset in ipairs(self.ruleset_folder) do
-		if(idx >= self.menu_ruleset_x / 120 - 3 and
-		   idx <= self.menu_ruleset_x / 120 + 3) then
-			local b = 1
-			if ruleset.is_directory then
-				b = 0.4
-			end
-			local highlight = cursorHighlight(
-				260 - self.menu_ruleset_x + 120 * idx, 400,
-				120, 20)
-			local r = ruleset.is_tag and 0 or 1
-			if highlight < 0.5 then
-				r = 1-highlight
-				b = highlight
-			end
-			love.graphics.setColor(r, 1, b, fadeoutAtEdges(
+		local can_display = false
+		local x = 260 - self.menu_ruleset_x + 120 * idx
+		local y = 400
+		local limit = 120
+		local x_start_offset = (limit - font:getWidth(ruleset.name)) / 2
+		local alpha = fadeoutAtEdges(
 				-self.menu_ruleset_x + 120 * idx,
 				240,
 				120)
-			)
-			drawWrappingText(ruleset.name,
-			260 - self.menu_ruleset_x + 120 * idx, 400, 120, "center")
+		local alignment = "center"
+		if config.visualsettings.mode_select_type == 1 then
+			can_display = (idx >= self.menu_ruleset_y / 20 - 7 and idx <= self.menu_ruleset_y / 20 + 7)
+			x = (idx == self.menu_state.ruleset and self.starting) and 360 or info_x + 80
+			y = (220 - self.menu_ruleset_y) + 20 * idx
+			limit = 200
+			alpha = fadeoutAtEdges(-y + 220, 120, 20)
+			alignment = "left"
+			x_start_offset = 0
+		else
+			can_display = (idx >= self.menu_ruleset_x / 120 - 3 and idx <= self.menu_ruleset_x / 120 + 3)
+		end
+		if idx == self.menu_state.ruleset and self.starting then
+			local x_final_offset = font:getWidth(self.game_mode_folder[self.menu_state.mode].name .. " - ")
+			local lerp_t = math.min(math.max(0, (self.start_frames - 45)) / 15, 1)
+			self:drawListElement(math.lerp(x + x_start_offset, x_final_offset, lerp_t), 
+						math.lerp(y, 460, lerp_t), ruleset, 1, 1, 200, "left")
+		elseif config.visualsettings.mode_select_type == 1 and (idx >= self.menu_ruleset_y / 20 - 8 and idx <= self.menu_ruleset_y / 20 + 8) then
+			x = x + math.max(0, math.sinh(self.start_frames / 6 - (y - 100) / 96))
+		elseif config.visualsettings.mode_select_type == 2 and (idx >= self.menu_ruleset_x / 120 - 3 and idx <= self.menu_ruleset_x / 120 + 3) then
+			y = y + math.max(0, math.sinh(self.start_frames / 6 - (x - 40) / 128))
+		end
+		if can_display and not (idx == self.menu_state.ruleset and self.starting) then
+			self:drawListElement(x, y, ruleset, cursorHighlight(x, 400, 120, 20), alpha, limit, alignment)
 		end
 	end
 	if self.game_mode_folder[self.menu_state.mode]
 	and self.game_mode_folder[self.menu_state.mode].ruleset_override then
 		love.graphics.setColor(0, 0, 0, 0.75)
-		love.graphics.rectangle("fill", 0, 380, 640, 60)
-		love.graphics.setColor(1, 1, 1, 1)
-		love.graphics.printf("This mode overrides the chosen ruleset!", 0, 400, 640, "center")
+		if config.visualsettings.mode_select_type == 1 then
+			love.graphics.rectangle("fill", 330, 80, 240, 380, 5, 5)
+			love.graphics.setColor(1, 1, 1, 1)
+			love.graphics.printf("This mode overrides the chosen ruleset!", 340, 240, 220, "center")
+		else
+			love.graphics.rectangle("fill", 0, 380, 640, 60)
+			love.graphics.setColor(1, 1, 1, 1)
+			love.graphics.printf("This mode overrides the chosen ruleset!", 0, 400, 640, "center")
+		end
 	end
 	local sequencing_start_frames = self.sequencing_start_frames
 	if sequencing_start_frames > 0 then
@@ -443,7 +497,7 @@ function ModeSelectScene:render()
 		table.insert(text_table, "G3: Configure mode")
 	end
 	love.graphics.setColor(1, 1, 1, 1)
-		love.graphics.printf(table.concat(text_table, " - "), 0, 10 - sequencing_start_frames * 5, 640, "center")
+		love.graphics.printf(table.concat(text_table, " - "), 0, 10 - sequencing_start_frames * 5 - offset_from_starting, 640, "center")
 	if self.input_timers["stop_sequencing"] then
 		love.graphics.setColor(1, 1, 1, 1 - self.input_timers["stop_sequencing"] / 40)
 		love.graphics.printf("Continue holding to stop sequencing...", 0, 10, 640, "center")
@@ -511,6 +565,7 @@ function ModeSelectScene:indirectStartMode()
 		self:refreshHighscores()
 		return
 	end
+	self.is_configuring = false
 	playSE("mode_decide")
 	if config.visualsettings.mode_entry == 1 then
 		self:startMode()
@@ -724,7 +779,7 @@ function ModeSelectScene:onInputPress(e)
 		elseif e.input == "generic_2" then
 			self.input_timers["secret_sequencing"] = 60
 		elseif e.input == "generic_3" then
-			if #self.game_mode_folder[self.menu_state.mode].config_settings > 0 then
+			if self:getHighscoreConditions() and #self.game_mode_folder[self.menu_state.mode].config_settings > 0 then
 				self.is_configuring = not self.is_configuring
 			end
 		end

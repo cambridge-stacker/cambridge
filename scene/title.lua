@@ -101,11 +101,6 @@ function TitleScene:new()
 	end
 	self.text = ""
 	self.text_flag = false
-	if config.visualsettings.mode_select_type == 1 then
-		TitleScene.menu_screens[1] = ModeSelectScene
-	else
-		TitleScene.menu_screens[1] = RevModeSelectScene
-	end
 	DiscordRPC:update({
 		details = "In menus",
 		state = mainmenuidle[love.math.random(#mainmenuidle)],

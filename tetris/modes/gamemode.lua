@@ -1255,12 +1255,14 @@ function GameMode:draw(paused)
 
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_2)
+	local y_offset = math.sinh(math.max(0, 40 - self.ready_frames) / 4)
 	if config.visualsettings.display_gamemode == 1 then
-		love.graphics.printf(
-			self.name .. " - " .. self.ruleset.name,
-			0, 460, 640, "left"
-		)
+		y_offset = 0
 	end
+	love.graphics.printf(
+		self.name .. " - " .. self.ruleset.name,
+		0, 460 + y_offset, 640, "left"
+	)
 
 	if paused then
 		self:drawIfPaused()
