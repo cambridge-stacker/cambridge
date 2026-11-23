@@ -4,7 +4,7 @@ ModeSelectScene.title = "Game Start"
 
 --- Beware of the rendering code. It's a huge mess by trying to animate all of it by starting up a mode. -Tetrina.
 
-function ModeSelectScene:new()
+function ModeSelectScene:new(params)
 	-- reload custom modules
 	initModules()
 	if highscores == nil then highscores = {} end
@@ -74,6 +74,16 @@ function ModeSelectScene:new()
 		state = "Chosen ??? and ???.",
 		largeImageKey = "ingame-000"
 	})
+
+	if params then
+		self.countdown = params.countdown
+		self.start_frames = params.frames or self.start_frames
+		if params.no_scroll then
+			self.menu_mode_y = current_mode * 20
+			self.menu_ruleset_x = current_ruleset * 120
+			self.menu_ruleset_y = current_ruleset * 20
+		end
+	end
 end
 
 local menu_DAS_hold = {["up"] = 0, ["down"] = 0, ["left"] = 0, ["right"] = 0}
@@ -143,7 +153,7 @@ function ModeSelectScene:update()
 			self:startMode()
 		end
 		return
-	elseif self.countdown then
+	elseif self.start_frames > 0 then
 		self.start_frames = math.max(self.start_frames - 1, 0)
 		if self.start_frames == 0 then
 			self.countdown = false
