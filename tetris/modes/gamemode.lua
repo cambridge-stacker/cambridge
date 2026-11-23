@@ -1096,7 +1096,8 @@ function GameMode:drawScoringInfo()
 		self.das.direction .. " " ..
 		self.das.frames .. " " ..
 		strTrueValues(self.prev_inputs) ..
-		self.drop_bonus
+		self.drop_bonus,
+		config.visualsettings.board_position == 2 and - 160 or 0
 	)
 
 	love.graphics.setFont(font_8x11)
@@ -1105,6 +1106,10 @@ end
 
 function GameMode:drawSectionTimes(current_section)
 	local section_x = 530
+
+	if config.visualsettings.board_position == 2 then
+		section_x = -50
+	end
 
 	for section, time in pairs(self.section_times) do
 		if section > 0 then
@@ -1124,6 +1129,10 @@ function GameMode:drawSectionTimesWithSecondary(current_section, section_limit)
 	local section_x = 530
 	local section_secondary_x = 440
 
+	if config.visualsettings.board_position == 2 then
+		section_x = -50
+		section_secondary_x = -140
+	end
 	for section, time in pairs(self.section_times) do
 		if section > 0 then
 			love.graphics.printf(formatTime(time), section_x, 40 + 20 * section, 90, "left")
@@ -1155,6 +1164,11 @@ function GameMode:drawSectionTimesWithSplits(current_section, section_limit)
 
 	local section_x = 440
 	local split_x = 530
+	
+	if config.visualsettings.board_position == 2 then
+		section_x = -140
+		split_x = -50
+	end
 
 	local split_time = 0
 
@@ -1241,7 +1255,11 @@ function GameMode:transformScreen() end
 
 function GameMode:draw(paused)
 	self:transformScreen()
+	love.graphics.push("transform")
 	self:drawBackground()
+	if config.visualsettings.board_position == 2 then
+		love.graphics.translate(160, 0)
+	end
 	self:drawFrame()
 	self:drawGrid()
 	self:drawPiece()
@@ -1253,6 +1271,18 @@ function GameMode:draw(paused)
 	self:drawReadyGo()
 	self:drawCustom()
 
+	if paused then
+		self:drawIfPaused()
+	end
+
+	if self.completed then
+		self:drawOnGameComplete()
+	elseif self.game_over then
+		self:drawOnGameOver()
+	end
+	
+	love.graphics.pop()
+
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(font_3x5_2)
 	local y_offset = math.sinh(math.max(0, 40 - self.ready_frames) / 4)
@@ -1263,16 +1293,6 @@ function GameMode:draw(paused)
 		self.name .. " - " .. self.ruleset.name,
 		0, 460 + y_offset, 640, "left"
 	)
-
-	if paused then
-		self:drawIfPaused()
-	end
-
-	if self.completed then
-		self:drawOnGameComplete()
-	elseif self.game_over then
-		self:drawOnGameOver()
-	end
 end
 
 return GameMode

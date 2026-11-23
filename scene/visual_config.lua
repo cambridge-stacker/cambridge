@@ -132,6 +132,14 @@ Max: Memory usage, GPU stats data, and 2 true hashes stored in replays]],
 			config.background_brightness = v/100
 		end,
 	},
+	{
+		config_name = "board_position",
+		display_name = "Board Position",
+		options = {"Left", "Center"},
+		description = "Whether to move the board and most of the in-game UI through a translate function",
+		type = "options",
+		default = 1,
+	},
 }
 
 function ConfigScene:new()
