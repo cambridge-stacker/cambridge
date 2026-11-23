@@ -158,10 +158,6 @@ function GameScene:onInputPress(e)
 		scene = e.input == "retry" and GameScene(self.retry_mode, self.retry_ruleset, self.metadata) or TitleScene.menu_screens[1](params)
 		scene.safety_frames = 2
 
-		if e.input ~= "retry" then
-			self:onExit()
-		end
-
 		-- for good measure -Rexxt
 		collectgarbage("collect")
 	elseif e.input == "frame_step" and TAS_mode then
