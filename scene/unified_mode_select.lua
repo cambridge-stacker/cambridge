@@ -2,6 +2,12 @@ local ModeSelectScene = Scene:extend()
 
 ModeSelectScene.title = "Game Start"
 
+current_mode = 1
+current_ruleset = 1
+current_folder_selections = {
+	mode = {},
+	ruleset = {},
+}
 --- Beware of the rendering code. It's a huge mess by trying to animate all of it by starting up a mode. -Tetrina.
 
 function ModeSelectScene:new(params)
