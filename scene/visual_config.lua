@@ -140,6 +140,14 @@ Max: Memory usage, GPU stats data, and 2 true hashes stored in replays]],
 		type = "options",
 		default = 1,
 	},
+	{
+		config_name = "player_info",
+		display_name = "Player Info Style",
+		description = "Defines how the player info looks on the bottom right of the screen.",
+		default = 1,
+		type = "options",
+		options = {"Card", "Text", "Hide"}
+	},
 }
 
 function ConfigScene:new()
