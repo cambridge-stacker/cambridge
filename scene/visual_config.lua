@@ -79,7 +79,7 @@ Has no effect if the next queue position is set to Side.
 	},
 	{
 		config_name = "mode_select_type",
-		display_name = "Mode Select Type",
+		display_name = "Mode Select Layout",
 		options = {"Default", "Oshi's idea"},
 		description = [[
 Changes the layout of the mode select screen.

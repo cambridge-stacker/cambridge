@@ -68,12 +68,26 @@ Out of field: Pieces spawn as low as they can above of the field.]],
 		config_name = "diagonal_input",
 		display_name = "Movement Type",
 		options = {"Standard", "4-way Abs.", "4-way LICP", "8-way LICP"},
-		description = [[
-Changes the behaviour of diagonal inputs.
-None: No input filtering is done.
-4-Way: Only one direction (up/down/left/right) can be pressed at a time.
-8-Way: Diagonals are allowed, but no opposing directions (U+D or L+R).
-LICP: Last Input Controlled Priority. If two directions are held at once, the last pressed direction has priority.]],
+		option_descriptions = {
+			[[
+Changes the behaviour of diagonal inputs. Currently:
+No input filtering is done.
+]],
+			[[
+Changes the behaviour of diagonal inputs. Currently:
+Only one direction (up/down/left/right) can be pressed at a time.
+]],
+			[[
+Changes the behaviour of diagonal inputs. Currently:
+Only one direction (up/down/left/right) can be pressed at a time.
+Last Input Controlled Priority. If two directions are held at once, the last pressed direction has priority.
+]],
+			[[
+Changes the behaviour of diagonal inputs. Currently:
+Diagonals are allowed, but no opposing directions (U+D or L+R).
+Last Input Controlled Priority. If two directions are held at once, the last pressed direction has priority.
+]],
+		},
 		type = "options",
 		default = 1,
 	},
