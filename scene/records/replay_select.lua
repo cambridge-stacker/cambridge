@@ -315,10 +315,10 @@ function ReplaySelectScene:render()
 				end
 				love.graphics.printf("In-replay highscore data:", 0, 100 + idx * 20, 640, "center")
 				for key, value in pairs(self.highscores_indexing) do
-					local text_content = key..": "..tostring(replay.highscore_data[key])
-					if self.highscores_data_comparison and replay.highscore_data[key] ~= self.highscores_data_comparison[key] then
+					local text_content = key..": "..tostring(self.formatted_highscore[key])
+					if self.highscores_data_comparison and self.formatted_highscore[key] ~= self.highscores_data_comparison[key] then
 						text_content = {key..": ", self.highscores_data_comparison[key] or "nil",
-						{1, 0, 0, 1}, " -", tostring(replay.highscore_data[key]), "- "}
+						{1, 0, 0, 1}, " -", tostring(self.formatted_highscore[key]), "- "}
 					end
 					love.graphics.printf(text_content, 0, 110 + (idx + self.highscores_idx_offset[value]) * 20, 640, "center")
 				end
@@ -525,8 +525,9 @@ function ReplaySelectScene:startReplay()
 		self.das_up = nil
 		self.das_left = nil
 		self.das_right = nil
-		self.highscores_indexing = HighscoresScene.getHighscoreIndexing({replay["highscore_data"]})
-		self.highscores_idx_offset = self:generateHighscoreRowOffsets(replay["highscore_data"], font_3x5_2)
+		self.formatted_highscore = (HighscoresScene:getHighscoreTable({replay["highscore_data"]}, true))[1]
+		self.highscores_indexing = HighscoresScene.getHighscoreIndexing({self.formatted_highscore})
+		self.highscores_idx_offset = self:generateHighscoreRowOffsets(self.formatted_highscore, font_3x5_2)
 		return
 	end
 
@@ -600,9 +601,9 @@ function ReplaySelectScene:verifyHighscoreData()
 	local highscore_data = game_scene.game:getHighscoreData()
 	scene = prev_scene
 	if not equals(replay["highscore_data"], highscore_data) then
-		self.highscores_data_comparison = highscore_data
-		self.highscores_indexing = HighscoresScene.getHighscoreIndexing({replay["highscore_data"], highscore_data})
-		self.highscores_idx_offset = self:generateHighscoreRowOffsets(replay["highscore_data"], font_3x5_2)
+		self.highscores_data_comparison = HighscoresScene:getHighscoreTable({highscore_data}, true)[1]
+		self.highscores_indexing = HighscoresScene.getHighscoreIndexing({self.formatted_highscore, self.highscores_data_comparison})
+		self.highscores_idx_offset = self:generateHighscoreRowOffsets(self.formatted_highscore, font_3x5_2)
 		playSE("error")
 	else
 		self.highscores_data_matching = true
