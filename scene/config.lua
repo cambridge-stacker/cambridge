@@ -29,6 +29,8 @@ ConfigScene.options = {
 	-- Format if otherwise:      	{name in config, displayed name, type, description, default, min, max, increase by, string format, sound effect name, setter function}
 }
 
+local FADEOUT_BOUNDARY = 110
+
 function ConfigScene:setDefaultConfigs()
 	if not config[self.config_type] then config[self.config_type] = {} end
 	for key, option in pairs(self.options) do
@@ -47,13 +49,15 @@ function ConfigScene:new(width)
 	self.options_width = width or 150
 	self.option_pos_y = {}
 	
+	self.spacing = self.spacing or 20
+
 	--#region Init option positions and sliders
 	
 	self.sliders = {}
 	local y = 100
 	for idx, option in ipairs(self.options) do
 		option.increase_by = option.increase_by or 1
-		y = y + (self.spacing or 20)
+		y = y + self.spacing
 		table.insert(self.option_pos_y, y)
 		assert((option.min or 0) < (option.max or 1), "the min value is higher than max value!")
 		if option.type == "slider" then
@@ -64,8 +68,9 @@ function ConfigScene:new(width)
 		end
 	end
 	--#endregion
-	
-	self.description_y = y + (self.spacing or 20) + 10
+
+	self.final_list_y = 0
+	self.description_y = math.min(360, y + self.spacing + 10)
 	self.vertical_das = 0
 	self.horizontal_das = 0
 
@@ -82,6 +87,21 @@ function ConfigScene:update()
 		slider:update(x, y)
 	end
 	--#endregion
+
+	if self.final_list_y / self.spacing > self.highlight - 2 then
+		self.final_list_y = (self.highlight - 2) * self.spacing
+	end
+	if self.final_list_y / self.spacing < self.highlight - 10 then
+		self.final_list_y = (self.highlight - 10) * self.spacing
+	end
+	self.final_list_y = math.max(self.final_list_y, 0)
+
+	for idx, option in ipairs(self.options) do
+		self.option_pos_y[idx] = interpolateNumber(self.option_pos_y[idx], 100 - self.final_list_y + idx * self.spacing)
+		if option.type == "slider" then
+			self.sliders[option.config_name].y = self.option_pos_y[idx] + 9
+		end
+	end
 	if self.das_up or self.das_down then
 		self.vertical_das = self.vertical_das + 1
 	else
@@ -123,19 +143,23 @@ function ConfigScene:renderSettings()
 	love.graphics.setColor(1, 1, b, 1)
 	love.graphics.printf(chars.big_left, font_8x11, 20, 40, 50, "center")
 
-	love.graphics.setColor(1, 1, 1, 0.5)
+	local alpha = fadeoutAtEdges(self.option_pos_y[self.highlight] - 222, FADEOUT_BOUNDARY, self.spacing)
+	love.graphics.setColor(1, 1, 1, 0.5 * alpha)
 	love.graphics.rectangle("fill", 25, self.option_pos_y[self.highlight] - 2, self.options_width + 20, 22)
 
 	love.graphics.setFont(font_3x5_2)
 	for i, option in ipairs(self.options) do
-		love.graphics.setColor(1, 1, 1, 1)
-		love.graphics.printf(option.display_name, 40, self.option_pos_y[i], self.options_width, "left")
-		if option.type == "slider" then
-			self:drawSlider(i, option)
-		elseif option.type == "options" then
-			self:drawOptions(i, option)
-		elseif option.type == "number" then
-			self:drawNumber(i, option)
+		local alpha = fadeoutAtEdges(self.option_pos_y[i] - 220, FADEOUT_BOUNDARY, self.spacing)
+		if alpha > 0 then
+			love.graphics.setColor(1, 1, 1, alpha)
+			love.graphics.printf(option.display_name, 40, self.option_pos_y[i], self.options_width, "left")
+			if option.type == "slider" then
+				self:drawSlider(i, option)
+			elseif option.type == "options" then
+				self:drawOptions(i, option)
+			elseif option.type == "number" then
+				self:drawNumber(i, option)
+			end
 		end
 	end
 	if self.options[self.highlight].option_descriptions then
@@ -149,7 +173,8 @@ function ConfigScene:renderSettings()
 end
 
 function ConfigScene:drawSlider(idx, option)
-	love.graphics.setColor(1, 1, 1, 0.75)
+	local alpha = fadeoutAtEdges(self.option_pos_y[idx] - 220, FADEOUT_BOUNDARY, self.spacing) * 0.75
+	love.graphics.setColor(1, 1, 1, alpha)
 	self.sliders[option.config_name]:draw()
 	self:drawNumber(idx, option)
 end
@@ -157,7 +182,8 @@ end
 function ConfigScene:drawNumber(idx, option)
 	local pos_x = 90 + self.options_width
 	local width = 510 - self.options_width
-	love.graphics.setColor(1, 1, 1, 1)
+	local alpha = fadeoutAtEdges(self.option_pos_y[idx] - 220, FADEOUT_BOUNDARY, self.spacing)
+	love.graphics.setColor(1, 1, 1, alpha)
 	local formatted_string = option
 	if type(option.format) == "function" then
 		formatted_string = option.format(config[self.config_type][option.config_name])
@@ -168,10 +194,11 @@ function ConfigScene:drawNumber(idx, option)
 end
 
 function ConfigScene:drawOptions(idx, option)
+	local alpha = fadeoutAtEdges(self.option_pos_y[idx] - 220, FADEOUT_BOUNDARY, self.spacing)
 	local initial_pos_x = self.options_width - 50
 	for j, setting in ipairs(option.options) do
 		local b = cursorHighlight(initial_pos_x + 110 * j, self.option_pos_y[idx], 100, 20)
-		love.graphics.setColor(1, 1, b, config[self.config_type][option.config_name] == j and 1 or 0.5)
+		love.graphics.setColor(1, 1, b, (config[self.config_type][option.config_name] == j and 1 or 0.5) * alpha)
 		love.graphics.printf(setting, initial_pos_x + 110 * j, self.option_pos_y[idx], 100, "center")
 	end
 end
@@ -214,7 +241,7 @@ function ConfigScene:onInputPress(e)
 		scene = SettingsScene()
 	elseif e.type == "mouse" and e.button == 1 then
 		for i, option in ipairs(self.options) do
-			if option.type == "options" then
+			if option.type == "options" and self.option_pos_y[i] > 100 and self.option_pos_y[i] < 360 then
 				local initial_pos_x = self.options_width - 50
 				for j, setting in ipairs(option.options) do
 					if cursorHoverArea(initial_pos_x + 110 * j, self.option_pos_y[i], 90, 20) then
