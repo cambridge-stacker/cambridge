@@ -595,8 +595,8 @@ function ReplaySelectScene:verifyHighscoreData()
 		end
 	end
 	config.sfx_volume = prev_sfx_volume
-	saveConfig()
 	game_scene.game:onExit()
+	saveConfig()
 	switchBGM(nil)
 	local highscore_data = game_scene.game:getHighscoreData()
 	scene = prev_scene
