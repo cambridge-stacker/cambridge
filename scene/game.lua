@@ -150,6 +150,7 @@ function GameScene:onInputPress(e)
 		switchBGM(nil)
 		self.game:onExit()
 		sortReplays()
+		self:submitCardSection()
 		self:postRun()
 		local params
 		if config.visualsettings.mode_entry == 2 then
@@ -247,6 +248,30 @@ function GameScene:postRun()
 		player.playtimes[self.game.hash] = (player.playtimes[self.game.hash] or 0) + time_integrity
 		player.run_counts[self.game.hash] = (player.run_counts[self.game.hash] or 0) + 1
 		savePlayerData()
+	end
+end
+
+function GameScene:submitCardSection()
+	-- yes, i know, another time integrity check here, which may seem a wee bit excessive, but, cmon...
+	local time_integrity = self:verifyTimeIntegrity()
+	if not time_integrity or self.game.ineligible or self.game.toolassisted then
+		return
+	end
+	local cardSectionData = self.game:getCardSectionData()
+	if cardSectionData.display == nil or cardSectionData.display == "" then
+		return
+	end
+	local highscore_hash = self.game.hash .. "-" .. self.ruleset.hash
+	player.mode_sections[highscore_hash] = player.mode_sections[highscore_hash] or {}
+	if cardSectionData.comparator(player.mode_sections[highscore_hash].highscore, cardSectionData.highscore) then
+		createToast("New Personal Best!", "You got ".. cardSectionData.display .. "!")
+		player.mode_sections[highscore_hash] = {
+			highscore = cardSectionData.highscore;
+			timestamp = os.time();
+			display_info = cardSectionData.display;
+			mode_name = self.game.name;
+			ruleset_name = self.ruleset.name;
+		}
 	end
 end
 

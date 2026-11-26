@@ -1077,6 +1077,60 @@ function GameMode:getHighscoreData()
 	return {}
 end
 
+function GameMode:getCardSectionDisplayString()
+	return ""
+end
+
+---@nodiscard
+---@return {highscore:table, display:string, comparator:fun(old:table, new:table):(boolean)}
+function GameMode:getCardSectionData()
+	return {
+		highscore = self:getHighscoreData(),
+		display = self:getCardSectionDisplayString(),
+		comparator = self:getHighscoreSortingFunction()
+	}
+end
+
+---This uses the PTB highscore format thing.
+---@return fun(old:table, new:table):(boolean)
+function GameMode:getHighscoreSortingFunction()
+	local sorting_order = {}
+	for key, value in pairs(self.highscore_format) do
+		if type(value.sort) == "number" then
+			local asc = value.asc
+			if asc == nil then
+				asc = key == "frames"
+			end
+			sorting_order[value.sort] = {key = key, asc = asc}
+		end
+	end
+	return function (old, new)
+		if old == nil then
+			return true
+		end
+		for id, data in ipairs(sorting_order) do
+			local old_data = old[data.key]
+			local new_data = new[data.key]
+			if old_data == nil then
+				return true
+			end
+			if type(new_data) == "table" then
+				new_data = new_data.value
+			end
+			if type(old_data) == "table" then
+				old_data = old_data.value
+			end
+			if new_data > old_data then
+				return not data.asc
+			elseif new_data < old_data then
+				return data.asc
+			end
+		end
+		-- if everything is equal, don't.
+		return false
+	end
+end
+
 function GameMode:drawGrid()
 	self.grid:draw()
 end

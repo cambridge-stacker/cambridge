@@ -176,6 +176,9 @@ function initPlayerData()
 	if type(player.run_counts) ~= "table" then
 		player.run_counts = {}
 	end
+	if type(player.mode_sections) ~= "table" then
+		player.mode_sections = {}
+	end
 	if not player.id then
 		player.id = love.math.random(0, 1e16 - 2)
 	end
