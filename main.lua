@@ -36,6 +36,7 @@ function love.load(args)
 	if table.contains(args, "--tempIdentity") then
 		love.filesystem.setIdentity(love.filesystem.getIdentity() .. "-temp")
 		saveConfig()
+		stripConfigForTempIdentity()
 	end
 	--config["side_next"] = false
 	--config["reverse_rotate"] = true

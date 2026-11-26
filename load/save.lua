@@ -192,6 +192,22 @@ function saveConfig()
 	saveToFile("config.sav", binser.serialize(config))
 end
 
+function stripConfigForTempIdentity()
+	loadSave()
+	if string.sub(love.filesystem.getIdentity(), -5) == "-temp" then
+		for key, value in pairs(config) do
+			if key ~= "input" then
+				config[key] = nil
+			end
+		end
+	end
+	initPlayerData()
+	player.name = "TEMPORARY"
+	player.about_me = "All attempts at saving data here will disappear on shutdown."
+	savePlayerData()
+	scene = TitleScene()
+end
+
 --This handles saving player data in a way...
 function savePlayerData()
 	local stored_profile_picture = player.profile_picture
