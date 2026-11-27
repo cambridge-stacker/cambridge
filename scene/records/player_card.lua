@@ -1,7 +1,7 @@
 local PlayerCardScene = Scene:extend()
 
 local PLAYER_NAME_LENGTH_LIMIT = 16
-local PLAYER_ABOUT_ME_LENGTH_LIMIT = 320
+local PLAYER_ABOUT_ME_LENGTH_LIMIT = 200
 
 local utf8 = require "utf8"
 
@@ -27,6 +27,12 @@ PlayerCardScene.options = {
 			self.is_editing = true
 			love.keyboard.setKeyRepeat(true)
 		end,
+	},
+	{
+		title = "Edit Card Sections",
+		action = function (self)
+			scene = CardSectionEditorScene()
+		end
 	}
 }
 
@@ -40,17 +46,63 @@ function getPlaytimeString(playtime)
 	end
 end
 
+-- this is incredibly hacky. what the hell, girl?
+function getTimestampDifference(timestamp)
+	local difftime = os.difftime(os.time(), timestamp)
+	local osdate_table = os.date("!*t", difftime)
+	if difftime < 120 then
+		return "Just now"
+	elseif difftime < 120 * 60 then
+		return math.floor(difftime / 60) .. " minutes ago"
+	elseif difftime < 120 * 60 * 24 then
+		return math.floor(difftime / 3600) .. " hours ago"
+	elseif difftime < 120 * 60 * 24 * 60 then
+		return math.floor(difftime / 86400) .. " days ago"
+	elseif osdate_table.year < 1971 then
+		return math.floor(osdate_table.month-1) .. " months ago"
+	else
+		return string.format("%d year%s ago", math.floor(osdate_table.year - 1970), math.floor(osdate_table.year - 1970) > 1 and "s" or "")
+	end
+
+end
+
+print(getTimestampDifference(os.time() - 160000000))
+
 local function getBlinking()
 	return os.clock() % 0.5 < 0.25 and "_" or " "
 end
 
-function PlayerCardScene.renderCard(x, y, is_editing, field_name)
+function PlayerCardScene.renderCardSection(x, y, section, highlighted, alpha)
+	alpha = alpha or 1
+	love.graphics.setColor(0.5, 0.5, 0.5, alpha ^ 3)
+	love.graphics.rectangle("fill", x, y, 160, 35, 3, 3)
+	love.graphics.setColor(0.6, 0.6, 0.6, alpha ^ 3)
+	love.graphics.rectangle("fill", x + 1, y + 1, 158, 33, 2, 2)
+	love.graphics.setColor(0.75, 0.75, 0.75, alpha ^ 3)
+	love.graphics.rectangle("fill", x + 2, y + 2, 156, 31, 1, 1)
+	if section == nil then
+		love.graphics.setFont(font_3x5_2)
+		love.graphics.setColor(0.5, 0.5, highlighted and 0 or 0.5, alpha)
+		love.graphics.print("<INSERT HERE>", x + 4, y + 4)
+	else
+		love.graphics.setColor(1, 1, highlighted and 0 or 1, alpha)
+		love.graphics.setFont(font_3x5_2)
+		drawWrappingText(section.display_info, x, y + 8, 160, "center")
+		love.graphics.setColor(0.8, 0.8, highlighted and 0 or 0.8, alpha)
+		love.graphics.setFont(font_3x5)
+		drawWrappingText(section.mode_name or "???", x + 1, y + 1, 78, "left")
+		drawWrappingText(section.ruleset_name or "???", x + 80, y + 1, 78, "right")
+		drawWrappingText(getTimestampDifference(section.timestamp), x, y + 25, 160, "center")
+	end
+end
+
+function PlayerCardScene.renderCard(x, y, is_editing, field_name, section_highlight)
 	love.graphics.setColor(1, 1, 1)
-	love.graphics.rectangle("fill", x, y, 340, 140, 10, 10)
+	love.graphics.rectangle("fill", x, y, 340, 156, 10, 10)
 	love.graphics.setColor(0.9, 0.9, 0.9)
-	love.graphics.rectangle("fill", x + 2, y + 2, 336, 136, 9, 9)
+	love.graphics.rectangle("fill", x + 2, y + 2, 336, 152, 9, 9)
 	love.graphics.setColor(0.75, 0.75, 0.75)
-	love.graphics.rectangle("fill", x + 4, y + 4, 332, 132, 8, 8)
+	love.graphics.rectangle("fill", x + 4, y + 4, 332, 148, 8, 8)
 
 	love.graphics.setColor(1, 1, 1)
 	love.graphics.setFont(font_3x5_3)
@@ -63,18 +115,32 @@ function PlayerCardScene.renderCard(x, y, is_editing, field_name)
 		total_runs = total_runs + runs
 	end
 	drawImage(player.profile_picture or blocks.bone_classic["W"], x + 4, y + 4, 0, 64, 64)
+	local _, wraps = love.graphics.getFont():getWrap(player.name, 240)
+	local width_last_line = love.graphics.getFont():getWidth(wraps[#wraps])
+	local last_line_y = love.graphics.getFont():getHeight() * (#wraps - 1)
 	if is_editing and field_name == "name" then
-		love.graphics.printf(player.name .. getBlinking(), x + 70, y + 10, 240, "left")
-	else
-		love.graphics.printf(player.name or "<INSERT NAME>", x + 70, y + 10, 240, "left")
+		love.graphics.printf(getBlinking(), x + 70 + width_last_line, y + 12 + last_line_y, 250, "left")
 	end
+	love.graphics.printf(player.name or "<INSERT NAME>", x + 70, y + 12, 240, "left")
 	love.graphics.setFont(font_3x5_2)
 	love.graphics.printf(getPlaytimeString(total_playtime) .. "\n" .. total_runs .. " att.", x + 30, y + 5, 300, "right")
-	if is_editing and field_name == "about_me" then
-		love.graphics.printf(player.about_me .. getBlinking(), x + 70, y + 36, 250, "left")
-	else
-		love.graphics.printf(player.about_me or "<insert info>", x + 70, y + 36, 240, "left")
+	local section_positions = {{x = 10, y = 80, section = player.mode_sections["BigA1-Standard"]}, {x = 170, y = 80}, {x = 10, y = 115}, {x = 170, y = 115}}
+	for key, value in pairs(section_positions) do
+		PlayerCardScene.renderCardSection(x + value.x, y + value.y, player.mode_sections[player.selected_sections[key]], key == section_highlight)
 	end
+	love.graphics.setFont(font_3x5_2)
+	love.graphics.setColor(1, 1, 1)
+	_, wraps = font_3x5_2:getWrap(player.about_me, 265)
+	if #wraps > 2 then
+		love.graphics.setFont(font_3x5)
+	end
+	_, wraps = love.graphics.getFont():getWrap(player.about_me, 265)
+	width_last_line = love.graphics.getFont():getWidth(wraps[#wraps])
+	last_line_y = love.graphics.getFont():getHeight() * (#wraps - 1)
+	if is_editing and field_name == "about_me" then
+		love.graphics.print(getBlinking(), x + 70 + width_last_line, y + 40 + last_line_y)
+	end
+	love.graphics.printf(player.about_me or "<insert info>", x + 70, y + 40, 265, "left")
 	love.graphics.setFont(font_3x5)
 	love.graphics.printf(string.format("%d", player.id), x + 70, y + 2, 160, "left")
 end
@@ -153,7 +219,7 @@ function PlayerCardScene:render()
 	for i, screen in pairs(self.options) do
 		local b = cursorHighlight(80,240 + 40 * i,200,40)
 		love.graphics.setColor(1,1,b,1)
-		love.graphics.printf(screen.title, 80, 250 + 40 * i, 200, "left")
+		love.graphics.print(screen.title, 80, 250 + 40 * i)
 	end
 end
 

@@ -179,6 +179,9 @@ function initPlayerData()
 	if type(player.mode_sections) ~= "table" then
 		player.mode_sections = {}
 	end
+	if type(player.selected_sections) ~= "table" then
+		player.selected_sections = {}
+	end
 	if not player.id then
 		player.id = love.math.random(0, 1e16 - 2)
 	end
