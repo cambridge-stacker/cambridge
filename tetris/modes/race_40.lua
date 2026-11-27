@@ -110,6 +110,11 @@ function Race40Game:getHighscoreData()
 	}
 end
 
+function Race40Game:getCardSectionDisplayString()
+	if self.lines >= 40 then return formatTime(self.frames) end
+	return ""
+end
+
 function Race40Game:getSecretGrade(sg)
 	if sg == 19 then self.upstacked = true end
 	if self.upstacked then return self.SGnames[14 + math.floor((20 - sg) / 4)]

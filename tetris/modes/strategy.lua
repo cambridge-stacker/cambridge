@@ -148,4 +148,8 @@ function StrategyGame:getHighscoreData()
 	}
 end
 
+function StrategyGame:getCardSectionDisplayString()
+	return string.format("Lv. %d, %s", self.level, formatTime(self.frames))
+end
+
 return StrategyGame

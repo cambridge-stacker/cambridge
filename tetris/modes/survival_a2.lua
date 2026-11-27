@@ -207,4 +207,8 @@ function SurvivalA2Game:getHighscoreData()
 	}
 end
 
+function SurvivalA2Game:getCardSectionDisplayString()
+	return string.format("Lv. %d, %s", self.level, formatTime(self.frames))
+end
+
 return SurvivalA2Game

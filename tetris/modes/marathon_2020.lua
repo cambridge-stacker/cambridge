@@ -485,6 +485,12 @@ function Marathon2020Game:getHighscoreData()
 	}
 end
 
+function Marathon2020Game:getCardSectionDisplayString()
+	local grade = self:getTotalGrade()
+	local grade_text = grade > 50 and "GM" or tostring(grade)
+	return string.format("%s, %d, %s", grade_text, self.level, formatTime(self.frames))
+end
+
 function Marathon2020Game:getBackground()
 	return math.min(19, math.floor(self.level / 100))
 end

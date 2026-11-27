@@ -272,4 +272,8 @@ function Survival2020Game:getHighscoreData()
 	}
 end
 
+function Survival2020Game:getCardSectionDisplayString()
+	return string.format("%d %s %s", self.level, getLetterGrade(math.floor(self.grade)), formatTime(self.frames))
+end
+
 return Survival2020Game

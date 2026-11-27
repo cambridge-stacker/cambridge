@@ -698,4 +698,14 @@ function SakuraGame:getHighscoreData()
 	}
 end
 
+function SakuraGame:getCardSectionDisplayString()
+	local map
+	if self.maps_cleared == 27 then
+		map = "ALL"
+	else
+		map = self:getStageShort()
+	end
+	return string.format("%s, %s", map, formatTime(self.frames))
+end
+
 return SakuraGame

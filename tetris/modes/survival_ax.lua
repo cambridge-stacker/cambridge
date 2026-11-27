@@ -131,6 +131,10 @@ function SurvivalAXGame:getHighscoreData()
 	}
 end
 
+function SurvivalAXGame:getCardSectionDisplayString()
+	return string.format("Lv. %d, %s", self.level, formatTime(self.frames))
+end
+
 function SurvivalAXGame:drawScoringInfo()
 	SurvivalAXGame.super.drawScoringInfo(self)
 

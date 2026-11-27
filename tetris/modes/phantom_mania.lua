@@ -248,4 +248,8 @@ function PhantomManiaGame:getHighscoreData()
 	}
 end
 
+function PhantomManiaGame:getCardSectionDisplayString()
+	return string.format("Lv. %d, %s", self.level, formatTime(self.frames))
+end
+
 return PhantomManiaGame

@@ -93,7 +93,7 @@ local function getRankForScore(score)
 	elseif score <  82000 then return {rank = "S6", next = 82000, index = 14}
 	elseif score < 100000 then return {rank = "S7", next = 100000, index = 15}
 	elseif score < 120000 then return {rank = "S8", next = 120000, index = 16}
-	else return {rank = "S9", next = "???"}
+	else return {rank = "S9", next = "???", index = 17}
 	end
 end
 
@@ -263,19 +263,31 @@ function MarathonA1Game:getBackground()
 end
 
 function MarathonA1Game:getHighscoreData()
+	local grade_index, grade_label
+	if self.gm_conditions["level300"] and self.gm_conditions["level500"] and self.gm_conditions["level999"] then
+		grade_index = 18
+		grade_label = "GM"
+	else
+		grade_index = self.grade.index
+		grade_label = self.grade.rank
+	end
+
+	return {
+		grade = {value = grade_index, label = grade_label},
+		score = self.score,
+		level = self.level,
+		frames = self.frames,
+	}
+end
+
+function MarathonA1Game:getCardSectionDisplayString()
 	local grade_label
 	if self.gm_conditions["level300"] and self.gm_conditions["level500"] and self.gm_conditions["level999"] then
 		grade_label = "GM"
 	else
 		grade_label = self.grade.rank
 	end
-
-	return {
-		grade = {value = self.grade.index, label = grade_label},
-		score = self.score,
-		level = self.level,
-		frames = self.frames,
-	}
+	return string.format("%s, %s", grade_label, formatTime(self.frames))
 end
 
 return MarathonA1Game

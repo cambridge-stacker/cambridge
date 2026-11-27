@@ -284,4 +284,8 @@ function SurvivalA3Game:getHighscoreData()
 	}
 end
 
+function SurvivalA3Game:getCardSectionDisplayString()
+	return string.format("%s, %d, %s", getLetterGrade(self.grade), self.level, formatTime(self.frames))
+end
+
 return SurvivalA3Game
