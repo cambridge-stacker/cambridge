@@ -36,6 +36,13 @@ sound_paths = {
 	go = "res/se/go.wav",
 	irs = "res/se/irs.wav",
 	ihs = "res/se/ihs.wav",
+	cool = "res/se/cool.wav",
+	garbage = "res/se/garbage.wav",
+	bell = "res/se/bell.wav",
+	level_up = "res/se/level_up.wav",
+	level_down = "res/se/level_down.wav",
+	grade_up = "res/se/grade_up.wav",
+	grade_down = "res/se/grade_down.wav",
 	-- a secret sound!
 	welcome = "res/se/welcomeToCambridge.wav",
 }
